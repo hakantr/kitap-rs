@@ -131,5 +131,5 @@
   - [C - Türetilebilir Trait'ler](ekler-03-turetilebilir-traitler.md)
   - [D - Faydalı Geliştirme Araçları](ekler-04-faydali-gelistirme-araclari.md)
   - [E - Sürümler](ekler-05-surumler.md)
-  - [F - Kitabın Çevirileri](ekler-06-translation.md)
+  - [F - Kitabın Çevirileri](ekler-06-ceviriler.md)
   - [G - Rust Nasıl Geliştirilir ve "Nightly Rust"](ekler-07-nightly-rust.md)
