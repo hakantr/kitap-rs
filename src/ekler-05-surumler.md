@@ -24,4 +24,4 @@ Açık olmak gerekirse: Çoğu özellik tüm sürümlerde mevcut olacaktır. Her
 
 Daha fazla ayrıntı için [_Rust Edition Guide (Rust Sürüm Rehberi)_][edition-guide] belgesine bakın. Bu, sürümler arasındaki farkları sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi açıklayan eksiksiz bir kitaptır.
 
-[edition-guide]: https://doc.rust-lang.org/stable/edition-guide
+[edition-guide]: https://hakantr.github.io/rust-surum/

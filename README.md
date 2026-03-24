@@ -80,7 +80,7 @@ Kitap [basıldığı][nostarch] ve çevrim içi sürümü mümkün olduğunca ba
 sürüme yakın tutmak istediğimiz için, gönderdiğiniz issue ya da pull request’e
 geri dönüş almaya alıştığınızdan daha uzun sürebilir.
 
-Şimdiye kadar büyük revizyonları [Rust Editions](https://doc.rust-lang.org/edition-guide/)
+Şimdiye kadar büyük revizyonları [Rust Editions](https://hakantr.github.io/rust-surum/)
 ile eş zamanlı yaptık. Bu büyük revizyonlar arasında yalnızca hataları
 düzeltiyoruz. Gönderdiğiniz issue ya da PR doğrudan bir hata düzeltmiyorsa,
 yeniden büyük revizyon dönemine kadar bekleyebilir. Bu da aylar hatta yıllar
