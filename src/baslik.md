@@ -13,6 +13,6 @@ Bu metin, [No Starch Press'ten ciltsiz (paperback) ve e-kitap formatında][nspru
 [install]: ch01-01-kurulum.html
 [ekler-e]: ekler-05-surumler.html
 [nsprust]: https://nostarch.com/rust-programming-language-3rd-edition
-[translations]: ekler-06-translation.html
+[translations]: ekler-06-ceviriler.html
 
 > **🚨 Daha etkileşimli bir öğrenme deneyimi mi istiyorsunuz? Testler, vurgulama (highlighting), görselleştirmeler ve daha fazlasını içeren farklı bir Rust Kitabı sürümünü deneyin**: <https://rust-book.cs.brown.edu>
