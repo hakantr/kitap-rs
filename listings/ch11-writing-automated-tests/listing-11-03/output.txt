@@ -1,0 +1,24 @@
+$ cargo test
+   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/listing-11-03)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running unittests src/lib.rs ($PROJE/listings/ch11-writing-automated-tests/listing-11-03/target/debug/deps/toplayici-ac13090f6eeacc92)
+
+running 2 tests
+test tests::kesif ... ok
+test tests::baska_bir_test ... FAILED
+
+failures:
+
+---- tests::baska_bir_test stdout ----
+
+thread 'tests::baska_bir_test' (84265) panicked at src/lib.rs:17:9:
+Bu testi başarısız yap
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::baska_bir_test
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`

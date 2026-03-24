@@ -1,0 +1,9 @@
+$ cargo test yuz
+   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/output-only-02-single-test)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running unittests src/lib.rs (target/debug/deps/toplayici-ac13090f6eeacc92)
+
+running 1 test
+test tests::yuz ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s

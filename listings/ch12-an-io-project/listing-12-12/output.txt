@@ -1,0 +1,30 @@
+$ cargo run -- mezar siir.txt
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+warning: unused `Result` that must be used
+  --> src/main.rs:23:5
+   |
+23 |     calistir(yapilandirma);
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+23 |     let _ = calistir(yapilandirma);
+   |     +++++++
+
+warning: `minigrep` (bin "minigrep") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.71s
+     Running `target/debug/minigrep mezar siir.txt`
+Aranan: mezar
+Dosya: siir.txt
+Metin içeriği:
+Ne hasta bekler sabahı,
+Ne taze ölüyü mezar.
+Ne de şeytan, bir günahı,
+Seni beklediğim kadar.
+
+Geçti istemem gelmeni,
+Yokluğunda buldum seni;
+Bırak vehmimde gölgeni
+Gelme, artık neye yarar?

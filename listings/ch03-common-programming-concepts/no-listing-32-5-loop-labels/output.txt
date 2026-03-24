@@ -1,0 +1,13 @@
+$ cargo run
+   Compiling loops v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-32-5-loop-labels)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running `target/debug/loops`
+İleri ayım = 0
+Geri sayım = 10
+Geri sayım = 9
+İleri ayım = 1
+Geri sayım = 10
+Geri sayım = 9
+İleri ayım = 2
+Geri sayım = 10
+Son İlerleme = 2

@@ -1,0 +1,77 @@
+pub trait Iletici {
+    fn gonder(&self, ileti: &str);
+}
+
+pub struct SinirIzleyici<'a, T: Iletici> {
+    iletici: &'a T,
+    deger: usize,
+    en_buyuk: usize,
+}
+
+impl<'a, T> SinirIzleyici<'a, T>
+where
+    T: Iletici,
+{
+    pub fn yeni(iletici: &'a T, en_buyuk: usize) -> SinirIzleyici<'a, T> {
+        SinirIzleyici {
+            iletici,
+            deger: 0,
+            en_buyuk,
+        }
+    }
+
+    pub fn deger_ata(&mut self, deger: usize) {
+        self.deger = deger;
+
+        let en_buyugun_yuzdesi = self.deger as f64 / self.en_buyuk as f64;
+
+        if en_buyugun_yuzdesi >= 1.0 {
+            self.iletici.gonder("Hata: Kotanizi astiniz!");
+        } else if en_buyugun_yuzdesi >= 0.9 {
+            self.iletici
+                .gonder("Acil uyari: Kotanizin %90'ini gectiniz!");
+        } else if en_buyugun_yuzdesi >= 0.75 {
+            self.iletici.gonder("Uyari: Kotanizin %75'ini gectiniz!");
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::cell::RefCell;
+
+    struct SahteIletici {
+        gonderilen_iletiler: RefCell<Vec<String>>,
+    }
+
+    impl SahteIletici {
+        fn yeni() -> SahteIletici {
+            SahteIletici {
+                gonderilen_iletiler: RefCell::new(vec![]),
+            }
+        }
+    }
+
+    // ANCHOR: here
+    impl Iletici for SahteIletici {
+        fn gonder(&self, ileti: &str) {
+            let mut ilk_odunc = self.gonderilen_iletiler.borrow_mut();
+            let mut ikinci_odunc = self.gonderilen_iletiler.borrow_mut();
+
+            ilk_odunc.push(String::from(ileti));
+            ikinci_odunc.push(String::from(ileti));
+        }
+    }
+    // ANCHOR_END: here
+
+    #[test]
+    fn yuzde_75_ustu_uyari_iletisi_gonderir() {
+        let sahte_iletici = SahteIletici::yeni();
+        let mut sinir_izleyici = SinirIzleyici::yeni(&sahte_iletici, 100);
+
+        sinir_izleyici.deger_ata(80);
+
+        assert_eq!(sahte_iletici.gonderilen_iletiler.borrow().len(), 1);
+    }
+}

@@ -1,0 +1,7 @@
+$ cargo run
+   Compiling birak-ornegi v0.1.0 (file:///projects/birak-ornegi)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.60s
+     Running `target/debug/birak-ornegi`
+OzelAkilliIsaretciler oluşturuldu
+`diğer şeyler` verisine sahip OzelAkilliIsaretci bırakılıyor!
+`benim şeylerim` verisine sahip OzelAkilliIsaretci bırakılıyor!

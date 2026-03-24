@@ -1,0 +1,5 @@
+$ cargo run
+   Compiling backyard v0.1.0 ($PROJE/listings/ch07-managing-growing-projects/quick-reference-example)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.33s
+     Running `target/debug/backyard`
+Kuskonmaz yetiştiriyorum!

@@ -1,0 +1,17 @@
+$ cargo run
+   Compiling bolum10 v0.1.0 ($PROJE/listings/ch10-generic-types-traits-and-lifetimes/listing-10-05)
+error[E0369]: binary operation `>` cannot be applied to type `&T`
+ --> src/main.rs:5:16
+  |
+5 |         if oge > en_buyuk {
+  |            --- ^ -------- &T
+  |            |
+  |            &T
+  |
+help: consider restricting type parameter `T` with trait `PartialOrd`
+  |
+1 | fn en_buyuk_bul<T: std::cmp::PartialOrd>(liste: &[T]) -> &T {
+  |                  ++++++++++++++++++++++
+
+For more information about this error, try `rustc --explain E0369`.
+error: could not compile `bolum10` (bin "bolum10") due to 1 previous error

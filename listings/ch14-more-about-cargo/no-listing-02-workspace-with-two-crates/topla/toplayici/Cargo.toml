@@ -1,0 +1,7 @@
+[package]
+name = "toplayici"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bir_ekle = { path = "../bir_ekle", package = "bir_ekle" }

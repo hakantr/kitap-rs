@@ -1,0 +1,25 @@
+$ cargo run
+   Compiling is-parcaciklari v0.1.0 (file:///projects/is-parcaciklari)
+error[E0382]: use of moved value: `vektor`
+  --> src/main.rs:10:10
+   |
+ 4 |     let vektor = vec![1, 2, 3];
+   |         ------ move occurs because `vektor` has type `Vec<i32>`, which does not implement the `Copy` trait
+ 5 |
+ 6 |     let tutamac = thread::spawn(move || {
+   |                                 ------- value moved into closure here
+ 7 |         println!("İşte bir vektör: {vektor:?}");
+   |                                     ------ variable moved due to use in closure
+...
+10 |     drop(vektor); // eyvah!
+   |          ^^^^^^ value used here after move
+   |
+help: consider cloning the value before moving it into the closure
+   |
+ 6 ~     let value = vektor.clone();
+ 7 ~     let tutamac = thread::spawn(move || {
+ 8 ~         println!("İşte bir vektör: {value:?}");
+   |
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `is-parcaciklari` (bin "is-parcaciklari") due to 1 previous error

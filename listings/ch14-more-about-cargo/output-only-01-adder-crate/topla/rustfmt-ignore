@@ -1,0 +1,3 @@
+Bu ornek, bir calisma alaninin nasil kurulacagini gostermek icin kullaniliyor;
+ancak calisma alani henuz tam kurulmadigi icin rustfmt, Cargo.toml icinde
+gecen crate'in henuz var olmamasindan yakiniyor.

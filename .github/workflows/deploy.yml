@@ -1,0 +1,51 @@
+name: Deploy Rust Book TR to GitHub Pages
+
+on:
+  # Her push'ta çalışır (main branch)
+  push:
+    branches: ["main"]
+
+  # Actions sekmesinden manuel tetikleme
+  workflow_dispatch:
+
+# GitHub Pages deploy izinleri
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Aynı anda birden fazla deploy olmasını engeller
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: mdBook kurulumu
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: "latest"
+
+      - name: Kitabı derle
+        run: mdbook build
+
+      - name: Pages artifact yükle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./book
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: GitHub Pages'a deploy et
+        id: deployment
+        uses: actions/deploy-pages@v4

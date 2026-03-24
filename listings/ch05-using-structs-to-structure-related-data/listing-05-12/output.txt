@@ -1,0 +1,5 @@
+$ cargo run
+   Compiling rectangles v0.1.0 (file:///projects/rectangles)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.48s
+     Running `target/debug/rectangles`
+dikdortgen1 şöyledir: Dikdortgen { genislik: 30, yukseklik: 50 }

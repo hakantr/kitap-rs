@@ -1,0 +1,11 @@
+$ cargo run
+   Compiling kons-liste v0.1.0 (file:///projects/kons-liste)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.53s
+     Running `target/debug/kons-liste`
+a icin ilk rc sayisi = 1
+a sonraki oge = Some(RefCell { value: Bos })
+b olustuktan sonra a rc sayisi = 2
+b icin ilk rc sayisi = 1
+b sonraki oge = Some(RefCell { value: Dugum(5, RefCell { value: Bos }) })
+a degistikten sonra b rc sayisi = 2
+a degistikten sonra a rc sayisi = 2

@@ -1,0 +1,12 @@
+$ cargo run
+   Compiling branches v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-31-arms-must-return-same-type)
+error[E0308]: `if` and `else` have incompatible types
+ --> src/main.rs:4:42
+  |
+4 |     let sayi = if condition { 5 } else { "altı" };
+  |                               -          ^^^^^^ expected integer, found `&str`
+  |                               |
+  |                               expected because of this
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `branches` (bin "branches") due to 1 previous error

@@ -1,0 +1,8 @@
+[package]
+name = "krepler"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+merhaba_makro = { path = "../hello_macro" }
+merhaba_makro_turet = { path = "../hello_macro/hello_macro_derive" }

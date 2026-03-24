@@ -1,0 +1,18 @@
+$ cargo run
+   Compiling dikdortgenler v0.1.0 (file:///projects/dikdortgenler)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running `target/debug/dikdortgenler`
+[
+    Dikdortgen {
+        genislik: 3,
+        yukseklik: 5,
+    },
+    Dikdortgen {
+        genislik: 7,
+        yukseklik: 12,
+    },
+    Dikdortgen {
+        genislik: 10,
+        yukseklik: 1,
+    },
+]

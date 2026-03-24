@@ -1,0 +1,19 @@
+$ cargo test
+   Compiling sinir-izleyici v0.1.0 (file:///projects/sinir-izleyici)
+error[E0596]: cannot borrow `self.gonderilen_iletiler` as mutable, as it is behind a `&` reference
+  --> src/lib.rs:58:13
+   |
+58 |             self.gonderilen_iletiler.push(String::from(ileti));
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^ `self` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+   |
+help: consider changing this to be a mutable reference in the `impl` method and the `trait` definition
+   |
+ 2 ~     fn gonder(&mut self, ileti: &str);
+ 3 | }
+...
+56 |     impl Iletici for SahteIletici {
+57 ~         fn gonder(&mut self, ileti: &str) {
+   |
+
+For more information about this error, try `rustc --explain E0596`.
+error: could not compile `sinir-izleyici` (lib test) due to 1 previous error

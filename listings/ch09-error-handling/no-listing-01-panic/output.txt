@@ -1,0 +1,8 @@
+$ cargo run
+   Compiling panik v0.1.0 ($PROJE/listings/ch09-error-handling/no-listing-01-panik)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running `target/debug/panik`
+
+thread 'main' (44082) panikked at src/main.rs:2:5:
+çök ve yan
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

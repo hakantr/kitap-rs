@@ -1,0 +1,8 @@
+$ cargo run
+   Compiling panik v0.1.0 ($PROJE/listings/ch09-hata-yonetimi/listing-09-01)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running `target/debug/panik`
+
+thread 'main' (42022) panikked at src/main.rs:4:6:
+index out of bounds: the len is 3 but the index is 99
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

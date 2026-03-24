@@ -1,0 +1,28 @@
+$ cargo run
+   Compiling kons-liste v0.1.0 (file:///projects/kons-liste)
+error[E0072]: recursive type `Liste` has infinite size
+ --> src/main.rs:1:1
+  |
+1 | enum Liste {
+  | ^^^^^^^^^
+2 |     Dugum(i32, Liste),
+  |               ---- recursive without indirection
+  |
+help: insert some indirection (e.g., a `Box`, `Rc`, or `&`) to break the cycle
+  |
+2 |     Dugum(i32, Box<Liste>),
+  |               ++++    +
+
+error[E0391]: cycle detected when computing when `Liste` needs drop
+ --> src/main.rs:1:1
+  |
+1 | enum Liste {
+  | ^^^^^^^^^
+  |
+  = note: ...which immediately requires computing when `Liste` needs drop again
+  = note: cycle used when computing whether `Liste` needs drop
+  = note: see https://rustc-dev-guide.rust-lang.org/overview.html#queries and https://rustc-dev-guide.rust-lang.org/query.html for more information
+
+Some errors have detailed explanations: E0072, E0391.
+For more information about an error, try `rustc --explain E0072`.
+error: could not compile `kons-liste` (bin "kons-liste") due to 2 previous errors

@@ -1,0 +1,10 @@
+$ cargo run
+   Compiling deref-ornegi v0.1.0 (file:///projects/deref-ornegi)
+error[E0614]: type `BenimKutu<{integer}>` cannot be dereferenced
+  --> src/main.rs:14:19
+   |
+14 |     assert_eq!(5, *kutu);
+   |                   ^^ can't be dereferenced
+
+For more information about this error, try `rustc --explain E0614`.
+error: could not compile `deref-ornegi` (bin "deref-ornegi") due to 1 previous error

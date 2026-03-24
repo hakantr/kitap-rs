@@ -1,0 +1,6 @@
+$ cargo run
+   Compiling gomlek-sirketi v0.1.0 (file:///projects/gomlek-sirketi)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running `target/debug/gomlek-sirketi`
+The user with preference Some(Kirmizi) gets Kirmizi
+The user with preference None gets Mavi

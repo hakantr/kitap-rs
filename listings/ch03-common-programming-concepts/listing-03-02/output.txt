@@ -1,0 +1,5 @@
+$ cargo run
+   Compiling branches v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/listing-03-02)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running `target/debug/branches`
+sayi'nin değeri: 5

@@ -1,0 +1,9 @@
+$ cargo test --test entegrasyon_testi
+   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/output-only-05-single-integration)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/entegrasyon_testi.rs (target/debug/deps/entegrasyon_testi-5737c6970c195272)
+
+running 1 test
+test iki_ekliyor ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

@@ -1,0 +1,17 @@
+$ cargo run
+   Compiling bolum10 v0.1.0 (file:///projects/bolum10)
+error[E0597]: `x` does not live long enough
+ --> src/main.rs:6:13
+  |
+5 |         let x = 5;
+  |             - binding `x` declared here
+6 |         r = &x;
+  |             ^^ borrowed value does not live long enough
+7 |     }
+  |     - `x` dropped here while still borrowed
+8 |
+9 |     println!("r: {r}");
+  |                   - borrow later used here
+
+For more information about this error, try `rustc --explain E0597`.
+error: could not compile `bolum10` (bin "bolum10") due to 1 previous error

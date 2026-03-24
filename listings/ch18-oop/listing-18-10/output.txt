@@ -1,0 +1,9 @@
+error[E0277]: the trait bound `String: Ciz` is not satisfied
+ --> src/main.rs:5:21
+  |
+5 |         bilesenler: vec![Box::new(String::from("Merhaba"))],
+  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Ciz` is not implemented for `String`
+  |
+  = help: the following other types implement trait `Ciz`:
+            Dugme
+  = note: required for the cast from `Box<String>` to `Box<dyn Ciz>`

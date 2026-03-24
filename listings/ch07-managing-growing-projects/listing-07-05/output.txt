@@ -1,0 +1,28 @@
+$ cargo build
+   Compiling restaurant v0.1.0 ($PROJE/listings/ch07-managing-growing-projects/listing-07-05)
+error[E0603]: function `bekleme_listesine_ekle` is private
+  --> src/lib.rs:12:42
+   |
+12 |     crate::restoran_on_kisim::karsilama::bekleme_listesine_ekle();
+   |                                          ^^^^^^^^^^^^^^^^^^^^^^ private function
+   |
+note: the function `bekleme_listesine_ekle` is defined here
+  --> src/lib.rs:4:9
+   |
+ 4 |         fn bekleme_listesine_ekle() {}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0603]: function `bekleme_listesine_ekle` is private
+  --> src/lib.rs:15:35
+   |
+15 |     restoran_on_kisim::karsilama::bekleme_listesine_ekle();
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^ private function
+   |
+note: the function `bekleme_listesine_ekle` is defined here
+  --> src/lib.rs:4:9
+   |
+ 4 |         fn bekleme_listesine_ekle() {}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0603`.
+error: could not compile `restaurant` (lib) due to 2 previous errors

@@ -1,0 +1,8 @@
+$ cargo run
+   Compiling kapanis-ornek v0.1.0 (file:///projects/kapanis-ornek)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running `target/debug/kapanis-ornek`
+Kapanışı tanımlamadan önce: [1, 2, 3]
+Kapanışı çağırmadan önce: [1, 2, 3]
+From closure: [1, 2, 3]
+Kapanışı çağırdıktan sonra: [1, 2, 3]

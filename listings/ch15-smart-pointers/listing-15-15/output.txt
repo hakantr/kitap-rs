@@ -1,0 +1,16 @@
+$ cargo run
+   Compiling birak-ornegi v0.1.0 (file:///projects/birak-ornegi)
+error[E0040]: explicit use of destructor method
+  --> src/main.rs:16:7
+   |
+16 |     c.drop();
+   |       ^^^^ explicit destructor calls not allowed
+   |
+help: consider using `drop` function
+   |
+16 -     c.drop();
+16 +     drop(c);
+   |
+
+For more information about this error, try `rustc --explain E0040`.
+error: could not compile `birak-ornegi` (bin "birak-ornegi") due to 1 previous error

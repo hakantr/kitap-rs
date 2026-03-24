@@ -1,0 +1,9 @@
+$ cargo run
+   Compiling loops v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/listing-03-04)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running `target/debug/loops`
+değer: 10
+değer: 20
+değer: 30
+değer: 40
+değer: 50

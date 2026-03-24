@@ -1,0 +1,16 @@
+$ cargo run
+   Compiling bolum10 v0.1.0 ($PROJE/listings/ch10-generic-types-traits-and-lifetimes/listing-10-23)
+error[E0597]: `dizgi2` does not live long enough
+ --> src/main.rs:7:42
+  |
+6 |         let dizgi2 = String::from("xyz");
+  |             ------ binding `dizgi2` declared here
+7 |         sonuc = en_uzun(dizgi1.as_str(), dizgi2.as_str());
+  |                                          ^^^^^^ borrowed value does not live long enough
+8 |     }
+  |     - `dizgi2` dropped here while still borrowed
+9 |     println!("En uzun dizgi: {sonuc}");
+  |                               ----- borrow later used here
+
+For more information about this error, try `rustc --explain E0597`.
+error: could not compile `bolum10` (bin "bolum10") due to 1 previous error

@@ -1,0 +1,20 @@
+warning: irrefutable `let...else` pattern
+ --> src/main.rs:3:5
+  |
+3 |     let x = 5 else {
+  |     ^^^^^^^^^
+  |
+  = note: this pattern will always match, so the `else` clause is useless
+  = help: consider removing the `else` clause
+  = note: `#[warn(irrefutable_let_patterns)]` on by default
+
+warning: unused variable: `x`
+ --> src/main.rs:3:9
+  |
+3 |     let x = 5 else {
+  |         ^ help: if this is intentional, prefix it with an underscore: `_x`
+  |
+  = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `desenler` (bin "desenler") generated 2 warnings (run `cargo fix --bin "desenler" -p desenler` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s

@@ -1,0 +1,7 @@
+use toplayici::iki_ekle;
+
+#[test]
+fn iki_ekliyor() {
+    let sonuc = iki_ekle(2);
+    assert_eq!(sonuc, 4);
+}

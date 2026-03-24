@@ -1,0 +1,5 @@
+$ cargo run -- ne siir.txt
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.0s
+     Running `target/debug/minigrep ne siir.txt`
+Gelme, artık neye yarar?

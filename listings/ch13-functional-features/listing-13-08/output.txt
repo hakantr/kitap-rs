@@ -1,0 +1,22 @@
+$ cargo run
+   Compiling dikdortgenler v0.1.0 (file:///projects/dikdortgenler)
+error[E0507]: cannot move out of `deger`, a captured variable in an `FnMut` closure
+  --> src/main.rs:18:30
+   |
+15 |     let deger = String::from("closure called");
+   |         -----   ------------------------------ move occurs because `deger` has type `String`, which does not implement the `Copy` trait
+   |         |
+   |         captured outer variable
+16 |
+17 |     liste.sort_by_key(|r| {
+   |                      --- captured by this `FnMut` closure
+18 |         siralama_islemleri.push(deger);
+   |                              ^^^^^ `deger` is moved here
+   |
+help: consider cloning the deger if the performance cost is acceptable
+   |
+18 |         siralama_islemleri.push(deger.clone());
+   |                                   ++++++++
+
+For more information about this error, try `rustc --explain E0507`.
+error: could not compile `dikdortgenler` (bin "dikdortgenler") due to 1 previous error

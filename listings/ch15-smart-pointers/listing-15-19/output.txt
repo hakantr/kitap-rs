@@ -1,0 +1,8 @@
+$ cargo run
+   Compiling kons-liste v0.1.0 (file:///projects/kons-liste)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.45s
+     Running `target/debug/kons-liste`
+a oluşturulduktan sonraki sayı = 1
+b oluşturulduktan sonraki sayı = 2
+c oluşturulduktan sonraki sayı = 3
+c kapsamdan çıkınca sayı = 2

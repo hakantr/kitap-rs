@@ -1,0 +1,6 @@
+$ cargo run
+   Compiling variables v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-03-shadowing)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+     Running `target/debug/variables`
+İç kapsamdaki x'in değeri: 12
+x'in değeri: 6

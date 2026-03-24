@@ -1,0 +1,12 @@
+$ cargo run
+   Compiling variables v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types)
+error[E0308]: mismatched types
+ --> src/main.rs:4:17
+  |
+3 |     let mut bosluklar = "   ";
+  |                         ----- expected due to this value
+4 |     bosluklar = bosluklar.len();
+  |                 ^^^^^^^^^^^^^^^ expected `&str`, found `usize`
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `variables` (bin "variables") due to 1 previous error

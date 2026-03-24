@@ -1,0 +1,10 @@
+$ cargo test ekle
+   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/output-only-03-multiple-tests)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running unittests src/lib.rs (target/debug/deps/toplayici-ac13090f6eeacc92)
+
+running 2 tests
+test tests::uc_ve_iki_ekle ... ok
+test tests::iki_ve_iki_ekle ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s

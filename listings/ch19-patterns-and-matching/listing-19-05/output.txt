@@ -1,0 +1,3 @@
+a, 0. indekste
+b, 1. indekste
+c, 2. indekste

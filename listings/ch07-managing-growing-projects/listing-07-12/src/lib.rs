@@ -1,0 +1,13 @@
+mod restoran_on_kisim {
+    pub mod karsilama {
+        pub fn bekleme_listesine_ekle() {}
+    }
+}
+
+use crate::restoran_on_kisim::karsilama;
+
+mod musteri {
+    pub fn restoranda_yemek_ye() {
+        karsilama::bekleme_listesine_ekle();
+    }
+}

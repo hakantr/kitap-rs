@@ -1,0 +1,5 @@
+# İlgili Verileri Yapılandırmak İçin Struct Kullanımı
+
+Bir _struct_ veya _yapı_, anlamlı bir grup oluşturan birden fazla ilgili değeri bir araya getirip isimlendirmenizi sağlayan özel bir veri türüdür. Nesne yönelimli (object-oriented) bir programlama diline aşinaysanız, struct bir nesnenin veri özelliklerine (data attributes) benzer. Bu bölümde, halihazırda bildiklerinizi geliştirmek için demetleri (tuples) struct'larla karşılaştıracak ve verileri gruplandırmak için struct'ların ne zaman daha iyi bir yol olduğunu göstereceğiz.
+
+Struct'ların nasıl tanımlanacağını ve örnekleneceğini (instantiate) göstereceğiz. Bir struct türüyle ilişkili davranışları belirtmek için ilişkili fonksiyonların (associated functions), özellikle de _metot_ (method) olarak adlandırılan türünün nasıl tanımlanacağını tartışacağız. Struct'lar ve enum'lar (Bölüm 6'da tartışılacaktır), Rust'ın derleme zamanı tür kontrolünden (compile-time type checking) tam anlamıyla yararlanmak üzere programınızın etki alanında (domain) yeni türler oluşturmak için temel yapı taşlarıdır.

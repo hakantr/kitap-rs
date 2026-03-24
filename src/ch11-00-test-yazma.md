@@ -1,0 +1,11 @@
+# Otomatik Testler Yazmak
+
+1972 tarihli "Mütevazı Programcı (The Humble Programmer)" adlı makalesinde Edsger W. Dijkstra, "program test etmenin hataların varlığını göstermenin çok etkili bir yolu olabileceğini, ancak bunların yokluğunu göstermek konusunda umutsuzca yetersiz olduğunu" söylemiştir. Bu, elimizden geldiğince çok test yapmaya çalışmamamız gerektiği anlamına gelmez!
+
+Programlarımızdaki _doğruluk_, kodumuzun amaçladığımız şeyi yapma ölçüsüdür. Rust, programların doğruluğu hakkında yüksek derecede endişe duyularak tasarlanmıştır, ancak doğruluğun kanıtlanması karmaşıktır ve kolay değildir. Rust'ın tür sistemi bu yükün büyük bir kısmını üstlenir, ancak tür sistemi her şeyi yakalayamaz. Bu nedenle Rust, otomatik yazılım testleri yazmak için destek içerir.
+
+Kendisine iletilen sayıya 2 ekleyen bir `iki_ekle` fonksiyonu yazdığımızı varsayalım. Bu fonksiyonun imzası, parametre olarak bir tamsayı kabul eder ve sonuç olarak bir tamsayı döndürür. Bu fonksiyonu uygulayıp derlediğimizde Rust, örneğin bu fonksiyona bir `String` değeri veya geçersiz bir referans iletmediğimizden emin olmak için şimdiye kadar öğrendiğiniz tüm tür denetimini ve ödünç alma denetimini yapar. Ancak Rust bu fonksiyonun tam olarak bizim amaçladığımız şeyi yapıp yapmadığını, yani örneğin parametreye 10 eklemek veya parametreden 50 çıkarmak yerine parametreye 2 ekleyip eklemediğini kontrol _edemez_! İşte testler burada devreye girer.
+
+Örneğin `iki_ekle` fonksiyonuna `3` ilettiğimizde dönen değerin `5` olduğunu doğrulayan testler yazabiliriz. Kodumuzda değişiklik yaptığımızda, mevcut doğru davranışın değişmediğinden emin olmak için bu testleri çalıştırabiliriz.
+
+Test yazmak karmaşık bir beceridir: Bir bölümde iyi testlerin nasıl yazılacağına dair her ayrıntıyı ele alamayacak olsak da, bu bölümde Rust'ın test araçlarının mekaniklerini tartışacağız. Testlerinizi yazarken kullanabileceğiniz açıklamalar ve makrolar, testlerinizi çalıştırmak için sağlanan varsayılan davranışlar ve seçenekler ile testlerin birim testleri ve entegrasyon testleri olarak nasıl organize edileceği hakkında konuşacağız.

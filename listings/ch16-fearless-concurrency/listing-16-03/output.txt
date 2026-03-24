@@ -1,0 +1,25 @@
+$ cargo run
+   Compiling is-parcaciklari v0.1.0 (file:///projects/is-parcaciklari)
+error[E0373]: closure may outlive the current function, but it borrows `vektor`, which is owned by the current function
+ --> src/main.rs:6:32
+  |
+6 |     let tutamac = thread::spawn(|| {
+  |                                ^^ may outlive borrowed value `vektor`
+7 |         println!("İşte bir vektör: {vektor:?}");
+  |                                     ------ `vektor` is borrowed here
+  |
+note: function requires argument type to outlive `'static`
+ --> src/main.rs:6:18
+  |
+6 |       let tutamac = thread::spawn(|| {
+  |  __________________^
+7 | |         println!("İşte bir vektör: {vektor:?}");
+8 | |     });
+  | |______^
+help: to force the closure to take ownership of `vektor` (and any other referenced variables), use the `move` keyword
+  |
+6 |     let tutamac = thread::spawn(move || {
+  |                                ++++
+
+For more information about this error, try `rustc --explain E0373`.
+error: could not compile `is-parcaciklari` (bin "is-parcaciklari") due to 1 previous error

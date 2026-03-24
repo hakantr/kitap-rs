@@ -1,0 +1,29 @@
+$ cargo run
+   Compiling kapanis-ornek v0.1.0 (file:///projects/kapanis-ornek)
+error[E0308]: mismatched types
+ --> src/main.rs:5:29
+  |
+5 |     let n = ornek_kapanis(5);
+  |             --------------- ^ expected `String`, found integer
+  |             |
+  |             arguments to this function are incorrect
+  |
+note: expected because the closure was earlier called with an argument of type `String`
+ --> src/main.rs:4:29
+  |
+4 |     let s = ornek_kapanis(String::from("merhaba"));
+  |             --------------- ^^^^^^^^^^^^^^^^^^^^^ expected because this argument is of type `String`
+  |             |
+  |             in this closure call
+note: closure parameter defined here
+ --> src/main.rs:2:28
+  |
+2 |     let ornek_kapanis = |x| x;
+  |                            ^
+help: try using a conversion method
+  |
+5 |     let n = ornek_kapanis(5.to_string());
+  |                              ++++++++++++
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `kapanis-ornek` (bin "kapanis-ornek") due to 1 previous error

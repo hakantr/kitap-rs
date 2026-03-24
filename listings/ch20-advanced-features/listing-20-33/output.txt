@@ -1,0 +1,15 @@
+error[E0308]: mismatched types
+ --> src/main.rs:2:43
+  |
+2 |     let handlers = vec![returns_closure(), returns_initialized_closure(123)];
+  |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected opaque type, found a different opaque type
+...
+8 | fn returns_closure() -> impl Fn(i32) -> i32 {
+  |                         ------------------- the expected opaque type
+...
+12 | fn returns_initialized_closure(init: i32) -> impl Fn(i32) -> i32 {
+  |                                              ------------------- the found opaque type
+  |
+  = note: expected opaque type `impl Fn(i32) -> i32`
+             found opaque type `impl Fn(i32) -> i32`
+  = note: distinct uses of `impl Trait` result in different opaque types

@@ -1,0 +1,25 @@
+$ cargo test
+   Compiling minigrep v0.1.0 (file:///projects/minigrep)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.97s
+     Running unittests src/lib.rs (target/debug/deps/minigrep-9cd200e5fac0fc94)
+
+running 1 test
+test tests::tek_sonuc ... FAILED
+
+failures:
+
+---- tests::tek_sonuc stdout ----
+
+thread 'tests::tek_sonuc' panicked at src/lib.rs:17:9:
+assertion `left == right` failed
+  left: ["güvenli, hızlı, üretken."]
+ right: []
+note: calistir with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::tek_sonuc
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`

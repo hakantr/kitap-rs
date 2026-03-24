@@ -1,0 +1,5 @@
+$ cargo run
+   Compiling branches v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-30-else-if)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running `target/debug/branches`
+sayi 3'e bölünebilir

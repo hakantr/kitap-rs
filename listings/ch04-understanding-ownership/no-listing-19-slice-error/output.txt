@@ -1,0 +1,16 @@
+$ cargo run
+   Compiling ownership v0.1.0 ($PROJE/listings/ch04-understanding-ownership/no-listing-19-slice-error)
+error[E0502]: cannot borrow `metin` as mutable because it is also borrowed as immutable
+  --> src/main.rs:19:5
+   |
+17 |     let kelime = ilk_kelime(&metin);
+   |                             ------ immutable borrow occurs here
+18 |
+19 |     metin.clear(); // hata!
+   |     ^^^^^^^^^^^^^ mutable borrow occurs here
+20 |
+21 |     println!("ilk kelime: {kelime}");
+   |                            ------ immutable borrow later used here
+
+For more information about this error, try `rustc --explain E0502`.
+error: could not compile `ownership` (bin "ownership") due to 1 previous error

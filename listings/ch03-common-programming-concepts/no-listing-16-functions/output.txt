@@ -1,0 +1,6 @@
+$ cargo run
+   Compiling functions v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-16-functions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running `target/debug/functions`
+Merhaba, dünya!
+Baska bir fonksiyon.

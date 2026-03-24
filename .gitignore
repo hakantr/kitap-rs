@@ -1,0 +1,15 @@
+book/
+dot/
+*~
+.idea
+.DS_Store
+target
+tmp
+
+.nova
+.vscode
+.zed
+
+ceviri_istegi.md
+ceviri_listesi.md
+ceviri_notlari.md

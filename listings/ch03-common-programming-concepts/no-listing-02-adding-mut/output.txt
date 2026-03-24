@@ -1,0 +1,6 @@
+$ cargo run
+   Compiling variables v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-02-adding-mut)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running `target/debug/variables`
+x'in değeri: 5
+x'in değeri: 6

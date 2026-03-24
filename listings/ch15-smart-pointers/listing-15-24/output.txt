@@ -1,0 +1,7 @@
+$ cargo run
+   Compiling kons-liste v0.1.0 (file:///projects/kons-liste)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.63s
+     Running `target/debug/kons-liste`
+a sonrasi = Dugum(RefCell { value: 15 }, Bos)
+b sonrasi = Dugum(RefCell { value: 3 }, Dugum(RefCell { value: 15 }, Bos))
+c sonrasi = Dugum(RefCell { value: 4 }, Dugum(RefCell { value: 15 }, Bos))

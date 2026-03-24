@@ -1,0 +1,96 @@
+use std::{
+    sync::{mpsc, Arc, Mutex},
+    thread,
+};
+
+pub struct IsParcacigiHavuzu {
+    calisanlar: Vec<Calisan>,
+    gonderici: Option<mpsc::Sender<Gorev>>,
+}
+
+type Gorev = Box<dyn FnOnce() + Send + 'static>;
+
+impl IsParcacigiHavuzu {
+    /// Yeni bir IsParcacigiHavuzu olusturur.
+    ///
+    /// Boyut, havuzdaki is parcacigi sayisidir.
+    ///
+    /// # Panics
+    ///
+    /// `new` fonksiyonu, boyut sifirsa panikler.
+    pub fn new(boyut: usize) -> IsParcacigiHavuzu {
+        assert!(boyut > 0);
+
+        let (gonderici, alici) = mpsc::channel();
+
+        let alici = Arc::new(Mutex::new(alici));
+
+        let mut calisanlar = Vec::with_capacity(boyut);
+
+        for kimlik in 0..boyut {
+            calisanlar.push(Calisan::new(kimlik, Arc::clone(&alici)));
+        }
+
+        IsParcacigiHavuzu {
+            calisanlar,
+            gonderici: Some(gonderici),
+        }
+    }
+
+    pub fn calistir<F>(&self, f: F)
+    where
+        F: FnOnce() + Send + 'static,
+    {
+        let gorev = Box::new(f);
+
+        self.gonderici.as_ref().unwrap().send(gorev).unwrap();
+    }
+}
+
+impl Drop for IsParcacigiHavuzu {
+    fn drop(&mut self) {
+        drop(self.gonderici.take());
+
+        for calisan in &mut self.calisanlar {
+            println!("Çalışan kapatılıyor: {}", calisan.kimlik);
+
+            if let Some(thread) = calisan.thread.take() {
+                thread.join().unwrap();
+            }
+        }
+    }
+}
+
+struct Calisan {
+    kimlik: usize,
+    thread: Option<thread::JoinHandle<()>>,
+}
+
+impl Calisan {
+    fn new(kimlik: usize, alici: Arc<Mutex<mpsc::Receiver<Gorev>>>) -> Calisan {
+        let thread = thread::spawn(move || loop {
+            let mesaj = alici.lock().unwrap().recv();
+
+            match mesaj {
+                Ok(gorev) => {
+                    println!(
+                        "Çalışan {kimlik} bir görev aldı; çalıştırılıyor."
+                    );
+
+                    gorev();
+                }
+                Err(_) => {
+                    println!(
+                        "Çalışan {kimlik} bağlantısı kesildi; kapatılıyor."
+                    );
+                    break;
+                }
+            }
+        });
+
+        Calisan {
+            kimlik,
+            thread: Some(thread),
+        }
+    }
+}
