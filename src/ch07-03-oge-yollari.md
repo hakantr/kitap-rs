@@ -87,7 +87,7 @@ Mutlak yolda, crate'imizin modül ağacının kökü (root) olan `crate` ile ba�
 
 Göreceli (relative) yolda mantık, ilk adım hariç, mutlak yolla aynıdır: Yol, crate kökünden başlamak yerine `restoran_on_kisim` ile başlar. `restoran_on_kisim` modülü, `restoranda_yemek_ye` fonksiyonu ile aynı modülde tanımlanmıştır, bu nedenle `restoranda_yemek_ye` fonksiyonunun tanımlı olduğu modülden başlayan göreceli yol çalışır. Ardından, `karsilama` ve `bekleme_listesine_ekle` fonksiyonları `pub` ile işaretlendiği için yolun geri kalanı çalışır ve bu fonksiyon çağrısı geçerlidir!
 
-Kütüphane crate'inizi diğer projelerin de kodunuzu kullanabilmesi için paylaşmayı planlıyorsanız, açık API'niz, crate'inizin kullanıcılarıyla yapacağınız ve kodunuzla nasıl etkileşime girebileceklerini belirleyen sözleşmenizdir (contract). İnsanların crate'inize bağımlı olmasını kolaylaştırmak için açık API'nizde yapılacak değişiklikleri yönetmekle ilgili pek çok husus vardır. Bu hususlar bu kitabın kapsamı dışındadır; eğer bu konuyla ilgileniyorsanız, [Rust API Yönergeleri (Rust API Guidelines)][api-guidelines] kılavuzuna bakabilirsiniz.
+Kütüphane crate'inizi diğer projelerin de kodunuzu kullanabilmesi için paylaşmayı planlıyorsanız, açık API'niz, crate'inizin kullanıcılarıyla yapacağınız ve kodunuzla nasıl etkileşime girebileceklerini belirleyen sözleşmenizdir (contract). İnsanların crate'inize bağımlı olmasını kolaylaştırmak için açık API'nizde yapılacak değişiklikleri yönetmekle ilgili pek çok husus vardır. Bu hususlar bu kitabın kapsamı dışındadır; eğer bu konuyla ilgileniyorsanız, [Rust API Yönergeleri][api-guidelines] kılavuzuna bakabilirsiniz.
 
 > #### Bir İkili (Binary) ve Kütüphane (Library) İçeren Paketler İçin En İyi Pratikler
 >

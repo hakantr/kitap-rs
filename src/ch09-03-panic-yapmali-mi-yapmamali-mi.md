@@ -2,7 +2,7 @@
 
 Peki ne zaman `panic!` çağırmanız ve ne zaman `Result` döndürmeniz gerektiğine nasıl karar verirsiniz? Kod panik yaptığında kurtarmanın bir yolu yoktur. Kurtarmanın mümkün bir yolu olsun ya da olmasın, herhangi bir hata durumu için `panic!` çağırabilirsiniz, ancak bu durumda çağıran kod adına bir durumun kurtarılamaz olduğuna karar vermiş olursunuz. Bir `Result` değeri döndürmeyi seçtiğinizde, çağıran koda seçenekler sunarsınız. Çağıran kod kendi durumuna uygun bir şekilde kurtarmaya çalışmayı seçebilir veya bu durumda bir `Err` değerinin kurtarılamaz olduğuna karar verebilir, böylece o da `panic!` çağırarak kurtarılabilir hatanızı kurtarılamaz bir hataya dönüştürebilir. Bu nedenle, başarısız olabilecek bir fonksiyon tanımlarken varsayılan olarak `Result` döndürmek iyi bir seçimdir.
 
-Örnekler, prototip kodları ve testler gibi durumlarda, `Result` döndürmek yerine panik yapan kodlar yazmak daha uygundur. Gelin bunun nedenini inceleyelim ve daha sonra derleyicinin başarısızlığın imkansız olduğunu anlayamadığı ama bir insan olarak sizin anlayabildiğiniz durumları tartışalım. Bu bölüm, kütüphane kodlarında (library code) panik yapıp yapmamaya nasıl karar verileceğine dair bazı genel yönergeler (guidelines) ile sona erecektir.
+Örnekler, prototip kodları ve testler gibi durumlarda, `Result` döndürmek yerine panik yapan kodlar yazmak daha uygundur. Gelin bunun nedenini inceleyelim ve daha sonra derleyicinin başarısızlığın imkansız olduğunu anlayamadığı ama bir insan olarak sizin anlayabildiğiniz durumları tartışalım. Bu bölüm, kütüphane kodlarında (library code) panik yapıp yapmamaya nasıl karar verileceğine dair bazı genel yönergeler  ile sona erecektir.
 
 ### Örnekler, Prototip Kodu ve Testler
 
@@ -26,7 +26,7 @@ Eğer bir testte bir metot çağrısı başarısız olursa, test edilen işlevse
 
 Sabit kodlanmış bir string'i ayrıştırarak bir `IpAddr` örneği oluşturuyoruz. `127.0.0.1`'in geçerli bir IP adresi olduğunu görebiliriz, bu yüzden burada `expect` kullanmak kabul edilebilirdir. Ancak, sabit kodlanmış, geçerli bir string'e sahip olmak `parse` metodunun dönüş türünü değiştirmez: Yine de bir `Result` değeri alırız ve derleyici bu string'in her zaman geçerli bir IP adresi olduğunu görecek kadar akıllı olmadığı için, `Err` varyantı bir olasılıkmış gibi derleyici bizi yine de `Result`'ı ele almaya zorlayacaktır. Eğer IP adresi string'i programa sabit kodlanmış olmak yerine bir kullanıcıdan gelseydi ve dolayısıyla başarısız olma ihtimali *olsaydı*, `Result`'ı kesinlikle daha sağlam bir şekilde ele almak isterdik. Bu IP adresinin sabit kodlanmış olduğu varsayımından bahsetmek, gelecekte IP adresini başka bir kaynaktan almamız gerekirse `expect`'i daha iyi bir hata yönetimi (hata-yonetimi) koduyla değiştirmemizi sağlayacaktır.
 
-### Hata Yönetimi Yönergeleri (Guidelines for Error Handling)
+### Hata Yönetimi Yönergeleri
 
 Kodunuzun kötü bir duruma düşmesi muhtemelse kodunuzun panik yapması tavsiye edilir. Bu bağlamda _kötü durum_, kodunuza geçersiz değerler, çelişkili değerler veya eksik değerler geçildiğinde olduğu gibi bazı varsayımların, garantilerin, sözleşmelerin veya değişmezlerin ihlal edilmesidir; ayrıca bunlara ek olarak aşağıdakilerden biri veya daha fazlasıdır:
 

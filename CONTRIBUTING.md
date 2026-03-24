@@ -75,7 +75,7 @@ geri dönüş almaya alıştığınızdan daha uzun sürebilir.
 
 [nostarch]: https://nostarch.com/rust-programming-language-2nd-edition
 
-Şimdiye kadar büyük revizyonları [Rust Editions](https://hakantr.github.io/rust-surum/)
+Şimdiye kadar büyük revizyonları [Rust Sürümleri](https://hakantr.github.io/rust-surum/)
 ile eş zamanlı yaptık. Bu büyük revizyonlar arasında yalnızca hataları
 düzeltiyoruz. Gönderdiğiniz issue ya da PR doğrudan bir hata düzeltmiyorsa,
 yeniden büyük revizyon dönemine kadar bekleyebilir. Bu da aylar hatta yıllar

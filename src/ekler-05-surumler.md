@@ -22,6 +22,6 @@ Tüm Rust derleyici sürümleri, o derleyicinin yayınlanmasından önce var ola
 
 Açık olmak gerekirse: Çoğu özellik tüm sürümlerde mevcut olacaktır. Herhangi bir Rust sürümünü kullanan geliştiriciler, yeni kararlı sürümler (stable releases) yapıldıkça iyileştirmeleri görmeye devam edeceklerdir. Ancak bazı durumlarda, temel olarak yeni anahtar kelimeler eklendiğinde, bazı yeni özellikler yalnızca sonraki sürümlerde mevcut olabilir. Bu tür özelliklerden yararlanmak istiyorsanız sürümleri değiştirmeniz gerekecektir.
 
-Daha fazla ayrıntı için [_Rust Edition Guide (Rust Sürüm Rehberi)_][edition-guide] belgesine bakın. Bu, sürümler arasındaki farkları sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi açıklayan eksiksiz bir kitaptır.
+Daha fazla ayrıntı için [_Rust Sürüm Rehberi_][edition-guide] belgesine bakın. Bu, sürümler arasındaki farkları sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi açıklayan eksiksiz bir kitaptır.
 
 [edition-guide]: https://hakantr.github.io/rust-surum/
