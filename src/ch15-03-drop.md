@@ -24,7 +24,7 @@ için şimdilik bu yönteme `println!` ekleyelim.
 Liste 15-14, kapsam dışına çıkınca mesaj basan `OzelAkilliIsaretci` yapısını
 gösterir.
 
-<Listing number="15-14" file-name="src/main.rs" caption="Temizlik kodunun yer alacagi `Drop` uygulamali `OzelAkilliIsaretci` yapisi">
+<Listing number="15-14" file-name="src/main.rs" caption="Temizlik kodunun yer alacağı `Drop` uygulamalı `OzelAkilliIsaretci` yapısı">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-14/src/main.rs}}
@@ -63,7 +63,7 @@ standart kütüphanedeki `std::mem::drop` fonksiyonunu kullanırsınız.
 Liste 15-14'teki `main`i değiştirip `drop` yöntemini elle çağırmak istersek,
 Liste 15-15'teki kod çalışmaz.
 
-<Listing number="15-15" file-name="src/main.rs" caption="Temizligi erken yapmak icin `Drop` trait'indeki `drop`u elle cagirmaya calismak">
+<Listing number="15-15" file-name="src/main.rs" caption="Temizliği erken yapmak için `Drop` trait'indeki `drop`u elle çağırmaya çalışmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-15/src/main.rs:here}}
@@ -88,7 +88,7 @@ Bu yüzden bir değeri erkenden bırakmak istiyorsak, `std::mem::drop`
 fonksiyonunu çağırırız. Değeri fonksiyona argüman olarak veririz; prelude içinde
 olduğu için ayrıca `use` yazmamız gerekmez. Liste 15-16 bunu gösterir.
 
-<Listing number="15-16" file-name="src/main.rs" caption="Bir degeri kapsam disina cikmadan once acikca birakmak icin `std::mem::drop` cagirmak">
+<Listing number="15-16" file-name="src/main.rs" caption="Bir değeri kapsam dışına çıkmadan önce açıkça bırakmak için `std::mem::drop` çağırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-16/src/main.rs:here}}

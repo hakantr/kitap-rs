@@ -149,7 +149,7 @@ varsaymaz; bu ilişkileri açıkça yazmamız gerekir.
 dosyasını açıp `main` fonksiyonunu, Liste 14-7'deki gibi `bir_ekle`
 fonksiyonunu çağıracak şekilde değiştirin.
 
-<Listing number="14-7" file-name="toplayici/src/main.rs" caption="`toplayici` crate'inden `bir_ekle` kutuphane fonksiyonunu kullanmak">
+<Listing number="14-7" file-name="toplayici/src/main.rs" caption="`toplayici` crate'inden `bir_ekle` kütüphane fonksiyonunu kullanmak">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch14-more-about-cargo/listing-14-07/topla/toplayici/src/main.rs}}

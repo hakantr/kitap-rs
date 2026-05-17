@@ -172,7 +172,7 @@ yazdığımızı düşünelim. Bu kütüphanede iki modül olsun: `turler` modü
 `BirincilRenk` ve `IkincilRenk` adlı iki enum içeriyor, `yardimcilar` modülü de
 `karistir` adlı bir fonksiyon içeriyor. Liste 14-3 bunu gösterir.
 
-<Listing number="14-3" file-name="src/lib.rs" caption="Ogeleri `turler` ve `yardimcilar` modullerine ayrilmis bir `sanat` kutuphanesi">
+<Listing number="14-3" file-name="src/lib.rs" caption="Öğeleri `turler` ve `yardimcilar` modüllerine ayrılmış bir `sanat` kütüphanesi">
 
 ```rust,noplayground,test_harness
 {{#rustdoc_include ../listings/ch14-more-about-cargo/listing-14-03/src/lib.rs:here}}
@@ -196,7 +196,7 @@ Bu kütüphaneye bağımlı başka bir crate, `sanat` içindeki öğeleri kullan
 Liste 14-4, `sanat` crate'indeki `BirincilRenk` ve `karistir` öğelerini kullanan
 bir crate örneğini gösterir.
 
-<Listing number="14-4" file-name="src/main.rs" caption="`sanat` crate'indeki ogeleri ic yapi disa aktarilmis halde kullanan bir crate">
+<Listing number="14-4" file-name="src/main.rs" caption="`sanat` crate'indeki öğeleri iç yapı dışa aktarılmış halde kullanan bir crate">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch14-more-about-cargo/listing-14-04/src/main.rs}}

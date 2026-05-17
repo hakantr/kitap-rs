@@ -13,7 +13,7 @@ referans sayısı sıfıra düşmez ve değerler asla bırakılmaz.
 Bunun nasıl olabileceğine, Liste 15-25'teki `Liste` tanımı ve `kuyruk` metodu
 ile bakalım.
 
-<Listing number="15-25" file-name="src/main.rs" caption="`Dugum` varyantinin gosterdigi seyi degistirebilmek icin `RefCell<T>` tutan kons liste tanimi">
+<Listing number="15-25" file-name="src/main.rs" caption="`Dugum` varyantının gösterdiği şeyi değiştirebilmek için `RefCell<T>` tutan cons liste tanımı">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-25/src/main.rs:here}}
@@ -31,7 +31,7 @@ ona işaret eden `b` adlı başka bir liste oluşturuyor. Sonra `a`yı, `Bos` ye
 `b`yi gösterecek biçimde değiştirerek referans döngüsü yaratıyor.
 `println!` satırları süreç boyunca referans sayılarını gösteriyor.
 
-<Listing number="15-26" file-name="src/main.rs" caption="Birbirini gosteren iki `Liste` degeriyle referans dongusu olusturmak">
+<Listing number="15-26" file-name="src/main.rs" caption="Birbirini gösteren iki `Liste` değeriyle referans döngüsü oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-26/src/main.rs:here}}
@@ -131,7 +131,7 @@ erişebilsin istiyoruz. Bunun için `Vec<T>` öğelerini `Rc<Node>` yapıyoruz.
 Sonra, çocuksuz ve değeri `3` olan `yaprak` düğümünü ve değeri `5` olan, çocuk
 olarak `yaprak`ı içeren `dal` düğümünü oluşturuyoruz.
 
-<Listing number="15-27" file-name="src/main.rs" caption="Cocuksuz `yaprak` dugumu ve cocuk olarak `yaprak`i iceren `dal` dugumu olusturmak">
+<Listing number="15-27" file-name="src/main.rs" caption="Çocuksuz `yaprak` düğümü ve çocuk olarak `yaprak`ı içeren `dal` düğümü oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-27/src/main.rs:there}}
@@ -165,7 +165,7 @@ Bu nedenle `ebeveyn` alanını `Rc<T>` değil, `Weak<T>` yapacağız; daha doğr
 Bir düğüm ebeveynini işaret edebilir ama ona sahip olmaz. Liste 15-28'de
 `yaprak`, `dal`ı ebeveyni olarak görecek şekilde `main`i güncelliyoruz.
 
-<Listing number="15-28" file-name="src/main.rs" caption="Ebeveynine zayif referans veren `yaprak` dugumu">
+<Listing number="15-28" file-name="src/main.rs" caption="Ebeveynine zayıf referans veren `yaprak` düğümü">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-28/src/main.rs:there}}
@@ -191,7 +191,7 @@ etiketleri göründüğü için döngü olmadığını da anlarız.
 Bunun için `dal` oluşturmayı iç kapsama alacağız; böylece kapsam bitince ne
 olduğunu net görürüz. Liste 15-29 değişiklikleri gösterir.
 
-<Listing number="15-29" file-name="src/main.rs" caption="`dal`i ic kapsamda olusturup guclu ve zayif referans sayilarini incelemek">
+<Listing number="15-29" file-name="src/main.rs" caption="`dal`ı iç kapsamda oluşturup güçlü ve zayıf referans sayılarını incelemek">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-29/src/main.rs:here}}

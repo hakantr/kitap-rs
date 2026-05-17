@@ -9,7 +9,7 @@
 //!
 //! [post]: https://matklad.github.io/2021/02/27/delete-cargo-integration-tests.html
 
-use std::{pin::Pin, time::Duration};
+use std::{path::Path, pin::Pin, time::Duration};
 
 use futures::Future;
 use trpl::{Either, Receiver, Sender};
@@ -204,9 +204,9 @@ fn yield_now() {
 #[test]
 fn read_to_string() {
     let result = trpl::block_on(async {
-        trpl::read_to_string("tests/integration/to-read.txt")
-            .await
-            .unwrap()
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/integration/to-read.txt");
+        trpl::read_to_string(path).await.unwrap()
     });
 
     assert_eq!(result, String::from("This is some text!\n"));

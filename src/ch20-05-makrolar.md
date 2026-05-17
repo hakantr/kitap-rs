@@ -284,3 +284,10 @@ Bu tanım, özel `derive` makrosunun imzasına benzer: parantez içindeki belirt
 ## Özet
 
 Derin bir nefes. Ara sıra kullanacağınız, ama gerektiğinde işinize çok yarayacak bazı Rust özelliklerini artık tanıyorsunuz. Burada birkaç karmaşık konuyu özellikle tanıttık; çünkü hata mesajlarında ya da başkasının kodunda karşınıza çıktıklarında bunları tanıyabilmeniz önemli. Gerektiğinde çözüme ulaşmak için bu bölümü başvuru kaynağı gibi kullanın.
+
+[quote]: https://crates.io/crates/quote
+[quote-docs]: https://docs.rs/quote
+[ref]: ../reference/macros-by-example.html
+[syn]: https://crates.io/crates/syn
+[syn-docs]: https://docs.rs/syn/2.0/syn/struct.DeriveInput.html
+[tlborm]: https://veykril.github.io/tlborm/

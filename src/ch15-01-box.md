@@ -1,4 +1,4 @@
-## Yığındaki Veriyi İşaret Etmek İçin `Box<T>` Kullanmak
+## Öbekteki Veriyi İşaret Etmek İçin `Box<T>` Kullanmak
 
 En sade akıllı işaretçi kutudur; türü `Box<T>` diye yazılır. _Kutular
 (boxes)_, veriyi yığın yerine öbekte (_heap_) saklamanızı sağlar. Yığında kalan
@@ -37,7 +37,7 @@ tamamen buna ayrılmıştır. Burada öğrenecekleriniz orada da işinize yaraya
 Liste 15-1, bir kutunun `i32` değerini öbekte saklamak için nasıl
 kullanıldığını gösteriyor.
 
-<Listing number="15-1" file-name="src/main.rs" caption="Bir `i32` degerini kutu kullanarak obekte saklamak">
+<Listing number="15-1" file-name="src/main.rs" caption="Bir `i32` değerini kutu kullanarak öbekte saklamak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-01/src/main.rs}}
@@ -106,7 +106,7 @@ Liste 15-2, cons listeyi temsil edecek bir enum tanımı içeriyor. Bu kod henü
 derlenmeyecek; çünkü birazdan göstereceğimiz gibi `Liste` türünün bilinen bir
 boyutu yoktur.
 
-<Listing number="15-2" file-name="src/main.rs" caption="`i32` degerlerinden olusan bir kons liste veri yapisini temsil etmek icin enum tanimlamaya ilk deneme">
+<Listing number="15-2" file-name="src/main.rs" caption="`i32` değerlerinden oluşan bir cons liste veri yapısını temsil etmek için enum tanımlamaya ilk deneme">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-02/src/main.rs:here}}
@@ -134,7 +134,7 @@ sonunda listenin bittiğini bildiren özyineli olmayan `Bos` varyantını tutar.
 
 Liste 15-3'teki kodu derlemeye çalışırsak, Liste 15-4'teki hatayı alırız.
 
-<Listing number="15-4" caption="Ozyineli bir enum tanimlamaya calisirken alinan hata">
+<Listing number="15-4" caption="Özyineli bir enum tanımlamaya çalışırken alınan hata">
 
 ```console
 {{#include ../listings/ch15-smart-pointers/listing-15-03/output.txt}}
@@ -169,7 +169,7 @@ Bunu, Liste 15-2'deki `Liste` enumu gibi özyineli bir türde Rust ne yapmaya
 boyutuna ihtiyaç duyar. `Liste`nin boyutunu bulmak için yine varyantlara bakar
 ve yine `Dugum`e gelir. Bu süreç sonsuza kadar sürer; Şekil 15-1 bunu gösterir.
 
-<img alt="Sonsuz bir Dugum listesi: 'Dugum' etiketli bir dikdortgen, biri 'i32' digeri daha kucuk bir 'Dugum' iceren bolmelere ayriliyor; bu yapi sonsuza dek tekrar ediyor." src="img/trpl15-01.svg" class="center" style="width: 50%;" />
+<img alt="Sonsuz bir Dugum listesi: 'Dugum' etiketli bir dikdörtgen, biri 'i32' diğeri daha küçük bir 'Dugum' içeren bölmelere ayrılıyor; bu yapı sonsuza dek tekrar ediyor." src="img/trpl15-01.svg" class="center" style="width: 50%;" />
 
 <span class="caption">Şekil 15-1: Sonsuz `Dugum` varyantlarından oluşan sonsuz bir `Liste`</span>
 
@@ -206,7 +206,7 @@ değil öbekte tutar. Kavramsal olarak yine aynı listeye sahibiz; ama bu kez
 Liste 15-2'deki `Liste` tanımını ve Liste 15-3'teki kullanımı Liste 15-5'teki
 koda çevirirsek, artık kod derlenir.
 
-<Listing number="15-5" file-name="src/main.rs" caption="Boyutu bilinsin diye `Box<T>` kullanan `Liste` tanimi">
+<Listing number="15-5" file-name="src/main.rs" caption="Boyutu bilinsin diye `Box<T>` kullanan `Liste` tanımı">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-05/src/main.rs}}
@@ -221,7 +221,7 @@ işaretçisi boyutu kadar olacağını biliyoruz. Kutu kullanarak sonsuz özyine
 zinciri kırdık; böylece derleyici `Liste`yi saklamak için gereken boyutu
 hesaplayabilir. Şekil 15-2 bunu gösteriyor.
 
-<img alt="'Dugum' etiketli bir dikdortgen; ilk parca 'i32', ikinci parca ise sonlu boyutlu bir isaretciyi temsil eden 'Box' olarak gosteriliyor." src="img/trpl15-02.svg" class="center" />
+<img alt="'Dugum' etiketli bir dikdörtgen; ilk parça 'i32', ikinci parça ise sonlu boyutlu bir işaretçiyi temsil eden 'Box' olarak gösteriliyor." src="img/trpl15-02.svg" class="center" />
 
 <span class="caption">Şekil 15-2: Sonsuz boyutlu olmayan bir `Liste`; çünkü `Dugum` bir `Box` tutuyor</span>
 
@@ -236,3 +236,5 @@ için başka kullanım alanlarını 18. bölümde yeniden göreceğiz.
 çıktığında, kutunun işaret ettiği öbek verisi de `Drop` trait'i sayesinde
 temizlenir. Bu iki trait, bu bölümün geri kalanında göreceğimiz diğer akıllı
 işaretçi türleri için daha da önemli olacak. Şimdi onlara bakalım.
+
+[trait-objects]: ch18-02-trait-nesneleri.html#ortak-davranış-üzerinden-soyutlamak-için-trait-nesnelerini-kullanmak

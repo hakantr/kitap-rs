@@ -122,7 +122,7 @@ gönderileceğini bilir. Mesajların nasıl gönderileceğini ise kütüphaneyi 
 uygulama sağlayacaktır. Bunun için `Iletici` adlı bir trait tanımlıyoruz.
 Liste 15-20 kütüphane kodunu gösterir.
 
-<Listing number="15-20" file-name="src/lib.rs" caption="Bir degerin ust sinira ne kadar yaklastigini izleyen ve belirli seviyelerde uyaran kutuphane">
+<Listing number="15-20" file-name="src/lib.rs" caption="Bir değerin üst sınıra ne kadar yaklaştığını izleyen ve belirli seviyelerde uyaran kütüphane">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-20/src/lib.rs}}
@@ -180,7 +180,7 @@ alanını `RefCell<T>` içine alırız; böylece `gonder` metodu `self`
 değiştirilemez referans alsa bile, içerideki veriyi değiştirebilir. Liste 15-22
 bunu gösterir.
 
-<Listing number="15-22" file-name="src/lib.rs" caption="Dis deger degistirilemez sayilirken ic degeri degistirmek icin `RefCell<T>` kullanmak">
+<Listing number="15-22" file-name="src/lib.rs" caption="Dış değer değiştirilemez sayılırken iç değeri değiştirmek için `RefCell<T>` kullanmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-22/src/lib.rs:here}}
@@ -222,7 +222,7 @@ zamanında `panic!` alırız. Liste 15-23, Liste 15-22'deki `gonder`
 uygulamasının bilerek bozulmuş sürümüdür: aynı kapsam içinde iki
 değiştirilebilir ödünç oluşturmaya çalışıyoruz.
 
-<Listing number="15-23" file-name="src/lib.rs" caption="Ayni kapsamda iki degistirilebilir referans olusturup `RefCell<T>`nin panic vermesini gormek">
+<Listing number="15-23" file-name="src/lib.rs" caption="Aynı kapsamda iki değiştirilebilir referans oluşturup `RefCell<T>`nin panic vermesini görmek">
 
 ```rust,ignore,panics
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-23/src/lib.rs:here}}
@@ -259,7 +259,7 @@ paylaşılabildiğini görmüştük. Ama `Rc<T>` yalnızca değiştirilemez değ
 tuttuğu için, liste oluştuktan sonra içindeki değerleri değiştiremiyorduk.
 Şimdi `RefCell<T>` ekleyerek bunu mümkün kılacağız. Liste 15-24 bunu gösterir.
 
-<Listing number="15-24" file-name="src/main.rs" caption="Degistirilebilir `Liste` olusturmak icin `Rc<RefCell<i32>>` kullanmak">
+<Listing number="15-24" file-name="src/main.rs" caption="Değiştirilebilir `Liste` oluşturmak için `Rc<RefCell<i32>>` kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-24/src/main.rs}}

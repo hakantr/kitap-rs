@@ -30,7 +30,7 @@ biri, başka yerde tutulan bir değere uzanan ok gibi görmektir. Liste 15-6'da
 bir `i32` değerine referans oluşturuyor ve başvuru çözme operatörüyle bu
 referansın gösterdiği değere gidiyoruz.
 
-<Listing number="15-6" file-name="src/main.rs" caption="Bir `i32` degerine giden referansi, basvuru cozme operatoruyle izlemek">
+<Listing number="15-6" file-name="src/main.rs" caption="Bir `i32` değerine giden referansı, başvuru çözme operatörüyle izlemek">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-06/src/main.rs}}
@@ -60,7 +60,7 @@ Liste 15-6'daki kodu, referans yerine `Box<T>` kullanacak biçimde
 yeniden yazabiliriz. Liste 15-7'de kutu üzerinde kullanılan başvuru çözme
 operatörü, Liste 15-6'daki referans üzerinde kullanılanla aynı şekilde çalışır.
 
-<Listing number="15-7" file-name="src/main.rs" caption="`Box<i32>` uzerinde basvuru cozme operatorunu kullanmak">
+<Listing number="15-7" file-name="src/main.rs" caption="`Box<i32>` üzerinde başvuru çözme operatörünü kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-07/src/main.rs}}
@@ -89,7 +89,7 @@ göreceğiz.
 `BenimKutu<T>` türünü tanımlar. `Box<T>`deki `new` fonksiyonuna benzeyen bir
 `yeni` fonksiyonu da tanımlıyoruz.
 
-<Listing number="15-8" file-name="src/main.rs" caption="`BenimKutu<T>` turunu tanimlamak">
+<Listing number="15-8" file-name="src/main.rs" caption="`BenimKutu<T>` türünü tanımlamak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-08/src/main.rs:here}}
@@ -105,7 +105,7 @@ bir parametre alır ve bu değeri saklayan `BenimKutu` döndürür.
 yerine `BenimKutu<T>` kullanalım. Liste 15-9 derlenmez; çünkü Rust `BenimKutu`
 üzerinde başvuru çözmenin nasıl yapılacağını bilmiyor.
 
-<Listing number="15-9" file-name="src/main.rs" caption="`BenimKutu<T>`yi referans ve `Box<T>` gibi kullanmaya calismak">
+<Listing number="15-9" file-name="src/main.rs" caption="`BenimKutu<T>`yi referans ve `Box<T>` gibi kullanmaya çalışmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-09/src/main.rs:here}}
@@ -134,7 +134,7 @@ gerekir. Standart kütüphanedeki `Deref` trait'i, `self`i ödünç alan ve içt
 veriye referans döndüren `deref` adlı tek bir yöntem ister. Liste 15-10 bu
 uygulamayı gösterir.
 
-<Listing number="15-10" file-name="src/main.rs" caption="`BenimKutu<T>` uzerinde `Deref` uygulamak">
+<Listing number="15-10" file-name="src/main.rs" caption="`BenimKutu<T>` üzerinde `Deref` uygulamak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-10/src/main.rs:here}}
@@ -195,7 +195,7 @@ olan `merhaba` fonksiyonunu gösterir.
 `merhaba("Rust");` gibi bir çağrı zaten çalışır. Ama deref zorlama sayesinde
 `BenimKutu<String>` referansı da geçebiliriz; Liste 15-12 bunu gösterir.
 
-<Listing number="15-12" file-name="src/main.rs" caption="Deref zorlama sayesinde `merhaba`yi `BenimKutu<String>` referansiyla cagirmak">
+<Listing number="15-12" file-name="src/main.rs" caption="Deref zorlama sayesinde `merhaba`yı `BenimKutu<String>` referansıyla çağırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-12/src/main.rs:here}}
@@ -212,7 +212,7 @@ Sonuçta `merhaba`nın beklediği türle eşleşmiş oluruz.
 Rust'ta deref zorlama olmasaydı, Liste 15-12 yerine Liste 15-13'teki gibi
 açık kod yazmamız gerekirdi:
 
-<Listing number="15-13" file-name="src/main.rs" caption="Rust'ta deref zorlama olmasaydi yazmamiz gerekecek kod">
+<Listing number="15-13" file-name="src/main.rs" caption="Rust'ta deref zorlama olmasaydı yazmamız gerekecek kod">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-13/src/main.rs:here}}
@@ -233,3 +233,5 @@ Rust üç durumda deref zorlama yapar:
 Üçüncü durum, değiştirilebilir referansın değiştirilemez referans da olabilmesi
 nedeniyle mümkündür. Tersi doğru değildir: değiştirilemez referansla
 değiştirilebilir referans elde edilemez.
+
+[impl-trait]: ch10-02-traitler.html#bir-tür-üzerinde-trait-uygulamak-implementing

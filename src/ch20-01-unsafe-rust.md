@@ -201,7 +201,7 @@ Bir fonksiyonu `safe` diye işaretlemek onu sihirli biçimde güvenli yapmaz. Bu
 
 Aşağıdaki örnekte `call_from_c` fonksiyonunu, paylaşılan kütüphane olarak derlenip C tarafından bağlandıktan sonra C koduna açıyoruz:
 
-```
+```rust
 #[unsafe(no_mangle)]
 pub extern "C" fn call_from_c() {
     println!("Az önce C'den bir Rust fonksiyonu çağrıldı!");
@@ -224,7 +224,7 @@ Rust'ta küresel değişkenlere _statik_ değişken denir. Liste 20-10, değeri 
 
 </Listing>
 
-Statik değişkenler, 3. bölümde sözünü ettiğimiz sabitlere benzer. Ancak adlandırma kuralı gereği statik değişken adları genellikle `SCREAMING_SNAKE_CASE` ile yazılır. Statik değişkenler yalnızca `'static` ömürlü referanslar tutabilir; yani Rust derleyicisi bu ömrü kendi çıkarabilir, bizim ayrıca yazmamız gerekmez. Değiştirilemez statik değişkene erişmek güvenlidir.
+Statik değişkenler, 3. bölümde sözünü ettiğimiz [sabitlere][constants]<!-- ignore --> benzer. Ancak adlandırma kuralı gereği statik değişken adları genellikle `SCREAMING_SNAKE_CASE` ile yazılır. Statik değişkenler yalnızca `'static` ömürlü referanslar tutabilir; yani Rust derleyicisi bu ömrü kendi çıkarabilir, bizim ayrıca yazmamız gerekmez. Değiştirilemez statik değişkene erişmek güvenlidir.
 
 Sabitlerle değiştirilemez statik değişkenler arasındaki ince farklardan biri şudur: statik değişkenlerdeki değerlerin bellekte sabit bir adresi vardır. Bu değeri kullanmak her zaman aynı veriye erişir. Sabitler ise kullanıldıkları yerde kopyalanabilir. Bir diğer fark da statik değişkenlerin değiştirilebilir olabilmesidir. Değiştirilebilir statik değişkenlere erişmek ve onları değiştirmek _güvensizdir_. Liste 20-11, `COUNTER` adlı değiştirilebilir statik değişkenin nasıl bildirildiğini, erişildiğini ve değiştirildiğini gösteriyor.
 
@@ -271,3 +271,42 @@ Güvensiz kod yazarken, yazdığınız şeyin gerçekten güvenli ve doğru olup
 Miri kullanmak için Rust'ın nightly sürümü gerekir. Bunu [Ek G: Rust Nasıl Yapılır ve "Nightly Rust"][nightly]<!-- ignore --> kısmında ayrıntılı ele alacağız. Gece sürümü ve Miri aracını `rustup +nightly component add miri` ile kurabilirsiniz. Bu, projenizin kullandığı Rust sürümünü değiştirmez; yalnızca aracı sisteminize ekler. Bir projede Miri'yi `cargo +nightly miri run` ya da `cargo +nightly miri test` ile çalıştırabilirsiniz.
 
 Bunun ne kadar yararlı olabileceğini görmek için, Liste 20-7 üzerinde çalıştırdığımızda ne olduğuna bakalım.
+
+Miri bu örnekte tamsayıdan işaretçiye dönüşüm yaptığımızı ve bunun sorun
+olabileceğini bildirir; ardından Liste 20-7'de tanımsız davranış riski olduğunu,
+çünkü geçerli olduğunu kanıtlayamadığımız bir işaretçiden dilim oluşturduğumuzu
+gösterir. Böylece yalnızca derleyicinin kabul ettiği bir programda bile güvenlik
+varsayımımızı tekrar sorgulamamız gerektiğini görürüz.
+
+Bazı durumlarda Miri hataları düzeltmek için öneri de sunabilir. Yine de Miri
+her şeyi yakalayamaz: dinamik bir analiz aracıdır, yani yalnızca gerçekten
+çalıştırılan kod yollarındaki sorunları görür. Bu nedenle Miri'yi iyi testlerle
+birlikte kullanmanız gerekir. Ayrıca güvensiz kodun hatalı olabileceği her yolu
+modellemez. Başka bir deyişle, Miri bir sorun yakalarsa ortada bir bug vardır;
+ama Miri sorun yakalamadı diye kodun kesinlikle doğru olduğunu varsayamazsınız.
+Yine de çok yararlıdır. Bu bölümdeki diğer güvensiz kod örneklerinde de
+çalıştırıp ne söylediğine bakmayı deneyin. Miri hakkında daha fazla bilgi için
+[GitHub deposuna][miri] bakabilirsiniz.
+
+### Güvensiz Kodu Doğru Kullanmak
+
+Bu bölümde anlattığımız beş süper güçten birini kullanmak için `unsafe`
+yazmak yanlış ya da kaçınılması gereken bir şey değildir; sadece daha zordur,
+çünkü derleyici bellek güvenliğini her noktada sizin yerinize kanıtlayamaz.
+`unsafe` kullanmak için iyi bir nedeniniz olduğunda kullanabilirsiniz. Açık
+`unsafe` işareti, bir sorun çıktığında bakılacak yerleri daraltır.
+
+Güvensiz kod yazarken Miri, kodunuzun Rust'ın kurallarını koruduğuna dair
+güveninizi artırabilir. Güvensiz Rust ile etkili çalışmak konusunda daha derin
+bir kaynak için Rust'ın resmi güvensiz kod rehberi olan
+[Rustonomicon][nomicon] kitabına bakabilirsiniz.
+
+[dangling-references]: ch04-02-referanslar-ve-odunc-alma.html#sarkan-referanslar-dangling-references
+[ABI]: ../reference/items/external-blocks.html#abi
+[constants]: ch03-01-degiskenler-ve-degistirilebilirlik.html#sabitler-constants
+[miri]: https://github.com/rust-lang/miri
+[nightly]: ekler-07-nightly-rust.html
+[nomicon]: https://doc.rust-lang.org/nomicon/
+[send-and-sync]: ch16-04-genisletilebilir-eszamanlilik.html
+[the-slice-type]: ch04-03-dilim-turu.html#dilim-slice-türü
+[unions]: ../reference/items/unions.html
