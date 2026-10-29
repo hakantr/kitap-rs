@@ -6,15 +6,16 @@ use std::process;
 use minigrep::ara;
 
 fn main() {
-    let argumanlar: Vec<String> = env::argumanlar().collect();
+    let argumanlar: Vec<String> = env::args().collect();
 
-    let config = Yapilandirma::olustur(&argumanlar).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {err}");
-        process::exit(1);
-    });
+    let yapilandirma =
+        Yapilandirma::olustur(&argumanlar).unwrap_or_else(|hata| {
+            println!("Argümanları ayrıştırırken problem oluştu: {hata}");
+            process::exit(1);
+        });
 
-    if let Err(e) = calistir(config) {
-        println!("Application error: {e}");
+    if let Err(e) = calistir(yapilandirma) {
+        println!("Uygulama hatası: {e}");
         process::exit(1);
     }
 }
@@ -37,10 +38,10 @@ impl Yapilandirma {
     }
 }
 
-fn calistir(config: Yapilandirma) -> Result<(), Box<dyn Error>> {
-    let icerik = fs::read_to_string(config.dosya_yolu)?;
+fn calistir(yapilandirma: Yapilandirma) -> Result<(), Box<dyn Error>> {
+    let icerik = fs::read_to_string(yapilandirma.dosya_yolu)?;
 
-    for satir in ara(&config.sorgu, &icerik) {
+    for satir in ara(&yapilandirma.sorgu, &icerik) {
         println!("{satir}");
     }
 

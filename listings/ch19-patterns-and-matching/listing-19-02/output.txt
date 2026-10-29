@@ -1,8 +1,9 @@
-    Checking desenler v0.1.0 (/home/hakanbiris/github/kitap/listings/ch19-patterns-and-matching/listing-19-02)
+$ cargo run
+   Compiling desenler v0.1.0 (file:///projects/desenler)
 error[E0308]: mismatched types
- --> src/main.rs:3:9
+ --> src/main.rs:2:9
   |
-3 |     let (birinci, ikinci) = (1, 2, 3);
+2 |     let (birinci, ikinci) = (1, 2, 3);
   |         ^^^^^^^^^^^^^^^^^   --------- this expression has type `({integer}, {integer}, {integer})`
   |         |
   |         expected a tuple with 3 elements, found one with 2 elements

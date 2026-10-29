@@ -8,7 +8,7 @@ struct SecimKutusu {
 
 impl Ciz for SecimKutusu {
     fn ciz(&self) {
-        // bir secim kutusunu gercekten cizmek icin kod
+        // bir seçim kutusunu gerçekten çizmek için kod
     }
 }
 
@@ -24,7 +24,7 @@ fn main() {
                 secenekler: vec![
                     String::from("Evet"),
                     String::from("Belki"),
-                    String::from("Hayir"),
+                    String::from("Hayır"),
                 ],
             }),
             Box::new(Dugme {

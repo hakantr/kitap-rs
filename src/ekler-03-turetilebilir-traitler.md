@@ -1,90 +1,130 @@
-## Ek C: Türetilebilir Trait'ler
+<!-- Old headings. Do not remove or links may break. -->
 
-Kitabın çeşitli yerlerinde, bir struct veya enum tanımına uygulayabileceğiniz `derive` niteliğinden (attribute) bahsettik. `derive` niteliği, `derive` sözdizimi ile açıklamalı (annotated) hale getirdiğiniz tür üzerinde, kendi varsayılan uygulamasıyla (default implementation) birlikte bir trait'i uygulayacak kodu üretir.
+<a id="appendix-c-derivable-traits"></a>
+<a id="ek-c-türetilebilir-traitler"></a>
 
-Bu ekte, standart kütüphanedeki `derive` ile kullanabileceğiniz tüm trait'lerin bir referansını sunuyoruz. Her bölüm şunları kapsar:
+## C - Türetilebilir Trait'ler
 
-- Bu trait'i türetmenin (deriving) hangi operatörleri ve metotları etkinleştireceği
+Kitabın çeşitli bölümlerinde bir struct veya enum tanımına uygulayabileceğiniz `derive` özniteliğinden (*attribute*) bahsettik. `derive` özniteliği, `derive` sözdizimiyle işaretlediğiniz tür üzerinde ilgili trait'i kendi varsayılan davranışıyla uygulayacak kodu otomatik olarak üretir.
+
+Bu ekte, standart kütüphanede bulunan ve `derive` ile kullanabileceğiniz tüm trait'ler için bir başvuru kaynağı sunuyoruz. Her alt bölüm şu konuları kapsar:
+
+- Bu trait'i türetmenin hangi operatörleri ve metotları etkinleştireceği
 - `derive` tarafından sağlanan trait uygulamasının ne yaptığı
-- Trait'i uygulamanın, tür hakkında ne anlama geldiği
+- Trait'i uygulamanın tür hakkında ne ifade ettiği
 - Trait'i uygulamanıza izin verilen veya verilmeyen koşullar
 - Trait'i gerektiren işlem örnekleri
 
-Eğer `derive` niteliği tarafından sağlanan davranıştan farklı bir davranış istiyorsanız, bunları manuel olarak nasıl uygulayacağınızla ilgili ayrıntılar için her bir trait'in [standart kütüphane dokümantasyonuna](../std/index.html)<!-- ignore --> başvurun.
+`derive` özniteliğinin sağladığı davranıştan farklı bir davranış istiyorsanız, bu trait'leri elle nasıl uygulayacağınıza ilişkin ayrıntılar için her bir trait'in [standart kütüphane belgelendirmesine](../std/index.html)<!-- ignore --> başvurabilirsiniz.
 
-Burada listelenen trait'ler, `derive` kullanılarak kendi türlerinizde uygulanabilen, standart kütüphane tarafından tanımlanmış yegane trait'lerdir. Standart kütüphanede tanımlanan diğer trait'lerin mantıklı bir varsayılan davranışı yoktur, bu nedenle onları başarmaya çalıştığınız şeye uygun şekilde uygulamak size kalmıştır.
+Burada listelenen trait'ler, standart kütüphane tarafından tanımlanmış olup kendi türleriniz üzerinde `derive` ile uygulanabilen yegâne trait'lerdir. Standart kütüphanede tanımlanan diğer trait'lerin her türe uyan mantıklı bir varsayılan davranışı yoktur; bu nedenle onları amacınıza uygun biçimde uygulamak size bırakılmıştır.
 
-Türetilemeyen (cannot be derived) bir trait örneği, son kullanıcılar için formatlamayı yöneten `Display` trait'idir. Bir türü son kullanıcıya uygun şekilde göstermenin yolunu her zaman düşünmelisiniz. Türün hangi kısımlarını son kullanıcının görmesine izin verilmeli? Hangi kısımlarını ilgili bulurlar? Verilerin hangi formatı onlar için en uygun olurdu? Rust derleyicisi bu öngörüye sahip değildir, bu yüzden sizin için uygun varsayılan davranışı sağlayamaz.
+Türetilemeyen bir trait'e örnek olarak, son kullanıcılara yönelik biçimlendirmeyi yöneten `Display` trait'i verilebilir. Bir türü son kullanıcıya en uygun biçimde nasıl göstereceğinizi her zaman düşünmeniz gerekir: Türün hangi kısımlarını son kullanıcının görmesine izin verilmeli? Hangi alanlar kullanıcı için anlamlıdır? Veriyi hangi biçimde sunmak en anlaşılır olur? Rust derleyicisi bu öngörüye sahip olmadığından sizin adınıza uygun bir varsayılan `Display` davranışı üretemez.
 
-Bu ekte sağlanan türetilebilir (derivable) trait'lerin listesi kapsamlı değildir: Kütüphaneler kendi trait'leri için `derive` uygulayabilir, bu da `derive` ile kullanabileceğiniz trait listesini gerçekten ucu açık hale getirir. `derive` uygulamak (implementing), Bölüm 20'deki [“Özel `derive` Makroları”][custom-derive-macros]<!-- ignore --> kısmında ele alınan prosedürel makroları (procedural macros) kullanmayı içerir.
+Bu ekte sunulan türetilebilir trait listesi ekosistemin tamamını kapsamaz: Harici kütüphaneler kendi trait'leri için `derive` desteği sağlayabilir; bu da `derive` ile kullanabileceğiniz trait listesini ucu açık hâle getirir (örneğin serileştirme için `serde::Serialize` ve `serde::Deserialize`). Özel bir `derive` tanımlamak, Bölüm 20'deki [“Özel `derive` Makroları”][custom-derive-macros]<!-- ignore --> bölümünde ele alınan prosedürel makroların kullanılmasını içerir.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="debug-for-programmer-output"></a>
+<a id="programcı-çıktısı-için-debug"></a>
 
 ### Programcı Çıktısı İçin `Debug`
 
-`Debug` trait'i, `{}` yer tutucuları içine `:?` ekleyerek belirttiğiniz format dizelerinde (format strings) hata ayıklama formatlamasını (debug formatting) etkinleştirir.
+`Debug` trait'i, biçimlendirme stringlerinde `{}` yer tutucularının içine `:?` (veya okunaklı çok satırlı çıktı için `:#?`) ekleyerek belirttiğiniz hata ayıklama biçimlendirmesini etkinleştirir.
 
-`Debug` trait'i, hata ayıklama amacıyla bir türün örneklerini yazdırmanıza olanak tanır, böylece siz ve türünüzü kullanan diğer programcılar, bir programın yürütülmesindeki belirli bir noktada bir örneği inceleyebilirsiniz.
+`Debug` trait'i, hata ayıklama amacıyla bir türün örneklerini yazdırmanıza olanak tanır; böylece siz ve türünüzü kullanan diğer programcılar, programın yürütülmesindeki belirli bir noktada bir örneğin iç durumunu inceleyebilirsiniz.
 
-`Debug` trait'i, örneğin `assert_eq!` makrosunun kullanımında gereklidir. Bu makro, eğer eşitlik iddiası (equality assertion) başarısız olursa, programcıların iki örneğin neden eşit olmadığını görebilmeleri için argüman olarak verilen örneklerin değerlerini yazdırır.
+`Debug` trait'i örneğin `assert_eq!` makrosunun kullanımında zorunludur. Bu makro, eşitlik doğrulaması başarısız olduğunda programcıların iki örneğin neden eşit olmadığını görebilmeleri için argüman olarak verilen örneklerin değerlerini ekrana yazdırır.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="partialeq-and-eq-for-equality-comparisons"></a>
+<a id="eşitlik-karşılaştırmaları-için-partialeq-ve-eq"></a>
 
 ### Eşitlik Karşılaştırmaları İçin `PartialEq` ve `Eq`
 
-`PartialEq` trait'i, eşitliği kontrol etmek için bir türün örneklerini karşılaştırmanıza olanak tanır ve `==` ile `!=` operatörlerinin kullanımını etkinleştirir.
+`PartialEq` trait'i, eşitliği denetlemek üzere bir türün örneklerini karşılaştırmanıza olanak tanır ve `==` ile `!=` operatörlerinin kullanımını etkinleştirir.
 
-`PartialEq` türetmek (deriving), `eq` metodunu uygular. `PartialEq` struct'larda türetildiğinde, iki örnek yalnızca _tüm_ alanlar (fields) eşitse eşittir ve eğer _herhangi_ bir alan eşit değilse örnekler eşit değildir. Enum'larda türetildiğinde, her varyant kendine eşittir ve diğer varyantlara eşit değildir.
+`PartialEq` türetmek `eq` metodunu uygular (`ne` metodu varsayılan uygulamaya sahiptir). `PartialEq` struct'lar üzerinde türetildiğinde iki örnek yalnızca _tüm_ alanları eşitse birbirine eşittir; _herhangi_ bir alan farklıysa örnekler eşit değildir. Enum'lar üzerinde türetildiğinde ise her varyant yalnızca kendi varyantındaki eşdeğer değerlere eşittir ve diğer tüm varyantlara eşit değildir.
 
-`PartialEq` trait'i, örneğin, eşitlik için bir türün iki örneğini karşılaştırması gereken `assert_eq!` makrosunun kullanımıyla gereklidir.
+`PartialEq` trait'i örneğin bir türün iki örneğini eşitlik açısından karşılaştırması gereken `assert_eq!` makrosunda gereklidir.
 
-`Eq` trait'inin hiçbir metodu yoktur. Amacı, açıklama eklenmiş türün (annotated type) her değeri için, değerin kendisine eşit olduğunu bildirmektir. `Eq` trait'i yalnızca aynı zamanda `PartialEq` uygulayan türlere uygulanabilir, ancak `PartialEq` uygulayan tüm türler `Eq` uygulayamaz. Bunun bir örneği kayan noktalı sayı (floating-point number) türleridir: Kayan noktalı sayıların uygulaması, sayı değil (`NaN` - not-a-number) değerinin iki örneğinin birbirine eşit olmadığını belirtir.
+`Eq` trait'inin hiçbir metodu yoktur. Amacı, işaretlenen türün her değeri için o değerin kendisine eşit olduğunu (yansıma özelliğini, yani `x == x` koşulunu) bildirmektir. `Eq` trait'i yalnızca aynı zamanda `PartialEq` uygulayan türlere uygulanabilir; ancak `PartialEq` uygulayan her tür `Eq` uygulayamaz. Bunun klasik örneği kayan noktalı sayı türleridir (`f32`, `f64`): IEEE 754 standardına göre iki “sayı değil” (`NaN`) örneği birbirine eşit değildir (`f64::NAN != f64::NAN`).
 
-`Eq`'in gerekli olduğu bir duruma örnek olarak, `HashMap<K, V>`'nin iki anahtarın aynı olup olmadığını anlayabilmesi için bir `HashMap<K, V>`'deki anahtarlar (keys) verilebilir.
+`Eq` trait'inin gerekli olduğu bir duruma örnek olarak, `HashMap<K, V>` yapısının iki anahtarın aynı olup olmadığını kesin biçimde ayırt edebilmesi için `HashMap<K, V>` anahtarları (`K`) verilebilir.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="partialord-and-ord-for-ordering-comparisons"></a>
+<a id="sıralama-karşılaştırmaları-için-partialord-ve-ord"></a>
 
 ### Sıralama Karşılaştırmaları İçin `PartialOrd` ve `Ord`
 
 `PartialOrd` trait'i, sıralama amacıyla bir türün örneklerini karşılaştırmanıza olanak tanır. `PartialOrd` uygulayan bir tür `<`, `>`, `<=` ve `>=` operatörleriyle kullanılabilir. `PartialOrd` trait'ini yalnızca aynı zamanda `PartialEq` uygulayan türlere uygulayabilirsiniz.
 
-`PartialOrd` türetmek, verilen değerler bir sıralama üretmediğinde `None` olacak bir `Option<Ordering>` döndüren `partial_cmp` metodunu uygular. O türdeki çoğu değer karşılaştırılabilmesine rağmen sıralama üretmeyen bir değere örnek, `NaN` kayan noktalı değeridir. Herhangi bir kayan noktalı sayı ve `NaN` kayan noktalı değeri ile `partial_cmp` çağırmak `None` döndürecektir.
+`PartialOrd` türetmek, verilen değerler geçerli bir sıralama üretmediğinde `None` olan bir `Option<Ordering>` döndüren `partial_cmp` metodunu uygular. Türdeki çoğu değer karşılaştırılabilmesine rağmen sıralama üretmeyen bir değere örnek yine `NaN` kayan noktalı değeridir: Herhangi bir kayan noktalı sayı ile `NaN` değeri üzerinde `partial_cmp` çağırmak `None` döndürür.
 
-Struct'larda türetildiğinde, `PartialOrd` iki örneği, her bir alandaki değeri struct tanımında göründükleri sıraya göre karşılaştırarak karşılaştırır. Enum'larda türetildiğinde, enum tanımında daha önce bildirilen (declared) enum varyantlarının, daha sonra listelenen varyantlardan daha küçük olduğu kabul edilir.
+Struct'lar üzerinde türetildiğinde `PartialOrd`, her alandaki değerleri alanların struct tanımında göründükleri sırayla (sözlük düzeninde) karşılaştırarak iki örneği kıyaslar. Enum'lar üzerinde türetildiğinde ise enum tanımında daha önce bildirilen varyantlar, daha sonra bildirilen varyantlardan daha küçük kabul edilir.
 
-`PartialOrd` trait'i, örneğin, `rand` crate'inden gelen ve bir aralık ifadesi (range expression) tarafından belirtilen aralıkta rastgele bir değer üreten `gen_range` metodu için gereklidir.
+`PartialOrd` trait'i örneğin `rand` crate'inde bir aralık ifadesiyle belirtilen sınırlar içinde rastgele değer üreten `random_range` (eski sürümlerde `gen_range`) metodu için gereklidir.
 
-`Ord` trait'i, açıklama eklenmiş türün (annotated type) herhangi iki değeri için geçerli (valid) bir sıralama var olacağını bilmenizi sağlar. `Ord` trait'i, her zaman geçerli bir sıralama mümkün olacağı için `Option<Ordering>` yerine `Ordering` döndüren `cmp` metodunu uygular. `Ord` trait'ini yalnızca aynı zamanda `PartialOrd` ve `Eq` uygulayan türlere uygulayabilirsiniz (`Eq` de `PartialEq` gerektirir). Struct'lar ve enum'larda türetildiğinde, `cmp`, `partial_cmp` için türetilen uygulamanın (derived implementation) `PartialOrd` ile aynı şekilde davranır.
+`Ord` trait'i, işaretlenen türün herhangi iki değeri için daima geçerli bir tam sıralamanın (*total ordering*) var olacağını garanti eder. Her zaman geçerli bir sıralama mümkün olacağından `Ord` trait'i, `Option<Ordering>` yerine doğrudan `Ordering` döndüren `cmp` metodunu uygular. `Ord` trait'ini yalnızca aynı zamanda `PartialOrd` ve `Eq` uygulayan türlere uygulayabilirsiniz (`Eq` de `PartialEq` gerektirir). Struct'lar ve enum'lar üzerinde türetildiğinde `cmp`, `PartialOrd` için türetilen `partial_cmp` uygulamasıyla aynı sırayı izler.
 
-`Ord`'un gerekli olduğu duruma örnek olarak, verileri değerlerin sıralama düzenine (sort order) göre saklayan bir veri yapısı olan `BTreeSet<T>`'de değerleri saklamak verilebilir.
+`Ord` trait'inin gerekli olduğu duruma örnek olarak, verileri değerlerin sıralama düzenine göre saklayan `BTreeSet<T>` veya `BTreeMap<K, V>` veri yapılarında öğe/anahtar saklamak ya da bir dilim üzerinde `.sort()` çağırmak verilebilir.
 
-### Değerleri Kopyalamak İçin `Clone` ve `Copy`
+<!-- Old headings. Do not remove or links may break. -->
 
-`Clone` trait'i, bir değerin derin kopyasını (deep copy) açıkça oluşturmanıza olanak tanır ve çoğaltma (duplication) süreci keyfi kod (arbitrary code) çalıştırmayı ve heap verilerini kopyalamayı içerebilir. `Clone` hakkında daha fazla bilgi için Bölüm 4'teki [“Clone ile Etkileşime Giren Değişkenler ve Veriler”][variables-and-data-interacting-with-clone]<!-- ignore --> kısmına bakın.
+<a id="clone-and-copy-for-duplicating-values"></a>
+<a id="değerleri-kopyalamak-için-clone-ve-copy"></a>
 
-`Clone` türetmek (deriving), tüm tür için uygulandığında türün parçalarının her birinde `clone` çağıran `clone` metodunu uygular. Bu, `Clone` türetmek için türdeki tüm alanların veya değerlerin de `Clone` uygulaması (implement `Clone`) gerektiği anlamına gelir.
+### Değerleri Çoğaltmak İçin `Clone` ve `Copy`
 
-`Clone`'un gerekli olduğu duruma bir örnek, bir dilim (slice) üzerinde `to_vec` metodunu çağırmaktır. Dilim, içerdiği tür örneklerine sahip değildir, ancak `to_vec`'den döndürülen vektörün kendi örneklerine sahip olması gerekecektir, bu nedenle `to_vec` her öğe üzerinde `clone` çağırır. Böylece, dilimde saklanan tür `Clone` uygulamalıdır.
+`Clone` trait'i, bir değerin derin kopyasını açıkça oluşturmanıza olanak tanır; bu çoğaltma süreci isteğe bağlı özel kod çalıştırmayı ve öbek (*heap*) verilerini kopyalamayı içerebilir. `Clone` hakkında daha fazla bilgi için Bölüm 4'teki [“Değişkenlerin ve Verilerin Clone ile Etkileşimi”][variables-and-data-interacting-with-clone]<!-- ignore --> bölümüne bakın.
 
-`Copy` trait'i, bir değeri yalnızca yığında (stack) saklanan bitleri kopyalayarak çoğaltmanıza olanak tanır; keyfi bir kod gerekli değildir. `Copy` hakkında daha fazla bilgi için Bölüm 4'teki [“Yalnızca Yığın Verileri: Copy”][stack-only-data-copy]<!-- ignore --> kısmına bakın.
+`Clone` türetmek, türün tamamı üzerinde çağrıldığında türün her bir parçası üzerinde `clone` çağıran `clone` metodunu uygular. Bu da `Clone` türetebilmek için türdeki tüm alanların veya varyant değerlerinin de `Clone` uygulaması gerektiği anlamına gelir.
 
-`Copy` trait'i, programcıların bu metotları aşırı yüklemesini (overloading) ve keyfi hiçbir kodun çalıştırılmadığı varsayımını ihlal etmesini önlemek için hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir değeri kopyalamanın çok hızlı olacağını varsayabilir.
+`Clone` trait'inin gerekli olduğu duruma bir örnek, bir dilim (`&[T]`) üzerinde `to_vec` metodunu çağırmaktır. Dilim içerdiği tür örneklerinin sahibi değildir, ancak `to_vec` çağrısından döndürülen `Vec<T>` kendi örneklerinin sahibi olmak zorundadır; bu nedenle `to_vec` her öğe üzerinde `clone` çağırır. Dolayısıyla dilimde saklanan türün `Clone` uygulaması gerekir.
 
-Tüm parçaları `Copy` uygulayan (implement `Copy`) herhangi bir tür üzerinde `Copy` türetebilirsiniz (derive). `Copy` uygulayan bir tür, `Clone`'u da uygulamalıdır, çünkü `Copy` uygulayan bir tür, `Copy` ile aynı görevi yerine getiren önemsiz (trivial) bir `Clone` uygulamasına sahiptir.
+`Copy` trait'i, bir değeri yalnızca yığında (*stack*) saklanan bitleri kopyalayarak çoğaltmanıza olanak tanır; hiçbir ek özel kod çalıştırılmaz. `Copy` hakkında daha fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri: Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
 
-`Copy` trait'i nadiren zorunludur; `Copy` uygulayan türlerin optimizasyonları mevcuttur, yani `clone` çağırmak zorunda kalmazsınız, bu da kodu daha öz hale getirir.
+`Copy` trait'i, programcıların herhangi bir metodu aşırı yükleyerek “arka planda hiçbir özel kod çalıştırılmadığı” varsayımını ihlal etmesini önlemek amacıyla hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir `Copy` değerini kopyalamanın çok hızlı (yalnızca bit düzeyinde kopyalama) olacağını güvenle varsayabilir.
 
-`Copy` ile mümkün olan her şeyi `Clone` ile de başarabilirsiniz, ancak kod daha yavaş olabilir veya yer yer `clone` kullanmak zorunda kalabilir.
+Tüm parçaları `Copy` uygulayan herhangi bir tür üzerinde `Copy` türetebilirsiniz. `Copy` uygulayan bir tür aynı zamanda `Clone` da uygulamak zorundadır (`#[derive(Copy, Clone)]`); çünkü `Copy` uygulayan her tür, `Copy` ile birebir aynı işi yapan önemsiz (*trivial*) bir `Clone` uygulamasına sahiptir.
 
-### Bir Değeri Sabit Boyutlu Bir Değerle Eşlemek İçin `Hash`
+`Copy` trait'i bir trait sınırı olarak nadiren zorunlu tutulur; ancak `Copy` uygulayan türlerde sahiplik taşınmadığı için `clone` çağırmanız gerekmez ve bu da kodu çok daha özlü kılar.
 
-`Hash` trait'i, rastgele boyuttaki (arbitrary size) bir türün örneğini almanıza ve bu örneği bir hash (karma) fonksiyonu kullanarak sabit boyutlu bir değerle eşlemenize olanak tanır. `Hash` türetmek `hash` metodunu uygular. `hash` metodunun türetilen uygulaması, türün parçalarının her birinde `hash` çağrısının sonucunu birleştirir, bu da `Hash` türetmek için tüm alanların veya değerlerin de `Hash` uygulaması gerektiği anlamına gelir.
+`Copy` ile mümkün olan her şeyi `Clone` ile de gerçekleştirebilirsiniz; ancak kod daha yavaş çalışabilir veya belirli noktalarda açıkça `.clone()` çağırmanızı gerektirebilir.
 
-`Hash`'in gerekli olduğu duruma bir örnek, verileri verimli bir şekilde saklamak için bir `HashMap<K, V>`'de anahtarları saklamaktır.
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="hash-for-mapping-a-value-to-a-value-of-fixed-size"></a>
+<a id="bir-değeri-sabit-boyutlu-bir-değerle-eşlemek-için-hash"></a>
+
+### Bir Değeri Sabit Boyutlu Bir Değere Eşlemek İçin `Hash`
+
+`Hash` trait'i, isteğe bağlı boyuttaki bir türün örneğini alıp bir karma (*hash*) fonksiyonu kullanarak sabit boyutlu bir değere eşlemenize olanak tanır. `Hash` türetmek `hash` metodunu uygular. `hash` metodunun türetilen uygulaması, türün her bir parçası üzerinde `hash` çağrılmasından elde edilen sonuçları birleştirir; dolayısıyla `Hash` türetebilmek için tüm alanların veya varyant değerlerinin de `Hash` uygulaması gerekir.
+
+`Hash` trait'inin gerekli olduğu duruma bir örnek, verileri verimli biçimde depolamak üzere `HashMap<K, V>` veya `HashSet<T>` içinde anahtar saklamaktır.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="default-for-default-values"></a>
+<a id="varsayılan-değerler-için-default"></a>
 
 ### Varsayılan Değerler İçin `Default`
 
-`Default` trait'i, bir tür için varsayılan (default) bir değer oluşturmanıza olanak tanır. `Default` türetmek `default` fonksiyonunu uygular. `default` fonksiyonunun türetilen uygulaması (derived implementation), türün her bir parçasında `default` fonksiyonunu çağırır, bu da `Default` türetmek için türdeki tüm alanların veya değerlerin de `Default` uygulaması gerektiği anlamına gelir.
+`Default` trait'i, bir tür için varsayılan bir değer oluşturmanıza olanak tanır. `Default` türetmek `default` ilişkili fonksiyonunu uygular. `default` fonksiyonunun türetilen uygulaması, türün her bir parçası üzerinde `default` fonksiyonunu çağırır; bu da bir struct üzerinde `Default` türetebilmek için tüm alanların da `Default` uygulaması gerektiği anlamına gelir.
 
-`Default::default` fonksiyonu, genellikle Bölüm 5'teki [“Struct Güncelleme Sözdizimi ile Diğer Örneklerden Örnekler Oluşturma”][creating-instances-from-other-instances-with-struct-update-syntax]<!-- ignore --> kısmında tartışılan struct güncelleme sözdizimi ile birlikte kullanılır. Bir struct'ın birkaç alanını özelleştirebilir ve ardından `..Default::default()` kullanarak alanların geri kalanı için varsayılan bir değeri ayarlayabilir ve kullanabilirsiniz.
+`Default::default` fonksiyonu, sıklıkla Bölüm 5'teki [“Struct Güncelleme Sözdizimi ile Örnekler Oluşturma”][creating-instances-from-other-instances-with-struct-update-syntax]<!-- ignore --> bölümünde ele alınan struct güncelleme sözdizimiyle birlikte kullanılır. Bir struct'ın yalnızca birkaç alanını özelleştirip geri kalan tüm alanlara `..Default::default()` yazarak varsayılan değerlerini atayabilirsiniz.
 
-Örneğin, `Option<T>` örneklerinde `unwrap_or_default` metodunu kullandığınızda `Default` trait'i gereklidir. Eğer `Option<T>` `None` ise, `unwrap_or_default` metodu, `Option<T>` içinde saklanan `T` türü için `Default::default` sonucunu döndürecektir.
+`Default` trait'i örneğin `Option<T>` örnekleri üzerinde `unwrap_or_default` metodunu kullandığınızda gereklidir: `Option<T>` değeri `None` ise `unwrap_or_default` metodu, içerideki `T` türü için `Default::default` sonucunu döndürür.
 
-[creating-instances-from-other-instances-with-struct-update-syntax]: ch05-01-struct-tanimlama-ve-ornekleme.html#struct-güncelleme-sözdizimi-ile-örnekler-oluşturmak-creating-instances-with-struct-update-syntax
-[stack-only-data-copy]: ch04-01-sahiplik-nedir.html#sadece-stack-verisi-stack-only-data-copy
+> Not: **Pratik `derive` İpuçları (`#[default]`, Üst-Trait Bağımlılıkları ve `Hash`/`PartialEq` Sözleşmesi):**
+> - **Enum'larda `#[derive(Default)]`:** Yalnızca struct'larda değil, birim varyantlarından birinin üzerine `#[default]` özniteliği ekleyerek enum'larda da `Default` türetebilirsiniz (örneğin `#[derive(Default)] enum Durum { #[default] Beklemede, Calisiyor }`).
+> - **Birlikte Türetme Gereksinimleri:** Üst-trait (*supertrait*) ilişkileri nedeniyle `Copy` türetirken `Clone`'u (`#[derive(Clone, Copy)]`), `Eq` türetirken `PartialEq`'yu, `Ord` türetirken ise `PartialEq, Eq, PartialOrd, Ord` dörtlüsünü birlikte türetmeniz gerekir.
+> - **`Hash` ve `PartialEq` Uyum Kuralı:** Bir tür üzerinde `PartialEq` trait'ini elle uygularsanız (`impl PartialEq for ...`), `k1 == k2` olduğunda `hash(k1) == hash(k2)` eşitliğinin bozulmaması için `Hash` trait'ini `#[derive(Hash)]` ile otomatik türetmek yerine aynı alanları kullanacak şekilde elle uygulamanız gerekir; aksi hâlde `HashMap` anahtar aramaları hatalı davranır.
+
+[creating-instances-from-other-instances-with-struct-update-syntax]: ch05-01-struct-tanimlama-ve-ornekleme.html#struct-güncelleme-sözdizimi-ile-örnekler-oluşturma
+[stack-only-data-copy]: ch04-01-sahiplik-nedir.html#yalnızca-yığındaki-veri-copy
 [variables-and-data-interacting-with-clone]: ch04-01-sahiplik-nedir.html#değişkenlerin-ve-verilerin-clone-ile-etkileşimi
 [custom-derive-macros]: ch20-05-makrolar.html#özel-derive-makroları

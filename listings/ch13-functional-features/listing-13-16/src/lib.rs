@@ -5,7 +5,7 @@ struct Ayakkabi {
 }
 
 fn numaradaki_ayakkabilar(ayakkabilar: Vec<Ayakkabi>, ayakkabi_numarasi: u32) -> Vec<Ayakkabi> {
-    ayakkabilar.into_iter().filter(|s| s.numara == ayakkabi_numarasi).collect()
+    ayakkabilar.into_iter().filter(|a| a.numara == ayakkabi_numarasi).collect()
 }
 
 #[cfg(test)]
@@ -17,7 +17,7 @@ mod tests {
         let ayakkabilar = vec![
             Ayakkabi {
                 numara: 10,
-                stil: String::from("spor_ayakkabi"),
+                stil: String::from("spor ayakkabı"),
             },
             Ayakkabi {
                 numara: 13,
@@ -29,14 +29,14 @@ mod tests {
             },
         ];
 
-        let in_my_size = numaradaki_ayakkabilar(ayakkabilar, 10);
+        let benim_numaramda = numaradaki_ayakkabilar(ayakkabilar, 10);
 
         assert_eq!(
-            in_my_size,
+            benim_numaramda,
             vec![
                 Ayakkabi {
                     numara: 10,
-                    stil: String::from("spor_ayakkabi")
+                    stil: String::from("spor ayakkabı")
                 },
                 Ayakkabi {
                     numara: 10,

@@ -1,35 +1,41 @@
+<!-- Old headings. Do not remove or links may break. -->
+<a id="hello-cargo"></a>
+
 ## Merhaba, Cargo!
 
-Cargo, Rust'ın derleme (build) sistemi ve paket yöneticisidir. Çoğu Rustacean (Rust programcısı) projelerini yönetmek için bu aracı kullanır; çünkü Cargo, kodunuzu derlemek, kodunuzun bağımlı olduğu kütüphaneleri indirmek ve o kütüphaneleri derlemek gibi sizin için pek çok işi halleder. (Kodunuzun ihtiyaç duyduğu bu kütüphanelere _bağımlılıklar_ (dependencies) diyoruz.)
+Cargo, Rust'ın derleme sistemi ve paket yöneticisidir. Rust geliştiricilerinin (*Rustacean*'ların) büyük çoğunluğu projelerini yönetmek için bu aracı kullanır; çünkü Cargo kodunuzu derlemek, kodunuzun ihtiyaç duyduğu kütüphaneleri indirmek ve bu kütüphaneleri derlemek gibi pek çok işi sizin yerinize üstlenir. (Kodunuzun ihtiyaç duyduğu bu kütüphanelere *bağımlılıklar (dependencies)* adını veriyoruz.)
 
-Şu ana kadar yazdığımız gibi en basit Rust programlarının herhangi bir bağımlılığı yoktur. "Merhaba, dünya!" projesini Cargo ile oluştursaydık, Cargo'nun yalnızca kodunuzu derlemeyle ilgilenen kısmını kullanırdı. Daha karmaşık Rust programları yazdıkça bağımlılıklar ekleyeceksiniz ve eğer bir projeye Cargo kullanarak başlarsanız, bağımlılık eklemek çok daha kolay olacaktır.
+Şimdiye kadar yazdığımız gibi en basit Rust programlarının herhangi bir bağımlılığı yoktur. "Merhaba, dünya!" projesini Cargo ile oluşturmuş olsaydık, Cargo'nun yalnızca kod derleme özelliğinden yararlanırdık. Daha karmaşık Rust programları yazdıkça projelerinize bağımlılıklar ekleyeceksiniz; projeye baştan Cargo ile başlarsanız sonradan bağımlılık eklemek çok daha kolay olacaktır.
 
-Rust projelerinin büyük çoğunluğu Cargo kullandığı için, bu kitabın geri kalanı da sizin Cargo kullandığınızı varsayar. ["Kurulum"][installation]<!-- ignore --> bölümünde bahsedilen resmi yükleyicileri kullandıysanız Cargo, Rust ile birlikte kurulu gelir. Eğer Rust'ı başka bir yolla kurduysanız, terminalinize şunu yazarak Cargo'nun kurulu olup olmadığını kontrol edin:
+Rust projelerinin büyük çoğunluğu Cargo kullandığından, kitabın geri kalanında sizin de Cargo kullandığınız varsayılmaktadır. ["Kurulum"][installation]<!-- ignore --> bölümünde anlatılan resmi yükleyicileri kullandıysanız Cargo, Rust ile birlikte kurulu gelir. Rust'ı başka bir yöntemle kurduysanız terminalinize aşağıdaki komutu girerek Cargo'nun kurulu olup olmadığını kontrol edin:
 
 ```console
 $ cargo --version
 ```
 
-Bir sürüm numarası görüyorsanız, Cargo kuruludur! Eğer `command not found` (komut bulunamadı) gibi bir hata görürseniz, Cargo'yu nasıl ayrı olarak kuracağınızı belirlemek için kullandığınız kurulum yönteminin belgelerine bakın.
+Bir sürüm numarası görüyorsanız Cargo kuruludur! `command not found` (komut bulunamadı) gibi bir hata alırsanız, Cargo'yu ayrıca nasıl kuracağınızı öğrenmek için kullandığınız kurulum yönteminin belgelerine bakın.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="creating-a-project-with-cargo"></a>
 
 ### Cargo ile Proje Oluşturmak
 
-Cargo'yu kullanarak yeni bir proje oluşturalım ve orijinal "Merhaba, dünya!" projemizden nasıl farklı olduğuna bakalım. _projects_ dizininize (veya kodunuzu nerede saklamaya karar verdiyseniz oraya) geri dönün. Ardından, herhangi bir işletim sisteminde aşağıdakini çalıştırın:
+Şimdi Cargo kullanarak yeni bir proje oluşturalım ve orijinal "Merhaba, dünya!" projemizden ne gibi farkları olduğuna bakalım. _projects_ dizininize (veya kodlarınızı saklamaya karar verdiğiniz dizine) geri dönün. Ardından, hangi işletim sistemini kullanırsanız kullanın şu komutları çalıştırın:
 
 ```console
 $ cargo new merhaba_cargo
 $ cd merhaba_cargo
 ```
 
-İlk komut _merhaba_cargo_ adında yeni bir dizin ve proje oluşturur. Projemize _merhaba_cargo_ adını verdik ve Cargo, dosyalarını aynı isimde bir dizin içinde oluşturur.
+İlk komut, _merhaba_cargo_ adında yeni bir dizin ve proje oluşturur. Projemize _merhaba_cargo_ adını verdiğimiz için Cargo, proje dosyalarını aynı adlı bir dizinin içinde oluşturur.
 
-_merhaba_cargo_ dizinine gidin ve dosyaları listeleyin. Cargo'nun bizim için iki dosya ve bir dizin oluşturduğunu göreceksiniz: bir _Cargo.toml_ dosyası ve içinde _main.rs_ dosyası bulunan bir _src_ dizini.
+_merhaba_cargo_ dizinine girip dosyaları listeleyin. Cargo'nun bizim için iki dosya ve bir dizin oluşturduğunu göreceksiniz: bir _Cargo.toml_ dosyası ve içinde _main.rs_ dosyası bulunan bir _src_ dizini.
 
-Ayrıca bir _.gitignore_ dosyası ile birlikte yeni bir Git deposu (repository) da başlatmıştır (initialize). Eğer mevcut bir Git deposunun içinde `cargo new` komutunu çalıştırırsanız Git dosyaları oluşturulmaz; `cargo new --vcs=git` kullanarak bu davranışı geçersiz kılabilirsiniz.
+Cargo ayrıca bir _.gitignore_ dosyasıyla birlikte yeni bir Git deposu da başlatmıştır. `cargo new` komutunu halihazırda var olan bir Git deposunun içinde çalıştırırsanız Git dosyaları oluşturulmaz; bu davranışı `cargo new --vcs=git` komutuyla geçersiz kılabilirsiniz.
 
-> Not: Git yaygın bir sürüm kontrol sistemidir (version control system). `--vcs` bayrağını (flag) kullanarak `cargo new` komutunun farklı bir sürüm kontrol sistemi kullanmasını sağlayabilir veya hiçbir sürüm kontrol sistemi kullanmamasını belirtebilirsiniz. Mevcut seçenekleri görmek için `cargo new --help` komutunu çalıştırın.
+> Not: Git yaygın bir *sürüm kontrol sistemidir (version control system)*. `--vcs` seçeneğini kullanarak `cargo new` komutunun farklı bir sürüm kontrol sistemi kullanmasını veya hiçbir sürüm kontrol sistemi başlatmamasını sağlayabilirsiniz. Kullanılabilir seçenekleri görmek için `cargo new --help` komutunu çalıştırın.
 
-_Cargo.toml_ dosyasını tercih ettiğiniz metin düzenleyicide açın. Liste 1-2'deki koda benzer görünmelidir.
+_Cargo.toml_ dosyasını tercih ettiğiniz metin düzenleyicide açın. İçeriği Liste 1-2'deki koda benzer görünmelidir.
 
 <Listing number="1-2" file-name="Cargo.toml" caption="`cargo new` tarafından oluşturulan *Cargo.toml* dosyasının içeriği">
 
@@ -44,13 +50,13 @@ edition = "2024"
 
 </Listing>
 
-Bu dosya, Cargo'nun yapılandırma formatı olan [_TOML_][toml]<!-- ignore --> (_Tom's Obvious, Minimal Language_) formatındadır.
+Bu dosya, Cargo'nun yapılandırma biçimi olan [_TOML_][toml]<!-- ignore --> (*Tom's Obvious, Minimal Language*) biçimindedir.
 
-İlk satır olan `[package]`, aşağıdaki ifadelerin bir paketi yapılandırdığını belirten bir bölüm başlığıdır. Bu dosyaya daha fazla bilgi ekledikçe, başka bölümler de ekleyeceğiz.
+İlk satırdaki `[package]`, izleyen ifadelerin bir paketi yapılandırdığını belirten bir bölüm başlığıdır. Bu dosyaya daha fazla bilgi ekledikçe başka bölümler de ekleyeceğiz.
 
-Sonraki üç satır, Cargo'nun programınızı derlemek için ihtiyaç duyduğu yapılandırma bilgilerini ayarlar: isim, sürüm (version) ve kullanılacak Rust sürümü (edition). `edition` anahtarından [Ek E][ekler-e]<!-- ignore -->'de bahsedeceğiz.
+Sonraki üç satır, Cargo'nun programınızı derlemek için ihtiyaç duyduğu yapılandırma bilgilerini belirler: paket adı, paket sürümü ve kullanılacak Rust sürümü (*edition*). `edition` anahtarını [Ek E][appendix-e]<!-- ignore --> bölümünde ayrıntılı olarak ele alacağız.
 
-Son satır olan `[dependencies]`, projenizin bağımlılıklarından herhangi birini listelemeniz için bir bölümün başlangıcıdır. Rust'ta kod paketlerine _crate_ (kasa) adı verilir. Bu proje için başka bir crate'e ihtiyacımız olmayacak, ancak Bölüm 2'deki ilk projede olacak, bu yüzden o zaman bu bağımlılıklar (dependencies) bölümünü kullanacağız.
+Son satırdaki `[dependencies]`, projenizin bağımlılıklarını listeleyeceğiniz bölümün başlangıcıdır. Rust'ta kod paketlerine *crate* adı verilir. Bu projede başka bir crate'e ihtiyacımız olmayacak; ancak Bölüm 2'deki ilk projemizde harici bir crate kullanacağımız için bu bağımlılıklar bölümünden yararlanacağız.
 
 Şimdi _src/main.rs_ dosyasını açın ve bir göz atın:
 
@@ -58,19 +64,24 @@ Son satır olan `[dependencies]`, projenizin bağımlılıklarından herhangi bi
 
 ```rust
 fn main() {
-    println!("Merhaba, dünya!");
+    println!("Hello, world!");
 }
 ```
 
-Cargo, tıpkı Liste 1-1'de yazdığımız gibi, sizin için bir "Merhaba, dünya!" programı oluşturdu! Şu ana kadar projemiz ile Cargo'nun oluşturduğu proje arasındaki farklar; Cargo'nun kodu _src_ dizinine koyması ve en üst (top-level) dizinde bir _Cargo.toml_ yapılandırma dosyamızın olmasıdır.
+Cargo, tıpkı Liste 1-1'de yazdığımız programa karşılık gelen bir "Hello, world!" başlangıç programı oluşturdu! Şu ana kadar önceki projemiz ile Cargo'nun oluşturduğu proje arasındaki farklar; Cargo'nun kaynak kodu _src_ dizinine yerleştirmesi ve en üst dizinde bir _Cargo.toml_ yapılandırma dosyasının bulunmasıdır.
 
-Cargo, kaynak dosyalarınızın _src_ dizini içinde bulunmasını bekler. En üst düzey proje dizini yalnızca README dosyaları, lisans bilgileri, yapılandırma dosyaları ve kodunuzla ilgisi olmayan diğer şeyler içindir. Cargo kullanmak projelerinizi düzenlemenize yardımcı olur. Her şeyin bir yeri vardır ve her şey yerli yerindedir.
+> Not: Cargo'nun yerleşik proje şablonu İngilizce olduğundan `cargo new` komutu _src/main.rs_ içinde varsayılan olarak `"Hello, world!"` metnini üretir. Dilerseniz bu metni Liste 1-1'deki gibi `"Merhaba, dünya!"` olarak değiştirebilir, dilerseniz aşağıdaki adımlarda olduğu gibi bırakabilirsiniz.
 
-"Merhaba, dünya!" projesinde yaptığımız gibi Cargo kullanmayan bir projeye başladıysanız, onu Cargo kullanan bir projeye dönüştürebilirsiniz. Proje kodunu _src_ dizinine taşıyın ve uygun bir _Cargo.toml_ dosyası oluşturun. Bu _Cargo.toml_ dosyasını elde etmenin kolay bir yolu, onu sizin için otomatik olarak oluşturacak olan `cargo init` komutunu çalıştırmaktır.
+Cargo, kaynak dosyalarınızın _src_ dizini içinde bulunmasını bekler. En üst düzey proje dizini yalnızca README dosyaları, lisans bilgileri, yapılandırma dosyaları ve doğrudan kaynak kodunuzla ilgili olmayan diğer dosyalar içindir. Cargo kullanmak projelerinizi düzenli tutmanıza yardımcı olur: Her şeyin bir yeri vardır ve her şey yerli yerindedir.
+
+"Merhaba, dünya!" projesinde yaptığımız gibi Cargo kullanmadan başladığınız bir projeyi sonradan Cargo projesine dönüştürebilirsiniz. Bunun için proje kodunu _src_ dizinine taşıyıp uygun bir _Cargo.toml_ dosyası oluşturmanız yeterlidir. _Cargo.toml_ dosyasını oluşturmanın kolay bir yolu da mevcut dizinde `cargo init` komutunu çalıştırmaktır; bu komut dosyayı sizin için otomatik olarak üretir.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="building-and-running-a-cargo-project"></a>
 
 ### Bir Cargo Projesini Derlemek ve Çalıştırmak
 
-Şimdi "Merhaba, dünya!" programını Cargo ile derleyip çalıştırdığımızda nelerin farklı olduğuna bakalım! _merhaba_cargo_ dizininizden şu komutu girerek projenizi derleyin:
+Şimdi "Hello, world!" programını Cargo ile derleyip çalıştırdığımızda nelerin değiştiğine bakalım! _merhaba_cargo_ dizininizdeyken aşağıdaki komutu girerek projenizi derleyin:
 
 ```console
 $ cargo build
@@ -78,37 +89,39 @@ $ cargo build
     Finished dev [unoptimized + debuginfo] target(s) in 2.85 secs
 ```
 
-Bu komut, çalıştırılabilir dosyayı geçerli dizininizde oluşturmak yerine _target/debug/merhaba_cargo_ (veya Windows'ta _target\debug\merhaba_cargo.exe_) konumunda oluşturur. Varsayılan (default) derleme bir hata ayıklama derlemesi olduğundan, Cargo ikili dosyayı _debug_ adlı bir dizine koyar. Çalıştırılabilir dosyayı şu komutla çalıştırabilirsiniz:
+Bu komut, çalıştırılabilir dosyayı bulunduğunuz dizin yerine _target/debug/merhaba_cargo_ (veya Windows'ta _target\debug\merhaba_cargo.exe_) konumunda oluşturur. Varsayılan derleme bir hata ayıklama (*debug*) derlemesi olduğundan Cargo, ikili dosyayı _debug_ adlı bir dizinin içine koyar. Çalıştırılabilir dosyayı şu komutla çalıştırabilirsiniz:
 
 ```console
 $ ./target/debug/merhaba_cargo # veya Windows'ta .\target\debug\merhaba_cargo.exe
-Merhaba, dünya!
+Hello, world!
 ```
 
-Eğer her şey yolunda giderse, terminale `Merhaba, dünya!` yazdırılmalıdır. `cargo build` komutunu ilk kez çalıştırmak, Cargo'nun en üst düzeyde (top-level) yeni bir dosya oluşturmasına da neden olur: _Cargo.lock_. Bu dosya projenizdeki bağımlılıkların kesin (exact) sürümlerini takip eder. Bu projenin bağımlılığı yoktur, bu nedenle dosya biraz boştur. Bu dosyayı hiçbir zaman manuel olarak değiştirmenize gerek kalmayacaktır; Cargo içeriğini sizin yerinize yönetir.
+Her şey yolunda giderse terminale `Hello, world!` yazdırılmalıdır. `cargo build` komutunu ilk kez çalıştırmak, Cargo'nun en üst dizinde yeni bir dosya daha oluşturmasını sağlar: _Cargo.lock_. Bu dosya, projenizdeki bağımlılıkların tam sürümlerini kayıt altında tutar. Bu projenin henüz bağımlılığı olmadığından dosyanın içeriği oldukça kısadır. Bu dosyayı hiçbir zaman elle değiştirmenize gerek kalmaz; Cargo içeriğini sizin yerinize otomatik olarak yönetir.
 
-Az önce `cargo build` ile bir proje derledik ve `./target/debug/merhaba_cargo` ile çalıştırdık, ancak kodu derlemek ve ardından ortaya çıkan çalıştırılabilir dosyayı tek bir komutla çalıştırmak için `cargo run` komutunu da kullanabiliriz:
+> Not: _Cargo.toml_ ile _Cargo.lock_ arasındaki farkı bilmek faydalıdır: _Cargo.toml_ sizin düzenlediğiniz ve istediğiniz bağımlılık sürümlerini genel olarak belirttiğiniz yapılandırma dosyasıdır; _Cargo.lock_ ise Cargo'nun derleme sırasında çözdüğü **kesin sürüm numaralarını** kilitlediği dosyadır. Bu sayede projeniz başka bir bilgisayarda veya aylar sonra derlendiğinde bile birebir aynı paket sürümleri kullanılır. Çalıştırılabilir projelerde _Cargo.lock_ dosyasını Git deposuna dahil etmek standart pratiktir; derleme çıktılarının bulunduğu _target_ dizini ise Cargo'nun oluşturduğu _.gitignore_ dosyası sayesinde Git dışında tutulur.
+
+Az önce projemizi `cargo build` ile derledik ve `./target/debug/merhaba_cargo` ile çalıştırdık; ancak kodu derleyip üretilen çalıştırılabilir dosyayı tek bir komutla çalıştırmak için `cargo run` komutunu da kullanabiliriz:
 
 ```console
 $ cargo run
     Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
      Running `target/debug/merhaba_cargo`
-Merhaba, dünya!
+Hello, world!
 ```
 
-`cargo run` kullanmak, `cargo build` komutunu çalıştırmayı ve ardından ikili dosyanın tüm yolunu kullanmayı hatırlamak zorunda kalmaktan daha uygundur, bu yüzden çoğu geliştirici `cargo run` kullanır.
+`cargo run` kullanmak, önce `cargo build` komutunu çalıştırmayı ve ardından ikili dosyanın tam yolunu yazmayı hatırlamaktan çok daha pratiktir; bu nedenle geliştiricilerin çoğu `cargo run` komutunu tercih eder.
 
-Dikkat ederseniz bu kez Cargo'nun `merhaba_cargo` projesini derlediğini (compiling) belirten bir çıktı görmedik. Cargo dosyaların değişmediğini anladı, bu yüzden yeniden derlemek yerine sadece ikili dosyayı çalıştırdı. Eğer kaynak kodunuzu değiştirmiş olsaydınız, Cargo çalıştırmadan önce projeyi yeniden derlerdi ve şu çıktıyı görürdünüz:
+Dikkat ederseniz bu kez Cargo'nun `merhaba_cargo` paketini derlediğini belirten bir çıktı görmedik. Cargo kaynak dosyaların değişmediğini fark etti ve projeyi yeniden derlemek yerine doğrudan mevcut ikili dosyayı çalıştırdı. Kaynak kodunuzda değişiklik yapmış olsaydınız Cargo çalıştırmadan önce projeyi yeniden derlerdi ve şu çıktıyı görürdünüz:
 
 ```console
 $ cargo run
    Compiling merhaba_cargo v0.1.0 (file:///projects/merhaba_cargo)
     Finished dev [unoptimized + debuginfo] target(s) in 0.33 secs
      Running `target/debug/merhaba_cargo`
-Merhaba, dünya!
+Hello, world!
 ```
 
-Cargo ayrıca `cargo check` adında bir komut da sağlar. Bu komut, kodunuzun derlendiğinden emin olmak için kodunuzu hızlıca kontrol eder ancak çalıştırılabilir bir dosya (executable) üretmez:
+Cargo ayrıca `cargo check` adında bir komut da sunar. Bu komut, kodunuzun sorunsuz derlenip derlenmediğini hızla denetler ancak çalıştırılabilir bir dosya üretmez:
 
 ```console
 $ cargo check
@@ -116,52 +129,63 @@ $ cargo check
     Finished dev [unoptimized + debuginfo] target(s) in 0.32 secs
 ```
 
-Neden çalıştırılabilir bir dosya istemeyesiniz? Çoğu zaman `cargo check`, çalıştırılabilir bir dosya üretme adımını atladığı için `cargo build`'den çok daha hızlıdır. Kodu yazarken çalışmanızı sürekli olarak kontrol ediyorsanız, `cargo check` kullanmak projenizin hala derlenip derlenmediğini bilme sürecinizi hızlandıracaktır! Bu nedenle pek çok Rustacean programlarını yazarken derlendiğinden emin olmak için periyodik olarak `cargo check` çalıştırır. Daha sonra, çalıştırılabilir dosyayı kullanmaya hazır olduklarında `cargo build` komutunu çalıştırırlar.
+Neden çalıştırılabilir bir dosya üretilmemesini isteyesiniz? Çoğu zaman `cargo check`, çalıştırılabilir ikili dosya üretme adımını atladığı için `cargo build` komutundan çok daha hızlıdır. Kod yazarken çalışmanızı sık sık kontrol ediyorsanız `cargo check` kullanmak, projenizin hâlâ geçerli olup olmadığını çok daha kısa sürede öğrenmenizi sağlar! Bu nedenle pek çok Rust geliştiricisi program yazarken kodun derlendiğinden emin olmak için düzenli aralıklarla `cargo check` çalıştırır; çalıştırılabilir dosyayı gerçekten kullanmaya hazır olduklarında ise `cargo build` (veya `cargo run`) komutuna başvurur.
 
-Cargo hakkında şu ana kadar öğrendiklerimizi özetleyelim:
+Cargo hakkında şimdiye kadar öğrendiklerimizi özetleyelim:
 
-- `cargo new` kullanarak bir proje oluşturabiliriz.
-- `cargo build` kullanarak bir projeyi derleyebiliriz.
-- `cargo run` kullanarak bir projeyi tek adımda derleyip çalıştırabiliriz.
-- Hataları kontrol etmek için bir ikili dosya üretmeden `cargo check` kullanarak bir projeyi derleyebiliriz.
-- Cargo derleme sonucunu kodumuzla aynı dizine kaydetmek yerine, onu _target/debug_ dizininde saklar.
+- `cargo new` komutuyla yeni bir proje oluşturabiliriz.
+- `cargo build` komutuyla bir projeyi derleyebiliriz.
+- `cargo run` komutuyla bir projeyi tek adımda derleyip çalıştırabiliriz.
+- `cargo check` komutuyla ikili dosya üretmeden projedeki hataları denetleyebiliriz.
+- Cargo, derleme çıktısını kaynak kodumuzla aynı dizine kaydetmek yerine _target/debug_ dizininde saklar.
 
-Cargo kullanmanın bir diğer avantajı da, hangi işletim sisteminde çalışırsanız çalışın komutların aynı olmasıdır. Dolayısıyla, bu noktada artık Linux ve macOS ile Windows için özel (farklı) talimatlar sunmayacağız.
+Cargo kullanmanın bir diğer avantajı da hangi işletim sisteminde çalışırsanız çalışın komutların tamamen aynı olmasıdır. Dolayısıyla bu noktadan itibaren Linux ve macOS ile Windows için ayrı komut talimatları vermeyeceğiz.
 
-### Yayın (Release) İçin Derlemek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="building-for-release"></a>
+<a id="yayın-release-için-derlemek"></a>
+<a id="yayin-release-icin-derlemek"></a>
 
-Projeniz sonunda yayınlanmaya (release) hazır olduğunda, optimizasyonlarla derlemek için `cargo build --release` komutunu kullanabilirsiniz. Bu komut, çalıştırılabilir dosyayı _target/debug_ yerine _target/release_ dizininde oluşturacaktır. Optimizasyonlar Rust kodunuzun daha hızlı çalışmasını sağlar, ancak bunları açmak programınızın derlenmesi için geçen süreyi uzatır. İşte bu yüzden iki farklı profil vardır: biri geliştirme için, yani hızlı ve sık bir şekilde yeniden derlemek istediğiniz zaman; diğeri ise bir kullanıcıya vereceğiniz, tekrar tekrar derlenmeyecek ve mümkün olduğunca hızlı çalışacak son programı derlemek içindir. Eğer kodunuzun çalışma süresini test ediyorsanız (benchmarking), `cargo build --release` komutunu çalıştırdığınızdan ve _target/release_ dizinindeki çalıştırılabilir dosya ile test ettiğinizden emin olun.
+### Yayın İçin Derlemek
+
+Projeniz nihayet yayınlanmaya hazır olduğunda, optimizasyonlarla derlemek için `cargo build --release` komutunu kullanabilirsiniz. Bu komut, çalıştırılabilir dosyayı _target/debug_ yerine _target/release_ dizininde oluşturur. Optimizasyonlar Rust kodunuzun çok daha hızlı çalışmasını sağlar; ancak bu optimizasyonları uygulamak programınızın derlenme süresini uzatır. İki farklı derleme profilinin bulunmasının nedeni tam olarak budur: Biri hızlı ve sık yeniden derleme yapmak istediğiniz geliştirme süreci içindir; diğeri ise kullanıcıya teslim edeceğiniz, tekrar tekrar derlenmeyecek ve mümkün olduğunca hızlı çalışması gereken nihai programı üretmek içindir. Kodunuzun çalışma süresini ölçüyorsanız (*benchmarking*), derlemeyi mutlaka `cargo build --release` komutuyla yaptığınızdan ve ölçümleri _target/release_ dizinindeki çalıştırılabilir dosyayla gerçekleştirdiğinizden emin olun.
+
+> Not: Cargo'nun varsayılan **`dev` profili**, terminal çıktısındaki `[unoptimized + debuginfo]` ifadesinden de görebileceğiniz üzere kod optimizasyonlarını kapalı tutar ve hata ayıklama (*debug*) sembollerini ikili dosyaya ekler; bu sayede derleme çok hızlı tamamlanır. **`release` profili** (`cargo build --release` veya doğrudan çalıştırmak için `cargo run --release`) ise kapsamlı derleyici optimizasyonlarını devreye sokar. Derleme profillerini _Cargo.toml_ üzerinden nasıl özelleştirebileceğinizi Bölüm 14'te inceleyeceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="cargo-as-convention"></a>
+<a id="leveraging-cargos-conventions"></a>
 
 ### Cargo Geleneklerinden Yararlanmak
 
-Basit projelerde Cargo sadece `rustc` kullanmaya kıyasla çok fazla bir değer (fayda) sağlamaz, ancak programlarınız daha karmaşık hale geldikçe değerini kanıtlayacaktır. Programlar birden fazla dosyaya yayıldığında veya bir bağımlılığa (dependency) ihtiyaç duyduğunda, derlemeyi Cargo'nun koordine etmesine izin vermek çok daha kolaydır.
+Çok basit projelerde Cargo, doğrudan `rustc` kullanmaya kıyasla büyük bir fark yaratmıyor gibi görünebilir; ancak programlarınız karmaşıklaştıkça değerini kanıtlayacaktır. Programlar birden fazla dosyaya yayıldığında veya bir bağımlılığa ihtiyaç duyduğunda, derleme sürecini Cargo'nun koordine etmesine izin vermek işinizi çok kolaylaştırır.
 
-`merhaba_cargo` projesi basit olsa da, artık Rust kariyerinizin geri kalanında kullanacağınız gerçek araçların çoğunu kullanıyor. Aslında, mevcut herhangi bir proje üzerinde çalışmak için Git kullanarak kodu almak, o projenin dizinine gitmek ve derlemek için aşağıdaki komutları kullanabilirsiniz:
+`merhaba_cargo` projesi her ne kadar basit olsa da artık Rust kariyerinizin geri kalanında kullanacağınız gerçek araç takımının büyük bir kısmını kullanıyor. Nitekim mevcut herhangi bir Rust projesi üzerinde çalışmak için Git ile kodu indirip proje dizinine geçmek ve derlemek üzere şu komutları kullanmanız yeterlidir:
 
 ```console
-$ git clone example.org/bazi_projeler
-$ cd bazi_projeler
+$ git clone example.org/bir_proje
+$ cd bir_proje
 $ cargo build
 ```
 
-Cargo hakkında daha fazla bilgi için [kendi dokümantasyonuna][cargo] göz atın.
+Cargo hakkında daha fazla bilgi edinmek için [Cargo belgelerine][cargo] göz atabilirsiniz.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="summary"></a>
 
 ## Özet
 
-Rust yolculuğunuza şimdiden harika bir başlangıç yaptınız! Bu bölümde şunları nasıl yapacağınızı öğrendiniz:
+Rust yolculuğunuza şimdiden harika bir başlangıç yaptınız! Bu bölümde şunları öğrendiniz:
 
-- `rustup` kullanarak en son kararlı Rust sürümünü kurmak.
-- Daha yeni bir Rust sürümüne güncellemek.
-- Yerel olarak yüklenmiş dokümantasyonu açmak.
-- Doğrudan `rustc` kullanarak bir "Merhaba, dünya!" programı yazmak ve çalıştırmak.
-- Cargo'nun geleneklerini kullanarak yeni bir proje oluşturmak ve çalıştırmak.
+- `rustup` kullanarak Rust'ın en son kararlı sürümünü kurmayı,
+- Daha yeni bir Rust sürümüne güncellemeyi,
+- Yerel olarak kurulmuş belgeleri açmayı,
+- Doğrudan `rustc` kullanarak bir "Merhaba, dünya!" programı yazıp çalıştırmayı,
+- Cargo'nun standart düzenini kullanarak yeni bir proje oluşturup çalıştırmayı.
 
-Rust kodu okumaya ve yazmaya alışmak adına daha kapsamlı bir program geliştirmek için şimdi harika bir zaman. Bu yüzden, 2. Bölüm'de bir tahmin oyunu programı geliştireceğiz. Eğer öncelikle genel programlama kavramlarının Rust'ta nasıl çalıştığını öğrenerek başlamayı tercih ederseniz, Bölüm 3'e bakabilir ve ardından Bölüm 2'ye geri dönebilirsiniz.
+Artık Rust kodu okumaya ve yazmaya alışmak için daha kapsamlı bir program geliştirmenin tam zamanı! Bu doğrultuda Bölüm 2'de bir sayı tahmin oyunu geliştireceğiz. Öncelikle yaygın programlama kavramlarının Rust'ta nasıl çalıştığını öğrenerek başlamayı tercih ederseniz doğrudan Bölüm 3'e geçebilir ve ardından Bölüm 2'ye dönebilirsiniz.
 
 [installation]: ch01-01-kurulum.html#kurulum
 [toml]: https://toml.io
-[ekler-e]: ekler-05-surumler.html
+[appendix-e]: ekler-05-surumler.html
 [cargo]: https://doc.rust-lang.org/cargo/

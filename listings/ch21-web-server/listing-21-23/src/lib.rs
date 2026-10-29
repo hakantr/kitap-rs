@@ -1,5 +1,5 @@
 use std::{
-    sync::{mpsc, Arc, Mutex},
+    sync::{Arc, Mutex, mpsc},
     thread,
 };
 
@@ -16,13 +16,13 @@ type Gorev = Box<dyn FnOnce() + Send + 'static>;
 // ANCHOR: here
 impl IsParcacigiHavuzu {
     // ANCHOR_END: here
-    /// Yeni bir IsParcacigiHavuzu olusturur.
+    /// Yeni bir IsParcacigiHavuzu oluşturur.
     ///
-    /// Boyut, havuzdaki is parcacigi sayisidir.
+    /// Boyut, havuzdaki thread sayısıdır.
     ///
     /// # Panics
     ///
-    /// `new` fonksiyonu, boyut sifirsa panikler.
+    /// `new` fonksiyonu, boyut sıfırsa panikler.
     // ANCHOR: here
     pub fn new(boyut: usize) -> IsParcacigiHavuzu {
         // --snip--

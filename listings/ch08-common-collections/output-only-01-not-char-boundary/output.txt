@@ -1,6 +1,8 @@
 $ cargo run
-   Compiling koleksiyonlar v0.1.0 ($PROJE/listings/ch08-common-koleksiyonlar/output-only-01-not-char-boundary)
+   Compiling koleksiyonlar v0.1.0 (file:///projects/koleksiyonlar)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running `target/debug/koleksiyonlar`
 
-thread 'main' (34670) panicked at src/main.rs:4:19:
-byte index 1 is not a char boundary; it is inside 'З' (bytes 0..2) of `Здравствуйте`
+thread 'main' (6017738) panicked at src/main.rs:4:21:
+end byte index 1 is not a char boundary; it is inside 'З' (bytes 0..2 of string)
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

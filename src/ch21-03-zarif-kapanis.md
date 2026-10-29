@@ -1,14 +1,26 @@
-## Zarif Kapanış ve Temizlik
+<!-- Old headings. Do not remove or links may break. -->
 
-Liste 21-20'deki kod artık istekleri iş parçacığı havuzu üzerinden eşzamanlı işliyor. Ancak `calisanlar`, `kimlik` ve `thread` gibi alanların dolaylı kullanıldığına dair uyarılar alıyoruz; bu da aslında henüz hiçbir şeyi temizlemediğimizi hatırlatıyor. Ana iş parçacığını kaba biçimde <kbd>ctrl</kbd>-<kbd>C</kbd> ile durdurduğumuzda, diğer iş parçacıkları da o anda ne yapıyor olurlarsa olsunlar aniden kesiliyor.
+<a id="graceful-shutdown-and-cleanup"></a>
+<a id="zarif-kapanış-ve-temizlik"></a>
 
-Şimdi `Drop` trait'ini uygulayarak havuzdaki her iş parçacığı üzerinde `join` çağıracağız. Böylece kapanmadan önce üzerinde çalıştıkları istekleri bitirebilecekler. Sonra da onlara yeni görev almayı bırakıp kapanmaları gerektiğini bildireceğiz.
+## Zarif Kapanış (Graceful Shutdown) ve Temizlik
 
-### `IsParcacigiHavuzu` Üzerinde `Drop` Uygulamak
+Liste 21-20'deki kod, amaçladığımız gibi bir thread (iş parçacığı) havuzu kullanarak isteklere eşzamansız biçimde yanıt veriyor. Doğrudan kullanmadığımız `calisanlar`, `kimlik` ve `thread` alanları hakkında bazı uyarılar alıyoruz; bu uyarılar bize henüz hiçbir temizlik işlemi yapmadığımızı hatırlatıyor. Ana thread'i durdurmak için daha kaba olan <kbd>ctrl</kbd>-<kbd>C</kbd> yöntemini kullandığımızda, diğer tüm thread'ler bir isteğe yanıt vermenin tam ortasında olsalar bile anında durduruluyor.
 
-İlk adım `Drop` uygulaması. Havuz kapsam dışına çıktığında, bütün iş parçacıklarının işini bitirip birleşmesini istiyoruz. Liste 21-22 ilk denemeyi gösteriyor.
+Şimdi, havuzdaki her bir thread üzerinde `join` çağırmak için `Drop` trait'ini uygulayacağız; böylece thread'ler kapanmadan önce üzerinde çalıştıkları istekleri tamamlayabilecekler. Ardından, thread'lere yeni istek kabul etmeyi bırakıp kapanmaları gerektiğini bildirecek bir mekanizma kuracağız. Bu kodu çalışırken görmek için sunucumuzu, thread havuzunu zarif biçimde kapatmadan önce yalnızca iki isteği kabul edecek şekilde değiştireceğiz.
 
-<Listing number="21-22" file-name="src/lib.rs" caption="İş parçacığı havuzu kapsam dışına çıktığında her iş parçacığını birleştirmeye çalışmak">
+İlerlerken dikkat etmeniz gereken bir nokta var: Buradaki değişikliklerin hiçbiri kapanışları (*closures*) çalıştıran kod bölümlerini etkilemez; dolayısıyla bir asenkron çalışma zamanı (*async runtime*) için thread havuzu yazıyor olsaydık da buradaki her şey birebir aynı olurdu.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="implementing-the-drop-trait-on-threadpool"></a>
+<a id="isparcacigihavuzu-üzerinde-drop-uygulamak"></a>
+
+### `IsParcacigiHavuzu` Üzerinde `Drop` Trait'ini Uygulamak
+
+Thread havuzumuz üzerinde `Drop` uygulayarak başlayalım. Havuz düşürüldüğünde, yürüttükleri işleri tamamladıklarından emin olmak için tüm thread'lerimizin birleşmesi (`join`) gerekir. Liste 21-22, `Drop` uygulamasına yönelik ilk denemeyi gösterir; bu kod henüz tam olarak çalışmayacaktır.
+
+<Listing number="21-22" file-name="src/lib.rs" caption="Thread havuzu kapsam dışına çıktığında her thread'i birleştirmek">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-22/src/lib.rs:here}}
@@ -16,11 +28,21 @@ Liste 21-20'deki kod artık istekleri iş parçacığı havuzu üzerinden eşzam
 
 </Listing>
 
-Burada her `Calisan` üzerinde dönüp onun iş parçacığına `join` çağırıyoruz. Ama derleyici hata verir; çünkü `join`, sahiplik alır. Bizde ise yalnızca ödünç alınmış `calisan` vardır.
+İlk olarak thread havuzunun `calisanlar` vektöründeki her öğe üzerinde döngü kurarız. Bunun için `&mut` kullanırız; çünkü `self` değiştirilebilir bir referanstır ve `calisan` örneğini de değiştirebilmemiz gerekir. Her `calisan` için bu `Calisan` örneğinin kapatıldığını belirten bir mesaj yazdırır ve ardından o `Calisan` örneğinin thread'i üzerinde `join` çağırırız. `join` çağrısı başarısız olursa, Rust'ın panikleyip zarif olmayan bir kapanışa geçmesi için `unwrap` kullanırız.
 
-Bunu çözmek için iş parçacığını `Calisan` içinden dışarı taşımamız gerekir. Bunun bir yolu alanı `Option<thread::JoinHandle<()>>` yapmak ve `take` ile içinden almak olabilir. Ancak bunu her yerde taşımak kodu gereksiz yere karmaşıklaştırabilir.
+Bu kodu derlediğimizde şu hatayı alırız:
 
-Bu bölümde daha temiz bir yaklaşım kullanacağız: `Vec::drain`. `drain(..)` ile vektördeki bütün öğeleri dışarı alıp onları tüketebiliriz. Güncel `drop` uygulaması şöyle görünür:
+```console
+{{#include ../listings/ch21-web-server/listing-21-22/output.txt}}
+```
+
+Hata bize, her `calisan` için yalnızca değiştirilebilir bir ödünç almaya sahip olduğumuz ve `join` metodu kendi argümanının sahipliğini aldığı için `join` çağıramayacağımızı söyler. Bu sorunu çözmek için, `join` metodunun thread'i tüketebilmesi amacıyla `thread` alanının sahibi olan `Calisan` örneğinin içinden thread'i dışarı taşımamız gerekir. Bunu yapmanın bir yolu, Liste 18-15'te izlediğimiz yaklaşımın aynısını uygulamaktır. `Calisan`, bir `Option<thread::JoinHandle<()>>` tutsaydı, değeri `Some` varyantının dışına taşıyıp yerinde `None` varyantı bırakmak için `Option` üzerinde `take` metodunu çağırabilirdik. Başka bir deyişle, çalışmakta olan bir `Calisan`, `thread` alanında bir `Some` varyantı bulundurur; bir `Calisan` örneğini temizlemek istediğimizde ise `Calisan`'ın çalıştıracak bir thread'i kalmaması için `Some` yerine `None` koyardık.
+
+Ancak bu durum _yalnızca_ `Calisan` düşürülürken karşımıza çıkardı. Buna karşılık, `calisan.thread` alanına eriştiğimiz her yerde bir `Option<thread::JoinHandle<()>>` ile uğraşmak zorunda kalırdık. İdiyomatik Rust'ta `Option` oldukça sık kullanılır; fakat her zaman var olacağını bildiğiniz bir değeri sırf geçici bir çözüm olarak `Option` içine sardığınızı fark ettiğinizde, kodunuzu daha temiz ve hataya daha az açık hâle getirecek alternatif yaklaşımlar aramak iyi bir fikirdir.
+
+Bu durumda daha iyi bir alternatif mevcuttur: `Vec::drain` metodu. Vektörden hangi öğelerin çıkarılacağını belirtmek için bir aralık (*range*) parametresi kabul eder ve bu öğeler üzerinde bir iteratör döndürür. `..` aralık sözdizimini geçirmek, vektördeki *her* değeri çıkaracaktır.
+
+Dolayısıyla `IsParcacigiHavuzu` için `drop` uygulamasını şöyle güncellememiz gerekir:
 
 <Listing file-name="src/lib.rs">
 
@@ -30,17 +52,22 @@ Bu bölümde daha temiz bir yaklaşım kullanacağız: `Vec::drain`. `drain(..)`
 
 </Listing>
 
-Bu sürüm derleyici hatasını çözer. Yine de bir sorun daha var: bu hâliyle kapanış istediğimiz gibi çalışmıyor.
+Bu değişiklik derleyici hatasını çözer ve kodumuzda başka herhangi bir değişiklik gerektirmez. Unutmayın ki `drop`, bir panik sırasında da çağrılabildiğinden buradaki `unwrap` çağrısı da panikleyerek *ikili paniğe* (*double panic*) neden olabilir; bu durum programı anında çökertir ve devam eden tüm temizlik işlemlerini yarıda keser. Örnek bir program için bu kabul edilebilirdir, ancak üretim kodu için önerilmez.
 
-### İş Parçacıklarına Yeni Görev Dinlemeyi Bırakmalarını Söylemek
+<!-- Old headings. Do not remove or links may break. -->
 
-Sorun şu: `Calisan` iş parçacıkları sonsuz döngü içinde sürekli görev bekliyor. Biz `join` çağırınca, onlar hâlâ beklediği için ana iş parçacığı sonsuza kadar bloklanabilir.
+<a id="signaling-to-the-threads-to-stop-listening-for-jobs"></a>
+<a id="iş-parçacıklarına-yeni-görev-dinlemeyi-bırakmalarını-söylemek"></a>
 
-Bunu düzeltmek için önce `gonderici` tarafını açıkça düşürmemiz gerekiyor. Kanalın gönderici tarafı kapanınca, `recv` hata döndürür; bu da alıcı tarafta döngüden çıkma sinyali olarak kullanılabilir.
+### Thread'lere Yeni Görev Dinlemeyi Bırakmalarını Bildirmek
 
-Liste 21-23, `gonderici` değerini `Option` içine alıp `drop` içinde `take()` ile kapattığımız sürümü gösteriyor.
+Yaptığımız tüm değişikliklerle kodumuz artık hiçbir uyarı vermeden derleniyor. Ancak kötü haber şu ki bu kod henüz istediğimiz biçimde çalışmıyor. Sorunun anahtarı, `Calisan` örneklerinin thread'leri tarafından çalıştırılan kapanışlardaki mantıktadır: Şu anda `join` çağırıyoruz, fakat bu çağrı thread'leri kapatmaz; çünkü thread'ler görev aramak için sonsuza dek `loop` içinde döner. Mevcut `drop` uygulamamızla `IsParcacigiHavuzu` örneğimizi düşürmeye çalışırsak, ana thread ilk thread'in bitmesini bekleyerek sonsuza dek bloklanır.
 
-<Listing number="21-23" file-name="src/lib.rs" caption="`Calisan` iş parçacıklarını birleştirmeden önce `gonderici` değerini açıkça düşürmek">
+Bu sorunu düzeltmek için önce `IsParcacigiHavuzu` `drop` uygulamasında, ardından da `Calisan` döngüsünde değişiklik yapmamız gerekecek.
+
+İlk olarak `IsParcacigiHavuzu` `drop` uygulamasını, thread'lerin bitmesini beklemeden önce `gonderici` değerini açıkça düşürecek şekilde değiştireceğiz. Liste 21-23, `gonderici` değerini açıkça düşürmek için `IsParcacigiHavuzu` üzerinde yapılan değişiklikleri gösterir. Thread alanında olduğunun aksine, burada `gonderici` değerini `Option::take` ile `IsParcacigiHavuzu` dışına taşıyabilmek için gerçekten bir `Option` kullanmamız _gerekir_.
+
+<Listing number="21-23" file-name="src/lib.rs" caption="`Calisan` thread'lerini birleştirmeden önce `gonderici` değerini açıkça düşürmek">
 
 ```rust,noplayground,not_desired_behavior
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-23/src/lib.rs:here}}
@@ -48,7 +75,7 @@ Liste 21-23, `gonderici` değerini `Option` içine alıp `drop` içinde `take()`
 
 </Listing>
 
-Bu değişiklikten sonra kanal kapanır. Böylece `Calisan` tarafında `recv` artık hata döndürmeye başlayabilir. Şimdi döngüyü buna göre güncelleyelim. Liste 21-24, `recv` hata döndürdüğünde döngüden zarif biçimde çıkan sürümü gösteriyor.
+`gonderici` değerinin düşürülmesi kanalı kapatır; bu da artık başka mesaj gönderilmeyeceğini belirtir. Bu gerçekleştiğinde, `Calisan` örneklerinin sonsuz döngü içinde yaptığı tüm `recv` çağrıları bir hata döndürür. Liste 21-24'te, bu durumda döngüden zarif biçimde çıkacak şekilde `Calisan` döngüsünü değiştiriyoruz; bu da `IsParcacigiHavuzu` `drop` uygulaması üzerlerinde `join` çağırdığında thread'lerin tamamlanacağı anlamına gelir.
 
 <Listing number="21-24" file-name="src/lib.rs" caption="`recv` hata döndürdüğünde döngüden açıkça çıkmak">
 
@@ -58,13 +85,11 @@ Bu değişiklikten sonra kanal kapanır. Böylece `Calisan` tarafında `recv` ar
 
 </Listing>
 
-Artık her `Calisan`, kanalın kapandığını görünce yeni görev beklemeyi bırakır, bir ileti yazar ve döngüden çıkar.
+<a id="sunucuyu-sınırlı-istekten-sonra-kapatmak"></a>
 
-### Sunucuyu Sınırlı İstekten Sonra Kapatmak
+Bu kodu çalışırken görmek için, Liste 21-25'te gösterildiği gibi sunucuyu zarif biçimde kapatmadan önce yalnızca iki isteği kabul edecek şekilde `main` fonksiyonunu değiştirelim.
 
-Bu davranışı gözle görmek için, `main` fonksiyonunu yalnızca iki isteği kabul edecek şekilde değiştirebiliriz. Liste 21-25 bunu gösteriyor.
-
-<Listing number="21-25" file-name="src/main.rs" caption="Döngüden çıkarak sunucuyu iki isteğin ardından kapatmak">
+<Listing number="21-25" file-name="src/main.rs" caption="Döngüden çıkarak sunucuyu iki isteğe yanıt verdikten sonra kapatmak">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-25/src/main.rs:here}}
@@ -72,11 +97,22 @@ Bu davranışı gözle görmek için, `main` fonksiyonunu yalnızca iki isteği 
 
 </Listing>
 
-Gerçek bir web sunucusunun iki istekten sonra kapanmasını istemezsiniz. Buradaki amaç yalnızca zarif kapanışın gerçekten çalıştığını göstermek.
+Gerçek dünyadaki bir web sunucusunun yalnızca iki isteğe yanıt verdikten sonra kapanmasını istemezsiniz. Bu kod yalnızca zarif kapanış ve temizlik mekanizmasının düzgün çalıştığını gösterir.
 
-`take(2)`, yineleyicinin en fazla ilk iki öğesini almasını sağlar. `main` sonlandığında `IsParcacigiHavuzu` da kapsam dışına çıkar ve `drop` çalışır.
+`take` metodu `Iterator` trait'inde tanımlanmıştır ve yinelemeyi en fazla ilk iki öğeyle sınırlar. `IsParcacigiHavuzu`, `main` sonunda kapsam dışına çıkacak ve `drop` uygulaması çalışacaktır.
 
-Sunucuyu `cargo run` ile başlatıp üç istek gönderirseniz, üçüncü isteğin başarısız olduğunu ve terminalde buna benzer iletiler gördüğünüzü fark edersiniz:
+Sunucuyu `cargo run` ile başlatın ve üç istek gönderin. Üçüncü istek hata vermeli ve terminalinizde şuna benzer bir çıktı görmelisiniz:
+
+<!-- manual-regeneration
+cd listings/ch21-web-server/listing-21-25
+cargo run
+curl http://127.0.0.1:7878
+curl http://127.0.0.1:7878
+curl http://127.0.0.1:7878
+third request will error because server will have shut down
+copy output below
+Can't automate because the output depends on making requests
+-->
 
 ```console
 $ cargo run
@@ -96,19 +132,15 @@ Kapatılıyor.
 Çalışan kapatılıyor: 3
 ```
 
-İletilerin sırası sizde farklı olabilir. Ama genel akış şudur:
+Yazdırılan `Calisan` kimliklerinin ve mesajların sırası sizde farklı olabilir. Bu kodun nasıl çalıştığını mesajlardan görebiliriz: `0` ve `3` numaralı `Calisan` örnekleri ilk iki isteği aldı. Sunucu ikinci bağlantıdan sonra yeni bağlantı kabul etmeyi bıraktı ve `IsParcacigiHavuzu` üzerindeki `Drop` uygulaması, `Çalışan 3` henüz görevine bile başlamadan çalışmaya başladı. `gonderici` değerinin düşürülmesi tüm `Calisan` örneklerinin bağlantısını keser ve onlara kapanmalarını söyler. Her `Calisan` örneği bağlantısı kesildiğinde bir mesaj yazdırır ve ardından thread havuzu her bir `Calisan` thread'inin bitmesini beklemek için `join` çağırır.
 
-- İlk iki isteği bazı `Calisan`lar alır.
-- Sunucu artık yeni bağlantı kabul etmeyi bırakır.
-- `drop`, `gonderici` değerini düşürür.
-- Her `Calisan`, kanal kapandığını fark eder ve döngüden çıkar.
-- Havuz da her iş parçacığı üzerinde `join` çağırıp temiz kapanış yapar.
+Bu özel çalıştırmanın ilginç bir yönüne dikkat edin: `IsParcacigiHavuzu`, `gonderici` değerini düşürdü ve herhangi bir `Calisan` hata almadan önce `Çalışan 0` üzerinde `join` çağırmayı denedik. `Çalışan 0` henüz `recv` çağrısından bir hata almamıştı; bu yüzden ana thread bloklanarak `Çalışan 0`'ın bitmesini bekledi. Bu sırada `Çalışan 3` bir görev aldı ve ardından tüm thread'ler birer hata aldı. `Çalışan 0` işini bitirdiğinde ana thread geri kalan `Calisan` örneklerinin bitmesini bekledi. O noktada hepsi döngülerinden çıkmış ve durmuştu.
 
-İlginç bir ayrıntı daha var: ana iş parçacığı, bazı `Calisan`lar hata alıp döngüden çıkmadan önce ilk `join` çağrısını yapabilir. Bu durumda kısa süre bloklanır; ama diğer iş parçacıkları işlerini bitirdikçe hepsi sırayla kapanır.
+> Not: **Gerçek Üretim Sunucularında İşletim Sistemi Sinyalleriyle Zarif Kapanış:** Gerçek dünyada bir sunucu `take(2)` ile değil, işletim sisteminden gelen sonlandırma sinyalleriyle (<kbd>Ctrl</kbd>+<kbd>C</kbd> ile gönderilen `SIGINT` veya konteyner/servis yöneticilerinin gönderdiği `SIGTERM`) zarif kapanışa geçer. Senkron Rust sunucularında `ctrlc` ya da `signal-hook` crate'leri kullanılarak bir kapatma bayrağı/kanalı tetiklenir ve dinleme döngüsü sonlandırılarak `IsParcacigiHavuzu`'nun doğal biçimde kapsam dışına çıkıp `Drop` çalıştırması sağlanır; `axum` ve `tokio` tabanlı asenkron sunucularda ise aynı desen `tokio::signal::ctrl_c()` ve `with_graceful_shutdown` ile kurulur. Ayrıca üretim kodunda `Drop` içinde `calisan.thread.join().unwrap()` yerine `if let Err(hata) = calisan.thread.join() { eprintln!(...); }` kullanmak, olası bir ikili paniğin (*double panic*) süreci anında sonlandırmasını önler.
 
-Böylece projemizi tamamlamış olduk. Artık elimizde iş parçacığı havuzu kullanan, istekleri eşzamanlı ele alan ve zarif biçimde kapanabilen temel bir web sunucusu var.
+Tebrikler! Artık projemizi tamamladık; eşzamansız yanıt vermek için bir thread havuzu kullanan temel bir web sunucumuz var. Havuzdaki tüm thread'leri temizleyen zarif bir sunucu kapanışı gerçekleştirebiliyoruz.
 
-Tam sürüm için aşağıdaki iki dosyaya bakabilirsiniz:
+Referans olması için kodun tamamı aşağıda verilmiştir:
 
 <Listing file-name="src/main.rs">
 
@@ -126,14 +158,19 @@ Tam sürüm için aşağıdaki iki dosyaya bakabilirsiniz:
 
 </Listing>
 
-Bu projeyi geliştirmeye devam etmek isterseniz:
+Burada daha fazlasını da yapabiliriz! Bu projeyi geliştirmeye devam etmek isterseniz işte birkaç fikir:
 
-- `IsParcacigiHavuzu` ve açık metodlarına daha fazla belge ekleyebilirsiniz.
-- Kütüphane işlevleri için testler yazabilirsiniz.
-- `unwrap` çağrılarını daha sağlam hata yönetimiyle değiştirebilirsiniz.
-- `IsParcacigiHavuzu`nu web sunucusu dışında başka görevlerde kullanabilirsiniz.
-- [crates.io](https://crates.io/) üstündeki hazır bir havuz crate'i ile benzer sunucuyu yeniden yazıp API farklarını inceleyebilirsiniz.
+- `IsParcacigiHavuzu` türüne ve genel (`pub`) metotlarına daha fazla belgelendirme yorumu ekleyin.
+- Kütüphanenin işlevselliği için testler ekleyin.
+- `unwrap` çağrılarını daha sağlam bir hata yönetimiyle değiştirin.
+- Web isteklerine yanıt vermek dışında başka bir görevi yerine getirmek için `IsParcacigiHavuzu` kullanın.
+- [crates.io](https://crates.io/) üzerinde bir thread havuzu crate'i bulun ve bunun yerine o crate'i kullanarak benzer bir web sunucusu yazın. Ardından API'sini ve sağlamlığını kendi uyguladığımız thread havuzuyla karşılaştırın.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="summary"></a>
+<a id="özet"></a>
 
 ## Özet
 
-Kitabın sonuna geldiniz. Artık kendi Rust projelerinizi geliştirecek, başkalarının projelerine katkı verecek ve daha ileri konuları anlamlandıracak temel bilgiye sahipsiniz. Takıldığınız yerde yardım alabileceğiniz, canlı ve destekleyici bir Rust topluluğu da var.
+Harika iş çıkardınız! Kitabın sonuna ulaştınız! Bu Rust yolculuğunda bize katıldığınız için teşekkür ederiz. Artık kendi Rust projelerinizi hayata geçirmeye ve başkalarının projelerine katkıda bulunmaya hazırsınız. Rust yolculuğunuzda karşılaşabileceğiniz her türlü zorlukta size yardımcı olmaktan mutluluk duyacak diğer *Rustacean*'lardan oluşan sıcak ve destekleyici bir topluluk olduğunu her zaman aklınızda bulundurun.

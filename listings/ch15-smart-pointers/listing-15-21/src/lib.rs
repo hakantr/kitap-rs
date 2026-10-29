@@ -26,12 +26,12 @@ where
         let en_buyugun_yuzdesi = self.deger as f64 / self.en_buyuk as f64;
 
         if en_buyugun_yuzdesi >= 1.0 {
-            self.iletici.gonder("Hata: Kotanizi astiniz!");
+            self.iletici.gonder("Hata: Kotanızı aştınız!");
         } else if en_buyugun_yuzdesi >= 0.9 {
             self.iletici
-                .gonder("Acil uyari: Kotanizin %90'ini gectiniz!");
+                .gonder("Acil uyarı: Kotanızın %90'ını geçtiniz!");
         } else if en_buyugun_yuzdesi >= 0.75 {
-            self.iletici.gonder("Uyari: Kotanizin %75'ini gectiniz!");
+            self.iletici.gonder("Uyarı: Kotanızın %75'ini geçtiniz!");
         }
     }
 }

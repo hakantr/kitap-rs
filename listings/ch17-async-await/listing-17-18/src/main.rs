@@ -11,9 +11,9 @@ fn main() {
         };
 
         match timeout(yavas, Duration::from_secs(2)).await {
-            Ok(message) => println!("'{message}' ile başarılı oldu"),
-            Err(duration) => {
-                println!("{} saniye sonra başarısız oldu", duration.as_secs())
+            Ok(mesaj) => println!("'{mesaj}' ile başarılı oldu"),
+            Err(sure) => {
+                println!("{} saniye sonra başarısız oldu", sure.as_secs())
             }
         }
         // ANCHOR_END: here

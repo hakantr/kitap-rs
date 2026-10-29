@@ -1,0 +1,10 @@
+$ cargo check
+    Checking merhaba v0.1.0 (file:///projects/merhaba)
+error[E0433]: cannot find type `IsParcacigiHavuzu` in this scope
+  --> src/main.rs:11:17
+   |
+11 |     let havuz = IsParcacigiHavuzu::new(4);
+   |                 ^^^^^^^^^^^^^^^^^ use of undeclared type `IsParcacigiHavuzu`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `merhaba` (bin "merhaba") due to 1 previous error

@@ -4,6 +4,7 @@
 [book]
 title = "Rust Programlama Dili"
 authors = ["Steve Klabnik", "Carol Nichols", "Chris Krycho", "Contributions from the Rust Community"]
+language = "tr"
 
 [output.html]
 additional-css = ["ferris.css", "theme/2018-edition.css", "theme/semantic-notes.css", "theme/listing.css"]

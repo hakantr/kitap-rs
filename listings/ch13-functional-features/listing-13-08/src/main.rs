@@ -12,7 +12,7 @@ fn main() {
     ];
 
     let mut siralama_islemleri = vec![];
-    let deger = String::from("closure called");
+    let deger = String::from("kapanış çağrıldı");
 
     liste.sort_by_key(|r| {
         siralama_islemleri.push(deger);

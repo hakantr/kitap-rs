@@ -10,7 +10,7 @@ impl<T> Option<T> {
     pub fn unwrap(self) -> T {
         match self {
             Some(val) => val,
-            None => panic!("`Option::unwrap()` `None` degeri uzerinde cagrildi"),
+            None => panic!("`Option::unwrap()` bir `None` değeri üzerinde çağrıldı"),
         }
     }
 }

@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling rectangles v0.1.0 (file:///projects/rectangles)
+   Compiling dikdortgenler v0.1.0 (file:///projects/dikdortgenler)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s
-     Running `target/debug/rectangles`
+     Running `target/debug/dikdortgenler`
 Dikdörtgenin alanı 1500 kare pikseldir.

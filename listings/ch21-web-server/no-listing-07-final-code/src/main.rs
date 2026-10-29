@@ -1,7 +1,7 @@
 use merhaba::IsParcacigiHavuzu;
 use std::{
     fs,
-    io::{prelude::*, BufReader},
+    io::{BufReader, prelude::*},
     net::{TcpListener, TcpStream},
     thread,
     time::Duration,

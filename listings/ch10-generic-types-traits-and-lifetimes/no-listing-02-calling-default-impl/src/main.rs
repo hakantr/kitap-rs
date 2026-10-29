@@ -1,4 +1,4 @@
-use aggregator::{self, HaberMakalesi, Ozet};
+use toplayici::{self, HaberMakalesi, Ozet};
 
 fn main() {
     // ANCHOR: here

@@ -6,6 +6,6 @@ fn main() {
     let sorgu = &argumanlar[1];
     let dosya_yolu = &argumanlar[2];
 
-    println!("Searching for {sorgu}");
-    println!("In file {dosya_yolu}");
+    println!("Aranan: {sorgu}");
+    println!("Dosya: {dosya_yolu}");
 }

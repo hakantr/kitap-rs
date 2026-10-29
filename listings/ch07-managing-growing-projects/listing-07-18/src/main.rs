@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::prelude::*;
 // ANCHOR: here
 // --snip--
 use std::{cmp::Ordering, io};
@@ -8,7 +8,7 @@ use std::{cmp::Ordering, io};
 fn main() {
     println!("Sayıyı tahmin et!");
 
-    let gizli_sayi = rand::thread_rng().gen_range(1..=100);
+    let gizli_sayi = rand::rng().random_range(1..=100);
 
     println!("Gizli sayı: {gizli_sayi}");
 
@@ -16,7 +16,9 @@ fn main() {
 
     let mut tahmin = String::new();
 
-    io::stdin().read_line(&mut tahmin).expect("Satır okunamadı");
+    io::stdin()
+        .read_line(&mut tahmin)
+        .expect("Satır okunamadı");
 
     let tahmin: u32 = tahmin.trim().parse().expect("Lütfen bir sayı yazın!");
 

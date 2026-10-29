@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling ownership v0.1.0 ($PROJE/listings/ch04-understanding-ownership/no-listing-19-slice-error)
+   Compiling ownership v0.1.0 (file:///projects/ownership)
 error[E0502]: cannot borrow `metin` as mutable because it is also borrowed as immutable
   --> src/main.rs:19:5
    |

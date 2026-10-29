@@ -14,16 +14,16 @@ impl Envanter {
     }
 
     fn en_cok_stoklanan(&self) -> GomlekRengi {
-        let mut num_red = 0;
-        let mut num_blue = 0;
+        let mut kirmizi_sayisi = 0;
+        let mut mavi_sayisi = 0;
 
-        for color in &self.gomlekler {
-            match color {
-                GomlekRengi::Kirmizi => num_red += 1,
-                GomlekRengi::Mavi => num_blue += 1,
+        for renk in &self.gomlekler {
+            match renk {
+                GomlekRengi::Kirmizi => kirmizi_sayisi += 1,
+                GomlekRengi::Mavi => mavi_sayisi += 1,
             }
         }
-        if num_red > num_blue {
+        if kirmizi_sayisi > mavi_sayisi {
             GomlekRengi::Kirmizi
         } else {
             GomlekRengi::Mavi
@@ -37,16 +37,16 @@ fn main() {
     };
 
     let kullanici_tercihi1 = Some(GomlekRengi::Kirmizi);
-    let giveaway1 = magaza.hediye_et(kullanici_tercihi1);
+    let hediye1 = magaza.hediye_et(kullanici_tercihi1);
     println!(
         "{:?} tercihine sahip kullanıcı {:?} alıyor",
-        kullanici_tercihi1, giveaway1
+        kullanici_tercihi1, hediye1
     );
 
     let kullanici_tercihi2 = None;
-    let giveaway2 = magaza.hediye_et(kullanici_tercihi2);
+    let hediye2 = magaza.hediye_et(kullanici_tercihi2);
     println!(
         "{:?} tercihine sahip kullanıcı {:?} alıyor",
-        kullanici_tercihi2, giveaway2
+        kullanici_tercihi2, hediye2
     );
 }

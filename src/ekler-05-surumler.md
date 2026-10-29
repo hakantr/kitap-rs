@@ -1,27 +1,38 @@
-## Ek E: Sürümler
+<!-- Old headings. Do not remove or links may break. -->
 
-Bölüm 1'de, `cargo new` komutunun _Cargo.toml_ dosyanıza sürüm (edition) hakkında bir miktar meta veri eklediğini görmüştünüz. Bu ek, bunun ne anlama geldiğinden bahsediyor!
+<a id="appendix-e-editions"></a>
+<a id="ek-e-sürümler"></a>
 
-Rust dili ve derleyicisinin altı haftalık bir yayın döngüsü (release cycle) vardır, bu da kullanıcıların sürekli yeni özellikler akışı aldığı anlamına gelir. Diğer programlama dilleri daha büyük değişiklikleri daha az sıklıkta yayınlar; Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük değişiklikler birikir. Ancak sürümden sürüme geriye dönüp "Vay canına, Rust 1.10 ile Rust 1.31 arasında Rust ne kadar çok değişmiş!" demek zor olabilir.
+## E - Sürümler
 
-Yaklaşık her üç yılda bir Rust ekibi yeni bir Rust _sürümü (edition)_ üretir. Her sürüm, tam olarak güncellenmiş belgeler ve araçlarla, gelen özellikleri net bir paket halinde bir araya getirir. Yeni sürümler olağan altı haftalık yayın sürecinin bir parçası olarak gönderilir.
+Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*) bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele alıyoruz!
 
-Sürümler farklı kişiler için farklı amaçlara hizmet eder:
+Rust dili ve derleyicisi altı haftalık bir yayın döngüsüne sahiptir; yani kullanıcılar sürekli olarak yeni özelliklere kavuşur. Diğer pek çok programlama dili daha büyük değişiklikleri daha seyrek aralıklarla yayınlarken, Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük iyileştirmeler üst üste birikir. Yine de altı haftalık sürümler arasında geriye dönüp baktığınızda, “Vay canına, Rust 1.10 ile Rust 1.31 arasında dil ne kadar değişmiş!” diyebilmek her zaman kolay olmayabilir.
 
-- Aktif Rust kullanıcıları için yeni bir sürüm, artımlı değişiklikleri anlaşılması kolay bir pakette bir araya getirir.
-- Kullanıcı olmayanlar için yeni bir sürüm, Rust'a yeniden bakmaya değer kılan bazı önemli ilerlemelerin (advancements) gerçekleştiğinin sinyalini verir.
-- Rust'ı geliştirenler için yeni bir sürüm, projenin bütünü için bir toplanma noktası (rallying point) sağlar.
+Yaklaşık her üç yılda bir Rust ekibi yeni bir Rust _sürümü_ (*edition*) yayınlar. Her sürüm, o zamana dek dile eklenen özellikleri eksiksiz güncellenmiş belgelendirme ve araçlarla birlikte net bir paket hâlinde bir araya getirir. Yeni sürümler de olağan altı haftalık yayın sürecinin bir parçası olarak kullanıcılara sunulur.
 
-Bu yazının yazıldığı sırada, dört Rust sürümü mevcuttur: Rust 2015, Rust 2018, Rust 2021 ve Rust 2024. Bu kitap, Rust 2024 sürümü kuralları (idioms) kullanılarak yazılmıştır.
+Sürümler farklı kitleler için farklı amaçlara hizmet eder:
 
-_Cargo.toml_ dosyasındaki `edition` anahtarı, derleyicinin kodunuz için hangi sürümü kullanması gerektiğini belirtir. Anahtar yoksa, Rust geriye dönük uyumluluk (backward compatibility) nedenleriyle sürüm değeri olarak `2015`'i kullanır.
+- Aktif Rust kullanıcıları için yeni bir sürüm, artımlı değişiklikleri anlaşılması kolay tek bir pakette toplar.
+- Henüz Rust kullanmayanlar için yeni bir sürüm, Rust'a yeniden göz atmaya değecek önemli ilerlemelerin kaydedildiğinin sinyalini verir.
+- Rust'ı geliştirenler için yeni bir sürüm, projenin bütünü adına ortak bir odaklanma noktası oluşturur.
 
-Her proje, varsayılan 2015 sürümünden farklı bir sürümü seçebilir (opt in). Sürümler, koddaki tanımlayıcılarla (identifiers) çelişen yeni bir anahtar kelime eklemek gibi uyumsuz değişiklikler (incompatible changes) içerebilir. Ancak, bu değişiklikleri açıkça seçmediğiniz (opt in) sürece, kullandığınız Rust derleyici sürümünü yükseltseniz bile kodunuz derlenmeye devam edecektir.
+Bu satırların yazıldığı sırada dört Rust sürümü mevcuttur: Rust 2015, Rust 2018, Rust 2021 ve Rust 2024. Bu kitap, Rust 2024 sürümünün idiyomları kullanılarak yazılmıştır.
 
-Tüm Rust derleyici sürümleri, o derleyicinin yayınlanmasından önce var olan herhangi bir sürümü (edition) destekler ve desteklenen herhangi bir sürümdeki crate'leri birbirine bağlayabilir (link). Sürüm değişiklikleri, derleyicinin kodu başlangıçta nasıl ayrıştırdığını (parses) etkiler. Bu nedenle, Rust 2015 kullanıyorsanız ve bağımlılıklarınızdan (dependencies) biri Rust 2018 kullanıyorsa, projeniz derlenecek ve o bağımlılığı kullanabilecektir. Projenizin Rust 2018 kullandığı ve bir bağımlılığın Rust 2015 kullandığı zıt durum da işe yarar.
+_Cargo.toml_ dosyasındaki `edition` anahtarı, derleyicinin kodunuz için hangi sürümü kullanması gerektiğini belirtir. Bu anahtar mevcut değilse Rust, geriye dönük uyumluluk amacıyla sürüm değeri olarak varsayılan `2015`'i kullanır.
 
-Açık olmak gerekirse: Çoğu özellik tüm sürümlerde mevcut olacaktır. Herhangi bir Rust sürümünü kullanan geliştiriciler, yeni kararlı sürümler (stable releases) yapıldıkça iyileştirmeleri görmeye devam edeceklerdir. Ancak bazı durumlarda, temel olarak yeni anahtar kelimeler eklendiğinde, bazı yeni özellikler yalnızca sonraki sürümlerde mevcut olabilir. Bu tür özelliklerden yararlanmak istiyorsanız sürümleri değiştirmeniz gerekecektir.
+Her proje, varsayılan 2015 sürümünden farklı bir sürümü açıkça tercih edebilir. Sürümler, mevcut koddaki tanımlayıcılarla çakışabilecek yeni bir anahtar kelimenin eklenmesi gibi geriye dönük uyumsuz değişiklikler barındırabilir. Ancak siz bu yeni sürümü açıkça seçmediğiniz sürece, kullandığınız Rust derleyicisini en güncel sürüme yükseltseniz bile kodunuz sorunsuzca derlenmeye devam eder.
 
-Daha fazla ayrıntı için [_Rust Sürüm Rehberi_][edition-guide] belgesine bakın. Bu, sürümler arasındaki farkları sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi açıklayan eksiksiz bir kitaptır.
+Tüm Rust derleyici sürümleri, o derleyicinin yayınlanmasından önce var olan tüm sürümleri (*editions*) destekler ve desteklenen herhangi bir sürümle yazılmış crate'leri birbirine sorunsuzca bağlayabilir. Sürüm değişiklikleri yalnızca derleyicinin kodu ilk aşamada nasıl ayrıştırdığını etkiler. Bu nedenle siz projenizde Rust 2015 kullanıyorsanız ve bağımlılıklarınızdan biri Rust 2018 (veya Rust 2024) kullanıyorsa projeniz derlenecek ve o bağımlılığı kullanabilecektir. Projenizin daha yeni bir sürümü, bir bağımlılığınızın ise Rust 2015 sürümünü kullandığı tersi durum da aynı şekilde çalışır.
+
+Netleştirmek gerekirse: Yeni özelliklerin büyük çoğunluğu tüm sürümlerde kullanılabilir. Hangi Rust sürümünü kullanırsa kullansın tüm geliştiriciler, yeni kararlı derleyici sürümleri yayınlandıkça iyileştirmelerden yararlanmaya devam eder. Yalnızca bazı özel durumlarda —özellikle yeni anahtar kelimeler eklendiğinde veya mevcut bir sözdiziminin varsayılan davranışı iyileştirildiğinde— belirli özellikler yalnızca yeni sürümlerde etkinleştirilir. Bu tür özelliklerden yararlanmak istediğinizde projenizin `edition` ayarını yükseltmeniz gerekir.
+
+> Not: **Rust Sürümlerinin Kısa Özeti ve Otomatik Yükseltme (`cargo fix --edition`):**
+> - **Rust 2018:** Modül sisteminde `extern crate` zorunluluğunun kalkması, sözdizimsel olmayan ömürler (*NLL*) ve `async`/`await` anahtar kelimeleri.
+> - **Rust 2021:** Diziler (`[T; N]`) için doğrudan değer üzerinden `IntoIterator`, kapanışlarda alan bazlı (*disjoint*) yakalama ve ön tanımlı kapsama (`prelude`) `TryInto`, `TryFrom`, `FromIterator` eklenmesi.
+> - **Rust 2024:** Ön tanımlı kapsama `Future` ve `IntoFuture` eklenmesi, `-> impl Trait` dönüş türlerinde ömür yakalama kurallarının sadeleşmesi, `if let` ve blok sonu ifadelerinde geçici değer düşürme kapsamlarının iyileştirilmesi, `unsafe extern` ve `unsafe fn` içi güvenli olmayan işlem uyarıları, ayrılmış `gen` anahtar kelimesi ve Cargo'da MSRV duyarlı `resolver = "3"`.
+> - Mevcut bir crate'i yeni sürüme yükseltmek için önce `cargo fix --edition` komutunu çalıştırıp kodunuzu uyumlu hâle getirebilir, ardından _Cargo.toml_ içinde `edition = "2024"` yazıp `cargo test` ile doğrulayabilirsiniz.
+
+Daha fazla ayrıntı için [_Rust Sürüm Rehberi_][edition-guide] kitabına başvurabilirsiniz. Bu rehber, sürümler arasındaki tüm farkları tek tek sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi adım adım açıklayan kapsamlı bir kaynaktır.
 
 [edition-guide]: https://hakantr.github.io/rust-surum/

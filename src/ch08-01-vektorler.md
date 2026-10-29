@@ -1,13 +1,20 @@
-## Vektörlerle Değer Listeleri Depolamak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="storing-lists-of-values-with-vectors"></a>
+<a id="vektörlerle-değer-listeleri-depolamak"></a>
 
-Bakacağımız ilk koleksiyon türü, `Vec<T>`, diğer adıyla vektördür.
-Vektörler, birden fazla değeri hafızada (bellekte) yan yana koyan tek bir veri yapısında depolamanızı sağlar. Vektörler sadece aynı türdeki değerleri depolayabilir. Bir dosyadaki metin satırları veya alışveriş sepetindeki ürünlerin fiyatları gibi bir öğe listeniz olduğunda kullanışlıdırlar.
+## Vektörlerle Değer Listeleri Saklama
 
-### Yeni Bir Vektör Oluşturmak
+İnceleyeceğimiz ilk koleksiyon türü, _vektör (vector)_ olarak da bilinen `Vec<T>` türüdür. Vektörler, tüm değerleri bellekte yan yana yerleştiren tek bir veri yapısı içinde birden fazla değer saklamanızı sağlar. Vektörler yalnızca aynı türdeki değerleri tutabilir. Bir dosyadaki metin satırları veya bir alışveriş sepetindeki ürünlerin fiyatları gibi bir öğe listeniz olduğunda oldukça kullanışlıdırlar.
 
-Yeni, boş bir vektör oluşturmak için Liste 8-1'de gösterildiği gibi `Vec::new` fonksiyonunu çağırırız.
+<!-- Old headings. Do not remove or links may break. -->
+<a id="creating-a-new-vector"></a>
+<a id="yeni-bir-vektör-oluşturmak"></a>
 
-<Listing number="8-1" caption="`i32` türünden değerleri tutacak yeni, boş bir vektör oluşturmak">
+### Yeni Bir Vektör Oluşturma
+
+Yeni ve boş bir vektör oluşturmak için Liste 8-1'de gösterildiği gibi `Vec::new` fonksiyonunu çağırırız.
+
+<Listing number="8-1" caption="`i32` türünden değerleri tutacak yeni ve boş bir vektör oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-01/src/main.rs:here}}
@@ -15,9 +22,9 @@ Yeni, boş bir vektör oluşturmak için Liste 8-1'de gösterildiği gibi `Vec::
 
 </Listing>
 
-Burada bir tür ek açıklaması eklediğimize dikkat edin. Bu vektöre herhangi bir değer eklemediğimiz için, Rust ne tür elemanları depolamak niyetinde olduğumuzu bilmez. Bu önemli bir noktadır. Vektörler jenerikler kullanılarak uygulanmıştır; kendi türlerinizle jenerikleri nasıl kullanacağınızı Bölüm 10'da ele alacağız. Şimdilik standart kütüphane tarafından sağlanan `Vec<T>` türünün herhangi bir türü barındırabileceğini bilin. Belirli bir türü tutması için bir vektör oluşturduğumuzda, bu türü açılı parantezler içinde belirtebiliriz. Liste 8-1'de, Rust'a `v` içerisindeki `Vec<T>`'nin `i32` türünden elemanlar tutacağını söyledik.
+Burada açık bir tür bildirimi eklediğimize dikkat edin. Bu vektöre herhangi bir değer eklemediğimiz için Rust, ne tür elemanlar saklamayı planladığımızı bilemez. Bu önemli bir noktadır. Vektörler jenerikler kullanılarak uygulanmıştır; kendi türlerinizle jenerikleri nasıl kullanacağınızı Bölüm 10'da ele alacağız. Şimdilik standart kütüphanenin sunduğu `Vec<T>` türünün herhangi bir türü barındırabileceğini bilmeniz yeterlidir. Belirli bir türü tutacak bir vektör oluşturduğumuzda, bu türü açılı parantezler (`< >`) içinde belirtebiliriz. Liste 8-1'de Rust'a, `v` değişkenindeki `Vec<T>` yapısının `i32` türünden elemanlar tutacağını söyledik.
 
-Daha sıklıkla, başlangıç değerleriyle bir `Vec<T>` oluşturursunuz ve Rust depolamak istediğiniz değerin türünü çıkarsar, bu yüzden bu tür ek açıklamasına nadiren ihtiyaç duyarsınız. Rust, verdiğiniz değerleri tutan yeni bir vektör oluşturacak olan kullanışlı `vec!` makrosunu sağlar. Liste 8-2, `1`, `2` ve `3` değerlerini tutan yeni bir `Vec<i32>` oluşturur. Tamsayı türü `i32`'dir, çünkü Bölüm 3'teki ["Veri Türleri"][data-types]<!-- ignore --> bölümünde tartıştığımız gibi, bu varsayılan tamsayı türüdür.
+Çoğu zaman başlangıç değerlerine sahip bir `Vec<T>` oluşturursunuz ve Rust saklamak istediğiniz değerin türünü kendiliğinden çıkarır; bu nedenle açık tür bildirimine nadiren ihtiyaç duyarsınız. Rust bu amaçla, verdiğiniz değerleri tutan yeni bir vektör oluşturan kullanışlı `vec!` makrosunu sunar. Liste 8-2; `1`, `2` ve `3` değerlerini tutan yeni bir `Vec<i32>` oluşturur. Bölüm 3'teki ["Veri Türleri"][data-types]<!-- ignore --> kısmında ele aldığımız üzere varsayılan tam sayı türü `i32` olduğundan burada tam sayı türü `i32` olarak belirlenir.
 
 <Listing number="8-2" caption="Değerler içeren yeni bir vektör oluşturmak">
 
@@ -27,11 +34,15 @@ Daha sıklıkla, başlangıç değerleriyle bir `Vec<T>` oluşturursunuz ve Rust
 
 </Listing>
 
-Başlangıçta `i32` değerleri verdiğimiz için Rust, `v`'nin türünün `Vec<i32>` olduğu sonucuna varabilir ve tür ek açıklamasına gerek kalmaz. Sırada, bir vektörün nasıl değiştirileceğine bakacağız.
+Başlangıçta `i32` değerleri verdiğimiz için Rust, `v`'nin türünün `Vec<i32>` olduğunu çıkarabilir ve tür bildirimine gerek kalmaz. Şimdi bir vektörün nasıl değiştirileceğine bakalım.
 
-### Bir Vektörü Güncellemek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="updating-a-vector"></a>
+<a id="bir-vektörü-güncellemek"></a>
 
-Bir vektör oluşturup ardından ona elemanlar eklemek için, Liste 8-3'te gösterildiği gibi `push` (it) metodunu kullanabiliriz.
+### Bir Vektörü Güncelleme
+
+Bir vektör oluşturup ardından ona elemanlar eklemek için Liste 8-3'te gösterildiği gibi `push` metodunu kullanabiliriz.
 
 <Listing number="8-3" caption="Bir vektöre değer eklemek için `push` metodunu kullanmak">
 
@@ -41,15 +52,19 @@ Bir vektör oluşturup ardından ona elemanlar eklemek için, Liste 8-3'te göst
 
 </Listing>
 
-Bölüm 3'te tartışıldığı gibi, herhangi bir değişkenle ilgili olduğu üzere, eğer değerini değiştirebilmek istiyorsak, onu `mut` anahtar kelimesini kullanarak değiştirilebilir yapmamız gerekir. İçine yerleştirdiğimiz sayıların hepsi `i32` türündedir ve Rust bunu veriden anlar, bu yüzden `Vec<i32>` ek açıklamasına ihtiyacımız yoktur.
+Bölüm 3'te ele aldığımız üzere, her değişkende olduğu gibi değerini değiştirebilmek istiyorsak onu `mut` anahtar kelimesiyle değiştirilebilir yapmamız gerekir. İçine yerleştirdiğimiz sayıların tamamı `i32` türündedir ve Rust bunu veriden çıkarabildiği için `Vec<i32>` tür bildirimine ihtiyacımız yoktur.
 
-### Vektörlerin Elemanlarını Okumak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="reading-elements-of-vectors"></a>
+<a id="vektörlerin-elemanlarını-okumak"></a>
 
-Bir vektörde depolanan bir değere referans vermenin iki yolu vardır: indeksleme yoluyla veya `get` (al) metodunu kullanarak. Aşağıdaki örneklerde, ekstra netlik için bu fonksiyonlardan döndürülen değerlerin türlerini ek açıklama ile belirttik.
+### Vektörlerin Elemanlarını Okuma
 
-Liste 8-4, indeksleme sözdizimi ve `get` metodu ile bir vektördeki bir değere erişmenin her iki yolunu da gösterir.
+Bir vektörde saklanan bir değere referans vermenin iki yolu vardır: indeksleme yoluyla veya `get` metodunu kullanarak. Aşağıdaki örneklerde, daha net anlaşılması adına bu işlemlerden döndürülen değerlerin türlerini açıkça belirttik.
 
-<Listing number="8-4" caption="Bir vektördeki bir öğeye erişmek için indeksleme sözdizimini ve `get` metodunu kullanmak">
+Liste 8-4, indeksleme sözdizimi ve `get` metodu ile bir vektördeki değere erişmenin her iki yolunu da gösterir.
+
+<Listing number="8-4" caption="Bir vektördeki öğeye erişmek için indeksleme sözdizimini ve `get` metodunu kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-04/src/main.rs:here}}
@@ -57,9 +72,9 @@ Liste 8-4, indeksleme sözdizimi ve `get` metodu ile bir vektördeki bir değere
 
 </Listing>
 
-Burada birkaç detaya dikkat edin. Üçüncü elemanı almak için `2` indeks değerini kullanırız çünkü vektörler sıfırdan başlayarak sayılarla indekslenir. `&` ve `[]` kullanmak, indeks değerindeki elemanın referansını verir. `get` metodunu indeks bir argüman olarak geçirilmiş şekilde kullandığımızda, `match` ile kullanabileceğimiz bir `Option<&T>` elde ederiz.
+Buradaki birkaç ayrıntıya dikkat edin. Vektörler sıfırdan başlayarak sayılarla indekslendiği için üçüncü elemanı almak üzere `2` indeks değerini kullanırız. `&` ve `[]` kullanmak bize ilgili indeksteki elemana bir referans (`&i32`) verir. İndeksi argüman olarak geçirerek `get` metodunu kullandığımızda ise `match` ile işleyebileceğimiz bir `Option<&T>` elde ederiz.
 
-Rust, mevcut elemanların aralığının dışındaki bir indeks değerini kullanmaya çalıştığınızda programın nasıl davranacağını seçebilmeniz için bir elemana referans vermenin bu iki yolunu sunar. Bir örnek olarak, beş elemanlı bir vektörümüz olduğunda ve ardından Liste 8-5'te gösterildiği gibi her iki teknikle 100. indeksteki bir elemana erişmeye çalıştığımızda ne olduğuna bakalım.
+Rust, mevcut eleman aralığının dışındaki bir indeks değerini kullanmaya çalıştığınızda programın nasıl davranacağını seçebilmeniz için elemana erişmenin bu iki yolunu sunar. Örnek olarak, beş elemanlı bir vektörümüz olduğunda ve Liste 8-5'te gösterildiği gibi her iki yöntemle 100. indeksteki elemana erişmeye çalıştığımızda ne olacağına bakalım.
 
 <Listing number="8-5" caption="Beş eleman içeren bir vektörde 100. indeksteki elemana erişmeye çalışmak">
 
@@ -69,13 +84,15 @@ Rust, mevcut elemanların aralığının dışındaki bir indeks değerini kulla
 
 </Listing>
 
-Bu kodu çalıştırdığımızda, ilk `[]` metodu programın panik yapmasına neden olacaktır çünkü var olmayan bir elemana referans verir. Bu yöntem, vektörün sonunu geçecek şekilde bir elemana erişilme girişimi olduğunda programınızın çökmesini istiyorsanız en iyi seçenektir.
+Bu kodu çalıştırdığımızda, ilk satırdaki `[]` yöntemi var olmayan bir elemana referans verdiği için programın panik yapmasına (`panic!`) neden olur. Bu yöntem, vektörün sonunu aşan bir elemana erişilmeye çalışıldığında programınızın anında durmasını istiyorsanız en uygun seçenektir.
 
-`get` metoduna vektörün dışında bir indeks geçirildiğinde, panik yapmadan `None` döndürür. Normal şartlar altında vektör aralığının ötesindeki bir elemana erişim zaman zaman meydana gelebiliyorsa bu yöntemi kullanırsınız. Daha sonra kodunuz, Bölüm 6'da tartışıldığı gibi, `Some(&eleman)` veya `None` olma durumunu yönetecek bir mantığa sahip olacaktır. Örneğin, indeks, bir kullanıcının girdiği bir sayıdan geliyor olabilir. Yanlışlıkla çok büyük bir sayı girerlerse ve program bir `None` değeri alırsa, kullanıcıya mevcut vektörde kaç tane öğe olduğunu söyleyebilir ve geçerli bir değer girmeleri için bir şans daha verebilirsiniz. Bu, bir yazım hatası nedeniyle programın çökmesinden daha kullanıcı dostu olacaktır!
+`get` metoduna vektör sınırlarının dışında bir indeks geçirildiğinde ise metot panik yapmadan `None` döndürür. Normal çalışma koşullarında vektör aralığının dışındaki bir elemana erişme ihtimali varsa bu yöntemi tercih edersiniz. Bu durumda kodunuz, Bölüm 6'da ele aldığımız gibi `Some(&eleman)` veya `None` olasılıklarının her ikisini de yönetecek mantığa sahip olur. Örneğin indeks değeri kullanıcının klavyeden girdiği bir sayıdan geliyor olabilir. Kullanıcı yanlışlıkla çok büyük bir sayı girerse ve program `None` değeri alırsa, kullanıcıya mevcut vektörde kaç öğe bulunduğunu bildirip geçerli bir değer girmesi için yeni bir şans tanıyabilirsiniz. Bu yaklaşım, basit bir yazım hatası yüzünden programı çökertmekten çok daha kullanıcı dostudur!
 
-Programın geçerli bir referansı olduğunda, ödünç alma denetleyicisi bu referansın ve vektörün içeriğine yönelik diğer referansların geçerli kalmasını sağlamak için (Bölüm 4'te kapsanan) sahiplik ve ödünç alma kurallarını zorunlu tutar. Aynı kapsamda değiştirilebilir ve değiştirilemez referanslara sahip olamayacağınızı belirten kuralı hatırlayın. Bu kural, bir vektördeki ilk elemana değiştirilemez bir referans tuttuğumuz ve sonuna bir eleman eklemeye çalıştığımız Liste 8-6'da uygulanır. Eğer daha sonra fonksiyonda o elemana tekrar atıfta bulunmaya çalışırsak bu program çalışmayacaktır.
+> Not: Liste 8-5 çalıştırıldığında `&v[100]` ifadesi çalışma zamanında sınır kontrolü (*bounds check*) yapar ve C gibi dillerde görülebilen bellek taşması / tanımsız davranışa izin vermek yerine `thread 'main' (...) panicked at src/main.rs:5:28: index out of bounds: the len is 5 but the index is 100` (*indeks sınırların dışında: uzunluk 5 ama indeks 100*) mesajıyla programı güvenli biçimde sonlandırır. Pratik bir seçim ölçütü olarak: indeksin geçerli olması algoritmanızın temel bir ön koşuluysa ve sınır aşımı kodunuzda bir mantık hatası anlamına geliyorsa hatayı anında yakalamak için `&v[i]` sözdizimini; indeks kullanıcı girdisi, dış veri veya dinamik bir hesaplamadan geliyorsa ve sınır dışında kalması olağan bir durumsa çökme olmadan `Option<&T>` üzerinden ele almak için `v.get(i)` metodunu tercih edin.
 
-<Listing number="8-6" caption="Bir öğeye referans tutarken bir vektöre eleman eklemeye çalışmak">
+Program geçerli bir referans elde ettiğinde, *ödünç alma denetleyicisi (borrow checker)* bu referansın ve vektör içeriğine yönelik diğer tüm referansların geçerli kalmasını güvence altına almak için (Bölüm 4'te incelenen) sahiplik ve ödünç alma kurallarını uygular. Aynı kapsamda hem değiştirilebilir hem de değiştirilemez referanslara sahip olamayacağınızı söyleyen kuralı hatırlayın. Bu kural, bir vektördeki ilk elemana değiştirilemez bir referans (`ilk`) tutarken vektörün sonuna yeni bir eleman eklemeye çalıştığımız Liste 8-6'da devreye girer. Fonksiyonun devamında bu referansı tekrar kullanmaya çalıştığımız için program derlenmeyecektir.
+
+<Listing number="8-6" caption="Bir öğeye referans tutarken vektöre eleman eklemeye çalışmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-06/src/main.rs:here}}
@@ -83,22 +100,25 @@ Programın geçerli bir referansı olduğunda, ödünç alma denetleyicisi bu re
 
 </Listing>
 
-Bu kodun derlenmesi şu hatayla sonuçlanacaktır:
+Bu kodu derlemek aşağıdaki hatayla sonuçlanır:
 
 ```console
 {{#include ../listings/ch08-common-collections/listing-08-06/output.txt}}
 ```
 
-Liste 8-6'daki kod çalışması gerekiyormuş gibi görünebilir: İlk elemana olan bir referans, vektörün sonundaki değişiklikleri neden umursasın ki? Bu hata vektörlerin çalışma şeklinden kaynaklanmaktadır: Vektörler değerleri bellekte yan yana yerleştirdiğinden, vektörün sonuna yeni bir eleman eklemek, eğer tüm elemanları vektörün şu anda depolandığı yerde yan yana koyacak kadar alan yoksa, yeni bir bellek ayırmayı ve eski elemanları yeni alana kopyalamayı gerektirebilir. Bu durumda, ilk elemana olan referans, ayrılmamış belleğe işaret ediyor olacaktır. Ödünç alma kuralları programların o duruma düşmesini engeller.
+Liste 8-6'daki kod ilk bakışta çalışması gerekiyormuş gibi görünebilir: İlk elemana tutulan bir referans, vektörün sonuna yapılan eklemeyi neden umursasın ki? Bu hatanın nedeni vektörlerin bellekte çalışma biçimidir: Vektörler tüm değerleri *öbekte (heap)* yan yana sakladığından, vektörün sonuna yeni bir eleman eklemek — eğer vektörün şu anda tutulduğu bellek bölgesinde tüm elemanları yan yana sığdıracak yeterli boş kapasite kalmadıysa — öbekte daha büyük yeni bir bellek alanı tahsis etmeyi, eski elemanları bu yeni alana kopyalamayı ve eski bellek alanını serbest bırakmayı gerektirebilir. Böyle bir yeniden tahsis (*reallocation*) gerçekleştiğinde, ilk elemana tutulan `ilk` referansı artık serbest bırakılmış geçersiz bir bellek adresine (*sarkan referans*) işaret ediyor olurdu. Ödünç alma kuralları, programların bu tehlikeli duruma düşmesini derleme zamanında engeller.
 
-> Not: `Vec<T>` türünün uygulama ayrıntıları hakkında daha fazlası için ["The
-> Rustonomicon"][nomicon] kitabına bakın.
+> Not: Bir `Vec<T>` değişkeni yığında (*stack*) işaretçi, uzunluk (`len`) ve kapasite (`capacity`) bilgisini tutarken asıl elemanlarını öbekte (*heap*) saklar. Vektöre kaç eleman ekleneceğini önceden biliyor veya yaklaşık olarak tahmin edebiliyorsanız, `Vec::new()` yerine `Vec::with_capacity(n)` kullanarak başlangıçta en az `n` elemanlık öbek alanını tek seferde ayırabilirsiniz. Böylece `push` çağrıları sırasında kapasite doldukça tekrarlayan öbek yeniden tahsislerini ve eleman kopyalama maliyetini önlemiş olursunuz (mevcut ayrılmış kapasiteyi `v.capacity()` ile sorgulayabilirsiniz). `Vec<T>` türünün alt seviye uygulama ayrıntıları hakkında daha fazla bilgi için ["The Rustonomicon"][nomicon] kitabına göz atabilirsiniz.
 
-### Bir Vektördeki Değerlerin Üzerinde Yineleme (Iterating) Yapmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="iterating-over-the-values-in-a-vector"></a>
+<a id="bir-vektördeki-değerlerin-üzerinde-yineleme-iterating-yapmak"></a>
 
-Bir vektördeki her bir elemana sırayla erişmek için, her defasında birine erişmek adına indeksleri kullanmak yerine, tüm elemanlar boyunca yineleme yapabiliriz. Liste 8-7, `i32` değerlerinden oluşan bir vektördeki her bir elemanın değiştirilemez referanslarını almak ve onları yazdırmak için bir `for` döngüsünün nasıl kullanılacağını gösterir.
+### Bir Vektördeki Değerler Üzerinde Yineleme Yapma
 
-<Listing number="8-7" caption="Bir `for` döngüsü kullanarak elemanların üzerinde yineleme yaparak bir vektördeki her elemanı yazdırmak">
+Bir vektördeki her bir elemana sırayla erişmek istediğimizde, indeks kullanarak tek tek erişmek yerine tüm elemanlar üzerinde yineleme (*iteration*) yaparız. Liste 8-7, `i32` değerlerinden oluşan bir vektörün her bir elemanına değiştirilemez referanslar almak ve bunları yazdırmak için `for` döngüsünün nasıl kullanılacağını gösterir.
+
+<Listing number="8-7" caption="Bir `for` döngüsüyle elemanlar üzerinde yineleme yaparak vektördeki her elemanı yazdırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-07/src/main.rs:here}}
@@ -106,7 +126,7 @@ Bir vektördeki her bir elemana sırayla erişmek için, her defasında birine e
 
 </Listing>
 
-Tüm elemanlarda değişiklik yapmak için değiştirilebilir bir vektördeki her elemanın değiştirilebilir referansları üzerinde de yineleme yapabiliriz. Liste 8-8'deki `for` döngüsü her bir elemana `50` ekleyecektir.
+Tüm elemanlarda değişiklik yapmak amacıyla değiştirilebilir bir vektördeki her elemanın değiştirilebilir referansı üzerinde de yineleme yapabiliriz. Liste 8-8'deki `for` döngüsü her bir elemana `50` ekleyecektir.
 
 <Listing number="8-8" caption="Bir vektördeki elemanların değiştirilebilir referansları üzerinde yineleme yapmak">
 
@@ -116,17 +136,21 @@ Tüm elemanlarda değişiklik yapmak için değiştirilebilir bir vektördeki he
 
 </Listing>
 
-Değiştirilebilir referansın işaret ettiği değeri değiştirmek için, `+=` operatörünü kullanmadan önce `i`'deki değere ulaşmak amacıyla `*` referansı kaldırma operatörünü kullanmalıyız. Referansı kaldırma operatörü hakkında daha fazla bilgiyi Bölüm 15'teki ["Referansı Kaldırma Operatörü ile İşaretçiden Değere Ulaşmak"][deref]<!-- ignore --> bölümünde konuşacağız.
+Değiştirilebilir referansın işaret ettiği değeri değiştirmek için, `+=` operatörünü kullanmadan önce `i` içindeki değere ulaşmak amacıyla `*` *başvuru çözme operatörünü (dereference operator)* kullanmamız gerekir (`i` değişkeninin türü `&mut i32` olduğundan, `*i` ifadesi referansı takip ederek asıl `i32` değerine erişir). Başvuru çözme operatörü hakkında daha ayrıntılı bilgiyi Bölüm 15'teki ["Referansın Göstediği Değere Gitmek"][deref]<!-- ignore --> bölümünde ele alacağız.
 
-Bir vektör üzerinde, ister değiştirilemez ister değiştirilebilir şekilde, yineleme yapmak ödünç alma denetleyicisinin kuralları sayesinde güvenlidir. Eğer Liste 8-7 ve Liste 8-8'deki `for` döngüsü gövdelerinde öğe eklemeye veya çıkarmaya kalkışsaydık, Liste 8-6'daki kodla aldığımıza benzer bir derleyici hatası alırdık. `for` döngüsünün tuttuğu vektöre olan referans, tüm vektörün eşzamanlı olarak değiştirilmesini engeller.
+Bir vektör üzerinde ister değiştirilemez ister değiştirilebilir şekilde yineleme yapmak, ödünç alma denetleyicisinin kuralları sayesinde tamamen güvenlidir. Liste 8-7 ve Liste 8-8'deki `for` döngüsü gövdelerinin içinde vektöre öğe eklemeye veya vektörden öğe çıkarmaya çalışsaydık, Liste 8-6'daki kodda aldığımıza benzer bir derleyici hatası alırdık. `for` döngüsünün vektöre tuttuğu referans, döngü devam ederken vektörün bütününün eşzamanlı olarak değiştirilmesini engeller.
 
-### Birden Fazla Türü Depolamak için Enum Kullanmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="using-an-enum-to-store-multiple-types"></a>
+<a id="birden-fazla-türü-depolamak-için-enum-kullanmak"></a>
 
-Vektörler sadece aynı türdeki değerleri depolayabilir. Bu rahatsız edici olabilir; farklı türlerdeki öğelerin bir listesini depolamaya kesinlikle ihtiyaç duyduğumuz kullanım durumları vardır. Neyse ki, bir enum'ın varyantları aynı enum türü altında tanımlanır, dolayısıyla farklı türlerdeki elemanları temsil etmek için tek bir türe ihtiyaç duyduğumuzda, bir enum tanımlayabilir ve kullanabiliriz!
+### Birden Fazla Türü Saklamak İçin Enum Kullanma
 
-Örneğin, bir elektronik tabloda, bir satırdaki bazı sütunların tam sayılar, bazılarının ondalıklı sayılar ve bazılarının da stringler içerdiği bir değer dizisini almak istediğimizi varsayalım. Varyantları farklı değer türlerini tutacak bir enum tanımlayabiliriz ve tüm enum varyantları aynı tür (enum'ın türü) kabul edilir. Ardından, o enum'ı tutacak ve böylece nihayetinde farklı türleri barındıracak bir vektör oluşturabiliriz. Bunu Liste 8-9'da gösterdik.
+Vektörler yalnızca aynı türdeki değerleri saklayabilir. Bu kısıtlama kimi zaman zahmetli görünebilir; farklı türlerdeki öğelerden oluşan bir listeyi saklamaya ihtiyaç duyduğumuz kullanım senaryoları kesinlikle vardır. Neyse ki bir enum'ın tüm varyantları aynı enum türü altında tanımlanır; dolayısıyla farklı türlerdeki elemanları temsil edecek tek bir türe ihtiyaç duyduğumuzda bir enum tanımlayıp kullanabiliriz!
 
-<Listing number="8-9" caption="Farklı türlerdeki değerleri bir vektörde saklamak için bir enum tanımlamak">
+Örneğin bir elektronik tablodaki bir satırdan değerler almak istediğimizi ve bu satırdaki bazı sütunların tam sayılar, bazılarının kayan noktalı sayılar, bazılarının ise metinler (`String`) içerdiğini varsayalım. Varyantları bu farklı değer türlerini barındıracak bir enum tanımlayabiliriz; böylece tüm varyantlar aynı tür — yani tanımladığımız enum türü — olarak kabul edilir. Ardından bu enum türünü tutacak bir vektör oluşturarak dolaylı yoldan farklı türlerdeki verileri bir arada saklayabiliriz. Bunu Liste 8-9'da gösterdik.
+
+<Listing number="8-9" caption="Farklı türlerdeki değerleri tek bir vektörde saklamak için enum tanımlamak">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-09/src/main.rs:here}}
@@ -134,17 +158,21 @@ Vektörler sadece aynı türdeki değerleri depolayabilir. Bu rahatsız edici ol
 
 </Listing>
 
-Rust, her bir elemanı yığında depolamak için tam olarak ne kadar belleğe ihtiyaç duyulacağını bilmesi amacıyla, derleme zamanında vektörde hangi türlerin olacağını bilmek zorundadır. Ayrıca bu vektörde hangi türlere izin verildiği konusunda da açık olmalıyız. Eğer Rust bir vektörün herhangi bir türü barındırmasına izin verseydi, bir veya daha fazla türün vektörün elemanları üzerinde gerçekleştirilen operasyonlarda hatalara neden olma ihtimali olurdu. Bir enum ve `match` (eşleştirme) ifadesi kullanmak, Bölüm 6'da tartışıldığı gibi, Rust'ın her olası durumun ele alındığından derleme zamanında emin olması anlamına gelir.
+Rust'ın, her bir elemanı *öbekte* saklamak için tam olarak ne kadar belleğe ihtiyaç duyulacağını bilmesi adına vektörde hangi türlerin yer alacağını derleme zamanında bilmesi gerekir. Ayrıca bu vektörde hangi türlere izin verildiğini açıkça belirtmemiz gerekir. Eğer Rust bir vektörün rastgele herhangi bir türü barındırmasına izin verseydi, elemanlar üzerinde gerçekleştirilen işlemlerde bu türlerden bir veya birkaçının hataya yol açma riski doğardı. Bir enum ile birlikte `match` ifadesi kullanmak, Bölüm 6'da ele aldığımız gibi Rust'ın olası her durumun işlendiğini derleme zamanında garanti altına almasını sağlar.
 
-Eğer bir programın çalışma zamanında bir vektörde depolamak üzere alacağı türlerin kapsamlı kümesini bilmiyorsanız, enum tekniği işe yaramayacaktır. Bunun yerine, Bölüm 18'de ele alacağımız bir trait nesnesi kullanabilirsiniz.
+Programınızın çalışma zamanında vektörde saklamak üzere karşılaşacağı tüm türlerin kümesini önceden bilmiyorsanız enum tekniği işinize yaramayacaktır. Bunun yerine, Bölüm 18'de inceleyeceğimiz bir *trait nesnesi (trait object)* kullanabilirsiniz.
 
-Vektörleri kullanmanın en yaygın yollarından bazılarını tartıştığımıza göre, standart kütüphane tarafından `Vec<T>` üzerinde tanımlanmış birçok kullanışlı metodun tamamı için [API belgelerini][vec-api]<!-- ignore --> mutlaka inceleyin. Örneğin, `push` (it) metoduna ek olarak, bir `pop` (çıkar) metodu son elemanı kaldırır ve döndürür.
+Vektörleri kullanmanın en yaygın yollarından bazılarını ele aldığımıza göre, standart kütüphanenin `Vec<T>` üzerinde tanımladığı diğer pek çok kullanışlı metodu görmek için [API belgelendirmesini][vec-api]<!-- ignore --> mutlaka inceleyin. Örneğin `push` metoduna ek olarak `pop` metodu, vektörün son elemanını çıkarıp (`Option<T>` olarak) döndürür.
 
-### Bir Vektörü Düşürmek (Dropping) Elemanlarını Da Düşürür
+<!-- Old headings. Do not remove or links may break. -->
+<a id="dropping-a-vector-drops-its-elements"></a>
+<a id="bir-vektörü-düşürmek-dropping-elemanlarını-da-düşürür"></a>
 
-Diğer herhangi bir `struct` gibi, bir vektör de Liste 8-10'da belirtildiği gibi kapsam dışına çıktığında serbest bırakılır.
+### Bir Vektörü Düşürmek Elemanlarını da Düşürür
 
-<Listing number="8-10" caption="Vektörün ve elemanlarının nerede düşürüldüğünü (dropped) göstermek">
+Diğer herhangi bir `struct` gibi bir vektör de Liste 8-10'da gösterildiği üzere kapsam dışına çıktığında bellekten serbest bırakılır.
+
+<Listing number="8-10" caption="Vektörün ve elemanlarının nerede düşürüldüğünü göstermek">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-10/src/main.rs:here}}
@@ -152,9 +180,9 @@ Diğer herhangi bir `struct` gibi, bir vektör de Liste 8-10'da belirtildiği gi
 
 </Listing>
 
-Vektör düşürüldüğünde, tüm içeriği de düşürülür, yani barındırdığı tamsayılar temizlenecektir. Ödünç alma denetleyicisi, bir vektörün içeriğine yapılan herhangi bir referansın yalnızca vektörün kendisi geçerliyken kullanılmasını sağlar.
+Vektör düşürüldüğünde tüm içeriği de düşürülür; yani barındırdığı tam sayılar (veya `String` gibi kendisi de öbek belleğine sahip karmaşık öğeler varsa bunların öbek verileri) bellekten temizlenir. Ödünç alma denetleyicisi, bir vektörün içeriğine yapılan herhangi bir referansın yalnızca vektörün kendisi geçerliyken kullanılmasını güvence altına alır.
 
-Bir sonraki koleksiyon türüne geçelim: `String`!
+Şimdi bir sonraki koleksiyon türüne geçelim: `String`!
 
 [data-types]: ch03-02-veri-turleri.html#veri-türleri
 [nomicon]: ../nomicon/vec/vec.html

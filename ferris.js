@@ -8,15 +8,15 @@
 const FERRIS_TYPES = [
   {
     attr: "does_not_compile",
-    title: "This code does not compile!",
+    title: "Bu kod derlenmez!",
   },
   {
     attr: "panics",
-    title: "This code panics!",
+    title: "Bu kod panik oluşturur!",
   },
   {
     attr: "not_desired_behavior",
-    title: "This code does not produce the desired behavior.",
+    title: "Bu kod istenen davranışı üretmez.",
   },
 ];
 
@@ -87,7 +87,7 @@ function prepareFerrisContainer(element, useButtons) {
  */
 function createFerris(type, size) {
   let a = document.createElement("a");
-  a.setAttribute("href", "ch00-00-introduction.html#ferris");
+  a.setAttribute("href", "ch00-00-giris.html#ferris");
   a.setAttribute("target", "_blank");
 
   let img = document.createElement("img");

@@ -1,36 +1,37 @@
-use guessing_game::Guess;
-use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
+use tahmin_oyunu::Tahmin;
 
-mod guessing_game;
+use rand::prelude::*;
+
+mod tahmin_oyunu;
 
 fn main() {
-    println!("Guess the number!");
+    println!("Sayıyı tahmin et!");
 
-    let secret_number = rand::thread_rng().gen_range(1..=100);
+    let gizli_sayi = rand::rng().random_range(1..=100);
 
     loop {
-        println!("Please input your guess.");
+        println!("Lütfen tahmininizi girin.");
 
-        let mut guess = String::new();
+        let mut tahmin = String::new();
 
         io::stdin()
-            .read_line(&mut guess)
-            .expect("Failed to read line");
+            .read_line(&mut tahmin)
+            .expect("Satır okunamadı");
 
-        let guess: i32 = match guess.trim().parse() {
-            Ok(num) => num,
+        let tahmin: i32 = match tahmin.trim().parse() {
+            Ok(sayi) => sayi,
             Err(_) => continue,
         };
 
-        let guess = Guess::new(guess);
+        let tahmin = Tahmin::new(tahmin);
 
-        match guess.value().cmp(&secret_number) {
-            Ordering::Less => println!("Too small!"),
-            Ordering::Greater => println!("Too big!"),
+        match tahmin.deger().cmp(&gizli_sayi) {
+            Ordering::Less => println!("Çok küçük!"),
+            Ordering::Greater => println!("Çok büyük!"),
             Ordering::Equal => {
-                println!("You win!");
+                println!("Kazandınız!");
                 break;
             }
         }

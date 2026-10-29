@@ -1,7 +1,7 @@
 fn main() {
     let mut ileri_sayim = 0;
     'yukari_sayma: loop {
-        println!("İleri ayım = {ileri_sayim}");
+        println!("İleri sayım = {ileri_sayim}");
         let mut geri_sayim = 10;
 
         loop {

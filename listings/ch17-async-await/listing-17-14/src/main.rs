@@ -4,13 +4,13 @@ use std::{thread, time::Duration};
 
 fn main() {
     trpl::block_on(async {
-        // We will call `slow` here later
+        // Daha sonra burada `slow` fonksiyonunu çağıracağız
     });
 }
 
 // ANCHOR: slow
-fn slow(name: &str, ms: u64) {
+fn slow(isim: &str, ms: u64) {
     thread::sleep(Duration::from_millis(ms));
-    println!("'{name}' {ms}ms çalıştı");
+    println!("'{isim}' {ms}ms çalıştı");
 }
 // ANCHOR_END: slow

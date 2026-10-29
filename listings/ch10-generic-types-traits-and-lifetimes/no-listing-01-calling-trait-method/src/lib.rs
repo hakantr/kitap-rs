@@ -1,29 +1,29 @@
-pub trait Summary {
-    fn summarize(&self) -> String;
+pub trait Ozet {
+    fn ozetle(&self) -> String;
 }
 
-pub struct NewsArticle {
-    pub headline: String,
-    pub location: String,
-    pub author: String,
-    pub content: String,
+pub struct HaberMakalesi {
+    pub manset: String,
+    pub konum: String,
+    pub yazar: String,
+    pub icerik: String,
 }
 
-impl Summary for NewsArticle {
-    fn summarize(&self) -> String {
-        format!("{}, by {} ({})", self.headline, self.author, self.location)
+impl Ozet for HaberMakalesi {
+    fn ozetle(&self) -> String {
+        format!("{}, {} ({})", self.manset, self.yazar, self.konum)
     }
 }
 
-pub struct SocialPost {
-    pub username: String,
-    pub content: String,
-    pub reply: bool,
-    pub repost: bool,
+pub struct SosyalGonderi {
+    pub kullanici_adi: String,
+    pub icerik: String,
+    pub yanit: bool,
+    pub yeniden_paylasim: bool,
 }
 
-impl Summary for SocialPost {
-    fn summarize(&self) -> String {
-        format!("{}: {}", self.username, self.content)
+impl Ozet for SosyalGonderi {
+    fn ozetle(&self) -> String {
+        format!("{}: {}", self.kullanici_adi, self.icerik)
     }
 }

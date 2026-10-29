@@ -12,7 +12,7 @@ failures:
 ---- tests::bu_test_basarisiz_olacak stdout ----
 8 değerini aldım
 
-thread 'tests::bu_test_basarisiz_olacak' panicked at src/lib.rs:19:9:
+thread 'tests::bu_test_basarisiz_olacak' (6019863) panicked at src/lib.rs:19:9:
 assertion `left == right` failed
   left: 10
  right: 5

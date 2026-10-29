@@ -16,9 +16,9 @@ fn main() {
         };
 
         match timeout(yavas, Duration::from_secs(2)).await {
-            Ok(message) => println!("'{message}' ile başarılı oldu"),
-            Err(duration) => {
-                println!("{} saniye sonra başarısız oldu", duration.as_secs())
+            Ok(mesaj) => println!("'{mesaj}' ile başarılı oldu"),
+            Err(sure) => {
+                println!("{} saniye sonra başarısız oldu", sure.as_secs())
             }
         }
     });
@@ -26,11 +26,11 @@ fn main() {
 
 // ANCHOR: implementation
 async fn timeout<F: Future>(
-    denecek_gelecek: F,
+    denenecek_future: F,
     azami_sure: Duration,
 ) -> Result<F::Output, Duration> {
-    match trpl::select(denecek_gelecek, trpl::sleep(azami_sure)).await {
-        Either::Left(output) => Ok(output),
+    match trpl::select(denenecek_future, trpl::sleep(azami_sure)).await {
+        Either::Left(cikti) => Ok(cikti),
         Either::Right(_) => Err(azami_sure),
     }
 }

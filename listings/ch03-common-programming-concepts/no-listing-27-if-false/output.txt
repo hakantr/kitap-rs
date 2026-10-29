@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling branches v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-27-if-false)
+   Compiling dallanmalar v0.1.0 (file:///projects/dallanmalar)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
-     Running `target/debug/branches`
+     Running `target/debug/dallanmalar`
 koşul yanlış

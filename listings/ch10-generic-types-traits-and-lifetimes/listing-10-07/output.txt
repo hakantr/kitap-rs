@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling bolum10 v0.1.0 ($PROJE/listings/ch10-generic-types-traits-and-lifetimes/listing-10-07)
+   Compiling bolum10 v0.1.0 (file:///projects/bolum10)
 error[E0308]: mismatched types
  --> src/main.rs:7:41
   |

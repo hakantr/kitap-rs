@@ -1,16 +1,25 @@
-## İlişkili Değerlerle Anahtarları Hash Maplerde Saklamak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="storing-keys-with-associated-values-in-hash-maps"></a>
+<a id="i̇lişkili-değerlerle-anahtarları-hash-maplerde-saklamak"></a>
+<a id="ilişkili-değerlerle-anahtarları-hash-maplerde-saklamak"></a>
 
-Yaygın koleksiyonlarımızın sonuncusu hash map'tir (karma harita). `HashMap<K, V>` türü, `K` türündeki anahtarları `V` türündeki değerlerle eşleştirmeyi depolamak için bir _karma fonksiyonu_ kullanır ve bu fonksiyon, bu anahtar ve değerleri belleğe nasıl yerleştireceğini belirler. Birçok programlama dili bu tür bir veri yapısını destekler, ancak genellikle _hash_, _map_ (harita), _object_ (nesne), _hash table_ (karma tablosu), _dictionary_ (sözlük) veya _associative array_ (ilişkisel dizi) gibi birkaç farklı isim kullanırlar.
+## Hash Map'lerde Anahtarları ve İlişkili Değerleri Saklama
 
-Hash mapler, verileri vektörlerde olduğu gibi bir indeks kullanarak değil de herhangi bir türde olabilen bir anahtar kullanarak aramak istediğinizde kullanışlıdır. Örneğin bir oyunda, her takımın skorunu bir hash mapte tutabilirsiniz; burada her anahtar bir takımın adıdır ve değerler her takımın skorudur. Bir takımın adı verildiğinde, skorunu alabilirsiniz.
+Yaygın koleksiyonlarımızın sonuncusu *hash map*'tir (karma eşlem). `HashMap<K, V>` türü, `K` türündeki anahtarların `V` türündeki değerlerle eşleşmesini bir _karma (özetleme) fonksiyonu_ (*hashing function*) kullanarak saklar; bu fonksiyon, söz konusu anahtarların ve değerlerin belleğe nasıl yerleştirileceğini belirler. Pek çok programlama dili bu tür bir veri yapısını destekler ancak çoğu zaman _hash_, _map_ (eşlem/harita), _object_ (nesne), _hash table_ (karma tablosu), _dictionary_ (sözlük) veya _associative array_ (ilişkisel dizi) gibi farklı adlar kullanır.
 
-Bu bölümde hash maplerin temel API'sini inceleyeceğiz, ancak standart kütüphane tarafından `HashMap<K, V>` üzerinde tanımlanan fonksiyonlarda daha birçok güzel şey saklıdır. Her zaman olduğu gibi, daha fazla bilgi için standart kütüphane belgelerini kontrol edin.
+Hash map'ler, verilere vektörlerde olduğu gibi sayısal bir indeks kullanarak değil de herhangi bir türde olabilen bir anahtar üzerinden ulaşmak istediğinizde oldukça kullanışlıdır. Örneğin bir oyunda her takımın skorunu, anahtarların takım adları ve değerlerin ise her takımın skoru olduğu bir hash map'te tutabilirsiniz. Bir takımın adı verildiğinde, o takımın skoruna doğrudan ulaşabilirsiniz.
 
-### Yeni Bir Hash Map Oluşturmak
+Bu bölümde hash map'lerin temel API'sini inceleyeceğiz; ancak standart kütüphanenin `HashMap<K, V>` üzerinde tanımladığı fonksiyonlar arasında çok daha fazla kullanışlı özellik gizlidir. Her zaman olduğu gibi, daha fazla bilgi için standart kütüphane belgelendirmesine göz atabilirsiniz.
 
-Boş bir hash map oluşturmanın bir yolu `new` kullanmak ve `insert` (ekle) ile eleman eklemektir. Liste 8-20'de isimleri _Mavi_ ve _Sarı_ olan iki takımın skorlarını takip ediyoruz. Mavi takım 10 puanla, Sarı takım ise 50 puanla başlar.
+<!-- Old headings. Do not remove or links may break. -->
+<a id="creating-a-new-hash-map"></a>
+<a id="yeni-bir-hash-map-oluşturmak"></a>
 
-<Listing number="8-20" caption="Yeni bir hash map oluşturmak ve bazı anahtarlar ve değerler eklemek">
+### Yeni Bir Hash Map Oluşturma
+
+Boş bir hash map oluşturmanın bir yolu `new` fonksiyonunu kullanmak ve ardından `insert` metoduyla eleman eklemektir. Liste 8-20'de adları _Mavi_ ve _Sarı_ olan iki takımın skorlarını takip ediyoruz. Mavi takım 10 puanla, Sarı takım ise 50 puanla oyuna başlar.
+
+<Listing number="8-20" caption="Yeni bir hash map oluşturma ve bazı anahtarlarla değerler ekleme">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-20/src/main.rs:here}}
@@ -18,15 +27,19 @@ Boş bir hash map oluşturmanın bir yolu `new` kullanmak ve `insert` (ekle) ile
 
 </Listing>
 
-Önce standart kütüphanenin koleksiyonlar kısmından `HashMap`'i `use` ile kullanıma dahil etmemiz gerektiğine dikkat edin. Üç yaygın koleksiyonumuzdan bu, en az sıklıkla kullanılanıdır, bu nedenle otomatik olarak kapsama dahil edilen özellikler arasında yer almaz. Hash mapler ayrıca standart kütüphaneden daha az destek alır; örneğin, bunları oluşturmak için yerleşik bir makro yoktur.
+Öncelikle standart kütüphanenin koleksiyonlar modülünden `HashMap` türünü `use` ile kapsama dâhil etmemiz gerektiğine dikkat edin. Üç yaygın koleksiyonumuz arasında en az sıklıkla kullanılanı bu olduğu için, ön tanımlı kapsamda (*prelude*) otomatik olarak kapsama dâhil edilen öğeler arasında yer almaz. Hash map'ler standart kütüphaneden daha az yerleşik destek alır; örneğin vektörlerdeki `vec!` gibi bunları oluşturmaya yarayan yerleşik bir makro yoktur.
 
-Tıpkı vektörler gibi, hash mapler de verilerini yığında depolar. Bu `HashMap`, `String` türünde anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi, hash mapler de homojendir: Tüm anahtarlar aynı türde olmalı ve tüm değerler aynı türde olmalıdır.
+Tıpkı vektörler gibi hash map'ler de asıl verilerini *öbekte (heap)* saklar (`HashMap` değişkeninin sabit boyutlu tablo işaretçisi ve kapasite bilgisi ise *yığında (stack)* tutulur). Bu örnekteki `HashMap`, `String` türünde anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi hash map'ler de türdeştir (homojendir): tüm anahtarlar kendi içinde aynı türde ve tüm değerler de kendi içinde aynı türde olmalıdır.
 
-### Bir Hash Mapteki Değerlere Erişmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="accessing-values-in-a-hash-map"></a>
+<a id="bir-hash-mapteki-değerlere-erişmek"></a>
 
-Liste 8-21'de gösterildiği gibi anahtarını `get` (al) metoduna sağlayarak hash map'ten bir değer alabiliriz.
+### Bir Hash Map'teki Değerlere Erişme
 
-<Listing number="8-21" caption="Hash mapte depolanan Mavi takımın skoruna erişmek">
+Liste 8-21'de gösterildiği gibi anahtarını `get` metoduna vererek hash map'ten bir değer alabiliriz.
+
+<Listing number="8-21" caption="Hash map'te saklanan Mavi takımın skoruna erişme">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-21/src/main.rs:here}}
@@ -34,15 +47,15 @@ Liste 8-21'de gösterildiği gibi anahtarını `get` (al) metoduna sağlayarak h
 
 </Listing>
 
-Burada `skor`, Mavi takımla ilişkili değere sahip olacak ve sonuç `10` olacaktır. `get` metodu bir `Option<&V>` döndürür; hash mapte o anahtar için bir değer yoksa `get`, `None` döndürecektir. Bu program `Option`'ı, `Option<&i32>` yerine `Option<i32>` almak için `copied` (kopyalanmış) çağrısı yaparak ve ardından eğer `skorlar` bu anahtar için bir girdiye sahip değilse `skor`'u sıfıra ayarlamak için `unwrap_or` çağrısı yaparak ele alır.
+Burada `skor` değişkeni Mavi takımla ilişkili değeri alacak ve sonuç `10` olacaktır. `get` metodu bir `Option<&V>` döndürür; hash map'te o anahtara karşılık gelen bir değer yoksa `get` metodu `None` döndürür. Bu program `Option` değerini işlemek için önce `Option<&i32>` yerine doğrudan `Option<i32>` elde etmek üzere `copied` metodunu, ardından `skorlar` içinde bu anahtara ait bir girdi bulunmuyorsa `skor` değişkenine `0` değerini atamak üzere `unwrap_or` metodunu çağırır.
 
-Bir `for` döngüsü kullanarak, vektörlerde yaptığımıza benzer bir şekilde bir hash map'teki her anahtar-değer çifti üzerinde yineleme yapabiliriz:
+Bir `for` döngüsü kullanarak, vektörlerde yaptığımıza benzer biçimde bir hash map'teki her anahtar-değer çifti üzerinde dönebiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-03-iterate-over-hashmap/src/main.rs:here}}
 ```
 
-Bu kod her bir çifti rastgele bir sırada yazdıracaktır:
+Bu kod her bir çifti rastgele (belirsiz) bir sırayla yazdıracaktır:
 
 ```text
 Sarı: 50
@@ -50,14 +63,15 @@ Mavi: 10
 ```
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="hash-maps-and-ownership"></a>
+<a id="managing-ownership-in-hash-maps"></a>
+<a id="hash-maplerde-sahipliği-yönetmek"></a>
 
-### Hash Maplerde Sahipliği Yönetmek
+### Hash Map'lerde Sahipliği Yönetme
 
-`i32` gibi `Copy` (kopyalama) trait'ini uygulayan türler için değerler hash map'e kopyalanır. `String` gibi sahiplenilmiş değerler için değerler taşınacak ve Liste 8-22'de gösterildiği gibi hash map bu değerlerin sahibi olacaktır.
+`i32` gibi `Copy` trait'ini uygulayan türler için değerler hash map'in içine kopyalanır. `String` gibi sahipli (*owned*) değerlerde ise değerler taşınır ve Liste 8-22'de gösterildiği gibi hash map bu değerlerin yeni sahibi olur.
 
-<Listing number="8-22" caption="Anahtarların ve değerlerin, eklendiklerinde (inserted) hash map'in mülkiyetine geçtiğini göstermek">
+<Listing number="8-22" caption="Anahtarların ve değerlerin eklendikten sonra hash map'in sahipliğine geçtiğini gösterme">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-22/src/main.rs:here}}
@@ -65,21 +79,29 @@ Mavi: 10
 
 </Listing>
 
-`alan_adi` ve `alan_degeri` değişkenlerini, `insert` çağrısıyla hash map'e taşındıktan sonra artık kullanamayız.
+`insert` çağrısıyla hash map'in içine taşındıktan sonra `alan_adi` ve `alan_degeri` değişkenlerini artık kullanamayız.
 
-Eğer hash map'e değerlere ait referansları eklersek, değerler hash map'e taşınmaz. Referansların işaret ettiği değerler, en az hash map geçerli olduğu sürece geçerli olmalıdır. Bu konular hakkında Bölüm 10'da ["Referansları Ömürlerle Doğrulamak (Validating References with Lifetimes)"][validating-references-with-lifetimes]<!-- ignore --> kısmında daha fazla konuşacağız.
+Hash map'e değerlerin kendisi yerine referanslarını eklersek değerler hash map'e taşınmaz. Ancak referansların işaret ettiği değerlerin, en az hash map geçerli olduğu sürece geçerli kalması gerekir. Bu konuyu Bölüm 10'daki ["Ömürlerle Referansları Doğrulama"][validating-references-with-lifetimes]<!-- ignore --> başlığında daha ayrıntılı ele alacağız.
 
-### Bir Hash Mapi Güncellemek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="updating-a-hash-map"></a>
+<a id="bir-hash-mapi-güncellemek"></a>
 
-Anahtar ve değer çiftlerinin sayısı artabilir olsa da her benzersiz anahtarın aynı anda yalnızca bir değerle ilişkisi olabilir (ancak tersi geçerli değildir: Örneğin hem Mavi takım hem de Sarı takım, `skorlar` hash map'inde `10` değerini depolayabilir).
+### Bir Hash Map'i Güncelleme
 
-Bir hash mapteki veriyi değiştirmek istediğinizde, bir anahtara halihazırda bir değer atanmışsa bu durumu nasıl ele alacağınıza karar vermelisiniz. Eski değeri tamamen göz ardı edip yerine yeni değeri koyabilirsiniz. Eski değeri koruyup yeni değeri yok sayabilir ve yalnızca anahtarın zaten bir değeri _yoksa_ yeni değeri ekleyebilirsiniz. Veya eski değer ile yeni değeri birleştirebilirsiniz. Her birini nasıl yapacağımıza bakalım!
+Anahtar ve değer çiftlerinin sayısı dinamik olarak artabilse de her benzersiz anahtar aynı anda yalnızca tek bir değerle ilişkilendirilebilir (ancak tersi geçerli değildir: örneğin `skorlar` hash map'inde hem Mavi takım hem de Sarı takım `10` değerine sahip olabilir).
 
-#### Bir Değerin Üzerine Yazmak (Overwriting)
+Bir hash map'teki veriyi değiştirmek istediğinizde, bir anahtara halihazırda bir değer atanmışsa bu durumu nasıl ele alacağınıza karar vermeniz gerekir. Eski değeri tamamen göz ardı ederek yerine yeni değeri yazabilirsiniz. Eski değeri koruyup yeni değeri yok sayabilir ve yeni değeri yalnızca anahtarın henüz bir değeri _yoksa_ ekleyebilirsiniz. Ya da eski değer ile yeni değeri birleştirebilirsiniz. Gelin bu işlemlerin her birini nasıl yapacağımıza bakalım!
 
-Eğer bir hash map'e bir anahtar ve bir değer ekler ve daha sonra aynı anahtarı farklı bir değerle eklerseniz, o anahtarla ilişkili değer değiştirilir. Liste 8-23'teki kod `insert` fonksiyonunu iki kez çağırsa bile, hash map yalnızca bir anahtar-değer çifti barındıracaktır çünkü her ikisinde de Mavi takımın anahtarı için değer ekliyoruz.
+<!-- Old headings. Do not remove or links may break. -->
+<a id="overwriting-a-value"></a>
+<a id="bir-değerin-üzerine-yazmak-overwriting"></a>
 
-<Listing number="8-23" caption="Belirli bir anahtarla depolanan bir değeri değiştirmek">
+#### Bir Değerin Üzerine Yazma
+
+Bir hash map'e bir anahtar ve değer ekledikten sonra aynı anahtarı farklı bir değerle tekrar eklerseniz, o anahtarla ilişkili değer yenisiyle değiştirilir. Liste 8-23'teki kod `insert` metodunu iki kez çağırsa da her iki seferde de Mavi takımın anahtarı için değer eklediğimizden hash map yalnızca tek bir anahtar-değer çifti barındıracaktır.
+
+<Listing number="8-23" caption="Belirli bir anahtarla saklanan bir değeri değiştirme">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-23/src/main.rs:here}}
@@ -87,19 +109,20 @@ Eğer bir hash map'e bir anahtar ve bir değer ekler ve daha sonra aynı anahtar
 
 </Listing>
 
-Bu kod `{"Mavi": 25}` yazdıracaktır. `10` olan orijinal değerin üzerine yazılmıştır.
+Bu kod ekrana `{"Mavi": 25}` yazdıracaktır; başlangıçtaki `10` değerinin üzerine yazılmıştır.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="only-inserting-a-value-if-the-key-has-no-value"></a>
+<a id="adding-a-key-and-value-only-if-a-key-isnt-present"></a>
+<a id="yalnızca-bir-anahtarın-değeri-yoksa-bir-anahtar-ve-değer-eklemek"></a>
 
-#### Yalnızca Bir Anahtarın Değeri Yoksa Bir Anahtar ve Değer Eklemek
+#### Yalnızca Anahtar Mevcut Değilse Anahtar ve Değer Ekleme
 
-Belirli bir anahtarın bir değer ile hash mapte halihazırda var olup olmadığını kontrol etmek ve ardından şu eylemleri gerçekleştirmek yaygındır: Eğer anahtar hash mapte varsa mevcut değer olduğu gibi kalmalıdır; eğer anahtar yoksa onu ve onun için bir değer ekleyin.
+Belirli bir anahtarın hash map'te bir değerle birlikte halihazırda var olup olmadığını kontrol edip şu adımları uygulamak oldukça yaygın bir ihtiyaçtır: anahtar hash map'te zaten varsa mevcut değer olduğu gibi kalsın; anahtar yoksa anahtar ve onun için verilen değer eklensin.
 
-Hash maplerin bunun için kontrol etmek istediğiniz anahtarı parametre olarak alan `entry` (giriş) adında özel bir API'si vardır. `entry` metodunun dönüş değeri, var olabilecek veya olmayabilecek bir değeri temsil eden `Entry` adlı bir enum'dır. Diyelim ki Sarı takımın anahtarının onunla ilişkili bir değeri olup olmadığını kontrol etmek istiyoruz. Eğer yoksa `50` değerini eklemek istiyoruz ve aynısını Mavi takım için de yapmak istiyoruz. `entry` API'si kullanılarak kod, Liste 8-24'teki gibi görünür.
+Hash map'ler bu işlem için, kontrol etmek istediğiniz anahtarı parametre olarak alan `entry` adında özel bir API sunar. `entry` metodunun dönüş değeri, var olabilecek ya da olmayabilecek bir girdiyi temsil eden `Entry` adlı bir enum'dır. Diyelim ki Sarı takımın anahtarıyla ilişkili bir değer olup olmadığını kontrol etmek istiyoruz; eğer yoksa `50` değerini eklemek istiyoruz ve aynı işlemi Mavi takım için de uygulamak istiyoruz. `entry` API'sini kullandığımızda kod Liste 8-24'teki gibi görünür.
 
-<Listing number="8-24" caption="Sadece anahtar halihazırda bir değere sahip değilse `entry` metodu kullanarak değer eklemek">
+<Listing number="8-24" caption="Yalnızca anahtarın henüz bir değeri yoksa ekleme yapmak için `entry` metodunu kullanma">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-24/src/main.rs:here}}
@@ -107,15 +130,21 @@ Hash maplerin bunun için kontrol etmek istediğiniz anahtarı parametre olarak 
 
 </Listing>
 
-`Entry` üzerindeki `or_insert` metodu, karşılık gelen `Entry` anahtarı varsa o değere değiştirilebilir bir referans (mutable reference) döndürmek üzere tanımlanmıştır ve eğer yoksa, parametreyi bu anahtar için yeni bir değer olarak ekler ve yeni değere değiştirilebilir bir referans döndürür. Bu teknik, mantığı kendi başımıza yazmaktan çok daha temizdir ve ek olarak ödünç alma denetleyicisi ile daha uyumlu çalışır.
+`Entry` üzerindeki `or_insert` metodu, ilgili `Entry` anahtarı mevcutsa o anahtarın değerine değiştirilebilir bir referans döndürecek; anahtar mevcut değilse verilen parametreyi bu anahtarın yeni değeri olarak ekleyip yeni değere değiştirilebilir bir referans döndürecek şekilde tanımlanmıştır. Bu teknik, aynı kontrol mantığını kendimiz yazmaktan çok daha temizdir ve ödünç alma denetleyicisiyle çok daha uyumlu çalışır.
 
-Liste 8-24'teki kodun çalıştırılması `{"Sarı": 50, "Mavi": 10}` yazdıracaktır. İlk `entry` çağrısı, Sarı takım için `50` değeri ile birlikte anahtarı ekleyecektir çünkü Sarı takımın halihazırda bir değeri yoktur. İkinci `entry` çağrısı hash map'i değiştirmeyecektir çünkü Mavi takım halihazırda `10` değerine sahiptir.
+Liste 8-24'teki kodu çalıştırdığımızda `{"Sarı": 50, "Mavi": 10}` çıktısını alırız. İlk `entry` çağrısı, Sarı takımın henüz bir değeri olmadığı için Sarı takım anahtarını `50` değeriyle birlikte ekler. İkinci `entry` çağrısı ise Mavi takımın zaten `10` değeri bulunduğu için hash map'te herhangi bir değişiklik yapmaz.
 
-#### Eski Değere Dayalı Olarak Bir Değeri Güncellemek
+> Not: `entry` API'si, `if !skorlar.contains_key("Sarı") { skorlar.insert(String::from("Sarı"), 50); }` şeklinde iki ayrı çağrı yazmaya kıyasla hem daha ergonomik hem de daha verimlidir. İki ayrı metot çağrısında anahtarın karma (hash) değeri iki kez hesaplanır ve tabloda iki kez arama yapılır; oysa `entry` metodu anahtarın tablodaki konumunu **yalnızca bir kez** bulur ve `Entry` enum'ı (`Occupied` veya `Vacant` varyantı) üzerinden ekleme ya da erişim işlemini doğrudan o konumda gerçekleştirir. Ayrıca tek bir değiştirilebilir ödünç alma üzerinden `&mut V` döndürdüğü için aynı kapsamda okuma ve yazma referanslarının çakışmasını önler. Eklenecek varsayılan değeri hesaplamak maliyetliyse, `or_insert` yerine kapanış alan `or_insert_with(|| ...)` (veya türün `Default` değerini kullanan `or_default()`) metodunu tercih ederek değerin yalnızca anahtar gerçekten yoksa üretilmesini sağlayabilirsiniz.
 
-Hash mapler için başka bir yaygın kullanım durumu, bir anahtarın değerini aramak ve sonra eski değere dayanarak onu güncellemektir. Örneğin Liste 8-25, bazı metinlerdeki her bir kelimenin kaç kez geçtiğini sayan bir kod gösterir. Anahtarlar olarak kelimeleri içeren bir hash map kullanıyoruz ve o kelimeyi kaç kez gördüğümüzü takip etmek için değeri artırıyoruz. Eğer bir kelimeyi ilk kez görüyorsak ilk olarak `0` değerini ekleyeceğiz.
+<!-- Old headings. Do not remove or links may break. -->
+<a id="updating-a-value-based-on-the-old-value"></a>
+<a id="eski-değere-dayalı-olarak-bir-değeri-güncellemek"></a>
 
-<Listing number="8-25" caption="Kelimeleri ve sayımları saklayan bir hash map kullanarak kelimelerin ortaya çıkma sıklığını saymak">
+#### Eski Değere Göre Bir Değeri Güncelleme
+
+Hash map'lerin bir diğer yaygın kullanım alanı, bir anahtarın değerini bulup onu eski değerine göre güncellemektir. Örneğin Liste 8-25, bir metin içinde her kelimenin kaç kez geçtiğini sayan bir kodu göstermektedir. Kelimeleri anahtar olarak tutan bir hash map kullanıyor ve o kelimeyle kaç kez karşılaştığımızı takip etmek için ilişkili değeri artırıyoruz. Bir kelimeyle ilk kez karşılaşıyorsak tabloya önce `0` değerini ekliyoruz.
+
+<Listing number="8-25" caption="Kelimeleri ve geçiş sayılarını tutan bir hash map ile kelime sıklıklarını sayma">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-25/src/main.rs:here}}
@@ -123,28 +152,42 @@ Hash mapler için başka bir yaygın kullanım durumu, bir anahtarın değerini 
 
 </Listing>
 
-Bu kod `{"dünya": 2, "merhaba": 1, "harika": 1}` yazdıracaktır. Aynı anahtar-değer çiftlerinin farklı bir sırada yazdırıldığını görebilirsiniz: ["Bir Hash Mapteki Değerlere Erişmek"][access]<!-- ignore --> bölümünden bir hash map üzerinde yineleme yapmanın rastgele bir düzende gerçekleştiğini hatırlayın.
+Bu kod ekrana `{"dünya": 2, "merhaba": 1, "harika": 1}` yazdıracaktır. Aynı anahtar-değer çiftlerinin farklı bir sırada yazdırıldığını da görebilirsiniz: ["Bir Hash Map'teki Değerlere Erişme"][access]<!-- ignore --> bölümünden, bir hash map üzerinde dönerken elemanların rastgele bir sırayla geldiğini hatırlayın.
 
-`split_whitespace` (boşluklardan_ayır) metodu, `metin` içindeki değerin boşluklarla ayrılmış alt dilimleri üzerinde bir yineleyici döndürür. `or_insert` metodu belirtilen anahtar için değere değiştirilebilir bir referans (`&mut V`) döndürür. Burada, bu değiştirilebilir referansı `sayac` değişkeninde depoluyoruz, bu nedenle bu değere atama yapmak için öncelikle yıldız imi (`*`) kullanarak `sayac`'ı referanstan kaldırmalıyız. Değiştirilebilir referans `for` döngüsünün sonunda kapsamın dışına çıkar, bu nedenle tüm bu değişiklikler güvenlidir ve ödünç alma kuralları tarafından izin verilir.
+`split_whitespace` metodu, `metin` içindeki değerin boşluk karakterleriyle ayrılmış alt dilimleri (`&str`) üzerinde dönen bir iteratör döndürür. `or_insert` metodu ise belirtilen anahtara karşılık gelen değere değiştirilebilir bir referans (`&mut V`) döndürür. Burada bu değiştirilebilir referansı `sayac` değişkeninde saklıyoruz; dolayısıyla doğrudan o değere atama yapabilmek için önce yıldız (`*`) başvuru çözme operatörünü kullanarak `sayac` referansını çözmemiz (`*sayac += 1;`) gerekir. Değiştirilebilir referans `for` döngüsünün her adımının sonunda kapsam dışına çıkar; bu nedenle yapılan tüm bu değişiklikler güvenlidir ve ödünç alma kurallarına uygundur.
 
-### Karma (Hashing) Fonksiyonları
+<!-- Old headings. Do not remove or links may break. -->
+<a id="hashing-functions"></a>
+<a id="karma-hashing-fonksiyonları"></a>
 
-Varsayılan olarak `HashMap`, karma tablolarını barındıran hizmet reddi (denial-of-service, DoS) saldırılarına karşı direnç sağlayabilen _SipHash_ adlı bir karma fonksiyonu kullanır[^siphash]<!-- ignore -->. Bu mevcut en hızlı karma algoritması değildir, ancak performanstaki düşüşle birlikte gelen daha iyi güvenlik için yapılan takasa değer. Eğer kodunuzun profilini çıkarır ve varsayılan karma fonksiyonunun amaçlarınız için çok yavaş olduğunu fark ederseniz, farklı bir karma oluşturucu belirterek başka bir fonksiyona geçiş yapabilirsiniz. Bir _hasher_ (karma oluşturucu), `BuildHasher` trait'ini uygulayan bir türdür. Trait'ler ve bunların nasıl uygulanacağı hakkında [Bölüm 10][traits]<!-- ignore -->'da konuşacağız. Kendi karma oluşturucunuzu baştan uygulamak zorunda değilsiniz; [crates.io](https://crates.io/)<!-- ignore -->, diğer Rust kullanıcıları tarafından paylaşılan, birçok yaygın karma algoritmasını uygulayan karma oluşturucular sağlayan kütüphanelere sahiptir.
+### Karma Fonksiyonları
+
+Varsayılan olarak `HashMap`, karma tablolarını hedef alan hizmet reddi (*denial-of-service*, DoS) saldırılarına karşı direnç sağlayabilen _SipHash_ adlı bir karma (özetleme) fonksiyonu kullanır[^siphash]<!-- ignore -->. Bu mevcut en hızlı özetleme algoritması değildir; ancak daha yüksek güvenlik karşılığında katlanılan bu küçük performans ödünü buna değerdir. Kodunuzun performans profilini çıkarır ve varsayılan özetleme fonksiyonunun amacınız için fazla yavaş kaldığını tespit ederseniz, farklı bir karma oluşturucu (*hasher*) belirterek başka bir fonksiyona geçiş yapabilirsiniz. _Karma oluşturucu_, `BuildHasher` trait'ini uygulayan bir türdür. Trait'lerden ve bunların nasıl uygulanacağından [Bölüm 10'da][traits]<!-- ignore --> bahsedeceğiz. Kendi karma oluşturucunuzu sıfırdan yazmanız da gerekmez; [crates.io](https://crates.io/)<!-- ignore --> üzerinde diğer Rust kullanıcılarının paylaştığı ve pek çok yaygın özetleme algoritmasını uygulayan hazır karma oluşturucu kütüphaneleri bulunmaktadır.
 
 [^siphash]: [https://en.wikipedia.org/wiki/SipHash](https://en.wikipedia.org/wiki/SipHash)
 
+<!-- Old headings. Do not remove or links may break. -->
+<a id="summary"></a>
+<a id="ozet"></a>
+
 ## Özet
 
-Vektörler, stringler ve hash mapler verileri depolamanız, bunlara erişmeniz ve bunları değiştirmeniz gerektiğinde programlarda gereken büyük miktarda işlevselliği sağlayacaktır. İşte artık çözmek için donanımlı olmanız gereken bazı egzersizler:
+Vektörler, string'ler ve hash map'ler; programlarınızda veri saklamanız, verilere erişmeniz ve onları değiştirmeniz gerektiğinde ihtiyaç duyacağınız işlevselliğin büyük bir bölümünü sağlar. Artık çözebilecek donanıma sahip olduğunuz birkaç alıştırma aşağıda verilmiştir:
 
-1. Bir tam sayı listesi verildiğinde bir vektör kullanın ve listenin medyanını (sıralandığında, orta konumdaki değer) ve modunu (en sık oluşan değer; burada bir hash map yardımcı olacaktır) döndürün.
-1. Stringleri Pig Latin'e (Domuz Latincesi) dönüştürün. Her kelimenin ilk sessiz harfi kelimenin sonuna taşınır ve _ay_ eklenir, böylece _ilk_ _ilkay-f_ (irst-fay) olur. Sesli harfle başlayan kelimelerin sonuna bunun yerine _hay_ eklenir (_elma_ (apple), _elma-hay_ (apple-hay) olur). UTF-8 kodlamasıyla ilgili detayları aklınızda bulundurun!
-1. Bir hash map ve vektörler kullanarak bir kullanıcının bir şirketteki bir departmana çalışan isimleri eklemesini sağlamak için bir metin arayüzü oluşturun; örneğin, "Sally'yi Mühendisliğe Ekle (Add Sally to Engineering)" veya "Amir'i Satışa Ekle (Add Amir to Sales)". Ardından kullanıcının bir departmandaki tüm kişilerin veya şirketteki tüm kişilerin departmana göre alfabetik olarak sıralanmış bir listesini almasına izin verin.
+1. Bir tam sayı listesi verildiğinde, bir vektör kullanarak listenin *medyanını* (ortancasını; liste sıralandığında tam ortadaki konumda bulunan değeri) ve *modunu* (tepe değerini; en sık tekrar eden değeri — burada bir hash map işinize yarayacaktır) döndürün.
+1. String'leri *Pig Latin* (Domuz Latincesi) biçimine dönüştürün. Ünsüz harfle başlayan her kelimenin ilk ünsüz harfi kelimenin sonuna taşınır ve sonuna _ay_ eklenir; böylece _first_ kelimesi _irst-fay_ (veya Türkçe bir örnekle _kitap_ kelimesi _itap-kay_) olur. Ünlü harfle başlayan kelimelerin sonuna ise bunun yerine doğrudan _hay_ eklenir (_apple_ kelimesi _apple-hay_ veya _elma_ kelimesi _elma-hay_ olur). UTF-8 kodlamasıyla ilgili ayrıntıları göz önünde bulundurmayı unutmayın!
+1. Bir hash map ve vektörler kullanarak, kullanıcının bir şirketteki bir departmana çalışan isimleri eklemesine olanak tanıyan metin tabanlı bir arayüz oluşturun; örneğin "Sally'yi Mühendislik'e ekle" veya "Amir'i Satış'a ekle" (`"Add Sally to Engineering"` veya `"Add Amir to Sales"`). Ardından kullanıcının bir departmandaki tüm kişilerin listesini ya da şirketteki tüm kişilerin departmanlara göre gruplanmış ve alfabetik olarak sıralanmış listesini alabilmesini sağlayın.
 
-Standart kütüphane API belgeleri, bu egzersizler için yararlı olacak vektörlerin, stringlerin ve hash maplerin sahip olduğu metotları açıklar!
+Standart kütüphane API belgelendirmesi; vektörlerin, string'lerin ve hash map'lerin bu alıştırmalar için çok yararlı olacak metotlarını açıklar!
 
-İşlemlerin başarısız olabileceği daha karmaşık programlara giriyoruz, bu yüzden hata yönetimi hakkında tartışmak için mükemmel bir zaman. Sırada bunu yapacağız!
+> Not: Bu üç alıştırmayı çözerken işinizi kolaylaştıracak bazı pratik standart kütüphane ipuçları:
+>
+> - **Medyan ve Mod**: Vektörü yerinde sıralamak için `sort()` veya tam sayılarda ek bellek ayırmadan daha hızlı çalışan `sort_unstable()` metodunu kullanabilirsiniz. Mod hesabında ise Liste 8-25'teki `entry(sayi).or_insert(0)` deseninden yararlanıp en yüksek sayaca sahip anahtarı bulabilirsiniz.
+> - **Pig Latin ve UTF-8**: Türkçedeki `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi karakterler UTF-8'de 2 bayt yer kapladığından `&kelime[0..1]` gibi bayt dilimlemeleri çalışma zamanında panik üretebilir. Bunun yerine `let mut karakterler = kelime.chars();` oluşturup ilk karakteri `karakterler.next()` ile güvenle alabilir, kelimenin geri kalan dilimine ise `karakterler.as_str()` ile ulaşabilirsiniz.
+> - **Çalışan ve Departman Arayüzü**: Şirket verisini `HashMap<String, Vec<String>>` olarak modelleyip yeni çalışan eklerken `departmanlar.entry(departman).or_default().push(isim)` çağrısını kullanabilirsiniz. Komut satırından (`std::io::stdin()`) okuduğunuz metni kelimelere ayırmak için `split_whitespace()`, çalışan isimlerini alfabetik sıralamak için `Vec::sort()`, tüm şirketi departman adına göre de sıralı listelemek için anahtarları bir vektöre toplayıp sıralamayı (veya anahtarları doğal olarak sıralı tutan `BTreeMap` yapısını) değerlendirebilirsiniz.
+
+Artık işlemlerin başarısız olabileceği daha karmaşık programlara adım atıyoruz; dolayısıyla hata yönetimini ele almak için en doğru zamandayız. Sırada tam olarak bu var!
 
 [validating-references-with-lifetimes]: ch10-03-omurler.html#referansları-ömürlerle-lifetimes-doğrulamak
-[access]: #bir-hash-mapteki-değerlere-erişmek
+[access]: #bir-hash-mapteki-değerlere-erişme
 [traits]: ch10-02-traitler.html

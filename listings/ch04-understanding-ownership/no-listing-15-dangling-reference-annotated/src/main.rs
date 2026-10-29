@@ -1,5 +1,5 @@
 fn main() {
-    let hicbire_referans = sarkan_isaretci();
+    let hicbir_seye_referans = sarkan_isaretci();
 }
 
 // ANCHOR: here

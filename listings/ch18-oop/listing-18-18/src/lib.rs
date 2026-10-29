@@ -40,7 +40,7 @@ trait Durum {
     fn onayla(self: Box<Self>) -> Box<dyn Durum>;
 
     // ANCHOR: here
-    fn icerik<'a>(&self, post: &'a Gonderi) -> &'a str {
+    fn icerik<'a>(&self, gonderi: &'a Gonderi) -> &'a str {
         ""
     }
 }
@@ -87,8 +87,8 @@ impl Durum for Yayinlanmis {
     }
 
     // ANCHOR: here
-    fn icerik<'a>(&self, post: &'a Gonderi) -> &'a str {
-        &post.icerik
+    fn icerik<'a>(&self, gonderi: &'a Gonderi) -> &'a str {
+        &gonderi.icerik
     }
 }
 // ANCHOR_END: here

@@ -1,7 +1,7 @@
-mod front_of_house;
+mod restoran_on_kisim;
 
-pub use crate::front_of_house::hosting;
+pub use crate::restoran_on_kisim::karsilama;
 
-pub fn eat_at_restaurant() {
-    hosting::add_to_waitlist();
+pub fn restoranda_yemek_ye() {
+    karsilama::bekleme_listesine_ekle();
 }

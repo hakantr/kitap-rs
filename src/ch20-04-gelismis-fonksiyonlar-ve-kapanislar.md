@@ -1,14 +1,24 @@
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="advanced-functions-and-closures"></a>
+<a id="gelismis-fonksiyonlar-ve-kapanislar"></a>
+
 ## Gelişmiş Fonksiyonlar ve Kapanışlar
 
-Bu bölümde fonksiyonlar ve kapanışlarla ilgili bazı daha ileri özelliklere bakacağız. Bunların arasında fonksiyon işaretçileri ve kapanış döndürme de var.
+Bu bölümde fonksiyon işaretçileri ve kapanış döndürme dahil olmak üzere fonksiyonlar ve kapanışlarla ilgili bazı gelişmiş özellikleri inceleyeceğiz.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="function-pointers"></a>
+<a id="fonksiyon-isaretcileri"></a>
 
 ### Fonksiyon İşaretçileri
 
-Kapanışları fonksiyonlara nasıl geçireceğimizi görmüştük; ama normal fonksiyonları da başka fonksiyonlara parametre olarak verebilirsiniz. Bu teknik, yeni bir kapanış tanımlamak yerine önceden tanımladığınız bir fonksiyonu geçirmek istediğinizde işe yarar. Fonksiyonlar, `Fn` kapanış trait'iyle karıştırılmaması gereken `fn` türüne zorlanır. `fn` türüne _fonksiyon işaretçisi_ denir. Fonksiyon işaretçileri sayesinde fonksiyonları başka fonksiyonlara argüman olarak geçirebiliriz.
+Kapanışları fonksiyonlara nasıl geçireceğimizi ele almıştık; normal fonksiyonları da başka fonksiyonlara geçirebilirsiniz! Bu teknik, yeni bir kapanış tanımlamak yerine önceden tanımladığınız bir fonksiyonu aktarmak istediğinizde kullanışlıdır. Fonksiyonlar, `Fn` kapanış trait'iyle karıştırılmaması gereken `fn` türüne (küçük _f_ harfiyle) zorlanır. `fn` türüne _fonksiyon işaretçisi (function pointer)_ denir. Fonksiyonları fonksiyon işaretçileri aracılığıyla aktarmak, onları başka fonksiyonlara argüman olarak kullanmanıza olanak tanır.
 
-Bir parametrenin fonksiyon işaretçisi olduğunu belirtmenin sözdizimi, kapanışlara benzerdir. Liste 20-28'de `add_one` adlı, parametresine 1 ekleyen bir fonksiyon tanımlıyoruz. `do_twice` iki parametre alır: `i32` alıp `i32` döndüren herhangi bir fonksiyona işaret eden fonksiyon işaretçisi ve bir `i32` değeri. `do_twice`, aldığı `f` fonksiyonunu `arg` değeriyle iki kez çağırır ve iki sonucu toplar. `main` ise `do_twice`'ı `add_one` ve `5` ile çağırır.
+Bir parametrenin fonksiyon işaretçisi olduğunu belirtmenin sözdizimi, Liste 20-28'de gösterildiği gibi kapanışlarınkine benzer. Burada parametresine 1 ekleyen `add_one` adlı bir fonksiyon tanımladık. `do_twice` fonksiyonu iki parametre alır: bir `i32` parametresi alıp `i32` döndüren herhangi bir fonksiyona işaret eden bir fonksiyon işaretçisi ve bir `i32` değeri. `do_twice` fonksiyonu, `f` fonksiyonunu kendisine `arg` değerini geçirerek iki kez çağırır ve ardından bu iki fonksiyon çağrısının sonuçlarını toplar. `main` fonksiyonu ise `do_twice` fonksiyonunu `add_one` ve `5` argümanlarıyla çağırır.
 
-<Listing number="20-28" file-name="src/main.rs" caption="Argüman olarak fonksiyon işaretçisi kabul etmek için `fn` türünü kullanmak">
+<Listing number="20-28" file-name="src/main.rs" caption="Argüman olarak bir fonksiyon işaretçisi kabul etmek için `fn` türünü kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-28/src/main.rs}}
@@ -16,17 +26,17 @@ Bir parametrenin fonksiyon işaretçisi olduğunu belirtmenin sözdizimi, kapan�
 
 </Listing>
 
-Bu kod `Cevap: 12` yazar. `do_twice` içindeki `f` parametresinin, bir `i32` alıp `i32` döndüren `fn` olduğunu belirtiyoruz. Sonra `do_twice` gövdesinde `f`'yi çağırabiliyoruz. `main` içinde de `add_one` fonksiyon adını ilk argüman olarak geçiyoruz.
+Bu kod ekrana `Cevap: 12` yazdırır. `do_twice` içindeki `f` parametresinin, `i32` türünde tek bir parametre alıp bir `i32` döndüren bir `fn` olduğunu belirtiyoruz. Ardından `do_twice` gövdesinde `f`'yi çağırabiliyoruz. `main` içinde ise `do_twice` fonksiyonuna ilk argüman olarak `add_one` fonksiyon adını geçirebiliyoruz.
 
-Kapanışlardan farklı olarak `fn` bir trait değil, bir türdür. Bu yüzden parametre türü olarak doğrudan `fn` yazarız; trait sınırıyla jenerik parametre tanımlamayız.
+Kapanışların aksine `fn` bir trait değil, doğrudan bir türdür; bu nedenle `Fn` trait'lerinden birini trait sınırı olarak kullanan jenerik bir tür parametresi bildirmek yerine parametre türü olarak doğrudan `fn` yazarız.
 
-Fonksiyon işaretçileri kapanış trait'lerinin üçünü de (`Fn`, `FnMut`, `FnOnce`) uygular. Yani kapanış bekleyen bir fonksiyona her zaman fonksiyon işaretçisi de geçebilirsiniz. Bu nedenle genellikle fonksiyonları, kapanış trait'lerinden biriyle sınırlandırılmış jenerik tür alacak şekilde yazmak daha esnektir; böylece hem fonksiyon hem kapanış kabul ederler.
+Fonksiyon işaretçileri kapanış trait'lerinin üçünü de (`Fn`, `FnMut` ve `FnOnce`) uygular; yani kapanış bekleyen bir fonksiyona argüman olarak her zaman bir fonksiyon işaretçisi geçirebilirsiniz. Fonksiyonlarınızı hem normal fonksiyonları hem de kapanışları kabul edebilecek şekilde jenerik bir tür ve kapanış trait'lerinden birini kullanarak yazmak en iyi yaklaşımdır.
 
-Bununla birlikte, yalnızca `fn` kabul etmek isteyeceğiniz bir durum da vardır: kapanış kavramı olmayan dış kodla etkileşmek. Örneğin C fonksiyonları, fonksiyonları argüman olarak alabilir ama kapanışları alamaz.
+Bununla birlikte, kapanışları değil de yalnızca `fn` türünü kabul etmek isteyeceğiniz durumlara bir örnek, kapanış kavramına sahip olmayan harici kodlarla etkileşim kurmaktır: C fonksiyonları argüman olarak fonksiyon kabul edebilir, ancak C dilinde kapanış yoktur.
 
-Hem satır içinde tanımlanmış kapanış hem de isimli fonksiyon kullanılabilen bir örnek olarak standart kütüphanedeki `Iterator` trait'inin `map` metoduna bakalım. Sayılardan oluşan vektörü string vektörüne dönüştürmek için Liste 20-29'daki gibi kapanış kullanabiliriz.
+Hem satır içinde tanımlanmış bir kapanışı hem de isimli bir fonksiyonu kullanabileceğiniz bir duruma örnek olarak, standart kütüphanedeki `Iterator` trait'inin sunduğu `map` metodunun kullanımına bakalım. Sayılardan oluşan bir vektörü string'lerden oluşan bir vektöre dönüştürmek üzere `map` metodunu kullanırken Liste 20-29'daki gibi bir kapanış yazabiliriz.
 
-<Listing number="20-29" caption="Sayıları string'lere dönüştürmek için `map` metodu ile kapanış kullanmak">
+<Listing number="20-29" caption="Sayıları string'lere dönüştürmek için `map` metoduyla bir kapanış kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-29/src/main.rs:here}}
@@ -34,9 +44,9 @@ Hem satır içinde tanımlanmış kapanış hem de isimli fonksiyon kullanılabi
 
 </Listing>
 
-Aynı işi, kapanış yerine isimli bir fonksiyon vererek de yapabiliriz. Liste 20-30 bunu gösteriyor.
+Ya da kapanış yerine `map` metoduna argüman olarak doğrudan bir fonksiyonun adını verebiliriz. Liste 20-30 bunun nasıl görüneceğini göstermektedir.
 
-<Listing number="20-30" caption="Sayıları string'lere dönüştürmek için `map` ile `String::to_string` fonksiyonunu kullanmak">
+<Listing number="20-30" caption="Sayıları string'lere dönüştürmek için `map` metoduyla `ToString::to_string` fonksiyonunu kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-30/src/main.rs:here}}
@@ -44,13 +54,13 @@ Aynı işi, kapanış yerine isimli bir fonksiyon vererek de yapabiliriz. Liste 
 
 </Listing>
 
-Burada, aynı adlı birden çok fonksiyon bulunduğu için, 20-02 bölümünde anlattığımız tam nitelikli sözdizimine ihtiyaç duyarız.
+Burada `to_string` adında birden fazla kullanılabilir fonksiyon bulunduğu için, [“Gelişmiş Trait'ler”][advanced-traits]<!-- ignore --> bölümünde ele aldığımız tam nitelikli sözdizimini (*fully qualified syntax*) kullanmamız gerektiğine dikkat edin.
 
-Burada kullandığımız `to_string`, standart kütüphanenin `Display` uygulayan her tür için sağladığı `ToString` trait'indeki fonksiyondur.
+Bu örnekte, standart kütüphanenin `Display` trait'ini uygulayan her tür için uyguladığı `ToString` trait'inde tanımlı `to_string` fonksiyonunu kullanıyoruz.
 
-Ayrıca 6. bölümdeki ["Enum Değerleri"][enum-values]<!-- ignore --> kısmından hatırlayın: tanımladığımız her enum varyantının adı, aynı zamanda başlatıcı fonksiyon olur. Bu başlatıcıları, kapanış trait'lerini uygulayan fonksiyon işaretçileri gibi kullanabiliriz. Liste 20-31, bunu `map` ile gösteriyor.
+Bölüm 6'daki [“Enum Değerleri”][enum-values]<!-- ignore --> kısmından hatırlayacağınız üzere, tanımladığımız her bir enum varyantının adı aynı zamanda bir başlatıcı fonksiyon haline gelir. Bu başlatıcı fonksiyonları kapanış trait'lerini uygulayan fonksiyon işaretçileri olarak kullanabiliriz; bu da Liste 20-31'de görüldüğü gibi, kapanış alan metotlara argüman olarak doğrudan bu başlatıcı fonksiyonları verebileceğimiz anlamına gelir.
 
-<Listing number="20-31" caption="Sayılardan `Durum` örnekleri üretmek için `map` içinde enum başlatıcısı kullanmak">
+<Listing number="20-31" caption="Sayılardan `Durum` örnekleri oluşturmak için `map` metoduyla bir enum başlatıcısı kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-31/src/main.rs:here}}
@@ -58,15 +68,20 @@ Ayrıca 6. bölümdeki ["Enum Değerleri"][enum-values]<!-- ignore --> kısmınd
 
 </Listing>
 
-Burada, `map` çağrılan aralıktaki her `u32` değeri için `Durum::Deger` başlatıcısını kullanarak `Durum::Deger` örnekleri oluşturuyoruz. Bazı geliştiriciler bu tarzı tercih eder, bazıları kapanış kullanmayı daha açık bulur. İkisi de aynı koda derlenir; sizin için hangisi daha anlaşılırsa onu kullanın.
+Burada, `map` metodunun üzerinde çağrıldığı aralıktaki her bir `u32` değerini kullanarak `Durum::Deger`'in başlatıcı fonksiyonu aracılığıyla `Durum::Deger` örnekleri oluşturuyoruz. Kimi geliştiriciler bu üslubu, kimileri ise kapanış kullanmayı tercih eder. İkisi de birebir aynı makine koduna derlenir; dolayısıyla hangisi size daha anlaşılır geliyorsa onu kullanabilirsiniz.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="returning-closures"></a>
+<a id="kapanis-dondurmek"></a>
 
 ### Kapanış Döndürmek
 
-Kapanışlar trait'lerle temsil edilir; bu yüzden doğrudan kapanış döndüremezsiniz. Trait döndürmek istediğiniz çoğu yerde, onun trait'i uygulayan somut türünü dönüş türü yapabilirsiniz. Ancak kapanışlarda bu çoğu zaman mümkün değildir; çünkü genellikle doğrudan yazılabilir somut bir dönüş türleri yoktur. Ayrıca, kapanış kapsamından değer yakalıyorsa onu `fn` dönüş türü olarak da kullanamazsınız.
+Kapanışlar trait'lerle temsil edilir; bu da kapanışları doğrudan döndüremeyeceğiniz anlamına gelir. Bir trait döndürmek isteyebileceğiniz çoğu durumda, bunun yerine fonksiyonun dönüş değeri olarak o trait'i uygulayan somut türü kullanabilirsiniz. Ancak kapanışlarda bunu genellikle yapamazsınız; çünkü kapanışların döndürülebilir somut bir türü yoktur. Örneğin kapanış kendi kapsamından herhangi bir değer yakalıyorsa dönüş türü olarak `fn` fonksiyon işaretçisini kullanmanıza izin verilmez.
 
-Bunun yerine, genellikle 10. bölümde öğrendiğimiz `impl Trait` sözdizimini kullanırsınız. `Fn`, `FnOnce` ve `FnMut` kullanarak işlevsel bir tür döndürebilirsiniz. Örneğin Liste 20-32'deki kod sorunsuz derlenir.
+Bunun yerine normalde Bölüm 10'da öğrendiğimiz `impl Trait` sözdizimini kullanırsınız. `Fn`, `FnOnce` ve `FnMut` trait'lerini kullanarak herhangi bir fonksiyon türü döndürebilirsiniz. Örneğin Liste 20-32'deki kod sorunsuz bir şekilde derlenecektir.
 
-<Listing number="20-32" caption="Bir fonksiyondan `impl Trait` sözdizimiyle kapanış döndürmek">
+<Listing number="20-32" caption="`impl Trait` sözdizimini kullanarak bir fonksiyondan kapanış döndürmek">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-32/src/lib.rs}}
@@ -74,9 +89,9 @@ Bunun yerine, genellikle 10. bölümde öğrendiğimiz `impl Trait` sözdizimini
 
 </Listing>
 
-Ama 13. bölümdeki ["Kapanış Türlerini Çıkarsamak ve Açıklamak"][closure-types]<!-- ignore --> kısmında belirttiğimiz gibi, her kapanış kendi başına ayrı bir türdür. Aynı imzaya sahip ama farklı uygulamalara sahip birden fazla işlevle çalışmanız gerekiyorsa, bunlar için trait nesnesi kullanmanız gerekir. Liste 20-33'te böyle bir durumda ne olduğuna bakalım.
+Ancak Bölüm 13'teki [“Kapanış Türlerini Çıkarsamak ve Açıklamak”][closure-types]<!-- ignore --> kısmında belirttiğimiz gibi, her kapanış aynı zamanda kendine özgü ayrı bir türdür. Aynı imzaya ancak farklı uygulamalara sahip birden fazla fonksiyonla çalışmanız gerekiyorsa bunlar için bir trait nesnesi kullanmanız gerekir. Liste 20-33'te gösterilen gibi bir kod yazdığınızda ne olacağına bakalım.
 
-<Listing file-name="src/main.rs" number="20-33" caption="`impl Fn` türleri döndüren fonksiyonlarla tanımlanmış kapanışlardan `Vec<T>` oluşturmaya çalışmak">
+<Listing file-name="src/main.rs" number="20-33" caption="`impl Fn` türleri döndüren fonksiyonlarla tanımlanmış kapanışlardan bir `Vec<T>` oluşturmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-33/src/main.rs}}
@@ -84,15 +99,15 @@ Ama 13. bölümdeki ["Kapanış Türlerini Çıkarsamak ve Açıklamak"][closure
 
 </Listing>
 
-Burada `returns_closure` ve `returns_initialized_closure` adlı iki fonksiyon var; ikisi de `impl Fn(i32) -> i32` döndürüyor. Fakat döndürdükleri kapanışlar farklı. Bu kodu derlemeye çalışırsak Rust bunun çalışmayacağını söyler:
+Burada ikisi de `impl Fn(i32) -> i32` döndüren `returns_closure` ve `returns_initialized_closure` adlı iki fonksiyonumuz var. Aynı trait'i uygulasalar bile döndürdükleri kapanışların birbirinden farklı olduğuna dikkat edin. Bu kodu derlemeye çalıştığımızda Rust derleyicisi bunun çalışmayacağını bize bildirir:
 
 ```text
 {{#include ../listings/ch20-advanced-features/listing-20-33/output.txt}}
 ```
 
-Hata mesajı bize şunu söyler: `impl Trait` döndürdüğümüzde Rust benzersiz bir _opak tür_ oluşturur. Bu, iç ayrıntılarını göremediğimiz ve kendi başımıza yazamayacağımız bir türdür. Dolayısıyla iki fonksiyon da aynı trait'i (`Fn(i32) -> i32`) uygulayan kapanış döndürse bile, Rust'ın bu iki dönüş için ürettiği opak türler birbirinden farklıdır. Bu, 17. bölümde gördüğümüz; aynı çıktı türüne sahip olsalar bile ayrı `async` bloklarının ayrı somut türlere sahip olmasına benzer. Bu sorunun çözümünü daha önce birkaç kez gördük: trait nesnesi kullanmak. Liste 20-34 bunu gösteriyor.
+Hata mesajı bize, ne zaman bir `impl Trait` döndürsek Rust'ın benzersiz bir _opak tür (opaque type)_ oluşturduğunu söyler; yani Rust'ın bizim için inşa ettiği yapının iç ayrıntılarını göremediğimiz, ne de Rust'ın üreteceği türü tahmin edip kendimiz yazabildiğimiz bir tür üretilir. Dolayısıyla bu fonksiyonlar aynı trait'i (`Fn(i32) -> i32`) uygulayan kapanışlar döndürse bile, Rust'ın her biri için ürettiği opak türler birbirinden farklıdır. (Bu durum, Bölüm 17'deki [“`Pin` Türü ve `Unpin` Trait'i”][future-types]<!-- ignore --> kısmında gördüğümüz gibi, aynı çıktı türüne sahip olsalar bile Rust'ın farklı `async` blokları için farklı somut türler üretmesine benzer.) Bu sorunun çözümünü şimdiye dek birkaç kez gördük: Liste 20-34'te olduğu gibi bir trait nesnesi kullanabiliriz.
 
-<Listing number="20-34" caption="Aynı türe sahip olmaları için `Box<dyn Fn>` döndüren fonksiyonlarla kapanışlardan `Vec<T>` oluşturmak">
+<Listing number="20-34" caption="Aynı türe sahip olmaları için `Box<dyn Fn>` döndüren fonksiyonlarla tanımlanmış kapanışlardan bir `Vec<T>` oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-34/src/main.rs:here}}
@@ -100,12 +115,16 @@ Hata mesajı bize şunu söyler: `impl Trait` döndürdüğümüzde Rust benzers
 
 </Listing>
 
-Bu sürüm sorunsuz derlenir. Trait nesneleri hakkında daha fazlası için 18. bölümdeki ["Trait Nesneleriyle Ortak Davranışı Soyutlamak"][trait-objects]<!-- ignore --> kısmına bakabilirsiniz.
+Bu kod sorunsuz bir şekilde derlenecektir. Trait nesneleri hakkında daha fazla bilgi için Bölüm 18'deki [“Ortak Davranışı Soyutlamak İçin Trait Nesnelerini Kullanma”][trait-objects]<!-- ignore --> bölümüne başvurabilirsiniz.
 
-Sırada makrolar var!
+> Not: Çağrılabilir yapıları döndürürken veya saklarken bu üç yaklaşım arasındaki farkı bellek temsili üzerinden kolayca hatırlayabilirsiniz. **Çevresinden değişken yakalamayan kapanışlar** (örneğin `|x| x + 1`), tıpkı normal fonksiyonlar gibi yalnızca kod adresini tutan ince fonksiyon işaretçisine (`fn(i32) -> i32`) otomatik olarak zorlanabilir. Buna karşılık **çevresinden değer yakalayan kapanışlar** (örneğin `init` değerini taşıyan `move |x| x + init`), bellekte ek durum verisi barındırdığı için `fn` işaretçisine dönüştürülemez.
+>
+> Yakalama yapan bir kapanış döndürürken tek bir somut kapanış için öbek (*heap*) tahsisi yapmadan *statik gönderim (static dispatch)* elde etmek istediğinizde `impl Fn(...)` kullanabilirsiniz. Farklı kapanışları (hatta normal fonksiyonları) `handlers` vektöründe olduğu gibi aynı homojen koleksiyon içinde saklamanız gerektiğinde ise veriyi öbeğe taşıyıp *dinamik gönderim (dynamic dispatch)* sağlayan `Box<dyn Fn(...)>` trait nesnesine başvurmanız gerekir.
+
+Şimdi makrolara bakalım!
 
 [advanced-traits]: ch20-02-gelismis-traitler.html#gelişmiş-traitler
 [enum-values]: ch06-01-bir-enum-tanimlama.html#enum-değerleri
-[closure-types]: ch13-01-kapanislar.html#kapanış-türlerini-çıkarsamak-ve-açıklamak-inferring-and-annotating
-[future-types]: ch17-03-daha-fazla-future.html
+[closure-types]: ch13-01-kapanislar.html#kapanış-türlerini-çıkarsamak-ve-açıklamak
+[future-types]: ch17-05-async-traitleri.html#pin-türü-ve-unpin-traiti
 [trait-objects]: ch18-02-trait-nesneleri.html

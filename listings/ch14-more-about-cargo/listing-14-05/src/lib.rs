@@ -1,7 +1,7 @@
 // ANCHOR: here
 //! # Sanat
 //!
-//! Sanatsal kavramlari modellemek icin bir kutuphane.
+//! Sanatsal kavramları modellemek için bir kütüphane.
 
 pub use self::turler::BirincilRenk;
 pub use self::turler::IkincilRenk;
@@ -10,14 +10,14 @@ pub use self::yardimcilar::karistir;
 pub mod turler {
     // --snip--
     // ANCHOR_END: here
-    /// RYB renk modeline gore birincil renkler.
+    /// RYB renk modeline göre birincil renkler.
     pub enum BirincilRenk {
         Kirmizi,
         Sari,
         Mavi,
     }
 
-    /// RYB renk modeline gore ikincil renkler.
+    /// RYB renk modeline göre ikincil renkler.
     pub enum IkincilRenk {
         Turuncu,
         Yesil,
@@ -31,8 +31,8 @@ pub mod yardimcilar {
     // ANCHOR_END: here
     use crate::turler::*;
 
-    /// Iki birincil rengi esit miktarda birlestirerek
-    /// bir ikincil renk olusturur.
+    /// İki birincil rengi eşit miktarda birleştirerek
+    /// bir ikincil renk oluşturur.
     pub fn karistir(renk1: BirincilRenk, renk2: BirincilRenk) -> IkincilRenk {
         let _ = (renk1, renk2);
         IkincilRenk::Turuncu

@@ -1,0 +1,15 @@
+$ cargo check
+    Checking merhaba v0.1.0 (file:///projects/merhaba)
+error[E0507]: cannot move out of `calisan.thread` which is behind a mutable reference
+  --> src/lib.rs:55:13
+   |
+55 |             calisan.thread.join().unwrap();
+   |             ^^^^^^^^^^^^^^ ------ `calisan.thread` moved due to this method call
+   |             |
+   |             move occurs because `calisan.thread` has type `JoinHandle<()>`, which does not implement the `Copy` trait
+   |
+note: `std::thread::JoinHandle::<T>::join` takes ownership of the receiver `self`, which moves `calisan.thread`
+  --> /rustc/58cf8f9c35b355199727627d07ae34a4e2846d67/library/std/src/thread/join_handle.rs:149:16
+
+For more information about this error, try `rustc --explain E0507`.
+error: could not compile `merhaba` (lib) due to 1 previous error

@@ -23,7 +23,7 @@ pub struct Dugme {
 
 impl Ciz for Dugme {
     fn ciz(&self) {
-        // bir dugmeyi gercekten cizmek icin kod
+        // bir düğmeyi gerçekten çizmek için kod
     }
 }
 // ANCHOR_END: here

@@ -1,8 +1,8 @@
 static mut COUNTER: u32 = 0;
 
-/// SAFETY: Calling tselams from more than a single thread at a time is undefined
-/// behavior, so you *must* guarantee you only call it from a single thread at
-/// a time.
+/// SAFETY: Bu fonksiyonu aynı anda birden fazla thread'den çağırmak tanımsız
+/// davranıştır; bu yüzden aynı anda *yalnızca* tek bir thread'den çağırdığınızı
+/// garanti etmelisiniz.
 unsafe fn add_to_count(inc: u32) {
     unsafe {
         COUNTER += inc;
@@ -11,7 +11,7 @@ unsafe fn add_to_count(inc: u32) {
 
 fn main() {
     unsafe {
-        // SAFETY: Tselams is only called from a single thread in `main`.
+        // SAFETY: Bu fonksiyon yalnızca `main` içindeki tek thread'den çağrılıyor.
         add_to_count(3);
         println!("COUNTER: {}", *(&raw const COUNTER));
     }

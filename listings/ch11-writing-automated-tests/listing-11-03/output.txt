@@ -1,17 +1,17 @@
 $ cargo test
-   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/listing-11-03)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
-     Running unittests src/lib.rs ($PROJE/listings/ch11-writing-automated-tests/listing-11-03/target/debug/deps/toplayici-ac13090f6eeacc92)
+   Compiling toplayici v0.1.0 (file:///projects/toplayici)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s
+     Running unittests src/lib.rs (target/debug/deps/toplayici-92948b65e88960b4)
 
 running 2 tests
-test tests::kesif ... ok
 test tests::baska_bir_test ... FAILED
+test tests::kesif ... ok
 
 failures:
 
 ---- tests::baska_bir_test stdout ----
 
-thread 'tests::baska_bir_test' (84265) panicked at src/lib.rs:17:9:
+thread 'tests::baska_bir_test' (6019162) panicked at src/lib.rs:17:9:
 Bu testi başarısız yap
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 

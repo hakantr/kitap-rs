@@ -3,5 +3,5 @@ unsafe extern "C" {
 }
 
 fn main() {
-    println!("C'ye gore -3'un mutlak degeri: {}", abs(-3));
+    println!("C'ye göre -3'ün mutlak değeri: {}", abs(-3));
 }

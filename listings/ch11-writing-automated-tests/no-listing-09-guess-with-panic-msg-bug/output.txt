@@ -10,7 +10,7 @@ failures:
 
 ---- tests::yuzden_buyuk stdout ----
 
-thread 'tests::yuzden_buyuk' panicked at src/lib.rs:12:13:
+thread 'tests::yuzden_buyuk' (6021675) panicked at src/lib.rs:12:13:
 Tahmin değeri 1'den büyük veya 1'e eşit olmalıdır, 200 alındı.
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 note: panic did not contain expected string

@@ -21,24 +21,24 @@ impl Liste {
 fn main() {
     let a = Rc::new(Dugum(5, RefCell::new(Rc::new(Bos))));
 
-    println!("a icin ilk rc sayisi = {}", Rc::strong_count(&a));
-    println!("a sonraki oge = {:?}", a.kuyruk());
+    println!("a için ilk rc sayısı = {}", Rc::strong_count(&a));
+    println!("a sonraki öğe = {:?}", a.kuyruk());
 
     let b = Rc::new(Dugum(10, RefCell::new(Rc::clone(&a))));
 
-    println!("b olustuktan sonra a rc sayisi = {}", Rc::strong_count(&a));
-    println!("b icin ilk rc sayisi = {}", Rc::strong_count(&b));
-    println!("b sonraki oge = {:?}", b.kuyruk());
+    println!("b oluşturulduktan sonra a rc sayısı = {}", Rc::strong_count(&a));
+    println!("b için ilk rc sayısı = {}", Rc::strong_count(&b));
+    println!("b sonraki öğe = {:?}", b.kuyruk());
 
     if let Some(baglanti) = a.kuyruk() {
         *baglanti.borrow_mut() = Rc::clone(&b);
     }
 
-    println!("a degistikten sonra b rc sayisi = {}", Rc::strong_count(&b));
-    println!("a degistikten sonra a rc sayisi = {}", Rc::strong_count(&a));
+    println!("a değiştirildikten sonra b rc sayısı = {}", Rc::strong_count(&b));
+    println!("a değiştirildikten sonra a rc sayısı = {}", Rc::strong_count(&a));
 
-    // Bir dongu olustugunu gormek icin sonraki satirin yorumunu kaldirin;
-    // bu, yigin tasmasina yol acar.
-    // println!("a sonraki oge = {:?}", a.kuyruk());
+    // Bir döngü oluştuğunu görmek için sonraki satırın yorumunu kaldırın;
+    // bu, yığın taşmasına yol açacaktır.
+    // println!("a sonraki öğe = {:?}", a.kuyruk());
 }
 // ANCHOR_END: here

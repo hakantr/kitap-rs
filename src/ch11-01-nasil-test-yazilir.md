@@ -1,34 +1,45 @@
-## Testler Nasıl Yazılır
+<!-- Old headings. Do not remove or links may break. -->
 
-_Testler_, test olmayan kodun beklenen şekilde çalışıp çalışmadığını doğrulayan Rust fonksiyonlarıdır. Test fonksiyonlarının gövdeleri tipik olarak şu üç eylemi gerçekleştirir:
+<a id="how-to-write-tests"></a>
+<a id="testler-nasıl-yazılır"></a>
+<a id="testler-nasil-yazilir"></a>
 
-- İhtiyaç duyulan verileri veya durumu ayarlamak.
+## Nasıl Test Yazılır
+
+_Testler_, test dışı kodun beklenen şekilde çalışıp çalışmadığını doğrulayan Rust fonksiyonlarıdır. Test fonksiyonlarının gövdeleri tipik olarak şu üç adımı gerçekleştirir:
+
+- Gerekli verileri veya durumu hazırlamak.
 - Test etmek istediğiniz kodu çalıştırmak.
 - Sonuçların beklediğiniz gibi olduğunu doğrulamak.
 
-Rust'ın bu eylemleri gerçekleştiren testler yazmak için özel olarak sağladığı ve `test` özniteliği (attribute), birkaç makro ve `should_panic` (paniklemeli) özniteliği gibi özellikleri inceleyelim.
+Rust'ın bu adımları yerine getiren testler yazmak için özel olarak sunduğu `test` *özniteliği (attribute)*, birkaç doğrulama makrosu ve `should_panic` özniteliği gibi olanakları inceleyelim.
+
+> Not: Yukarıdaki üç adım, yazılım mühendisliğinde **Hazırla–Çalıştır–Doğrula (*Arrange–Act–Assert*, kısaca AAA)** düzeni olarak bilinir. Birim testlerinizi bu üç aşamaya göre kurgulamak —ve Liste 11-6'da göreceğiniz gibi aşamaları gerektiğinde boş bir satırla ayırmak— her testin tek bir davranışa odaklanmasını sağlar; test başarısız olduğunda sorunun kurulumdan mı, çağrılan fonksiyondan mı yoksa beklenen sonuçtan mı kaynaklandığını bir bakışta görmenizi kolaylaştırır.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="the-anatomy-of-a-test-function"></a>
+<a id="structuring-test-functions"></a>
+<a id="test-fonksiyonlarını-yapılandırmak"></a>
+<a id="test-fonksiyonlarini-yapilandirmak"></a>
 
-### Test Fonksiyonlarını Yapılandırmak
+### Test Fonksiyonlarını Yapılandırma
 
-En basit haliyle, Rust'ta bir test, `test` özniteliğiyle açıklanmış (annotated) bir fonksiyondur. Öznitelikler (attributes) Rust kodunun parçaları hakkındaki meta verilerdir; Bölüm 5'te struct'larla kullandığımız `derive` özniteliği buna bir örnektir. Bir fonksiyonu test fonksiyonuna dönüştürmek için, `fn`'den önceki satıra `#[test]` ekleyin. Testlerinizi `cargo test` komutuyla çalıştırdığınızda Rust, açıklanmış (annotated) fonksiyonları çalıştıran ve her bir test fonksiyonunun geçip geçmediğini veya başarısız olup olmadığını bildiren bir test çalıştırıcı ikili dosyası oluşturur.
+En yalın haliyle Rust'ta bir test, `test` özniteliğiyle işaretlenmiş bir fonksiyondur. Öznitelikler, Rust kod parçaları hakkındaki meta verilerdir; Bölüm 5'te struct'larla birlikte kullandığımız `derive` özniteliği buna bir örnektir. Bir fonksiyonu test fonksiyonuna dönüştürmek için `fn` anahtar kelimesinden önceki satıra `#[test]` eklemeniz yeterlidir. Testlerinizi `cargo test` komutuyla çalıştırdığınızda Rust, `#[test]` ile işaretlenmiş fonksiyonları yürüten ve her bir test fonksiyonunun geçip geçmediğini bildiren bir test çalıştırıcısı ikili dosyası derler.
 
-Cargo ile yeni bir kütüphane projesi oluşturduğumuzda, içinde bir test fonksiyonu bulunan bir test modülü bizim için otomatik olarak üretilir. Bu modül size testlerinizi yazmanız için bir şablon sunar, böylece her yeni projeye başladığınızda tam yapıyı ve sözdizimini araştırmak zorunda kalmazsınız. İstediğiniz kadar ek test fonksiyonu ve test modülü ekleyebilirsiniz!
+Cargo ile yeni bir kütüphane projesi oluşturduğumuzda, içinde örnek bir test fonksiyonu bulunan bir test modülü bizim için otomatik olarak üretilir. Bu modül, testlerinizi yazmanız için hazır bir şablon sunar; böylece her yeni projeye başladığınızda tam yapıyı ve sözdizimini aramak zorunda kalmazsınız. İstediğiniz kadar ek test fonksiyonu ve test modülü ekleyebilirsiniz!
 
-Testlerin nasıl çalıştığına dair bazı yönleri, aslında herhangi bir kodu test etmeden önce şablon testiyle deneyler yaparak keşfedeceğiz. Ardından, yazdığımız bazı kodları çağıran ve davranışının doğru olduğunu doğrulayan gerçek dünya testleri yazacağız.
+Gerçek bir kodu test etmeye geçmeden önce, bu şablon test üzerinde denemeler yaparak testlerin çalışma biçimine dair bazı temel noktaları keşfedeceğiz. Ardından kendi yazdığımız kodu çağıran ve davranışının doğru olduğunu sınayan gerçek dünya testleri yazacağız.
 
-İki sayıyı toplayacak `adder` (toplayıcı) adında yeni bir kütüphane projesi oluşturalım:
+İki sayıyı toplayacak `toplayici` adında yeni bir kütüphane projesi oluşturalım:
 
 ```console
-$ cargo new adder --lib
-     Created library `adder` project
-$ cd adder
+$ cargo new toplayici --lib
+     Created library `toplayici` project
+$ cd toplayici
 ```
 
-`adder` kütüphanenizdeki _src/lib.rs_ dosyasının içeriği Liste 11-1'deki gibi görünmelidir.
+`toplayici` kütüphanenizdeki _src/lib.rs_ dosyasının içeriği (tanımlayıcılar Türkçeleştirildiğinde) Liste 11-1'deki gibi görünmelidir.
 
 <Listing number="11-1" file-name="src/lib.rs" caption="`cargo new` tarafından otomatik olarak üretilen kod">
 
@@ -49,13 +60,13 @@ cd ../../..
 
 </Listing>
 
-Dosya örnek bir `add` (topla) fonksiyonuyla başlar, böylece test edecek bir şeyimiz olur.
+Dosya, test edecek bir kodumuz olması için örnek bir `topla` fonksiyonuyla başlar (`cargo new --lib` komutu varsayılan şablonda İngilizce `add` ve `it_works` adlarını üretir; örneklerimizle uyumlu olması için burada `topla` ve `calisiyor` adlarını kullanıyoruz).
 
-Şimdilik yalnızca `calisiyor` fonksiyonuna odaklanalım. `#[test]` açıklamasına dikkat edin: Bu öznitelik bunun bir test fonksiyonu olduğunu belirtir, böylece test çalıştırıcısı bu fonksiyonu bir test olarak ele alacağını bilir. Ortak senaryolar kurmaya veya ortak işlemleri gerçekleştirmeye yardımcı olması için `tests` modülünde test olmayan fonksiyonlarımız da olabilir, bu nedenle her zaman hangi fonksiyonların test olduğunu belirtmemiz gerekir.
+Şimdilik yalnızca `calisiyor` fonksiyonuna odaklanalım. `#[test]` özniteliğine dikkat edin: Bu öznitelik fonksiyonun bir test fonksiyonu olduğunu belirtir; böylece test çalıştırıcısı bu fonksiyonu bir test olarak ele alacağını bilir. Ortak senaryoları hazırlamak veya sık tekrarlanan işlemleri yürütmek amacıyla `tests` modülü içinde test olmayan yardımcı fonksiyonlar da bulundurabiliriz; bu yüzden hangi fonksiyonların test olduğunu her zaman açıkça belirtmemiz gerekir.
 
-Örnek fonksiyon gövdesi, 2 ile 2'yi toplama fonksiyonunun çağrılmasının sonucunu içeren `sonuc`'un 4'e eşit olduğunu doğrulamak için `assert_eq!` makrosunu kullanır. Bu doğrulama (assertion), tipik bir testin formatı için bir örnek görevi görür. Bu testin geçtiğini görmek için çalıştıralım.
+Örnek fonksiyon gövdesi, `topla` fonksiyonunu `2` ve `2` argümanlarıyla çağırmanın sonucunu tutan `sonuc` değişkeninin `4`'e eşit olduğunu doğrulamak (*assert*) için `assert_eq!` makrosunu kullanır. Bu doğrulama ifadesi, tipik bir testin biçimine örnek teşkil eder. Testin geçtiğini görmek için çalıştıralım.
 
-`cargo test` komutu Liste 11-2'de gösterildiği gibi projemizdeki tüm testleri çalıştırır.
+`cargo test` komutu, Liste 11-2'de gösterildiği gibi projemizdeki tüm testleri çalıştırır.
 
 <Listing number="11-2" caption="Otomatik olarak üretilen testin çalıştırılmasından elde edilen çıktı">
 
@@ -65,15 +76,15 @@ Dosya örnek bir `add` (topla) fonksiyonuyla başlar, böylece test edecek bir �
 
 </Listing>
 
-Cargo testi derledi ve çalıştırdı. `running 1 test` (1 test çalıştırılıyor) satırını görüyoruz. Sonraki satırda `tests::calisiyor` adlı oluşturulan test fonksiyonunun adı ve o testi çalıştırmanın sonucunun `ok` (tamam) olduğu gösterilir. `test result: ok.` (test sonucu: tamam.) genel özeti tüm testlerin geçtiği anlamına gelir ve `1 passed; 0 failed` (1 geçti; 0 başarısız oldu) yazan kısım geçen veya başarısız olan testlerin toplam sayısını verir.
+Cargo testi derledi ve çalıştırdı. Çıktıda 1 testin çalıştırıldığını belirten `running 1 test` satırını görüyoruz. Bir sonraki satırda, üretilen test fonksiyonunun adı (`tests::calisiyor`) ve bu testi çalıştırma sonucunun başarılı olduğunu gösteren `ok` ifadesi yer alır. Genel özet satırındaki `test result: ok.` tüm testlerin geçtiği anlamına gelir; `1 passed; 0 failed` kısmı ise geçen ve başarısız olan testlerin toplam sayısını verir.
 
-Bir testi yok sayıldı olarak işaretlemek mümkündür, böylece belirli bir örnekte çalışmaz; bunu bu bölümün ilerleyen kısımlarında ["Açıkça İstenmedikçe Testleri Yok Saymak"][ignoring]<!-- ignore --> kısmında ele alacağız. Bunu burada yapmadığımız için özet `0 ignored` (0 yoksayıldı) şeklinde gösterilir. Ayrıca `cargo test` komutuna yalnızca adı bir string (dizgi) ile eşleşen testleri çalıştırmak için bir argüman da iletebiliriz; buna _filtreleme_ denir ve bunu ["Testlerin Bir Alt Kümesini İsme Göre Çalıştırmak"][subset]<!-- ignore --> bölümünde ele alacağız. Burada, çalıştırılan testleri filtrelemedik, bu nedenle özetin sonunda `0 filtered out` (0 filtrelendi) yazar.
+Bir testi belirli bir çalıştırmada yürütülmemesi için yok sayılmış olarak işaretlemek mümkündür; bunu bu bölümün ilerleyen kısımlarındaki ["Açıkça İstenmedikçe Testleri Yok Saymak"][ignoring]<!-- ignore --> başlığında ele alacağız. Burada böyle bir işaretleme yapmadığımız için özette `0 ignored` (0 yok sayıldı) yazar. Ayrıca `cargo test` komutuna bir argüman geçirerek yalnızca adı belirli bir metinle eşleşen testleri çalıştırabiliriz; buna _filtreleme_ denir ve bu konuyu ["Testlerin Bir Alt Kümesini İsme Göre Çalıştırmak"][subset]<!-- ignore --> başlığında inceleyeceğiz. Çalıştırılan testleri filtrelemediğimiz için özetin sonunda `0 filtered out` (0 filtrelendi) ifadesi yer alır.
 
-`0 measured` (0 ölçüldü) istatistiği performansı ölçen kıyaslama testleri içindir. Kıyaslama testleri, bu yazının yazıldığı sırada yalnızca Rust'ın gecelik (nightly) sürümünde kullanılabilir. Daha fazlasını öğrenmek için [kıyaslama testleri hakkındaki belgelere][bench] bakın.
+`0 measured` (0 ölçüldü) istatistiği, performansı ölçen kıyaslama (*benchmark*) testleri içindir. Kıyaslama testleri, bu satırların yazıldığı sırada yalnızca Rust'ın gecelik (*nightly*) sürümünde kullanılabilmektedir. Daha fazla bilgi edinmek için [kıyaslama testleri hakkındaki belgelere][bench] göz atabilirsiniz.
 
-Test çıktısının `Doc-tests adder` ile başlayan bir sonraki bölümü dokümantasyon testlerinin sonuçları içindir. Henüz hiçbir dokümantasyon testimiz yok, ancak Rust, API dokümantasyonumuzda görünen herhangi bir kod örneğini derleyebilir. Bu özellik, dokümanlarınızı ve kodunuzu senkronize tutmanıza yardımcı olur! Dokümantasyon testlerinin nasıl yazılacağını Bölüm 14'teki ["Test Olarak Dokümantasyon Yorumları"][doc-comments]<!-- ignore --> kısmında tartışacağız. Şimdilik `Doc-tests` çıktısını görmezden geleceğiz.
+Test çıktısının `Doc-tests toplayici` ile başlayan bir sonraki bölümü ise *belgelendirme testlerinin (`Doc-tests`)* sonuçlarına ayrılmıştır. Henüz herhangi bir belgelendirme testimiz yok; ancak Rust, API belgelendirmemizde yer alan kod örneklerini derleyip çalıştırabilir. Bu özellik, belgeleriniz ile kodunuzu her zaman senkronize tutmanıza yardımcı olur! Belgelendirme testlerinin nasıl yazılacağını Bölüm 14'teki ["Belgelendirme Yorumlarını Test Olarak Kullanmak"][doc-comments]<!-- ignore --> başlığında ele alacağız. Şimdilik `Doc-tests` çıktısını göz ardı edeceğiz.
 
-Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak, `calisiyor` fonksiyonunun adını farklı bir adla, örneğin şu şekilde `kesif` olarak değiştirin:
+Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak `calisiyor` fonksiyonunun adını farklı bir adla, örneğin aşağıdaki gibi `kesif` olarak değiştirin:
 
 <span class="filename">Dosya adı: src/lib.rs</span>
 
@@ -81,15 +92,15 @@ Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak,
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-01-changing-test-name/src/lib.rs}}
 ```
 
-Ardından, `cargo test`'i tekrar çalıştırın. Çıktı artık `calisiyor` yerine `kesif`'i gösteriyor:
+Ardından `cargo test` komutunu tekrar çalıştırın. Çıktı artık `calisiyor` yerine `kesif` adını gösterir:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-01-changing-test-name/output.txt}}
 ```
 
-Şimdi başka bir test daha ekleyeceğiz, ama bu sefer başarısız olan bir test yapacağız! Test fonksiyonundaki bir şey paniklediğinde testler başarısız olur. Her test yeni bir iş parçacığında çalıştırılır ve ana iş parçacığı bir test iş parçacığının öldüğünü gördüğünde test başarısız olarak işaretlenir. Bölüm 9'da, panik yapmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak girin, böylece _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünür.
+Şimdi bir test daha ekleyeceğiz, ancak bu kez başarısız olan bir test yazacağız! Test fonksiyonunun içindeki bir kod paniklediğinde test başarısız olur. Her test ayrı bir thread'de (iş parçacığında) çalıştırılır ve ana thread bir test thread'inin sonlandığını gördüğünde o testi başarısız olarak işaretler. Bölüm 9'da panik oluşturmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak ekleyin; _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünecektir.
 
-<Listing number="11-3" file-name="src/lib.rs" caption="`panic!` makrosunu çağırdığımız için başarısız olacak ikinci bir test eklemek">
+<Listing number="11-3" file-name="src/lib.rs" caption="`panic!` makrosunu çağırdığımız için başarısız olacak ikinci bir test ekleme">
 
 ```rust,panics,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-03/src/lib.rs}}
@@ -97,9 +108,9 @@ Ardından, `cargo test`'i tekrar çalıştırın. Çıktı artık `calisiyor` ye
 
 </Listing>
 
-`cargo test` komutunu kullanarak testleri tekrar çalıştırın. Çıktı Liste 11-4'teki gibi görünmeli ve `kesif` testimizin geçtiğini, `baska_bir_test`'in ise başarısız olduğunu göstermelidir.
+`cargo test` komutuyla testleri tekrar çalıştırın. Çıktı Liste 11-4'teki gibi görünmeli; `kesif` testimizin geçtiğini, `baska_bir_test` testimizin ise başarısız olduğunu göstermelidir.
 
-<Listing number="11-4" caption="Bir test geçtiğinde ve bir test başarısız olduğunda test sonuçları">
+<Listing number="11-4" caption="Bir test geçtiğinde ve bir test başarısız olduğunda elde edilen test sonuçları">
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-03/output.txt}}
@@ -112,21 +123,24 @@ rg panicked listings/ch11-writing-automated-tests/listing-11-03/output.txt
 check the line number of the panic matches the line number in the following paragraph
  -->
 
-Bireysel sonuçlar (individual results) ile özet arasında iki yeni bölüm görünür: `test tests::baska_bir_test` satırı `ok` yerine `FAILED` (BAŞARISIZ) gösterir. İlk yeni bölüm, her bir test başarısızlığının ayrıntılı nedenini görüntüler. Bu durumda, `tests::baska_bir_test`'in _src/lib.rs_ dosyasındaki 17. satırda `Bu testi başarısız yap` (Make this test fail) mesajıyla paniklediği için başarısız olduğu detaylarını alıyoruz. Sonraki bölümde sadece başarısız olan tüm testlerin adları listelenir ki bu da çok sayıda test ve çok sayıda ayrıntılı başarısız test çıktısı olduğunda kullanışlıdır. Daha kolay hata ayıklamak amacıyla yalnızca o testi çalıştırmak için başarısız olan bir testin adını kullanabiliriz; testleri çalıştırmanın yolları hakkında ["Testlerin Nasıl Çalıştırılacağını Kontrol Etme"][controlling-how-tests-are-run]<!-- ignore --> bölümünde daha fazla konuşacağız.
+`test tests::baska_bir_test` satırında `ok` yerine `FAILED` (başarısız) yazar. Tek tek test sonuçları ile genel özet arasında iki yeni bölüm belirir: İlk bölüm, her bir test başarısızlığının ayrıntılı nedenini gösterir. Bu örnekte `tests::baska_bir_test` testinin, _src/lib.rs_ dosyasının 17. satırında `Bu testi başarısız yap` mesajıyla paniklediği için başarısız olduğu ayrıntısını görürüz. İkinci bölüm ise yalnızca başarısız olan tüm testlerin adlarını listeler; çok sayıda testin ve uzun hata çıktılarının bulunduğu projelerde bu liste oldukça kullanışlıdır. Başarısız olan bir testin adını kullanarak hataları daha kolay ayıklamak üzere yalnızca o testi çalıştırabiliriz; testleri çalıştırma yöntemlerini ["Testlerin Nasıl Çalıştırılacağını Kontrol Etme"][controlling-how-tests-are-run]<!-- ignore --> bölümünde daha ayrıntılı ele alacağız.
 
-Özet satırı en sonda görüntülenir: Genel olarak, test sonucumuz `FAILED` (BAŞARISIZ)'dır. Bir testimiz geçti ve bir testimiz başarısız oldu.
+En sonda özet satırı görüntülenir: Genel test sonucumuz `FAILED` olarak raporlanmıştır. Bir testimiz geçmiş, bir testimiz ise başarısız olmuştur.
 
-Farklı senaryolarda test sonuçlarının neye benzediğini gördüğünüze göre, testlerde yararlı olan `panic!` dışındaki bazı makrolara bakalım.
+Farklı senaryolarda test sonuçlarının nasıl göründüğünü incelediğimize göre, şimdi testlerde `panic!` dışında işimize yarayacak diğer makrolara bakalım.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="checking-results-with-the-assert-macro"></a>
+<a id="checking-results-with-assert"></a>
+<a id="assert-ile-sonuçları-kontrol-etmek"></a>
+<a id="assert-ile-sonuclari-kontrol-etmek"></a>
 
-### `assert!` ile Sonuçları Kontrol Etmek
+### `assert!` ile Sonuçları Kontrol Etme
 
-Standart kütüphane tarafından sağlanan `assert!` makrosu, bir testteki bazı koşulların `true` (doğru) olarak değerlendirilmesini sağlamak istediğinizde yararlıdır. `assert!` makrosuna bir Boolean (mantıksal değer) olarak değerlendirilen bir argüman veririz. Eğer değer `true` ise hiçbir şey olmaz ve test geçer. Değer `false` (yanlış) ise, `assert!` makrosu testin başarısız olmasına neden olmak için `panic!` çağırır. `assert!` makrosunu kullanmak, kodumuzun amaçladığımız şekilde çalışıp çalışmadığını kontrol etmemize yardımcı olur.
+Standart kütüphane tarafından sağlanan `assert!` makrosu, bir testteki belirli bir koşulun `true` olarak değerlendirildiğinden emin olmak istediğinizde kullanışlıdır. `assert!` makrosuna mantıksal (`bool`) bir değer üreten bir argüman veririz. Değer `true` ise hiçbir şey olmaz ve test geçer. Değer `false` ise `assert!` makrosu `panic!` çağırarak testin başarısız olmasına yol açar. `assert!` makrosunu kullanmak, kodumuzun amaçladığımız şekilde çalışıp çalışmadığını denetlememize yardımcı olur.
 
-Bölüm 5, Liste 5-15'te, burada Liste 11-5'te tekrarlanan bir `Dikdortgen` yapısı (struct) ve bir `tutabilir_mi` metodu kullandık. Gelin bu kodu _src/lib.rs_ dosyasına koyalım ve ardından `assert!` makrosunu kullanarak bunun için bazı testler yazalım.
+Bölüm 5, Liste 5-15'te bir `Dikdortgen` struct'ı ve başka bir dikdörtgeni içine alıp alamayacağını kontrol eden bir metot (orada `kapsayabilir_mi`, burada ise Liste 11-5'te `tutabilir_mi` adıyla) kullanmıştık. Bu kodu _src/lib.rs_ dosyasına koyalım ve ardından `assert!` makrosunu kullanarak onun için birkaç test yazalım.
 
 <Listing number="11-5" file-name="src/lib.rs" caption="Bölüm 5'teki `Dikdortgen` struct'ı ve `tutabilir_mi` metodu">
 
@@ -136,9 +150,9 @@ Bölüm 5, Liste 5-15'te, burada Liste 11-5'te tekrarlanan bir `Dikdortgen` yap�
 
 </Listing>
 
-`tutabilir_mi` metodu bir Boolean döndürür, bu da `assert!` makrosu için mükemmel bir kullanım durumu olduğu anlamına gelir. Liste 11-6'da, genişliği 8 ve yüksekliği 7 olan bir `Dikdortgen` örneği oluşturarak ve onun genişliği 5 ve yüksekliği 1 olan başka bir `Dikdortgen` örneğini tutabildiğini (hold) doğrulayarak (asserting) `tutabilir_mi` metodunu uygulayan (exercises) bir test yazıyoruz.
+`tutabilir_mi` metodu bir `bool` döndürür; bu da onu `assert!` makrosu için biçilmiş kaftan yapar. Liste 11-6'da genişliği `8`, yüksekliği `7` olan bir `Dikdortgen` örneği oluşturup bunun genişliği `5`, yüksekliği `1` olan başka bir `Dikdortgen` örneğini tutabildiğini doğrulayarak `tutabilir_mi` metodunu sınayan bir test yazıyoruz.
 
-<Listing number="11-6" file-name="src/lib.rs" caption="Daha büyük bir dikdörtgenin gerçekten daha küçük bir dikdörtgeni tutup tutamayacağını kontrol eden `tutabilir_mi` için bir test">
+<Listing number="11-6" file-name="src/lib.rs" caption="Daha büyük bir dikdörtgenin daha küçük bir dikdörtgeni gerçekten içine alıp alamayacağını kontrol eden `tutabilir_mi` testi">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-06/src/lib.rs:here}}
@@ -146,15 +160,15 @@ Bölüm 5, Liste 5-15'te, burada Liste 11-5'te tekrarlanan bir `Dikdortgen` yap�
 
 </Listing>
 
-`tests` modülünün içindeki `use super::*;` satırına dikkat edin. `tests` modülü, Bölüm 7'de ["Modül Ağacındaki Bir Öğeye Atıfta Bulunmak İçin Yollar"][paths-for-referring-to-an-item-in-the-module-tree]<!-- ignore --> kısmında ele aldığımız olağan görünürlük (visibility) kurallarını izleyen normal bir modüldür. `tests` modülü bir iç modül (inner module) olduğu için, dış modülde (outer module) test edilen kodu iç modülün kapsamına getirmemiz gerekir. Burada bir glob kullanıyoruz, böylece dış modülde tanımladığımız her şey bu `tests` modülü tarafından kullanılabilir (available) olur.
+`tests` modülünün içindeki `use super::*;` satırına dikkat edin. `tests` modülü, Bölüm 7'deki ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths-for-referring-to-an-item-in-the-module-tree]<!-- ignore --> başlığında ele aldığımız olağan görünürlük kurallarına uyan sıradan bir modüldür. `tests` modülü bir iç modül olduğundan, dış modülde yer alan ve test edilen kodu iç modülün kapsamına dahil etmemiz gerekir. Burada bir *glob* (`*`) operatörü kullandığımız için dış modülde tanımladığımız her şey bu `tests` modülü içinde erişilebilir hale gelir.
 
-Testimizi `buyuk_kucugu_tutabilir_mi` olarak adlandırdık ve ihtiyacımız olan iki `Dikdortgen` örneğini oluşturduk. Ardından, `assert!` makrosunu çağırdık ve ona `buyuk.tutabilir_mi(&kucuk)` (`larger.can_hold(&smaller)`) çağrısının sonucunu geçtik (passed). Bu ifadenin `true` döndürmesi varsayılır, bu yüzden testimiz geçmelidir. Hadi öğrenelim!
+Testimizi `buyuk_kucugu_tutabilir_mi` olarak adlandırdık ve ihtiyacımız olan iki `Dikdortgen` örneğini oluşturduk. Ardından `assert!` makrosunu çağırıp ona `buyuk.tutabilir_mi(&kucuk)` ifadesinin sonucunu geçirdik. Bu ifadenin `true` döndürmesi gerekir, dolayısıyla testimiz geçmelidir. Haydi deneyip görelim!
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-06/output.txt}}
 ```
 
-Geçiyor! Haydi başka bir test ekleyelim, bu sefer daha küçük bir dikdörtgenin daha büyük bir dikdörtgeni tutamayacağını doğrulayalım:
+Test geçti! Şimdi bir test daha ekleyelim ve bu kez küçük bir dikdörtgenin kendisinden büyük bir dikdörtgeni tutamayacağını doğrulayalım:
 
 <span class="filename">Dosya adı: src/lib.rs</span>
 
@@ -162,37 +176,40 @@ Geçiyor! Haydi başka bir test ekleyelim, bu sefer daha küçük bir dikdörtge
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/src/lib.rs:here}}
 ```
 
-Bu durumda `tutabilir_mi` fonksiyonunun doğru sonucu `false` (yanlış) olduğundan, `assert!` makrosuna iletmeden önce bu sonucu değillememiz (negate) gerekir. Sonuç olarak, `tutabilir_mi` `false` döndürürse testimiz geçecektir:
+Bu senaryoda `tutabilir_mi` metodunun doğru sonucu `false` olduğundan, sonucu `assert!` makrosuna geçirmeden önce `!` operatörüyle değillememiz gerekir. Böylece `tutabilir_mi` metodu `false` döndürdüğünde testimiz geçecektir:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/output.txt}}
 ```
 
-Geçen iki test! Şimdi kodumuza bir hata (bug) eklediğimizde test sonuçlarımıza ne olacağını görelim. Genişlikleri (widths) karşılaştırırken büyüktür işaretini (`>`) küçüktür işaretiyle (`<`) değiştirerek `tutabilir_mi` metodunun uygulamasını değiştireceğiz:
+İki test de geçti! Şimdi kodumuza bir hata yerleştirdiğimizde test sonuçlarımıza ne olacağını görelim. Genişlikleri karşılaştırırken büyüktür işaretini (`>`) küçüktür işaretiyle (`<`) değiştirerek `tutabilir_mi` metodunun uygulamasını bozalım:
 
 ```rust,not_desired_behavior,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-03-introducing-a-bug/src/lib.rs:here}}
 ```
 
-Testleri şimdi çalıştırmak şunları üretir:
+Testleri şimdi çalıştırmak şu çıktıyı üretir:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-03-introducing-a-bug/output.txt}}
 ```
 
-Testlerimiz hatayı yakaladı! `buyuk.genislik` (larger.width) `8` ve `kucuk.genislik` (smaller.width) `5` olduğu için, `tutabilir_mi` içindeki genişliklerin (widths) karşılaştırması artık `false` döndürür: 8, 5'ten küçük değildir.
+Testlerimiz hatayı yakaladı! `buyuk.genislik` değeri `8` ve `kucuk.genislik` değeri `5` olduğundan, `tutabilir_mi` içindeki genişlik karşılaştırması artık `false` döndürür; çünkü `8`, `5`'ten küçük değildir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="testing-equality-with-the-assert_eq-and-assert_ne-macros"></a>
+<a id="testing-equality-with-assert_eq-and-assert_ne"></a>
+<a id="assert_eq-ve-assert_ne-makroları-ile-eşitliği-test-etmek"></a>
+<a id="assert_eq-ve-assert_ne-makrolari-ile-esitligi-test-etmek"></a>
 
-### `assert_eq!` ve `assert_ne!` Makroları ile Eşitliği Test Etmek
+### `assert_eq!` ve `assert_ne!` ile Eşitliği Test Etme
 
-İşlevselliği doğrulamanın yaygın bir yolu, test edilen kodun sonucu ile kodun döndürmesini beklediğiniz değer arasında eşitlik testi yapmaktır. Bunu `assert!` makrosunu kullanarak ve ona `==` operatörü ile bir ifade ileterek yapabilirsiniz. Ancak bu o kadar yaygın bir testtir ki, standart kütüphane bu testi daha rahat gerçekleştirmek için bir çift makro (`assert_eq!` ve `assert_ne!`) sağlar. Bu makrolar sırasıyla iki argümanı eşitlik veya eşitsizlik açısından karşılaştırır. Doğrulama başarısız olursa iki değeri de yazdırırlar ki bu da testin _neden_ başarısız olduğunu görmeyi kolaylaştırır; buna karşılık `assert!` makrosu `false` değerine yol açan değerleri yazdırmadan yalnızca `==` ifadesi için `false` değerini aldığını belirtir.
+İşlevselliği doğrulamanın yaygın bir yolu, test edilen kodun ürettiği sonuç ile döndürmesini beklediğiniz değer arasında eşitlik kontrolü yapmaktır. Bunu `assert!` makrosuna `==` operatörünü kullanan bir ifade geçirerek de yapabilirsiniz. Ancak bu o kadar sık yapılan bir denetimdir ki standart kütüphane bu işi daha pratik biçimde gerçekleştirmek için bir çift makro sunar: `assert_eq!` ve `assert_ne!`. Bu makrolar iki argümanı sırasıyla eşitlik veya eşitsizlik açısından karşılaştırır. Üstelik doğrulama başarısız olduğunda her iki değeri de ekrana yazdırarak testin _neden_ başarısız olduğunu görmeyi kolaylaştırırlar; oysa `assert!` makrosu `false` sonucuna yol açan değerleri göstermeden yalnızca `==` ifadesinin `false` döndürdüğünü bildirir.
 
-Liste 11-7'de parametresine `2` ekleyen `iki_ekle` adında bir fonksiyon yazıyoruz ve ardından bu fonksiyonu `assert_eq!` makrosunu kullanarak test ediyoruz.
+Liste 11-7'de parametresine `2` ekleyen `iki_ekle` adında bir fonksiyon yazıyor ve ardından bu fonksiyonu `assert_eq!` makrosuyla test ediyoruz.
 
-<Listing number="11-7" file-name="src/lib.rs" caption="`assert_eq!` makrosunu kullanarak `iki_ekle` fonksiyonunu test etmek">
+<Listing number="11-7" file-name="src/lib.rs" caption="`assert_eq!` makrosunu kullanarak `iki_ekle` fonksiyonunu test etme">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-07/src/lib.rs}}
@@ -200,15 +217,15 @@ Liste 11-7'de parametresine `2` ekleyen `iki_ekle` adında bir fonksiyon yazıyo
 
 </Listing>
 
-Geçip geçmediğini kontrol edelim!
+Testin geçip geçmediğini kontrol edelim!
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-07/output.txt}}
 ```
 
-`iki_ekle(2)` çağrısının sonucunu tutan `sonuc` adında bir değişken oluşturuyoruz. Ardından `assert_eq!` makrosuna argüman olarak `sonuc` ve `4`'ü geçiriyoruz. Bu test için çıktı satırı `test tests::iki_ekliyor ... ok` şeklindedir ve `ok` (tamam) metni testimizin geçtiğini gösterir!
+`iki_ekle(2)` çağrısının sonucunu tutan `sonuc` adında bir değişken oluşturuyoruz. Ardından `assert_eq!` makrosuna argüman olarak `sonuc` ve `4` değerlerini geçiriyoruz. Bu testin çıktı satırı `test tests::iki_ekliyor ... ok` şeklindedir ve `ok` metni testimizin geçtiğini gösterir!
 
-`assert_eq!`'in başarısız olduğunda nasıl göründüğünü görmek için kodumuza bir hata (bug) ekleyelim. `iki_ekle` fonksiyonunun uygulamasını `3` ekleyecek şekilde değiştirin:
+`assert_eq!` makrosunun başarısız olduğunda nasıl bir çıktı ürettiğini görmek için kodumuza bir hata ekleyelim. `iki_ekle` fonksiyonunun uygulamasını `2` yerine `3` ekleyecek şekilde değiştirin:
 
 ```rust,not_desired_behavior,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-04-bug-in-add-two/src/lib.rs:here}}
@@ -220,19 +237,27 @@ Testleri tekrar çalıştırın:
 {{#include ../listings/ch11-writing-automated-tests/no-listing-04-bug-in-add-two/output.txt}}
 ```
 
-Testimiz hatayı yakaladı! `tests::iki_ekliyor` testi başarısız oldu ve mesaj bize başarısız olan doğrulamanın (assertion) `left == right` (sol == sağ) olduğunu ve `left` ile `right` değerlerinin ne olduğunu söylüyor. Bu mesaj hata ayıklamaya başlamamıza yardımcı olur: `iki_ekle(2)` çağırmanın sonucunu koyduğumuz `left` argümanı `5`'ti ama `right` argümanı `4`'tü. Çok fazla testimiz olduğunda bunun özellikle yararlı olacağını hayal edebilirsiniz.
+Testimiz hatayı yakaladı! `tests::iki_ekliyor` testi başarısız oldu; hata mesajı bize başarısız olan doğrulamanın `left == right` olduğunu ve `left` (sol) ile `right` (sağ) değerlerinin ne olduğunu açıkça söylüyor. Bu bilgi hata ayıklamaya hemen başlamamıza yardımcı olur: `iki_ekle(2)` çağrısının sonucunu verdiğimiz `left` argümanı `5` iken `right` argümanı `4` idi. Çok sayıda testimizin bulunduğu projelerde bu çıktının ne kadar işe yarayacağını tahmin edebilirsiniz.
 
-Bazı dillerde ve test framework'lerinde (çatı/altyapı) eşitlik doğrulama fonksiyonlarının parametrelerine `expected` (beklenen) ve `actual` (gerçek) adının verildiğini ve argümanları belirttiğimiz sıranın önemli olduğunu unutmayın. Ancak Rust'ta bunlar `left` (sol) ve `right` (sağ) olarak adlandırılır ve beklediğimiz değeri ve kodun ürettiği değeri belirttiğimiz sıra (order) önemli değildir. Bu testteki doğrulamayı `assert_eq!(4, sonuc)` olarak yazabilirdik ve bu da yine `` assertion `left == right` failed `` şeklinde aynı başarısızlık mesajını verirdi.
+Bazı programlama dillerinde ve test çatılarında eşitlik doğrulama fonksiyonlarının parametrelerine `expected` (beklenen) ve `actual` (gerçekleşen) adı verilir; dolayısıyla argümanları belirttiğimiz sıra önem taşır. Rust'ta ise bu parametreler `left` ve `right` olarak adlandırılır; beklediğimiz değer ile kodun ürettiği değeri hangi sırayla yazdığımızın bir önemi yoktur. Bu testteki doğrulamayı `assert_eq!(4, sonuc)` olarak da yazabilirdik ve başarısızlık durumunda yine `` assertion `left == right` failed `` şeklinde aynı hata mesajını alırdık.
 
-`assert_ne!` makrosu, verdiğimiz iki değer eşit değilse geçecek ve eşitse başarısız olacaktır. Bu makro, bir değerin ne _olacağından_ emin olmadığımız ama ne _olmaması_ gerektiğini kesin olarak bildiğimiz durumlarda en kullanışlıdır. Örneğin, girdisini bir şekilde değiştirmesi garanti edilen bir fonksiyonu test ediyorsak, ancak girdinin değiştirilme şekli testlerimizi çalıştırdığımız haftanın gününe bağlıysa, doğrulanacak en iyi şey fonksiyonun çıktısının girdiye eşit olmaması (not equal) olabilir.
+`assert_ne!` makrosu ise verdiğimiz iki değer birbirine eşit değilse geçer, eşitse başarısız olur. Bu makro en çok bir değerin ne _olacağından_ emin olmadığımız, ancak kesinlikle ne _olmaması_ gerektiğini bildiğimiz durumlarda kullanışlıdır. Örneğin girdisini bir şekilde değiştirmesi garanti edilen, ancak bu değişikliğin biçimi testleri çalıştırdığımız haftanın gününe bağlı olan bir fonksiyonu test ediyorsak, doğrulanabilecek en iyi koşul fonksiyon çıktısının girdiye eşit olmaması olabilir.
 
-Yüzeyin altında, `assert_eq!` ve `assert_ne!` makroları sırasıyla `==` ve `!=` operatörlerini kullanır. Doğrulamalar başarısız olduğunda, bu makrolar argümanlarını debug (hata ayıklama) formatlamasını kullanarak yazdırır, bu da karşılaştırılan değerlerin `PartialEq` ve `Debug` trait'lerini (özelliklerini) uygulaması gerektiği anlamına gelir. Tüm ilkel türler ve standart kütüphane türlerinin çoğu bu traitleri uygular. Kendi tanımladığınız struct'lar ve enum'lar için, bu türlerin eşitliğini doğrulamak adına `PartialEq` uygulamanız gerekecektir. Doğrulama başarısız olduğunda değerleri yazdırmak için `Debug` trait'ini de uygulamanız gerekecektir. Her iki trait de Bölüm 5'teki Liste 5-12'de belirtildiği gibi türetilebilir traitler olduğundan, bu genellikle struct veya enum tanımınıza `#[derive(PartialEq, Debug)]` açıklamasını eklemek kadar kolaydır. Bu ve diğer türetilebilir traitler hakkında daha fazla detay için Ek C, ["Türetilebilir Traitler (Derivable Traits)"][derivable-traits]<!-- ignore --> bölümüne bakınız.
+Perde arkasında `assert_eq!` ve `assert_ne!` makroları sırasıyla `==` ve `!=` operatörlerini kullanır. Doğrulamalar başarısız olduğunda bu makrolar argümanlarını hata ayıklama (*debug*) biçimlendirmesiyle yazdırır; bu da karşılaştırılan değerlerin hem `PartialEq` hem de `Debug` trait'lerini uygulaması gerektiği anlamına gelir. Tüm ilkel türler ve standart kütüphane türlerinin büyük çoğunluğu bu trait'leri halihazırda uygular. Kendi tanımladığınız struct ve enum'larda ise türlerin eşitliğini sınayabilmek için `PartialEq` trait'ini, doğrulama başarısız olduğunda değerleri yazdırabilmek için de `Debug` trait'ini uygulamanız gerekir. Bölüm 5'teki Liste 5-12'de değindiğimiz üzere her iki trait de türetilebilir (*derivable*) olduğundan, bu işlem genellikle struct veya enum tanımınıza `#[derive(PartialEq, Debug)]` özniteliğini eklemek kadar basittir. Bu ve diğer türetilebilir trait'ler hakkında daha fazla ayrıntı için Ek C, ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz.
 
-### Özel Başarısızlık Mesajları Eklemek
+> Not: Testiniz başarılı olsa bile `assert_eq!(sol, sag)` ve `assert_ne!(sol, sag)` makroları derleme zamanında her iki trait sınırını da zorunlu tutar: Makro genişletildiğinde karşılaştırma için `PartialEq` (`==` / `!=`), başarısızlık kolundaki hata mesajı için ise `Debug` (`{:?}`) biçimlendirme kodu üretilir. Tam eşitlik (`Eq`) yerine kısmi eşitlik (`PartialEq`) istenmesinin nedeni, `NaN != NaN` kuralı yüzünden `Eq` uygulamayan `f32`/`f64` gibi kayan noktalı sayıların da testlerde karşılaştırılabilmesini sağlamaktır. Kendi struct veya enum türünüze `#[derive(PartialEq, Debug)]` eklediğinizde, o türün içindeki tüm alanların da bu iki trait'i uygulaması gerektiğini unutmayın.
 
-Başarısızlık mesajıyla birlikte yazdırılacak özel bir mesajı `assert!`, `assert_eq!` ve `assert_ne!` makrolarına isteğe bağlı argümanlar olarak da ekleyebilirsiniz. Gerekli argümanlardan sonra belirtilen tüm argümanlar `format!` makrosuna iletilir (Bölüm 8'de ["`+` veya `format!` Makrosu ile Birleştirmek (Concatenating)"][concatenating]<!-- ignore --> kısmında tartışılmıştır), böylece `{}` yer tutucularını ve bu yer tutuculara gidecek değerleri içeren bir format string'i (dizgisi) iletebilirsiniz. Özel mesajlar, bir doğrulamanın ne anlama geldiğini belgelemek için faydalıdır; bir test başarısız olduğunda koddaki sorunun ne olduğu hakkında daha iyi bir fikre sahip olursunuz.
+<!-- Old headings. Do not remove or links may break. -->
 
-Örneğin, insanları ismen selamlayan bir fonksiyonumuz olduğunu ve fonksiyona geçtiğimiz adın çıktıda göründüğünü test etmek istediğimizi varsayalım:
+<a id="adding-custom-failure-messages"></a>
+<a id="özel-başarısızlık-mesajları-eklemek"></a>
+<a id="ozel-basarisizlik-mesajlari-eklemek"></a>
+
+### Özel Başarısızlık Mesajları Ekleme
+
+Başarısızlık mesajıyla birlikte yazdırılacak özel bir açıklamayı `assert!`, `assert_eq!` ve `assert_ne!` makrolarına isteğe bağlı argümanlar olarak da ekleyebilirsiniz. Zorunlu argümanlardan sonra belirtilen tüm ek argümanlar `format!` makrosuna (Bölüm 8'deki ["`+` veya `format!` ile Birleştirme"][concatenating]<!-- ignore --> başlığında ele alınmıştı) aktarılır; dolayısıyla `{}` yer tutucuları içeren bir biçimlendirme dizgisi ve bu yer tutuculara yerleşecek değerleri geçirebilirsiniz. Özel mesajlar bir doğrulamanın ne anlama geldiğini belgelemek açısından oldukça yararlıdır; test başarısız olduğunda koddaki sorunun ne olduğuna dair çok daha net bir fikir verir.
+
+Örneğin insanları ismen selamlayan bir fonksiyonumuz olduğunu ve fonksiyona geçirdiğimiz ismin çıktıda yer alıp almadığını test etmek istediğimizi varsayalım:
 
 <span class="filename">Dosya adı: src/lib.rs</span>
 
@@ -240,43 +265,49 @@ Başarısızlık mesajıyla birlikte yazdırılacak özel bir mesajı `assert!`,
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-05-greeter/src/lib.rs}}
 ```
 
-Bu programa yönelik gereksinimler henüz tam olarak kararlaştırılmadı (agreed upon) ve selamlamanın başındaki `Merhaba` (Hello) metninin değişeceğinden oldukça eminiz. Gereksinimler değiştiğinde testi güncellemek zorunda kalmamaya karar verdik, bu nedenle `selamlama` fonksiyonundan döndürülen değere tam eşitlik kontrolü yapmak yerine çıktının girdi parametresinin metnini içerdiğini doğrulayacağız.
+Bu programa ilişkin gereksinimler henüz kesinleşmedi ve selamlamanın başındaki `Merhaba` metninin ileride değişeceğinden neredeyse eminiz. Gereksinimler değiştiğinde testi yeniden güncellemek istemediğimiz için, `selamlama` fonksiyonundan dönen değer üzerinde tam eşitlik kontrolü yapmak yerine yalnızca çıktının girdi parametresindeki metni içerdiğini doğrulamayı tercih ettik.
 
-Şimdi `selamlama` fonksiyonunu `isim` değişkenini dışarıda bırakacak şekilde değiştirerek bu koda bir hata ekleyelim ve varsayılan test başarısızlığının nasıl göründüğüne bakalım:
+Şimdi `selamlama` fonksiyonunu `isim` parametresini dışarıda bırakacak şekilde değiştirerek bu koda bir hata ekleyelim ve varsayılan test başarısızlığının nasıl göründüğüne bakalım:
 
 ```rust,not_desired_behavior,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-06-greeter-with-bug/src/lib.rs:here}}
 ```
 
-Bu testin çalıştırılması aşağıdakini üretir:
+Bu testi çalıştırmak aşağıdaki çıktıyı üretir:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-06-greeter-with-bug/output.txt}}
 ```
 
-Bu sonuç sadece doğrulamanın başarısız olduğunu ve doğrulamanın hangi satırda olduğunu gösterir. Daha kullanışlı bir başarısızlık mesajı, `selamlama` fonksiyonundan gelen değeri yazdıracaktır. `selamlama` fonksiyonundan aldığımız gerçek değerle doldurulmuş bir yer tutucusu (placeholder) olan format string'inden oluşan özel bir başarısızlık mesajı ekleyelim:
+Bu sonuç yalnızca doğrulamanın başarısız olduğunu ve hangi satırda gerçekleştiğini bildirir. Daha kullanışlı bir başarısızlık mesajı, `selamlama` fonksiyonundan dönen gerçek değeri de yazdırırdı. Şimdi `selamlama` fonksiyonundan aldığımız gerçek değerle doldurulan bir yer tutucuya sahip biçimlendirme dizgisinden oluşan özel bir başarısızlık mesajı ekleyelim:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-07-custom-failure-message/src/lib.rs:here}}
 ```
 
-Şimdi testi çalıştırdığımızda daha bilgilendirici bir hata mesajı alacağız:
+Artık testi çalıştırdığımızda çok daha bilgilendirici bir hata mesajı alırız:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-07-custom-failure-message/output.txt}}
 ```
 
-Test çıktısında gerçekten aldığımız değeri görebiliyoruz, bu da olmasını beklediğimiz şey yerine ne olduğunun hatasını ayıklamamıza yardımcı olacaktır.
+Test çıktısında gerçekten elde ettiğimiz değeri görebiliyoruz; bu da beklediğimiz sonuç yerine gerçekte ne olup bittiğini anlayıp hatayı ayıklamamıza yardımcı olur.
 
-### `should_panic` ile Panikleri (Panics) Kontrol Etmek
+<!-- Old headings. Do not remove or links may break. -->
 
-Dönüş değerlerini kontrol etmeye ek olarak kodumuzun hata durumlarını (error conditions) beklediğimiz gibi yönetip yönetmediğini kontrol etmek de önemlidir. Örneğin, Bölüm 9 Liste 9-13'te oluşturduğumuz `Tahmin` türünü düşünün. `Tahmin`'i kullanan diğer kodlar, `Tahmin` örneklerinin sadece 1 ile 100 arasındaki değerleri içereceğinin garantisine bağlıdır. Bu aralığın dışında bir değerle `Tahmin` örneği oluşturma denemesinin panik yarattığından emin olan bir test yazabiliriz.
+<a id="checking-for-panics-with-should_panic"></a>
+<a id="should_panic-ile-panikleri-panics-kontrol-etmek"></a>
+<a id="should_panic-ile-panikleri-kontrol-etmek"></a>
 
-Bunu test fonksiyonumuza `should_panic` (paniklemeli) özniteliğini ekleyerek yapıyoruz. Fonksiyonun içindeki kod paniklerse test geçer; fonksiyonun içindeki kod paniklemezse test başarısız olur.
+### `should_panic` ile Panikleri Kontrol Etme
 
-Liste 11-8, `Tahmin::new` (Guess::new) hata durumlarının beklediğimiz zaman gerçekleştiğini kontrol eden bir testi gösterir.
+Dönüş değerlerini kontrol etmenin yanı sıra, kodumuzun hata durumlarını beklediğimiz gibi ele alıp almadığını denetlemek de önemlidir. Örneğin Bölüm 9, Liste 9-13'te oluşturduğumuz `Tahmin` türünü düşünün. `Tahmin` türünü kullanan diğer kodlar, `Tahmin` örneklerinin yalnızca `1` ile `100` arasındaki değerleri barındıracağı güvencesine dayanır. Bu aralığın dışındaki bir değerle `Tahmin` örneği oluşturma girişiminin panikle sonuçlandığından emin olan bir test yazabiliriz.
 
-<Listing number="11-8" file-name="src/lib.rs" caption="Bir koşulun `panic!`'e neden olacağını test etme">
+Bunu test fonksiyonumuza `should_panic` özniteliğini ekleyerek yaparız. Fonksiyonun içindeki kod paniklerse test geçer; kod paniklemezse test başarısız olur.
+
+Liste 11-8, `Tahmin::new` fonksiyonunun hata koşullarının beklediğimiz durumda gerçekleştiğini denetleyen bir testi gösterir.
+
+<Listing number="11-8" file-name="src/lib.rs" caption="Bir koşulun `panic!` çağrısına neden olacağını test etme">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-08/src/lib.rs}}
@@ -284,29 +315,29 @@ Liste 11-8, `Tahmin::new` (Guess::new) hata durumlarının beklediğimiz zaman g
 
 </Listing>
 
-`#[should_panic]` özniteliğini (attribute) `#[test]` özniteliğinden sonra ve uygulandığı test fonksiyonundan önce yerleştiririz. Bu test geçtiğindeki sonuca bakalım:
+`#[should_panic]` özniteliğini `#[test]` özniteliğinden sonra ve uygulanacağı test fonksiyonundan hemen önce yerleştiririz. Bu test geçtiğinde elde edilen sonuca bakalım:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-08/output.txt}}
 ```
 
-Güzel görünüyor! Şimdi `new` (yeni) fonksiyonunun değer 100'den büyükse paniğe kapılacağı koşulunu kaldırarak kodumuza bir hata (bug) sokalım:
+Harika görünüyor! Şimdi `new` fonksiyonundaki değerin `100`'den büyük olması durumunda panikleme koşulunu kaldırarak kodumuza bir hata ekleyelim:
 
 ```rust,not_desired_behavior,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-08-guess-with-bug/src/lib.rs:here}}
 ```
 
-Liste 11-8'deki testi çalıştırdığımızda, başarısız olacaktır:
+Liste 11-8'deki testi çalıştırdığımızda test başarısız olacaktır:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-08-guess-with-bug/output.txt}}
 ```
 
-Bu durumda pek yardımcı bir mesaj alamıyoruz, ancak test fonksiyonuna baktığımızda onun `#[should_panic]` ile açıklandığını (annotated) görüyoruz. Aldığımız hata (failure), test fonksiyonundaki kodun paniğe neden olmadığı anlamına gelir.
+Bu durumda çok açıklayıcı bir mesaj almayız; ancak test fonksiyonuna baktığımızda `#[should_panic]` ile işaretlendiğini görürüz. Aldığımız başarısızlık sonucu, test fonksiyonundaki kodun paniğe yol açmadığı anlamına gelir.
 
-`should_panic` kullanan testler kesin (imprecise) olmayabilir. Bir `should_panic` testi, test beklediğimizden farklı bir nedenle paniklese bile geçer. `should_panic` testlerini daha kesin hale getirmek için, `should_panic` özniteliğine isteğe bağlı (optional) bir `expected` (beklenen) parametresi ekleyebiliriz. Test altyapısı başarısızlık mesajının sağlanan metni içerdiğinden emin olacaktır. Örneğin Liste 11-9'da, `new` fonksiyonunun değerin çok küçük ya da çok büyük olmasına bağlı olarak farklı mesajlarla paniklediği `Tahmin` için değiştirilmiş koda bakın.
+Yalnızca `should_panic` kullanan testler yeterince kesin olmayabilir. Bir `should_panic` testi, beklediğimizden tamamen farklı bir nedenle paniklese bile geçer. `should_panic` testlerini daha kesin hale getirmek için `should_panic` özniteliğine isteğe bağlı `expected` parametresini ekleyebiliriz. Test altyapısı, panik mesajının belirtilen metni içerip içermediğini kontrol eder. Örneğin Liste 11-9'da `new` fonksiyonunun, değerin çok küçük ya da çok büyük olmasına bağlı olarak farklı mesajlarla paniklediği güncellenmiş `Tahmin` koduna bakalım.
 
-<Listing number="11-9" file-name="src/lib.rs" caption="Belirli bir alt dizgiyi barındıran bir panik mesajıyla bir `panic!` için test yapmak">
+<Listing number="11-9" file-name="src/lib.rs" caption="Belirli bir alt dizgiyi barındıran panik mesajıyla `panic!` oluşumunu test etme">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-09/src/lib.rs:here}}
@@ -314,37 +345,42 @@ Bu durumda pek yardımcı bir mesaj alamıyoruz, ancak test fonksiyonuna baktı�
 
 </Listing>
 
-Bu test geçecektir çünkü `should_panic` özniteliğinin `expected` (beklenen) parametresine koyduğumuz değer, `Tahmin::new` fonksiyonunun paniklediği mesajın bir alt dizgisidir. Beklediğimiz panik mesajının tamamını da belirtebilirdik ki bu durumda `Tahmin değeri 100'den küçük veya 100'e eşit olmalıdır, 200 alındı.` (Guess value must be less than or equal to 100, got 200.) olurdu. Neyi belirteceğiniz, panik mesajının ne kadarının benzersiz veya dinamik olduğuna ve testinizin ne kadar kesin olmasını istediğinize bağlıdır. Bu durumda panik mesajının bir alt dizgisi, test fonksiyonundaki kodun `else if deger > 100` (`else if value > 100`) durumunu çalıştırdığından emin olmak için yeterlidir.
+Bu test geçecektir; çünkü `should_panic` özniteliğinin `expected` parametresine yazdığımız metin, `Tahmin::new` fonksiyonunun paniklerken ürettiği mesajın bir alt dizgisidir. Beklediğimiz panik mesajının tamamını, yani `Tahmin değeri 100'den küçük veya 100'e eşit olmalıdır, 200 alındı.` metnini de belirtebilirdik. Neyi belirteceğiniz, panik mesajının ne kadarının benzersiz veya dinamik olduğuna ve testinizin ne ölçüde kesin olmasını istediğinize bağlıdır. Bu örnekte panik mesajının bir alt dizgisini vermek, test fonksiyonundaki kodun `else if deger > 100` kolunu çalıştırdığından emin olmak için yeterlidir.
 
-`expected` (beklenen) mesaja sahip bir `should_panic` testi başarısız olduğunda ne olacağını görmek için, `if deger < 1` ve `else if deger > 100` bloklarının gövdelerini değiştirerek kodumuza tekrar bir hata ekleyelim:
+`expected` mesajına sahip bir `should_panic` testi başarısız olduğunda ne olacağını görmek için, `if deger < 1` ve `else if deger > 100` bloklarının gövdelerini birbiriyle değiştirerek kodumuza bir kez daha hata ekleyelim:
 
 ```rust,ignore,not_desired_behavior
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-09-guess-with-panic-msg-bug/src/lib.rs:here}}
 ```
 
-Bu kez `should_panic` testini çalıştırdığımızda başarısız olacaktır:
+Bu kez `should_panic` testini çalıştırdığımızda test başarısız olur:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-09-guess-with-panic-msg-bug/output.txt}}
 ```
 
-Hata mesajı, bu testin beklediğimiz gibi gerçekten de paniklediğini, ancak panik mesajının beklenen `100'den küçük veya 100'e eşit` (less than or equal to 100) dizgisini (string) içermediğini gösteriyor. Bu durumda aldığımız panik mesajı `Tahmin değeri 1'den büyük veya 1'e eşit olmalıdır, 200 alındı.` (Guess value must be greater than or equal to 1, got 200) şeklindeydi. Artık hatamızın (bug) nerede olduğunu bulmaya başlayabiliriz!
+Hata mesajı, testin beklediğimiz gibi gerçekten paniklediğini ancak panik mesajının beklenen `100'den küçük veya 100'e eşit` dizgisini içermediğini gösterir. Bu durumda elde ettiğimiz gerçek panik mesajı `Tahmin değeri 1'den büyük veya 1'e eşit olmalıdır, 200 alındı.` şeklindeydi. Böylece hatamızın nerede olduğunu hemen bulabiliriz!
 
-### Testlerde `Result<T, E>` Kullanmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Şimdiye kadar tüm testlerimiz başarısız olduklarında panikliyorlardı. Ayrıca `Result<T, E>` kullanan testler de yazabiliriz! İşte Liste 11-1'deki testin, paniklemek yerine `Result<T, E>` kullanacak ve bir `Err` (hata) döndürecek şekilde yeniden yazılmış hali:
+<a id="using-resultt-e-in-tests"></a>
+<a id="testlerde-resultt-e-kullanmak"></a>
+
+### Testlerde `Result<T, E>` Kullanma
+
+Şimdiye kadarki tüm testlerimiz başarısız olduklarında panikliyordu. Testlerimizi `Result<T, E>` döndürecek şekilde de yazabiliriz! İşte Liste 11-1'deki testin paniklemek yerine `Result<T, E>` kullanacak ve hata durumunda bir `Err` döndürecek biçimde yeniden yazılmış hali:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-10-result-in-tests/src/lib.rs:here}}
 ```
 
-`calisiyor` fonksiyonu artık `Result<(), String>` dönüş türüne sahip. Fonksiyonun gövdesinde `assert_eq!` makrosunu çağırmak yerine, test başarılı olduğunda `Ok(())` ve test başarısız olduğunda içinde bir `String` barındıran bir `Err` döndürüyoruz.
+`calisiyor` fonksiyonu artık `Result<(), String>` dönüş türüne sahiptir. Fonksiyon gövdesinde `assert_eq!` makrosunu çağırmak yerine, test başarılı olduğunda `Ok(())`, başarısız olduğunda ise içinde sorunu açıklayan bir `String` barındıran `Err` varyantı döndürüyoruz.
 
-Testleri `Result<T, E>` döndürecek şekilde yazmak, testlerin gövdesinde soru işareti operatörünü (`?`) kullanmanızı sağlar; bu da içlerindeki herhangi bir işlem `Err` varyantı döndürdüğünde başarısız olması gereken testleri yazmanın kullanışlı bir yolu olabilir.
+Testleri `Result<T, E>` döndürecek şekilde yazmak, test gövdesinde soru işareti operatörünü (`?`) kullanmanıza olanak tanır; bu da içindeki herhangi bir adım `Err` varyantı döndürdüğünde başarısız olması gereken çok adımlı testleri yazmak için son derece pratik bir yoldur.
 
-`Result<T, E>` kullanan testlerde `#[should_panic]` açıklamasını (annotation) kullanamazsınız. Bir işlemin bir `Err` varyantı döndürdüğünü doğrulamak için `Result<T, E>` değeri üzerinde soru işareti operatörünü _kullanmayın_. Bunun yerine `assert!(deger.is_err())` kullanın.
+`Result<T, E>` kullanan testlerde `#[should_panic]` özniteliğini kullanamazsınız. Bir işlemin `Err` varyantı döndürdüğünü doğrulamak için `Result<T, E>` değeri üzerinde soru işareti operatörünü (`?`) _kullanmayın_ (aksi halde `?` operatörü hatayı dışarı yayarak testi başarısız kılar). Bunun yerine `assert!(deger.is_err())` ifadesini kullanın.
 
-Test yazmanın birkaç yolunu bildiğinize göre, testlerimizi çalıştırdığımızda neler olduğuna bakalım ve `cargo test` ile kullanabileceğimiz farklı seçenekleri inceleyelim.
+Artık test yazmanın çeşitli yollarını öğrendiğinize göre, testlerimizi çalıştırdığımızda neler olup bittiğine bakalım ve `cargo test` ile kullanabileceğimiz farklı seçenekleri inceleyelim.
 
 [concatenating]: ch08-02-stringler.html#-veya-format-ile-birleştirmek
 [bench]: ../unstable-book/library-features/test.html
@@ -353,4 +389,4 @@ Test yazmanın birkaç yolunu bildiğinize göre, testlerimizi çalıştırdığ
 [controlling-how-tests-are-run]: ch11-02-test-calistirmayi-kontrol-etme.html#testlerin-nasıl-çalıştırılacağını-kontrol-etme
 [derivable-traits]: ekler-03-turetilebilir-traitler.html
 [doc-comments]: ch14-02-crates-io-da-yayinlama.html#belgelendirme-yorumlarını-test-olarak-kullanmak
-[paths-for-referring-to-an-item-in-the-module-tree]: ch07-03-oge-yollari.html#modül-ağacındaki-bir-öğeye-başvurmak-için-yollar-paths
+[paths-for-referring-to-an-item-in-the-module-tree]: ch07-03-oge-yollari.html#modül-ağacındaki-bir-öğeye-başvurmak-için-yollar

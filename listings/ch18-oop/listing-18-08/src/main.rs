@@ -9,7 +9,7 @@ struct SecimKutusu {
 
 impl Ciz for SecimKutusu {
     fn ciz(&self) {
-        // bir secim kutusunu gercekten cizmek icin kod
+        // bir seçim kutusunu gerçekten çizmek için kod
     }
 }
 // ANCHOR_END: here

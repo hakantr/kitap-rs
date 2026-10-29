@@ -16,5 +16,5 @@ fn main() {
         siralama_islemi_sayisi += 1;
         r.genislik
     });
-    println!("{liste:#?}, sorted in {siralama_islemi_sayisi} operations");
+    println!("{liste:#?}, {siralama_islemi_sayisi} işlemde sıralandı");
 }

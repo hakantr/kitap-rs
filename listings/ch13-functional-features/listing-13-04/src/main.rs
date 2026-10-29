@@ -1,10 +1,10 @@
 fn main() {
     let liste = vec![1, 2, 3];
-    println!("Before defining closure: {liste:?}");
+    println!("Kapanışı tanımlamadan önce: {liste:?}");
 
-    let sadece_odunc_alir = || println!("From closure: {liste:?}");
+    let sadece_odunc_alir = || println!("Kapanıştan: {liste:?}");
 
-    println!("Before calling closure: {liste:?}");
+    println!("Kapanışı çağırmadan önce: {liste:?}");
     sadece_odunc_alir();
-    println!("After calling closure: {liste:?}");
+    println!("Kapanışı çağırdıktan sonra: {liste:?}");
 }

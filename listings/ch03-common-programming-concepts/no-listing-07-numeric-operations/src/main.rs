@@ -10,7 +10,7 @@ fn main() {
 
     // bölme
     let bolum = 56.7 / 32.2;
-    let kesilmis = -5 / 3; // Results in -1
+    let kesilmis = -5 / 3; // Sonuç -1 olur
 
     // kalan
     let kalan = 43 % 5;

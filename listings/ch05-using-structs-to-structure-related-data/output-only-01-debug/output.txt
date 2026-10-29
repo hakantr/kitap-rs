@@ -1,16 +1,12 @@
 $ cargo run
-   Compiling rectangles v0.1.0 (file:///projects/rectangles)
+   Compiling dikdortgenler v0.1.0 (file:///projects/dikdortgenler)
 error[E0277]: `Dikdortgen` doesn't implement `Debug`
-  --> src/main.rs:12:31
+  --> src/main.rs:12:37
    |
-12 |     println!("dikdortgen1 şöyledir: {:?}", dikdortgen1);
-   |                                     ----   ^^^^^^^^^^^ `Dikdortgen` cannot be formatted using `{:?}` because it doesn't implement `Debug`
-   |                                     |
-   |                                     required by this formatting parameter
+12 |     println!("dikdortgen1 şöyledir: {dikdortgen1:?}");
+   |                                     ^^^^^^^^^^^^^^^ `Dikdortgen` cannot be formatted using `{:?}` because it doesn't implement `Debug`
    |
    = help: the trait `Debug` is not implemented for `Dikdortgen`
-   = note: add `#[derive(Debug)]` to `Dikdortgen` or manually `impl Debug for Dikdortgen`
-   = note: this error originates in the macro `$crate::format_args_nl` which comes from the expansion of the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
 help: consider annotating `Dikdortgen` with `#[derive(Debug)]`
    |
  1 + #[derive(Debug)]
@@ -18,4 +14,4 @@ help: consider annotating `Dikdortgen` with `#[derive(Debug)]`
    |
 
 For more information about this error, try `rustc --explain E0277`.
-error: could not compile `rectangles` (bin "rectangles") due to 1 previous error
+error: could not compile `dikdortgenler` (bin "dikdortgenler") due to 1 previous error

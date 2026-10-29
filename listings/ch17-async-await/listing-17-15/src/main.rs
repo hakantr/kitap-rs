@@ -29,7 +29,7 @@ fn main() {
     });
 }
 
-fn slow(name: &str, ms: u64) {
+fn slow(isim: &str, ms: u64) {
     thread::sleep(Duration::from_millis(ms));
-    println!("'{name}' {ms}ms çalıştı");
+    println!("'{isim}' {ms}ms çalıştı");
 }

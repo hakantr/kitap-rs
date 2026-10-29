@@ -7,16 +7,17 @@ use minigrep::{ara, buyuk_kucuk_harf_duyarsiz_ara};
 
 // ANCHOR: here
 fn main() {
-    let config = Yapilandirma::olustur(env::argumanlar()).unwrap_or_else(|err| {
-        eprintln!("Problem parsing arguments: {err}");
-        process::exit(1);
-    });
+    let yapilandirma =
+        Yapilandirma::olustur(env::args()).unwrap_or_else(|hata| {
+            eprintln!("Argümanları ayrıştırırken problem oluştu: {hata}");
+            process::exit(1);
+        });
 
     // --snip--
     // ANCHOR_END: here
 
-    if let Err(e) = calistir(config) {
-        eprintln!("Application error: {e}");
+    if let Err(e) = calistir(yapilandirma) {
+        eprintln!("Uygulama hatası: {e}");
         process::exit(1);
     }
     // ANCHOR: here
@@ -48,13 +49,13 @@ impl Yapilandirma {
     }
 }
 
-fn calistir(config: Yapilandirma) -> Result<(), Box<dyn Error>> {
-    let icerik = fs::read_to_string(config.dosya_yolu)?;
+fn calistir(yapilandirma: Yapilandirma) -> Result<(), Box<dyn Error>> {
+    let icerik = fs::read_to_string(yapilandirma.dosya_yolu)?;
 
-    let sonuclar = if config.buyuk_kucuk_harf_yoksay {
-        buyuk_kucuk_harf_duyarsiz_ara(&config.sorgu, &icerik)
+    let sonuclar = if yapilandirma.buyuk_kucuk_harf_yoksay {
+        buyuk_kucuk_harf_duyarsiz_ara(&yapilandirma.sorgu, &icerik)
     } else {
-        ara(&config.sorgu, &icerik)
+        ara(&yapilandirma.sorgu, &icerik)
     };
 
     for satir in sonuclar {

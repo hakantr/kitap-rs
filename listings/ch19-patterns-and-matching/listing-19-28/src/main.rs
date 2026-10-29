@@ -5,7 +5,7 @@ fn main() {
 
     match x {
         4 | 5 | 6 if y => println!("evet"),
-        _ => println!("hayir"),
+        _ => println!("hayır"),
     }
     // ANCHOR_END: here
 }

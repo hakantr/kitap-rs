@@ -1,58 +1,74 @@
-## Ek A: Anahtar Kelimeler
+<!-- Old headings. Do not remove or links may break. -->
 
-Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanım için ayrılmış olan anahtar kelimeleri (keywords) içerir. Bu nedenle, tanımlayıcı (identifier) olarak kullanılamazlar (ancak [“Ham Tanımlayıcılar”][raw-identifiers]<!-- ignore --> bölümünde tartışacağımız gibi ham tanımlayıcılar (raw identifiers) olarak kullanılabilirler). _Tanımlayıcılar_ (Identifiers); fonksiyonların, değişkenlerin, parametrelerin, struct alanlarının, modüllerin, crate'lerin, sabitlerin (constants), makroların, statik değerlerin, niteliklerin (attributes), türlerin, trait'lerin veya ömürlerin isimleridir.
+<a id="appendix-a-keywords"></a>
+<a id="ek-a-anahtar-kelimeler"></a>
 
-[raw-identifiers]: #ham-tanimlayicilar-raw-identifiers
+## A - Anahtar Kelimeler
+
+Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımlar için ayrılmış anahtar kelimeleri (*keywords*) içerir. Bu nedenle bu kelimeler tanımlayıcı (*identifier*) olarak kullanılamazlar (ancak [“Ham Tanımlayıcılar”][raw-identifiers]<!-- ignore --> bölümünde ele alacağımız ham tanımlayıcı sözdizimi bunun istisnasıdır). _Tanımlayıcılar_; fonksiyonların, değişkenlerin, parametrelerin, struct alanlarının, modüllerin, crate'lerin, sabitlerin, makroların, statik değerlerin, özniteliklerin (*attributes*), türlerin, trait'lerin veya ömürlerin adlarıdır.
+
+[raw-identifiers]: #ham-tanımlayıcılar
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="keywords-currently-in-use"></a>
+<a id="currently-in-use"></a>
+<a id="şu-anda-kullanımda-olan-anahtar-kelimeler"></a>
 
 ### Şu Anda Kullanımda Olan Anahtar Kelimeler
 
-Aşağıda, şu anda kullanımda olan anahtar kelimelerin işlevleriyle birlikte listesi verilmiştir.
+Şu anda kullanımda olan anahtar kelimeler ve işlevleri aşağıda listelenmiştir:
 
-- **`as`**: İlkel tür dönüştürme (primitive casting) yapar, bir öğeyi içeren belirli trait'in belirsizliğini giderir veya `use` ifadelerinde öğeleri yeniden adlandırır.
-- **`async`**: Mevcut thread'i (iş parçacığını) bloke etmek yerine bir `Future` döndürür.
-- **`await`**: Bir `Future`'ın sonucu hazır olana kadar yürütmeyi askıya alır.
+- **`as`**: İlkel tür dönüştürme (*primitive casting*) yapar, bir öğeyi barındıran belirli trait'in belirsizliğini giderir veya `use` deyimlerinde öğeleri yeniden adlandırır.
+- **`async`**: Mevcut thread'i (iş parçacığını) bloklamak yerine bir `Future` döndürür.
+- **`await`**: Bir `Future` değerinin sonucu hazır olana kadar yürütmeyi askıya alır.
 - **`break`**: Bir döngüden anında çıkar.
-- **`const`**: Sabit (constant) öğeleri veya sabit ham işaretçileri (raw pointers) tanımlar.
-- **`continue`**: Bir sonraki döngü iterasyonuna atlar.
-- **`crate`**: Bir modül yolunda (path), crate kökünü (root) ifade eder.
-- **`dyn`**: Bir trait nesnesine dinamik dağıtım (dynamic dispatch) yapar.
-- **`else`**: `if` ve `if let` kontrol akışı yapılarında, koşulun sağlanmadığı durumlar için (fallback) kullanılır.
-- **`enum`**: Bir numaralandırma (enumeration) tanımlar.
-- **`extern`**: Harici bir fonksiyonu veya değişkeni bağlar (link).
-- **`false`**: Boolean yanlış (false) literali.
-- **`fn`**: Bir fonksiyon veya fonksiyon işaretçisi türünü tanımlar.
-- **`for`**: Bir iteratörden gelen öğeler üzerinde döngü oluşturur, bir trait'i uygular veya daha yüksek dereceli (higher ranked) bir ömrü belirtir.
-- **`if`**: Bir koşullu ifadenin sonucuna göre dallanma (branch) yapar.
-- **`impl`**: Doğal (inherent) veya bir trait işlevselliğini uygular.
+- **`const`**: Sabit öğeleri veya sabit ham işaretçileri (*raw pointers*) tanımlar.
+- **`continue`**: Bir sonraki döngü yinelemesine geçer.
+- **`crate`**: Bir modül yolunda crate kökünü ifade eder.
+- **`dyn`**: Bir trait nesnesine dinamik gönderim (*dynamic dispatch*) yapılacağını belirtir.
+- **`else`**: `if` ve `if let` kontrol akışı yapılarında koşul sağlanmadığında çalışacak geri dönüş kolunu tanımlar.
+- **`enum`**: Bir numaralandırma (*enumeration*) türü tanımlar.
+- **`extern`**: Harici bir fonksiyonu, değişkeni veya crate'i bağlar.
+- **`false`**: Mantıksal (`bool`) yanlış hazır değeri.
+- **`fn`**: Bir fonksiyon veya fonksiyon işaretçisi türü tanımlar.
+- **`for`**: Bir iteratörden gelen öğeler üzerinde döngü kurar, bir trait'i uygular veya yüksek mertebeli (*higher-ranked*) bir ömür sınırı belirtir.
+- **`if`**: Koşullu bir ifadenin sonucuna göre dallanma yapar.
+- **`impl`**: Doğrudan türe ait (*inherent*) işlevselliği veya bir trait uygulamasını tanımlar.
 - **`in`**: `for` döngüsü sözdiziminin bir parçasıdır.
-- **`let`**: Bir değişkeni bağlar (bind).
-- **`loop`**: Koşulsuz olarak döngü oluşturur.
-- **`match`**: Bir değeri desenlerle (patterns) eşleştirir.
+- **`let`**: Bir değişken bağlar.
+- **`loop`**: Koşulsuz bir döngü oluşturur.
+- **`match`**: Bir değeri desenlerle eşleştirir.
 - **`mod`**: Bir modül tanımlar.
-- **`move`**: Bir closure'ın (kapanışın) yakaladığı tüm değerlerin sahipliğini almasını sağlar.
-- **`mut`**: Referanslarda, ham işaretçilerde (raw pointers) veya desen bağlamalarında değiştirilebilirliği (mutability) belirtir.
+- **`move`**: Bir kapanışın (*closure*) yakaladığı tüm değerlerin sahipliğini almasını sağlar.
+- **`mut`**: Referanslarda, ham işaretçilerde veya desen bağlamalarında değiştirilebilirliği belirtir.
 - **`pub`**: Struct alanlarında, `impl` bloklarında veya modüllerde genel görünürlüğü belirtir.
-- **`ref`**: Referans olarak bağlar.
-- **`return`**: Fonksiyondan dönüş yapar.
-- **`Self`**: Tanımladığımız veya uyguladığımız tür için bir tür takma adı (type alias).
-- **`self`**: Metot öznesi veya mevcut modül.
-- **`static`**: Tüm program yürütmesi boyunca süren küresel değişken (global variable) veya ömür.
-- **`struct`**: Bir yapı tanımlar.
+- **`ref`**: Değeri taşımak yerine referansla bağlar.
+- **`return`**: Bir fonksiyondan erken dönüş yapar.
+- **`Self`**: Tanımlamakta veya uygulamakta olduğumuz tür için tür takma adı.
+- **`self`**: Metot alıcısı (öznesi) veya mevcut modül.
+- **`static`**: Programın tüm yürütme süresi boyunca yaşayan genel değişken veya ömür.
+- **`struct`**: Bir yapı (*struct*) tanımlar.
 - **`super`**: Mevcut modülün üst modülü.
 - **`trait`**: Bir trait tanımlar.
-- **`true`**: Boolean doğru (true) literali.
-- **`type`**: Bir tür takma adı (type alias) veya ilişkili tür (associated type) tanımlar.
-- **`union`**: Bir [union][union]<!-- ignore --> tanımlar; yalnızca bir union bildirimi (declaration) içinde kullanıldığında anahtar kelimedir.
-- **`unsafe`**: Güvenli olmayan (unsafe) kodu, fonksiyonları, trait'leri veya implementasyonları belirtir.
-- **`use`**: Sembolleri kapsama dahil eder.
-- **`where`**: Bir türü kısıtlayan yan tümceleri (clauses) belirtir.
-- **`while`**: Bir ifadenin sonucuna göre koşullu olarak döngü oluşturur.
+- **`true`**: Mantıksal (`bool`) doğru hazır değeri.
+- **`type`**: Bir tür takma adı veya ilişkili tür tanımlar.
+- **`union`**: Bir [birleşim (`union`)][union]<!-- ignore --> tanımlar; yalnızca bir `union` bildirimi içinde kullanıldığında anahtar kelimedir.
+- **`unsafe`**: Güvenli olmayan (*unsafe*) kod bloklarını, fonksiyonları, trait'leri veya uygulamaları belirtir.
+- **`use`**: Sembolleri mevcut kapsama dahil eder.
+- **`where`**: Bir türü kısıtlayan sınır yan tümcelerini belirtir.
+- **`while`**: Bir ifadenin sonucuna bağlı olarak koşullu döngü kurar.
 
 [union]: ../reference/items/unions.html
 
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="keywords-reserved-for-future-use"></a>
+<a id="gelecekteki-kullanım-için-ayrılmış-anahtar-kelimeler"></a>
+
 ### Gelecekteki Kullanım İçin Ayrılmış Anahtar Kelimeler
 
-Aşağıdaki anahtar kelimelerin henüz herhangi bir işlevi yoktur, ancak potansiyel gelecekteki kullanım için Rust tarafından ayrılmıştır:
+Aşağıdaki anahtar kelimelerin henüz bir işlevi yoktur; ancak gelecekteki olası kullanımlar için Rust tarafından ayrılmıştır:
 
 - `abstract`
 - `become`
@@ -69,17 +85,23 @@ Aşağıdaki anahtar kelimelerin henüz herhangi bir işlevi yoktur, ancak potan
 - `virtual`
 - `yield`
 
-### Ham Tanımlayıcılar (Raw Identifiers)
+<!-- Old headings. Do not remove or links may break. -->
 
-_Ham tanımlayıcılar (raw identifiers)_, normalde izin verilmeyen yerlerde anahtar kelimeleri kullanmanızı sağlayan bir sözdizimidir (syntax). Bir anahtar kelimenin önüne `r#` ekleyerek bir ham tanımlayıcı kullanırsınız.
+<a id="raw-identifiers"></a>
+<a id="ham-tanimlayicilar-raw-identifiers"></a>
+<a id="ham-tanımlayıcılar-raw-identifiers"></a>
 
-Örneğin, `match` bir anahtar kelimedir. Adı olarak `match`'i kullanan aşağıdaki fonksiyonu derlemeye çalışırsanız:
+### Ham Tanımlayıcılar
 
-<span class="filename">Dosya Adı: src/main.rs</span>
+_Ham tanımlayıcılar_ (*raw identifiers*), normalde izin verilmeyen yerlerde anahtar kelimeleri isim olarak kullanmanıza olanak tanıyan sözdizimidir. Bir anahtar kelimenin önüne `r#` ekleyerek ham tanımlayıcı oluşturursunuz.
+
+Örneğin `match` bir anahtar kelimedir. Adı `match` olan aşağıdaki fonksiyonu derlemeye çalışırsanız:
+
+<span class="filename">Dosya adı: src/main.rs</span>
 
 ```rust,ignore,does_not_compile
-fn match(needle: &str, haystack: &str) -> bool {
-    haystack.contains(needle)
+fn match(aranan: &str, samanlik: &str) -> bool {
+    samanlik.contains(aranan)
 }
 ```
 
@@ -89,17 +111,17 @@ fn match(needle: &str, haystack: &str) -> bool {
 error: expected identifier, found keyword `match`
  --> src/main.rs:4:4
   |
-4 | fn match(needle: &str, haystack: &str) -> bool {
+4 | fn match(aranan: &str, samanlik: &str) -> bool {
   |    ^^^^^ expected identifier, found keyword
 ```
 
-Hata, `match` anahtar kelimesini fonksiyon tanımlayıcısı olarak kullanamayacağınızı gösteriyor. `match` kelimesini bir fonksiyon adı olarak kullanmak için, aşağıdaki gibi ham tanımlayıcı sözdizimini kullanmanız gerekir:
+Hata, `match` anahtar kelimesini fonksiyon tanımlayıcısı olarak kullanamayacağınızı gösterir. `match` kelimesini fonksiyon adı olarak kullanmak için ham tanımlayıcı sözdizimini aşağıdaki gibi yazmanız gerekir:
 
-<span class="filename">Dosya Adı: src/main.rs</span>
+<span class="filename">Dosya adı: src/main.rs</span>
 
 ```rust
-fn r#match(needle: &str, haystack: &str) -> bool {
-    haystack.contains(needle)
+fn r#match(aranan: &str, samanlik: &str) -> bool {
+    samanlik.contains(aranan)
 }
 
 fn main() {
@@ -107,8 +129,10 @@ fn main() {
 }
 ```
 
-Bu kod hiçbir hata olmadan derlenecektir. Fonksiyon adının tanımındaki ve fonksiyonun `main` içinde çağrıldığı yerdeki `r#` ön ekine dikkat edin.
+Bu kod hiçbir hata vermeden derlenecektir. Hem fonksiyon tanımındaki hem de `main` içindeki çağrıda fonksiyon adının önünde yer alan `r#` önekine dikkat edin.
 
-Ham tanımlayıcılar, rezerve edilmiş bir anahtar kelime olsa bile, seçtiğiniz herhangi bir kelimeyi tanımlayıcı olarak kullanmanıza olanak tanır. Bu, tanımlayıcı adlarını seçme konusunda bize daha fazla özgürlük vermenin yanı sıra, bu kelimelerin anahtar kelime olmadığı bir dilde yazılmış programlarla entegre olmamızı sağlar. Ek olarak, ham tanımlayıcılar, crate'inizin kullandığından farklı bir Rust sürümünde (edition) yazılmış kütüphaneleri kullanmanıza olanak tanır. Örneğin, `try` 2015 sürümünde bir anahtar kelime değildir, ancak 2018, 2021 ve 2024 sürümlerinde bir anahtar kelimedir. 2015 sürümü kullanılarak yazılmış ve bir `try` fonksiyonu olan bir kütüphaneye bağımlıysanız, daha sonraki sürümlerde o fonksiyonu kodunuzdan çağırmak için ham tanımlayıcı sözdizimini, bu durumda `r#try`'ı kullanmanız gerekecektir. Sürümler (editions) hakkında daha fazla bilgi için [Ek E][ekler-e]<!-- ignore -->'ye bakın.
+Ham tanımlayıcılar, ayrılmış bir anahtar kelime olsa bile seçtiğiniz herhangi bir kelimeyi tanımlayıcı olarak kullanmanıza olanak tanır. Bu özellik, isim seçiminde daha fazla özgürlük sunmanın yanı sıra bu kelimelerin anahtar kelime olmadığı başka dillerde yazılmış programlarla (örneğin C kütüphaneleriyle FFI üzerinden) entegre olmamızı da kolaylaştırır. Buna ek olarak ham tanımlayıcılar, crate'inizin kullandığından farklı bir Rust sürümünde (*edition*) yazılmış kütüphaneleri kullanmanıza imkan verir. Örneğin `try`, 2015 sürümünde bir anahtar kelime değilken 2018, 2021 ve 2024 sürümlerinde ayrılmış bir anahtar kelimedir (benzer şekilde `gen` de Rust 2024 sürümüyle ayrılmış anahtar kelimeler arasına katılmıştır). 2015 sürümüyle yazılmış ve `try` adında bir fonksiyon barındıran bir kütüphaneye bağımlıysanız, daha yeni sürümlerdeki kodunuzdan bu fonksiyonu çağırmak için `r#try` ham tanımlayıcı sözdizimini kullanmanız gerekir. Sürümler hakkında daha fazla bilgi için [Ek E][ekler-e]<!-- ignore --> bölümüne bakın.
+
+> Not: **Bağlamsal Anahtar Kelimeler ve `r#` İstisnaları:** Rust'ta yukarıdaki katı anahtar kelimelere ek olarak yalnızca belirli dilbilgisi konumlarında özel anlam taşıyan *zayıf (bağlamsal) anahtar kelimeler* de vardır: `union` yanı sıra `macro_rules`, `'static`, `&raw const` / `&raw mut` ifadelerindeki `raw` ve Rust 2024'teki `unsafe extern` blokları içinde kullanılan `safe` bu gruba girer; bu kelimeleri normal değişken veya fonksiyon adı olarak doğrudan kullanabilirsiniz. Öte yandan yol ve modül çözümlemesinde özel rol oynayan dört anahtar kelime — **`crate`**, **`self`**, **`super`** ve **`Self`** — `r#crate` veya `r#self` biçiminde ham tanımlayıcı olarak **kullanılamaz**.
 
 [ekler-e]: ekler-05-surumler.html

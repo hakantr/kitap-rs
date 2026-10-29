@@ -1,12 +1,12 @@
-$ cargo check
-    Checking guvensiz-ornek v0.1.0 (file:///projects/guvensiz-ornek)
+$ cargo run
+   Compiling guvensiz-ornek v0.1.0 (file:///projects/guvensiz-ornek)
 error[E0499]: cannot borrow `*values` as mutable more than once at a time
- --> src/main.rs:7:31
+ --> src/main.rs:6:31
   |
 1 | fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
   |                         - let's call the lifetime of this reference `'1`
 ...
-7 |     (&mut values[..mid], &mut values[mid..])
+6 |     (&mut values[..mid], &mut values[mid..])
   |     --------------------------^^^^^^--------
   |     |     |                   |
   |     |     |                   second mutable borrow occurs here

@@ -96,7 +96,7 @@ yardım eder.
 Kitabın çevrilmesine katkı verilmesini isteriz. Hâlihazırda süren çalışmalara
 katılmak için [Translations] etiketine bakın. Yeni bir dil üzerinde çalışmaya
 başlamak istiyorsanız yeni bir issue açın. Birden fazla dil için
-[mdbook desteğini] beklediğimiz için bu katkıları hemen birleştirmiyoruz;
+[mdbook desteğini][mdbook support] beklediğimiz için bu katkıları hemen birleştirmiyoruz;
 ama çalışmaya başlamanızda bir engel yok.
 
 [Translations]: https://github.com/rust-lang/book/issues?q=is%3Aopen+is%3Aissue+label%3ATranslations

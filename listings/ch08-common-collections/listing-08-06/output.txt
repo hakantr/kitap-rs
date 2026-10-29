@@ -1,15 +1,15 @@
 $ cargo run
-   Compiling koleksiyonlar v0.1.0 ($PROJE/listings/ch08-common-koleksiyonlar/listing-08-06)
+   Compiling koleksiyonlar v0.1.0 (file:///projects/koleksiyonlar)
 error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
- --> src/main.rs:7:5
+ --> src/main.rs:6:5
   |
-5 |     let ilk = &v[0];
+4 |     let ilk = &v[0];
   |                - immutable borrow occurs here
-6 |
-7 |     v.push(6);
+5 |
+6 |     v.push(6);
   |     ^^^^^^^^^ mutable borrow occurs here
-8 |
-9 |     println!("İlk eleman: {ilk}");
+7 |
+8 |     println!("İlk eleman: {ilk}");
   |                            --- immutable borrow later used here
 
 For more information about this error, try `rustc --explain E0502`.

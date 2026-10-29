@@ -1,11 +1,11 @@
 fn main() {
     // ANCHOR: here
-    let dizgi = Some(String::from("Merhaba!"));
+    let metin = Some(String::from("Merhaba!"));
 
-    if let Some(_) = dizgi {
-        println!("bir dizgi bulundu");
+    if let Some(_) = metin {
+        println!("bir metin bulundu");
     }
 
-    println!("{dizgi:?}");
+    println!("{metin:?}");
     // ANCHOR_END: here
 }

@@ -1,30 +1,42 @@
 # Desenler ve Eşleştirme
 
-Desenler, Rust'ta türlerin yapısına karşı eşleştirme yapmayı sağlayan özel bir
-sözdizimidir. Basit ya da karmaşık veri yapıları üzerinde aynı fikirle
-çalışırlar. Desenleri `match` ifadeleri ve başka yapılarla birlikte kullanmak,
-programın kontrol akışı üzerinde daha ince denetim sağlar. Bir desen şu
-parçaların bir birleşiminden oluşabilir:
+<a id="patterns-and-matching"></a>
 
-- Sabit değerler
-- Ayrıştırılmış dizi, enum, struct veya demetler
+_Desenler (patterns)_, Rust'ta hem karmaşık hem de basit türlerin yapısına karşı
+eşleştirme yapmayı sağlayan özel bir sözdizimidir. Desenleri `match` ifadeleri
+ve diğer yapılarla birlikte kullanmak, programın kontrol akışı üzerinde size
+daha fazla denetim sunar. Bir desen aşağıdaki bileşenlerin bir birleşiminden
+oluşabilir:
+
+- Hazır değerler (*literals*)
+- Yapısı bozulmuş (*destructured*) diziler, enum'lar, yapılar veya demetler
 - Değişkenler
-- Joker desenler
-- Yer tutucular
+- Joker desenler (*wildcards*)
+- Yer tutucular (*placeholders*)
 
-Örneğin `x`, `(a, 3)` ve `Some(Renk::Kirmizi)` birer desendir. Desenlerin
-geçerli olduğu bağlamlarda bu bileşenler, verinin şeklini tarif eder. Program
-da bir değeri desenle karşılaştırıp, ilgili kod parçasının çalışmaya devam
-edebilmesi için verinin doğru biçimde olup olmadığını belirler.
+Örnek bazı desenler arasında `x`, `(a, 3)` ve `Some(Renk::Kirmizi)` sayılabilir.
+Desenlerin geçerli olduğu bağlamlarda bu bileşenler verinin şeklini tarif eder.
+Ardından programımız değerleri bu desenlere karşı eşleştirerek belirli bir kod
+parçasını çalıştırmaya devam etmek için doğru veri şekline sahip olup olmadığını
+belirler.
 
-Bir deseni kullanmak için onu bir değerle karşılaştırırız. Eğer desen değerle
-eşleşirse, değerin parçalarını kod içinde kullanabiliriz. 6. bölümde gördüğünüz
-`match` ifadeleri buna örnekti. Değer desenin şekline uyuyorsa, o desende ad
-verilmiş parçaları kullanabiliriz. Uymuyorsa o desenle ilişkili kod
-çalıştırılmaz.
+Bir deseni kullanmak için onu bir değerle karşılaştırırız. Desen değerle
+eşleşirse kodumuzda değerin parçalarını kullanırız. Bölüm 6'da madeni para
+ayırma makinesi örneği gibi desen kullanan `match` ifadelerini hatırlayın. Değer
+desenin şekline uyuyorsa adlandırılmış parçaları kullanabiliriz. Uymuyorsa
+desenle ilişkili kod çalışmaz.
 
-Bu bölüm, desenlerle ilgili her şey için bir başvuru bölümü niteliğinde.
-Desenlerin kullanılabildiği yerleri, çürütülebilir ve çürütülemez desenler
-arasındaki farkı ve görebileceğiniz temel desen sözdizimlerini ele alacağız.
-Bölümün sonunda, birçok kavramı açık ve güçlü biçimde ifade etmek için
-desenleri nasıl kullanacağınızı biliyor olacaksınız.
+Bu bölüm, desenlerle ilgili her şey için bir başvuru kılavuzu niteliğindedir.
+Desenleri kullanmanın geçerli olduğu yerleri, çürütülebilir (*refutable*) ve
+çürütülemez (*irrefutable*) desenler arasındaki farkı ve karşılaşabileceğiniz
+farklı desen sözdizimi türlerini ele alacağız. Bölümün sonunda pek çok kavramı
+açık ve anlaşılır bir biçimde ifade etmek için desenleri nasıl kullanacağınızı
+biliyor olacaksınız.
+
+> Not: Rust'ta desen eşleştirme aynı anda iki temel görevi yerine getirir:
+> verinin belirli bir şekle uyup uymadığını **sınamak** ve uyuyorsa içindeki
+> alanları **değişkenlere bağlayarak yapısını bozmak (*destructuring*)**. Üstelik
+> desenler Rust'ın sahiplik kurallarıyla doğrudan bütünleşiktir: `Copy` olmayan
+> bir değeri desende bir değişkene bağladığınızda sahiplik taşınır; referans
+> üzerinden eşleştirme yaptığınızda ise derleyici bağlanan değişkenleri otomatik
+> olarak referans (`&T` veya `&mut T`) haline getirir.

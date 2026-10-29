@@ -1,19 +1,30 @@
+<!-- Old headings. Do not remove or links may break. -->
+<a id="unrecoverable-errors-with-panic"></a>
+<a id="panic-ile-kurtarilamayan-hatalar"></a>
+
 ## `panic!` ile Kurtarılamayan Hatalar
 
-Bazen kodunuzda kötü şeyler olur ve bu konuda yapabileceğiniz hiçbir şey yoktur. Bu durumlar için Rust'ın `panic!` makrosu vardır. Uygulamada paniğe neden olmanın iki yolu vardır: kodumuzun panik yapmasına neden olacak bir eylemde bulunmak (bir dizinin sonunu geçerek erişmek gibi) veya açıkça `panic!` makrosunu çağırmak. Her iki durumda da programımızda bir paniğe neden oluruz. Varsayılan olarak bu panikler bir hata mesajı yazdıracak, yığını geri saracak (unwind), temizleyecek ve çıkacaktır. Bir çevre değişkeni aracılığıyla, bir panik meydana geldiğinde paniğin kaynağının izini sürmeyi kolaylaştırmak için Rust'ın çağrı yığınını (call stack) görüntülemesini de sağlayabilirsiniz.
+Bazen kodunuzda işler ters gider ve bu konuda yapabileceğiniz hiçbir şey yoktur. Bu durumlar için Rust'ta `panic!` makrosu bulunur. Uygulamada paniğe yol açmanın iki yolu vardır: kodumuzun panik yapmasına neden olacak bir işlem yapmak (örneğin bir dizinin sonunun ötesine erişmeye çalışmak) ya da doğrudan `panic!` makrosunu çağırmak. Her iki durumda da programımızda bir panik tetikleriz. Varsayılan olarak bu panikler bir hata mesajı yazdırır, *yığını (stack)* *geri sararak (unwinding)* temizler ve programı sonlandırır. Ayrıca bir çevre değişkeni aracılığıyla, panik oluştuğunda hatanın kaynağını bulmayı kolaylaştırmak için Rust'ın *çağrı yığınını (call stack)* görüntülemesini de sağlayabilirsiniz.
 
-> ### Bir Paniğe Yanıt Olarak Yığını Geri Sarmak veya İptal Etmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="unwinding-the-stack-or-aborting-in-response-to-a-panic"></a>
+<a id="bir-paniğe-yanıt-olarak-yığını-geri-sarmak-veya-iptal-etmek"></a>
+<a id="bir-paniğe-yanıt-olarak-yığını-geri-sarmak-veya-i̇ptal-etmek"></a>
+
+> ### Bir Paniğe Yanıt Olarak Yığını Geri Sarma veya İptal Etme
 >
-> Varsayılan olarak, bir panik oluştuğunda program *geri sarmaya* (unwinding) başlar, bu da Rust'ın yığında geriye doğru yürüdüğü ve karşılaştığı her fonksiyondan verileri temizlediği anlamına gelir. Ancak, geriye doğru yürümek ve temizlemek çok iş gerektirir. Bu nedenle Rust, alternatif olarak verileri temizlemeden programı sonlandıran hemen *iptal etme* (aborting) seçeneğini de sunar.
+> Varsayılan olarak bir panik oluştuğunda program *yığını geri sarmaya (unwinding)* başlar; bu, Rust'ın çağrı yığını boyunca geriye doğru ilerleyerek karşılaştığı her fonksiyona ait verileri tek tek temizlediği anlamına gelir. Ancak yığında geriye doğru ilerleyip temizlik yapmak epey iş yükü gerektirir. Bu nedenle Rust, alternatif olarak temizlik yapmadan programı derhal sonlandıran *iptal etme (aborting)* seçeneğini de sunar.
 >
-> Programın kullanmakta olduğu belleğin daha sonra işletim sistemi tarafından temizlenmesi gerekecektir. Projenizde ortaya çıkan ikili dosyayı olabildiğince küçük yapmanız gerekiyorsa, _Cargo.toml_ dosyanızdaki uygun `[profile]` bölümlerine `panic = 'abort'` ekleyerek panik anında geri sarmadan iptal etmeye geçebilirsiniz. Örneğin, yayın (release) modunda panik anında iptal etmek istiyorsanız şunu ekleyin:
+> Bu durumda programın kullanmakta olduğu belleğin daha sonra işletim sistemi tarafından geri alınması gerekir. Projenizde üretilen ikili (*binary*) dosyayı olabildiğince küçük tutmanız gerekiyorsa, _Cargo.toml_ dosyanızdaki ilgili `[profile]` bölümlerine `panic = 'abort'` ekleyerek panik anında geri sarma yerine iptal etme davranışına geçebilirsiniz. Örneğin yayın (*release*) modunda panik anında programı doğrudan iptal etmek istiyorsanız şunu ekleyebilirsiniz:
 >
 > ```toml
 > [profile.release]
 > panic = 'abort'
 > ```
 
-Basit bir programda `panic!` çağırmayı deneyelim:
+> Not: `panic = 'unwind'` (varsayılan) ile `panic = 'abort'` arasındaki seçim yalnızca ikili dosya boyutunu değil, kaynak temizleme davranışını da doğrudan etkiler. *Geri sarma* modunda Rust, çağrı yığınındaki her çerçeveden çıkarken kapsamda bulunan yerel değişkenler için `Drop` trait'inin (Bölüm 15'te ayrıntılarıyla inceleyeceğimiz) yıkıcı (*destructor*) kodlarını çalıştırır; böylece öbekte (*heap*) ayrılmış bellek alanları serbest bırakılır, açık dosya tamponları diske yazılır ve kilitler temiz bir şekilde kapatılır. Ancak her fonksiyon için bu geri sarma tablolarını ve temizlik kodlarını üretmek ikili dosyayı büyütür. `panic = 'abort'` seçildiğinde ise geri sarma tabloları ikili dosyaya hiç eklenmez (bu da özellikle gömülü sistemlerde ve WebAssembly hedeflerinde önemli ölçüde boyut tasarrufu sağlar), fakat panik anında `Drop` yıkıcıları **çalıştırılmaz**; süreç anında sonlandırılır ve yalnızca işletim sisteminin süreç bazında yaptığı bellek ve dosya tanıtıcısı temizliği gerçekleşir.
+
+Basit bir programda `panic!` makrosunu çağırmayı deneyelim:
 
 <Listing file-name="src/main.rs">
 
@@ -23,23 +34,23 @@ Basit bir programda `panic!` çağırmayı deneyelim:
 
 </Listing>
 
-Programı çalıştırdığınızda şuna benzer bir şey göreceksiniz:
+Programı çalıştırdığınızda şuna benzer bir çıktı görürsünüz:
 
 ```console
 {{#include ../listings/ch09-error-handling/no-listing-01-panic/output.txt}}
 ```
 
-`panic!` çağrısı, son iki satırda bulunan hata mesajına neden olur. İlk satır, panik mesajımızı ve kaynak kodumuzda paniğin oluştuğu yeri gösterir: _src/main.rs:2:5_ bunun, _src/main.rs_ dosyamızın ikinci satırı, beşinci karakteri olduğunu belirtir.
+`panic!` çağrısı, çıktının son bölümünde yer alan hata mesajını üretir. Panik çıktısının ilk iki satırı kaynak kodumuzda paniğin gerçekleştiği konumu ve panik mesajımızı (`çök ve yan`) gösterir: _src/main.rs:2:5_ ifadesi, bunun _src/main.rs_ dosyamızın ikinci satırının beşinci karakteri olduğunu belirtir (parantez içindeki sayı ise ana *thread*'in kimlik numarasıdır).
 
-Bu durumda, belirtilen satır bizim kodumuzun bir parçasıdır ve o satıra gidersek `panic!` makro çağrısını görürüz. Diğer durumlarda, `panic!` çağrısı kodumuzun çağırdığı bir kodda olabilir ve hata mesajı tarafından bildirilen dosya adı ve satır numarası, nihayetinde `panic!` çağrısına yol açan bizim kodumuzun satırı değil, `panic!` makrosunun çağrıldığı başka birinin kodundaki satır olacaktır.
+Bu örnekte işaret edilen satır doğrudan bizim yazdığımız koda aittir ve o satıra baktığımızda `panic!` makro çağrısını görürüz. Başka durumlarda ise `panic!` çağrısı, kodumuzun çağırdığı harici bir kodun içinde yer alabilir; bu durumda hata mesajında bildirilen dosya adı ve satır numarası, en başta `panic!` çağrısına yol açan bizim kodumuzdaki satırı değil, `panic!` makrosunun bizzat çağrıldığı başka bir koddaki satırı gösterir.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="using-a-panic-backtrace"></a>
+<a id="bir-panic-geri-izlemesi-kullanmak"></a>
 
-Probleme neden olan kodumuzun bölümünü bulmak için, `panic!` çağrısının geldiği fonksiyonların geri izlemesini (backtrace) kullanabiliriz. Bir `panic!` geri izlemesini nasıl kullanacağımızı anlamak için başka bir örneğe bakalım ve bir `panic!` çağrısı makroyu doğrudan çağıran bizim kodumuzdan ziyade, kodumuzdaki bir hata nedeniyle bir kütüphaneden geldiğinde neye benzediğini görelim. Liste 9-1, bir vektörde geçerli indeks aralığının ötesindeki bir indekse erişmeye çalışan bir koda sahiptir.
+Kodumuzun soruna yol açan kısmını bulmak için, `panic!` çağrısının gerçekleştiği noktaya gelene dek çağrılan fonksiyonların *geri izlemesini (backtrace)* kullanabiliriz. Bir `panic!` geri izlemesinin nasıl kullanıldığını anlamak için başka bir örneğe bakalım ve `panic!` çağrısı makroyu doğrudan bizim çağırmamız yerine kodumuzdaki bir kusur (*bug*) yüzünden bir kütüphaneden geldiğinde neyle karşılaştığımızı görelim. Liste 9-1'de bir vektörün geçerli indeks aralığının ötesindeki bir indekse erişmeye çalışan bir kod yer almaktadır.
 
-<Listing number="9-1" file-name="src/main.rs" caption="Bir vektörün sonunun ötesindeki bir elemana erişmeye çalışmak; bu durum `panic!` çağrısına neden olacaktır">
+<Listing number="9-1" file-name="src/main.rs" caption="Bir vektörün sonunun ötesindeki bir elemana erişmeye çalışma; bu işlem `panic!` çağrısına yol açar">
 
 ```rust,should_panic,panics
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-01/src/main.rs}}
@@ -47,59 +58,64 @@ Probleme neden olan kodumuzun bölümünü bulmak için, `panic!` çağrısını
 
 </Listing>
 
-Burada vektörümüzün 100. elemanına (indeksleme sıfırdan başladığı için 99. indekstedir) erişmeye çalışıyoruz ancak vektörün sadece üç elemanı var. Bu durumda Rust panik yapacaktır. `[]` kullanımının bir eleman döndürmesi varsayılır, ancak geçersiz bir indeks geçerseniz Rust'ın burada döndürebileceği doğru olan bir eleman yoktur.
+Burada vektörümüzün 100. elemanına (indeksleme sıfırdan başladığı için 99. indeksteki elemana) erişmeye çalışıyoruz; ancak vektörde yalnızca üç eleman var. Bu durumda Rust panik yapacaktır. `[]` operatörünün bir eleman döndürmesi beklenir; fakat geçersiz bir indeks verirseniz Rust'ın burada doğru olarak döndürebileceği hiçbir eleman yoktur.
 
-C'de bir veri yapısının sonunun ötesinde okuma yapmaya çalışmak tanımsız davranıştır (undefined behavior). Bellek o yapıya ait olmasa bile, veri yapısındaki o elemana karşılık gelecek olan bellekteki konumda ne varsa onu alabilirsiniz. Buna *arabellek aşımı* (buffer overread) denir ve eğer bir saldırgan indeksi veri yapısından sonra depolanan ve izin verilmemesi gereken verileri okuyacak şekilde manipüle edebiliyorsa güvenlik açıklarına (security vulnerabilities) yol açabilir.
+C dilinde bir veri yapısının sonunun ötesini okumaya çalışmak *tanımsız davranıştır (undefined behavior)*. Söz konusu bellek alanı o veri yapısına ait olmasa bile, bellekte o indekse karşılık gelen adreste ne bulunuyorsa onu okuyabilirsiniz. Buna *tampon aşımı (buffer overread)* (tampon sınırının ötesini okuma) adı verilir ve bir saldırganın indeksi kurcalayarak veri yapısından hemen sonra bellekte tutulan, erişmemesi gereken hassas verileri okumasına imkân tanıdığında ciddi güvenlik açıklarına yol açabilir.
 
-Programınızı bu tür güvenlik açıklarından korumak için, eğer var olmayan bir indeksteki bir elemanı okumaya çalışırsanız, Rust yürütmeyi durduracak ve devam etmeyi reddedecektir. Deneyelim ve görelim:
+Programınızı bu tür güvenlik açıklarından korumak amacıyla Rust, var olmayan bir indeksteki elemanı okumaya çalıştığınızda yürütmeyi durdurur ve devam etmeyi reddeder. Gelin bunu deneyip görelim:
 
 ```console
 {{#include ../listings/ch09-error-handling/listing-09-01/output.txt}}
 ```
 
-Bu hata, _main.rs_ dosyamızın 4. satırına işaret ediyor; burada `v` vektörünün 99. indeksine erişmeye çalışıyoruz.
+Bu hata, `v` içindeki vektörün 99. indeksine erişmeye çalıştığımız _main.rs_ dosyamızın 4. satırına işaret eder.
 
-`note:` satırı, hataya neden olan şeyin tam olarak ne olduğunun bir geri izlemesini (backtrace) almak için `RUST_BACKTRACE` çevre değişkenini ayarlayabileceğimizi söyler. Bir *geri izleme* (backtrace), bu noktaya gelmek için çağrılan tüm fonksiyonların bir listesidir. Rust'taki geri izlemeler diğer dillerdeki gibi çalışır: Geri izlemeyi okumanın anahtarı, en üstten başlayıp kendi yazdığınız dosyaları görene kadar okumaktır. Sorunun ortaya çıktığı nokta orasıdır. O noktanın üstündeki satırlar sizin kodunuzun çağırdığı koddur; altındaki satırlar ise sizin kodunuzu çağıran koddur. Bu önceki ve sonraki satırlar, çekirdek Rust kodunu, standart kütüphane kodunu veya kullanmakta olduğunuz crateleri içerebilir. `RUST_BACKTRACE` çevre değişkenini `0` hariç herhangi bir değere ayarlayarak bir geri izleme almayı deneyelim. Liste 9-2, göreceğinize benzer bir çıktı gösterir.
+Çıktıdaki `note:` satırı, hataya tam olarak neyin yol açtığını gösteren bir geri izleme elde etmek için `RUST_BACKTRACE` çevre değişkenini ayarlayabileceğimizi belirtir. *Geri izleme*, bu noktaya gelinene kadar çağrılmış tüm fonksiyonların listesidir. Rust'taki geri izlemeler diğer dillerdekiyle aynı mantıkla çalışır: geri izlemeyi okumanın püf noktası, en üstten başlayıp kendi yazdığınız dosyaları görene kadar aşağı doğru okumaktır. Sorunun kaynaklandığı yer tam olarak orasıdır. Bu noktanın üstündeki satırlar sizin kodunuzun çağırdığı kodları, altındaki satırlar ise sizin kodunuzu çağıran kodları gösterir. Öncesindeki ve sonrasındaki bu satırlar çekirdek Rust kodunu, standart kütüphane kodunu veya kullandığınız crate'leri içerebilir. Şimdi `RUST_BACKTRACE` çevre değişkenini `0` dışındaki herhangi bir değere ayarlayarak bir geri izleme almayı deneyelim. Liste 9-2, göreceğinize benzer bir çıktıyı göstermektedir.
 
 <!-- manual-regeneration
-cd listings/ch09-hata-yonetimi/listing-09-01
+cd listings/ch09-error-handling/listing-09-01
 RUST_BACKTRACE=1 cargo run
 copy the backtrace output below
 check the backtrace number mentioned in the text below the listing
 -->
 
-<Listing number="9-2" caption="`RUST_BACKTRACE` çevre değişkeni ayarlandığında görüntülenen bir `panic!` çağrısı tarafından oluşturulan geri izleme">
+<Listing number="9-2" caption="`RUST_BACKTRACE` çevre değişkeni ayarlandığında bir `panic!` çağrısının ürettiği geri izleme çıktısı">
 
 ```console
 $ RUST_BACKTRACE=1 cargo run
-thread 'main' panicked at src/main.rs:4:6:
+thread 'main' (6017887) panicked at src/main.rs:4:6:
 index out of bounds: the len is 3 but the index is 99
 stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/4d91de4e48198da2e33413efdcd9cd2cc0c46688/library/std/src/panicking.rs:692:5
+   0: __rustc::rust_begin_unwind
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library/std/src/panicking.rs:679:5
    1: core::panicking::panic_fmt
-             at /rustc/4d91de4e48198da2e33413efdcd9cd2cc0c46688/library/core/src/panicking.rs:75:14
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library/core/src/panicking.rs:80:14
    2: core::panicking::panic_bounds_check
-             at /rustc/4d91de4e48198da2e33413efdcd9cd2cc0c46688/library/core/src/panicking.rs:273:5
-   3: <usize as core::slice::index::SliceIndex<[T]>>::index
-             at file:///home/.rustup/toolchains/1.85/lib/rustlib/src/rust/library/core/src/slice/index.rs:274:10
-   4: core::slice::index::<impl core::ops::index::Index<I> for [T]>::index
-             at file:///home/.rustup/toolchains/1.85/lib/rustlib/src/rust/library/core/src/slice/index.rs:16:9
-   5: <alloc::vec::Vec<T,A> as core::ops::index::Index<I>>::index
-             at file:///home/.rustup/toolchains/1.85/lib/rustlib/src/rust/library/alloc/src/vec/mod.rs:3361:9
-   6: panic::main
+             at /rustc/b940084d7eb6a299eb4bfeb8e34901bc051e7ac4/library/core/src/panicking.rs:271:5
+   3: <usize as core::slice::index::SliceIndex<[i32]>>::index
+             at file:///home/.rustup/toolchains/1.99/lib/rustlib/src/rust/library/core/src/slice/index.rs:238:10
+   4: <[i32] as core::ops::index::Index<usize>>::index
+             at file:///home/.rustup/toolchains/1.99/lib/rustlib/src/rust/library/core/src/slice/index.rs:19:15
+   5: <alloc::vec::Vec<i32> as core::ops::index::Index<usize>>::index
+             at file:///home/.rustup/toolchains/1.99/lib/rustlib/src/rust/library/alloc/src/vec/mod.rs:3934:9
+   6: panik::main
              at ./src/main.rs:4:6
-   7: core::ops::function::FnOnce::call_once
-             at file:///home/.rustup/toolchains/1.85/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
+   7: <fn() as core::ops::function::FnOnce<()>>::call_once
+             at file:///home/.rustup/toolchains/1.99/lib/rustlib/src/rust/library/core/src/ops/function.rs:250:5
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 ```
 
 </Listing>
 
-Bu epey bir çıktı! Göreceğiniz kesin çıktı, işletim sisteminize ve Rust sürümünüze bağlı olarak farklı olabilir. Bu bilgileri içeren geri izlemeleri almak için hata ayıklama sembollerinin etkinleştirilmiş olması gerekir. Hata ayıklama sembolleri, burada yaptığımız gibi, `--release` bayrağı olmadan `cargo build` veya `cargo run` kullanıldığında varsayılan olarak etkinleştirilir.
+Bu oldukça uzun bir çıktı! Göreceğiniz birebir çıktı, işletim sisteminize ve Rust sürümünüze bağlı olarak farklılık gösterebilir. Bu bilgileri içeren geri izlemeler elde edebilmek için *hata ayıklama sembollerinin (debug symbols)* etkinleştirilmiş olması gerekir. Hata ayıklama sembolleri, burada yaptığımız gibi `--release` bayrağı olmadan `cargo build` veya `cargo run` çalıştırıldığında varsayılan olarak etkindir.
 
-Liste 9-2'deki çıktıda, geri izlemenin 6. satırı projemizde soruna neden olan satıra işaret eder: _src/main.rs_ dosyasının 4. satırı. Eğer programımızın panik yapmasını istemiyorsak, incelememize kendi yazdığımız bir dosyadan bahseden ilk satırın işaret ettiği konumdan başlamalıyız. Bilerek panik yapacak kod yazdığımız Liste 9-1'de, paniği düzeltmenin yolu vektör indeks aralığının ötesinde bir eleman istememektir. Kodunuz gelecekte paniklediğinde, kodun paniğe neden olmak için hangi değerlerle nasıl bir eylemde bulunduğunu ve bunun yerine kodun ne yapması gerektiğini bulmanız gerekecektir.
+Liste 9-2'deki çıktıda geri izlemenin `6` numaralı kaydı, projemizde soruna yol açan satıra işaret eder: _src/main.rs_ dosyasının 4. satırı. Programımızın panik yapmasını istemiyorsak, incelememize kendi yazdığımız bir dosyadan bahseden ilk satırın gösterdiği konumdan başlamalıyız. Bilerek panik yapacak biçimde yazdığımız Liste 9-1'de paniği gidermenin yolu, vektörün geçerli indeks aralığının ötesinden bir eleman istememektir. Gelecekte kodunuz panik yaptığında, kodun hangi değerlerle hangi işlemi yaparak paniğe yol açtığını ve bunun yerine ne yapması gerektiğini belirlemeniz gerekecektir.
 
-Daha sonra bu bölümdeki [“`panic!` Yapmalı mı Yapmamalı mı?”][to-panic-or-not-to-panic]<!-- ignore --> kısmında `panic!`'e ve hata durumlarını ele almak için `panic!`'i ne zaman kullanıp ne zaman kullanmamamız gerektiğine geri döneceğiz. Sırada, `Result` kullanarak bir hatadan nasıl kurtulacağımıza bakacağız.
+> Not: Liste 9-2'nin sonundaki `note:` satırında görülen `RUST_BACKTRACE=1` ile `RUST_BACKTRACE=full` arasındaki fark günlük hata ayıklamada işinizi çok kolaylaştırır:
+>
+> - **`RUST_BACKTRACE=1` (önerilen başlangıç noktası)**: Programı başlatan Rust çalışma zamanı (*runtime*) başlangıç çerçevelerini ve panik sonrasındaki düşük seviyeli iç adımları gizleyerek yalnızca hataya giden asıl çağrı zincirini özetler. Örneğin Liste 9-2'yi aşağıdan yukarıya (`6` → `0`) takip ederseniz çağrı akışını adım adım görebilirsiniz: `6: panik::main` içindeki `v[99]` ifadesi önce `5: Vec::index`'i, o da dilim indekslemesini (`4` ve `3`) çağırmış; sınır denetimi başarısız olunca `2: panic_bounds_check` üzerinden panik başlatılmıştır. Hatayı ayıklarken ise her zaman **yukarıdan aşağıya** inip kendi kaynak dosyanızı (`./src/main.rs`) gördüğünüz ilk kayıttan (`6`) başlamalısınız (vektörlerde paniklemek yerine güvenli erişim gerektiğinde Bölüm 8'de gördüğümüz `v.get(99)` metodunu tercih edebilirsiniz).
+> - **`RUST_BACKTRACE=full`**: Gizlenen tüm standart kütüphane ve çalışma zamanı başlatma çerçevelerini ham bellek adresleriyle birlikte eksiksiz listeler. Uygulama düzeyindeki hatalar için `RUST_BACKTRACE=1` çok daha okunaklıdır; `full` seçeneğine genellikle yalnızca düşük seviyeli kütüphane, FFI veya derleyici sorunlarını incelerken ihtiyaç duyulur. Ayrıca Windows PowerShell kullanıyorsanız bu çevre değişkenini `$env:RUST_BACKTRACE=1; cargo run` komutuyla ayarlayabilirsiniz.
+
+Bu bölümün ilerleyen kısımlarındaki [“`panic!` Yapmalı mı Yapmamalı mı?”][to-panic-or-not-to-panic]<!-- ignore --> başlığında `panic!` makrosuna geri dönecek ve hata durumlarını ele alırken `panic!`'i ne zaman kullanıp ne zaman kullanmamamız gerektiğini inceleyeceğiz. Şimdi sırada `Result` kullanarak bir hatadan nasıl kurtulabileceğimize bakmak var.
 
 [to-panic-or-not-to-panic]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#panic-yapmalı-mı-yapmamalı-mı

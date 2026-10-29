@@ -17,5 +17,5 @@ impl Hayvan for Kopek {
 }
 
 fn main() {
-    println!("Bir yavru köpeğe {}", Kopek::baby_name());
+    println!("Bir yavru köpeğe {} denir", Kopek::baby_name());
 }

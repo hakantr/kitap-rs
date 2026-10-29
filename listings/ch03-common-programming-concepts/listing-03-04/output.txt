@@ -1,7 +1,7 @@
 $ cargo run
-   Compiling loops v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/listing-03-04)
+   Compiling donguler v0.1.0 (file:///projects/donguler)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
-     Running `target/debug/loops`
+     Running `target/debug/donguler`
 değer: 10
 değer: 20
 değer: 30

@@ -1,6 +1,6 @@
 $ cargo run
-   Compiling variables v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-02-adding-mut)
+   Compiling degiskenler v0.1.0 (file:///projects/degiskenler)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
-     Running `target/debug/variables`
+     Running `target/debug/degiskenler`
 x'in değeri: 5
 x'in değeri: 6

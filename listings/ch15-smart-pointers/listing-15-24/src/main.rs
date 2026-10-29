@@ -1,10 +1,10 @@
 #[derive(Debug)]
-enum List {
-    Dugum(Rc<RefCell<i32>>, Rc<List>),
+enum Liste {
+    Dugum(Rc<RefCell<i32>>, Rc<Liste>),
     Bos,
 }
 
-use crate::List::{Bos, Dugum};
+use crate::Liste::{Bos, Dugum};
 use std::cell::RefCell;
 use std::rc::Rc;
 

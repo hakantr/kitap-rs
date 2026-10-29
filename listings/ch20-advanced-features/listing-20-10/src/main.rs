@@ -1,5 +1,5 @@
-static HELLO_WORLD: &str = "Hello, Rust!";
+static HELLO_WORLD: &str = "Merhaba, dünya!";
 
 fn main() {
-    println!("deger: {HELLO_WORLD}");
+    println!("değer: {HELLO_WORLD}");
 }

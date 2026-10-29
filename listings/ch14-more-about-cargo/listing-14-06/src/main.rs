@@ -1,6 +1,6 @@
 // ANCHOR: here
-use sanat::karistir;
 use sanat::BirincilRenk;
+use sanat::karistir;
 
 fn main() {
     // --snip--

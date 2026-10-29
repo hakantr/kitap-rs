@@ -1,12 +1,12 @@
 use std::cmp::Ordering;
 use std::io;
 
-use rand::Rng;
+use rand::prelude::*;
 
 fn main() {
     println!("Sayıyı tahmin et!");
 
-    let gizli_sayi = rand::thread_rng().gen_range(1..=100);
+    let gizli_sayi = rand::rng().random_range(1..=100);
 
     println!("Gizli sayı: {gizli_sayi}");
 
@@ -24,7 +24,7 @@ fn main() {
 
         // ANCHOR: ch19
         let tahmin: u32 = match tahmin.trim().parse() {
-            Ok(num) => num,
+            Ok(sayi) => sayi,
             Err(_) => continue,
         };
         // ANCHOR_END: ch19

@@ -1,20 +1,24 @@
-## Dilim Türü (The Slice Type)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="the-slice-type"></a>
+<a id="dilim-türü-the-slice-type"></a>
 
-_Dilimler_, bir [koleksiyondaki](ch08-00-yaygin-koleksiyonlar.md)<!-- ignore --> bitişik bir eleman dizisine referans vermenizi sağlar. Bir dilim bir tür referanstır, bu nedenle sahipliği yoktur.
+## Dilim (Slice) Türü
 
-İşte küçük bir programlama problemi: Boşluklarla ayrılmış kelimelerden oluşan bir metin (string) alan ve o metinde bulduğu ilk kelimeyi döndüren bir fonksiyon yazın. Eğer fonksiyon metin içinde boşluk bulamazsa, tüm metin tek bir kelime olmalıdır, bu yüzden metnin tamamı döndürülmelidir.
+_Dilimler (slices)_, bir [koleksiyon](ch08-00-yaygin-koleksiyonlar.html)<!-- ignore --> içindeki bitişik bir eleman dizisine referans vermenizi sağlar. Dilim bir referans türüdür; dolayısıyla verinin sahipliğine sahip değildir.
 
-> Not: Dilimleri tanıtmak amacıyla, bu bölümde yalnızca ASCII karakterleri olduğunu varsayıyoruz; UTF-8 kullanımı ile ilgili daha kapsamlı bir tartışma Bölüm 8'deki ["UTF-8 Kodlanmış Metni Stringler ile Saklamak"][strings]<!-- ignore --> bölümünde yer almaktadır.
+Küçük bir programlama problemi düşünelim: Boşluklarla ayrılmış kelimelerden oluşan bir string alan ve bu string içinde bulduğu ilk kelimeyi döndüren bir fonksiyon yazın. Fonksiyon string içinde hiç boşluk bulamazsa tüm string tek bir kelime demektir; bu durumda stringin tamamı döndürülmelidir.
 
-Dilimlerin çözeceği problemi anlamak için, dilim kullanmadan bu fonksiyonun imzasını nasıl yazacağımız üzerinde çalışalım:
+> Not: Dilimleri tanıtmak amacıyla bu bölümde metinlerin yalnızca ASCII karakterlerden oluştuğunu varsayıyoruz; UTF-8 işleme konusunu Bölüm 8'deki ["String'lerle UTF-8 Kodlanmış Metin Saklama"][strings]<!-- ignore --> bölümünde kapsamlı biçimde ele alacağız.
+
+Dilimlerin hangi sorunu çözdüğünü anlamak için bu fonksiyonun imzasını dilim kullanmadan nasıl yazacağımız üzerinde düşünelim:
 
 ```rust,ignore
 fn ilk_kelime(metin: &String) -> ?
 ```
 
-`ilk_kelime` fonksiyonunun `&String` türünde bir parametresi var. Sahipliğe ihtiyacımız yok, o yüzden bu gayet uygundur. (İdiyomatik Rust'ta, fonksiyonlar ihtiyaç duymadıkça argümanlarının sahipliğini almazlar ve bunun nedenleri ilerledikçe netleşecektir.) Peki ne döndürmeliyiz? Bir metnin *bir kısmından* bahsetmenin gerçekten bir yolu yok. Ancak, bir boşlukla belirtilen kelimenin sonunun indeksini döndürebiliriz. Liste 4-7'de gösterildiği gibi bunu deneyelim.
+`ilk_kelime` fonksiyonu `&String` türünde bir parametre alır. Sahipliğe ihtiyacımız olmadığı için bu tercih gayet uygundur. (İdiyomatik Rust'ta fonksiyonlar gerçekten gerekmedikçe argümanlarının sahipliğini almaz; bunun nedenleri ilerledikçe netleşecektir.) Peki bu fonksiyondan ne döndürmeliyiz? Bir stringin *bir kısmını* ifade etmenin henüz doğrudan bir yolu yoktur. Bununla birlikte, kelimenin sonunu belirten boşluğun indeksini döndürebiliriz. Gelin bunu Liste 4-7'de gösterildiği gibi deneyelim.
 
-<Listing number="4-7" file-name="src/main.rs" caption="`String` parametresine karşılık bir bayt indeksi değeri döndüren `ilk_kelime` fonksiyonu">
+<Listing number="4-7" file-name="src/main.rs" caption="`String` parametresi içindeki bir bayt indeksini döndüren `ilk_kelime` fonksiyonu">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:here}}
@@ -22,31 +26,31 @@ fn ilk_kelime(metin: &String) -> ?
 
 </Listing>
 
-`String`'i eleman eleman incelememiz ve bir değerin boşluk olup olmadığını kontrol etmemiz gerektiğinden, `as_bytes` metodunu kullanarak `String`'imizi bir bayt dizisine dönüştürüyoruz.
+`String` değerini eleman eleman tarayıp her bir değerin boşluk olup olmadığını kontrol etmemiz gerektiğinden, `as_bytes` metodunu kullanarak `String` değerimizi bir bayt dizisine dönüştürürüz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}
 ```
 
-Daha sonra, `iter` metodunu kullanarak bayt dizisi üzerinde bir yineleyici oluşturuyoruz:
+Ardından `iter` metodunu kullanarak bu bayt dizisi üzerinde bir *iteratör (yineleyici)* oluştururuz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:iter}}
 ```
 
-Yineleyicileri [Bölüm 13][ch13]<!-- ignore -->'te daha detaylı tartışacağız. Şimdilik `iter`'in bir koleksiyondaki her elemanı döndüren bir metot olduğunu ve `enumerate`'in `iter` sonucunu sarmaladığını ve bunun yerine her elemanı bir demetin parçası olarak döndürdüğünü bilin. `enumerate`'ten döndürülen demetin ilk elemanı indekstir ve ikinci eleman elemana bir referanstır. Bu, indeksi kendimiz hesaplamaktan biraz daha uygundur.
+İteratörleri [Bölüm 13][ch13]<!-- ignore -->'te ayrıntılı olarak inceleyeceğiz. Şimdilik `iter` metodunun bir koleksiyondaki her elemanı sırayla döndürdüğünü, `enumerate` metodunun ise `iter` sonucunu sarmalayarak her elemanı bunun yerine bir demetin parçası olarak döndürdüğünü bilmeniz yeterlidir. `enumerate` çağrısından dönen demetin ilk elemanı indeks, ikinci elemanı ise ilgili elemana ait referanstır. Bu yöntem, indeksi kendi başımıza hesaplamaktan biraz daha pratiktir.
 
-`enumerate` metodu bir demet döndürdüğü için, o demeti ayrıştırmak (destructure) amacıyla desenleri (patterns) kullanabiliriz. Desenler hakkında [Bölüm 6][ch6]<!-- ignore -->'da daha fazla konuşacağız. `for` döngüsünde, demetteki indeks için `i` ve demetteki tek bayt için `&oge` olan bir desen belirtiyoruz. `.iter().enumerate()`'ten elemanın bir referansını aldığımız için desende `&` kullanırız.
+`enumerate` metodu bir demet döndürdüğü için bu demeti parçalarına ayırmak (*destructure*) amacıyla desenleri (*patterns*) kullanabiliriz. Desenleri [Bölüm 6][ch6]<!-- ignore -->'da daha ayrıntılı ele alacağız. `for` döngüsünde, demetteki indeks için `i` ve demetteki tekil bayt için `&oge` içeren bir desen belirtiriz. `.iter().enumerate()` çağrısından elemana bir referans elde ettiğimiz için desende `&` kullanırız.
 
-`for` döngüsünün içinde, bayt literali (byte literal) sözdizimini kullanarak boşluğu temsil eden baytı ararız. Eğer bir boşluk bulursak, o konumu döndürürüz. Aksi takdirde, `metin.len()` kullanarak metnin uzunluğunu döndürürüz.
+`for` döngüsünün içinde, *bayt sabiti (byte literal)* sözdizimini (`b' '`) kullanarak boşluğu temsil eden baytı ararız. Bir boşluk bulursak bu konumu döndürürüz. Aksi takdirde `metin.len()` çağrısıyla stringin uzunluğunu döndürürüz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:inside_for}}
 ```
 
-Artık metindeki ilk kelimenin sonunun indeksini bulmanın bir yoluna sahibiz, ancak bir sorun var. Tek başına bir `usize` döndürüyoruz, ancak bu yalnızca `&String` bağlamında anlamlı bir sayıdır. Başka bir deyişle, `String`'den ayrı bir değer olduğu için gelecekte de geçerli kalacağının garantisi yoktur. Liste 4-7'deki `ilk_kelime` fonksiyonunu kullanan Liste 4-8'deki programı inceleyelim.
+Artık string içindeki ilk kelimenin bittiği yerin indeksini bulabiliyoruz, ancak önemli bir sorun var. Tek başına bir `usize` döndürüyoruz; oysa bu sayı yalnızca `&String` bağlamında anlamlıdır. Başka bir deyişle, `String`'den bağımsız ayrı bir değer olduğu için gelecekte hâlâ geçerli kalacağının hiçbir garantisi yoktur. Liste 4-7'deki `ilk_kelime` fonksiyonunu kullanan Liste 4-8'deki programı inceleyelim.
 
-<Listing number="4-8" file-name="src/main.rs" caption="`ilk_kelime` fonksiyonunu çağırmaktan dönen sonucu saklayıp ardından `String` içeriğini değiştirmek">
+<Listing number="4-8" file-name="src/main.rs" caption="`ilk_kelime` fonksiyonu çağrısından dönen sonucu saklayıp ardından `String` içeriğini değiştirmek">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-08/src/main.rs:here}}
@@ -54,36 +58,40 @@ Artık metindeki ilk kelimenin sonunun indeksini bulmanın bir yoluna sahibiz, a
 
 </Listing>
 
-Bu program hiçbir hata olmadan derlenir ve `metin.clear()` çağırdıktan sonra `kelime`'yi kullansaydık da derlenirdi. `kelime` `metin`'in durumuna hiç bağlı olmadığı için, `kelime` hala `7` (veya `"merhaba"` kelimesinin uzunluğu) değerini içerir. İlk kelimeyi çıkarmayı denemek için `metin` değişkeni ile birlikte bu `7` değerini kullanabilirdik, ancak bu bir bug olurdu çünkü `kelime`'de `7`'yi kaydettiğimizden bu yana `metin`'in içerikleri değişmiştir.
+Bu program hiçbir hata vermeden derlenir; hatta `metin.clear()` çağrısından sonra `kelime` değişkenini kullansaydık bile derlenirdi. `kelime` değişkeni `metin`'in durumuna hiçbir şekilde bağlı olmadığından hâlâ `7` değerini tutar. İlk kelimeyi çıkarmak amacıyla `metin` değişkeniyle birlikte bu `7` değerini kullanmaya çalışabilirdik; ancak biz `7` sayısını `kelime` değişkenine kaydettikten sonra `metin`'in içeriği değiştiği için bu bir mantık hatası (*bug*) olurdu.
 
-`kelime`'deki indeksin `metin`'deki verilerle senkronizasyonunun (uyumunun) bozulması konusunda endişelenmek yorucu ve hataya açıktır! Eğer bir `ikinci_kelime` fonksiyonu yazarsak bu indeksleri yönetmek daha da kırılgan (brittle) bir hal alır. İmzası şuna benzerdi:
+`kelime` içindeki indeksin `metin` içindeki veriyle uyumunun bozulabileceği konusunda sürekli endişelenmek yorucu ve hataya açıktır! Bir `ikinci_kelime` fonksiyonu yazdığımızda bu indeksleri yönetmek daha da kırılgan bir hâl alır. Böyle bir fonksiyonun imzası şuna benzemek zorunda kalırdı:
 
 ```rust,ignore
 fn ikinci_kelime(metin: &String) -> (usize, usize) {
 ```
 
-Artık bir başlangıç _ve_ bir bitiş indeksini izliyoruz; belirli bir durumdaki verilerden hesaplanmış ancak o duruma hiçbir şekilde bağlı olmayan daha da fazla değerimiz var. Etrafta dolaşan ve senkronize tutulması gereken, birbiriyle ilgisiz üç değişkenimiz var.
+Şimdi hem bir başlangıç _hem de_ bir bitiş indeksini takip ediyoruz; üstelik verinin belirli bir durumundan hesaplanmış ama o duruma hiçbir biçimde bağlı olmayan daha da fazla değerimiz var. Artık ortalıkta dolaşan ve birbiriyle uyumlu tutulması gereken üç ilişkisiz değişken bulunuyor.
 
-Neyse ki Rust'ın bu soruna bir çözümü var: string dilimleri.
+Neyse ki Rust'ın bu soruna bir çözümü vardır: string dilimleri.
 
-### String Dilimleri (String Slices)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="string-slices"></a>
+<a id="string-dilimleri-string-slices"></a>
 
-Bir _string dilimi_, bir `String`'in elemanlarının bitişik bir dizisine referanstır ve şuna benzer:
+### String Dilimleri
+
+Bir _string dilimi (string slice)_, bir `String` içindeki elemanların bitişik bir dizisine referanstır ve şöyle görünür:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-17-slice/src/main.rs:here}}
 ```
 
-Tüm `String`'e referans vermek yerine, `merhaba`, ekstra `[0..7]` bölümünde belirtilen `String`'in bir kısmına referanstır. Dilimleri `[başlangıç_indeksi..bitiş_indeksi]` belirterek köşeli parantezler içinde bir aralık kullanarak oluştururuz; burada _`başlangıç_indeksi`_ dilimdeki ilk konumdur ve _`bitiş_indeksi`_ dilimdeki son konumun bir fazlasıdır. Dahili olarak, dilim veri yapısı dilimin başlangıç konumunu ve uzunluğunu depolar; bu uzunluk _`bitiş_indeksi`_ eksi _`başlangıç_indeksi`_ değerine karşılık gelir. Yani, `let dunya = &metin[8..13];` durumunda `dunya`, `metin`'in 8. indeksindeki bayta bir işaretçi ve `5` uzunluk değeri içeren bir dilim olacaktır.
+`merhaba` değişkeni tüm `String`'e referans vermek yerine, fazladan eklenen `[0..7]` kısmında belirtilen `String` bölümüne referans verir. Dilimleri köşeli parantezler içinde `[başlangıç_indeksi..bitiş_indeksi]` biçiminde bir aralık belirterek oluştururuz; burada _`başlangıç_indeksi`_ dilimdeki ilk konumu, _`bitiş_indeksi`_ ise dilimdeki son konumun bir fazlasını ifade eder. Dilim veri yapısı dahili olarak dilimin başlangıç konumunu ve uzunluğunu saklar; bu uzunluk _`bitiş_indeksi`_ eksi _`başlangıç_indeksi`_ değerine karşılık gelir. Dolayısıyla `let dunya = &metin[8..13];` örneğinde `dunya`, `metin` değişkeninin 8. indeksindeki bayta yönelen bir işaretçi ve `5` uzunluk değerini barındıran bir dilim olur.
 
-Şekil 4-7 bunu bir diyagram halinde göstermektedir.
+Şekil 4-7 bu bellek yapısını bir diyagramla göstermektedir.
 
-<img alt="Üç tablo: metin (s) için stack verilerini temsil eden bir tablo, heap üzerindeki &quot;merhaba dünya&quot; string verileri tablosunda 0. indeksteki bayta işaret eder. Üçüncü tablo ise dunya (world) diliminin stack verilerini temsil eder; bu tablo 5 uzunluk değerine sahiptir ve heap veri tablosunun 8. baytına işaret eder."
+<img alt="Üç tablo: ilk tablo yığın üzerindeki s (metin) değişkeninin verilerini temsil eder ve öbek üzerindeki &quot;hello world&quot; string verisi tablosunun 0. indeksindeki bayta işaret eder. Üçüncü tablo ise dilim olan world (dunya) değişkeninin yığın verilerini temsil eder; uzunluk değeri 5'tir ve öbek veri tablosunun 6. baytına işaret eder."
 src="img/trpl04-07.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Şekil 4-7: `String`'in bir parçasına atıfta bulunan bir string dilimi</span>
+<span class="caption">Şekil 4-7: Bir `String`'in belirli bir parçasına başvuran string dilimi (diyagramda İngilizce `s = "hello world"` ve `&s[6..11]` karşılığı olan `world` gösterilmektedir)</span>
 
-Rust'ın `..` aralık sözdizimi ile, eğer indeks 0'dan başlamak istiyorsanız, iki noktadan önceki değeri bırakabilirsiniz. Başka bir deyişle, bunlar birbirine eşittir:
+Rust'ın `..` aralık sözdiziminde 0. indeksten başlamak istiyorsanız iki noktadan önceki sayıyı yazmayabilirsiniz. Başka bir deyişle, aşağıdaki iki satır birbirine eşdeğerdir:
 
 ```rust
 let metin = String::from("merhaba");
@@ -92,7 +100,7 @@ let dilim = &metin[0..2];
 let dilim = &metin[..2];
 ```
 
-Aynı şekilde, diliminiz `String`'in son baytını içeriyorsa, sondaki sayıyı da bırakabilirsiniz. Bu, şunların eşit olduğu anlamına gelir:
+Aynı mantıkla, diliminiz `String`'in son baytını da içeriyorsa sondaki sayıyı yazmayabilirsiniz. Yani şu iki satır da birbirine eşdeğerdir:
 
 ```rust
 let metin = String::from("merhaba");
@@ -103,7 +111,7 @@ let dilim = &metin[3..uzunluk];
 let dilim = &metin[3..];
 ```
 
-Tüm metnin bir dilimini almak için her iki değeri de bırakabilirsiniz. Dolayısıyla bunlar da eşittir:
+Tüm stringin bir dilimini almak için her iki değeri de atlayabilirsiniz. Dolayısıyla şunlar da eşdeğerdir:
 
 ```rust
 let metin = String::from("merhaba");
@@ -114,9 +122,11 @@ let dilim = &metin[0..uzunluk];
 let dilim = &metin[..];
 ```
 
-> Not: String dilim aralığı indeksleri geçerli UTF-8 karakter sınırlarında gerçekleşmelidir. Çok baytlı (multibyte) bir karakterin ortasında bir string dilimi oluşturmaya çalışırsanız, programınız bir hatayla çıkış yapacaktır.
+> Not: String dilimi aralık indeksleri geçerli UTF-8 karakter sınırlarına denk gelmelidir. Çok baytlı (*multibyte*) bir karakterin tam ortasından string dilimi oluşturmaya çalışırsanız programınız çalışma zamanında bir panik hatasıyla sonlanır.
+>
+> Türkçe metinlerle çalışırken bu kural özellikle önemlidir: UTF-8 kodlamasında ASCII karakterler 1 bayt yer kaplarken `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` (ve büyük harf karşılıkları olan `'Ç'`, `'Ğ'`, `'İ'`, `'Ö'`, `'Ş'`, `'Ü'`) bellekte **2 bayt** yer kaplar. Örneğin `let metin = String::from("çalışma");` tanımladığınızda ilk harf olan `'ç'` bellekte `0` ve `1` numaralı baytlara yayılır (`0..2`). Bu nedenle `&metin[0..1]` yazarak yalnızca ilk baytı dilimlemeye çalışırsanız Rust, karakter bütünlüğünün bozulmasını önlemek için çalışma zamanında `end byte index 1 is not a char boundary; it is inside 'ç' (bytes 0..2 of string)` hatasıyla panikler; `"ç"` harfini dilimlemek için `&metin[0..2]` kullanmanız gerekir. Benzer şekilde `"dünya"` kelimesi 5 harfli olmasına rağmen `'ü'` 2 bayt tuttuğundan bellekte 6 bayt (`len = 6`) uzunluğundadır.
 
-Tüm bu bilgileri göz önünde bulundurarak, `ilk_kelime`'yi bir dilim döndürecek şekilde yeniden yazalım. "String dilimi"ni ifade eden tür `&str` olarak yazılır:
+Tüm bu bilgileri göz önünde bulundurarak `ilk_kelime` fonksiyonunu bir dilim döndürecek biçimde yeniden yazalım. "String dilimi" anlamına gelen tür `&str` şeklinde yazılır:
 
 <Listing file-name="src/main.rs">
 
@@ -126,17 +136,17 @@ Tüm bu bilgileri göz önünde bulundurarak, `ilk_kelime`'yi bir dilim döndür
 
 </Listing>
 
-Kelimenin sonu için indeksi Liste 4-7'de yaptığımız gibi, bir boşluğun ilk geçtiği yeri arayarak elde ederiz. Bir boşluk bulduğumuzda, metnin başlangıcını ve boşluğun indeksini sırasıyla başlangıç ve bitiş indeksleri olarak kullanarak bir string dilimi döndürürüz.
+Kelimenin bitiş indeksini tıpkı Liste 4-7'de yaptığımız gibi ilk boşluk karakterini arayarak buluruz. Bir boşluk bulduğumuzda, başlangıç ve bitiş indeksleri olarak sırasıyla stringin başlangıcını ve boşluğun indeksini kullanarak bir string dilimi döndürürüz.
 
-Artık `ilk_kelime`'yi çağırdığımızda, temel alınan (underlying) verilere bağlı tek bir değer geri alıyoruz. Bu değer, dilimin başlangıç noktasına yönelik bir referans ile dilimdeki eleman sayısından oluşur.
+Artık `ilk_kelime` fonksiyonunu çağırdığımızda, arka plandaki asıl veriye doğrudan bağlı tek bir değer elde ederiz. Bu değer, dilimin başlangıç noktasına yönelen bir referanstan ve dilimdeki eleman (bayt) sayısından oluşur.
 
-Bir dilim döndürmek `ikinci_kelime` fonksiyonu için de işe yarayacaktır:
+Bir dilim döndürmek `ikinci_kelime` fonksiyonu için de aynı şekilde işe yarar:
 
 ```rust,ignore
 fn ikinci_kelime(metin: &String) -> &str {
 ```
 
-Derleyici `String` içindeki referansların geçerli kalmasını sağlayacağından artık bozması çok daha zor olan basit bir API'ye sahibiz. Liste 4-8'deki programda yer alan ve ilk kelimenin sonunun indeksini aldığımız, ancak daha sonra metni boşalttığımızda indeksimizin geçersiz hale geldiği hatayı hatırlıyor musunuz? O kod mantıksal olarak yanlıştı ancak anında herhangi bir hata göstermemişti. İlk kelime indeksini boşaltılmış bir metinle birlikte kullanmaya devam etseydik, sorunlar daha sonra ortaya çıkacaktı. Dilimler bu hatayı imkansız kılar ve kodumuzla ilgili bir sorunumuz olduğunu çok daha erken bilmemizi sağlar. `ilk_kelime`'nin dilim sürümünü kullanmak bir derleme zamanı hatası fırlatır:
+Derleyici `String` içine yönelen referansların geçerli kalmasını güvence altına alacağından, artık yanlış kullanılması çok daha zor ve yalın bir API'ye sahibiz. Liste 4-8'deki programda ilk kelimenin bitiş indeksini aldıktan sonra stringi temizlediğimiz ve elimizdeki indeksin geçersiz kaldığı hatayı hatırlıyor musunuz? O kod mantıksal açıdan hatalıydı ama anında hiçbir hata vermemişti; sorun ancak boşaltılmış bir string üzerinde ilk kelime indeksini kullanmaya devam ettiğimizde sonradan ortaya çıkacaktı. Dilimler bu hatayı imkânsız kılar ve kodumuzda bir sorun olduğunu çok daha erken fark etmemizi sağlar. `ilk_kelime`'nin dilim döndüren sürümünü aynı senaryoda kullanmak derleme zamanı hatası üretir:
 
 <Listing file-name="src/main.rs">
 
@@ -152,33 +162,37 @@ Derleyici `String` içindeki referansların geçerli kalmasını sağlayacağın
 {{#include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/output.txt}}
 ```
 
-Ödünç alma kurallarını hatırlayın: Eğer bir şeye değiştirilemez bir referansımız varsa, ona ayrıca değiştirilebilir bir referans alamayız. `clear`'ın `String`'i kesmesi (truncate) gerektiği için değiştirilebilir bir referans alması gerekir. `clear` çağrısından sonraki `println!`, `kelime`'deki referansı kullanır, dolayısıyla o noktada değiştirilemez referansın hala aktif olması gerekir. Rust, `clear`'daki değiştirilebilir referans ile `kelime`'deki değiştirilemez referansın aynı anda var olmasına izin vermez ve derleme başarısız olur. Rust yalnızca API'mizi daha kolay kullanılır hale getirmekle kalmadı, aynı zamanda bütün bir hata sınıfını derleme zamanında ortadan kaldırdı!
+Ödünç alma kurallarını hatırlayalım: Bir değere ait değiştirilemez bir referansımız varken, aynı değere değiştirilebilir bir referans alamayız. `clear` metodunun `String`'i kısaltıp boşaltması gerektiği için değiştirilebilir bir referans alması gerekir. `clear` çağrısından sonraki `println!` satırı ise `kelime` içindeki referansı kullanır; dolayısıyla değiştirilemez referansın o noktada hâlâ etkin olması zorunludur. Rust, `clear` çağrısındaki değiştirilebilir referans (`mutable borrow occurs here`) ile `kelime` içindeki değiştirilemez referansın (`immutable borrow occurs here`) aynı anda var olmasına izin vermez ve derleme başarısız olur. Rust yalnızca API'mizi kullanımı daha kolay bir hâle getirmekle kalmamış, koskoca bir hata sınıfını daha derleme zamanında ortadan kaldırmıştır!
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="string-literals-are-slices"></a>
+<a id="string-literals-as-slices"></a>
+<a id="dilim-olarak-sabit-metinler-string-literals-as-slices"></a>
 
-#### Dilim Olarak Sabit Metinler (String Literals as Slices)
+#### Dilim Olarak String Sabitleri
 
-Sabit metinlerin (string literals) ikili dosya içinde saklandığından bahsettiğimizi hatırlayın. Artık dilimleri bildiğimize göre sabit metinleri uygun bir şekilde anlayabiliriz:
+Daha önce string sabitlerinin derlenen ikili dosyanın (*binary*) içinde saklandığından söz ettiğimizi hatırlayın. Artık dilimleri tanıdığımıza göre string sabitlerini tam olarak anlayabiliriz:
 
 ```rust
 let metin = "Merhaba, dünya!";
 ```
 
-Buradaki `metin` değişkeninin türü `&str`'dir: İkili dosyanın belirli bir noktasına işaret eden bir dilimdir. Sabit metinlerin değiştirilemez olmasının nedeni de budur; `&str` değiştirilemez bir referanstır.
+Buradaki `metin` değişkeninin türü `&str`'dir: İkili dosyanın tam o noktasına işaret eden bir dilimdir. String sabitlerinin değiştirilemez olmasının nedeni de budur; `&str` değiştirilemez bir referanstır.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="string-slices-as-parameters"></a>
 
 #### Parametre Olarak String Dilimleri
 
-Sabitlerin (literals) ve `String` değerlerinin dilimlerini alabileceğinizi bilmek, `ilk_kelime` üzerinde yapacağımız bir iyileştirmeye, yani onun imzasına yönlendirir bizi:
+Hem string sabitlerinin hem de `String` değerlerinin dilimlerini alabileceğimizi bilmek, bizi `ilk_kelime` fonksiyonunda yapabileceğimiz bir iyileştirmeye daha — fonksiyonun imzasına — götürür:
 
 ```rust,ignore
 fn ilk_kelime(metin: &String) -> &str {
 ```
 
-Daha tecrübeli bir Rust geliştiricisi bunun yerine Liste 4-9'da gösterilen imzayı yazardı, çünkü bu imza aynı fonksiyonu hem `&String` hem de `&str` değerleri üzerinde kullanmamıza olanak tanır.
+Daha deneyimli bir Rust geliştiricisi bunun yerine Liste 4-9'da gösterilen imzayı yazar; çünkü bu imza aynı fonksiyonu hem `&String` değerleri hem de `&str` değerleri üzerinde kullanmamıza olanak tanır.
 
-<Listing number="4-9" caption="`metin` parametresi için bir string dilimi kullanarak `ilk_kelime` fonksiyonunu iyileştirme">
+<Listing number="4-9" caption="`metin` parametresinin türü olarak string dilimi kullanarak `ilk_kelime` fonksiyonunu iyileştirmek">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-09/src/main.rs:here}}
@@ -186,9 +200,11 @@ Daha tecrübeli bir Rust geliştiricisi bunun yerine Liste 4-9'da gösterilen im
 
 </Listing>
 
-Eğer elimizde bir string dilimi varsa, bunu doğrudan geçirebiliriz. Eğer bir `String`'imiz varsa, bu `String`'in bir dilimini veya `String`'in referansını geçirebiliriz. Bu esneklik, Bölüm 15'teki ["Fonksiyonlarda ve Metotlarda Deref Zorlamalarını Kullanma (Using Deref Coercions in Functions and Methods)"][deref-coercions]<!-- ignore --> bölümünde ele alacağımız deref zorlamaları (deref coercions) özelliğinden yararlanır.
+Elimizde bir string dilimi varsa onu doğrudan argüman olarak geçirebiliriz. Elimizde bir `String` varsa ya bu `String`'in bir dilimini ya da doğrudan `String`'e ait bir referansı geçirebiliriz. Bu esneklik, Bölüm 15'teki ["Fonksiyon ve Metotlarda Deref Zorlaması Kullanmak"][deref-coercions]<!-- ignore --> bölümünde ele alacağımız *deref zorlaması (deref coercion)* özelliğinden yararlanır.
 
-Bir fonksiyonu `String` referansı yerine bir string dilimi alacak şekilde tanımlamak, API'mizi hiçbir işlevselliğini kaybetmeden daha genel ve kullanışlı hale getirir:
+> Not: Özetle *deref zorlaması*, derleyicinin `&String` türündeki bir referansı gerektiğinde hiçbir ek çalışma zamanı maliyeti veya bellek kopyalaması olmadan otomatik olarak `&str` dilimine dönüştürmesidir (`&benim_metnim` ifadesi `&benim_metnim[..]` ile aynı sonucu verir). Bu nedenle günlük Rust kodlarında, bir fonksiyon metnin sahipliğini almak veya onu değiştirmek zorunda değilse parametre türü olarak `&String` yerine her zaman `&str` tercih edilir.
+
+Bir fonksiyonu `String` referansı yerine string dilimi alacak şekilde tanımlamak, hiçbir işlevsellik kaybı yaşatmadan API'mizi daha genel ve kullanışlı hâle getirir:
 
 <Listing file-name="src/main.rs">
 
@@ -198,15 +214,19 @@ Bir fonksiyonu `String` referansı yerine bir string dilimi alacak şekilde tan�
 
 </Listing>
 
-### Diğer Dilimler (Other Slices)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="other-slices"></a>
+<a id="diğer-dilimler-other-slices"></a>
 
-String dilimleri tahmin edebileceğiniz gibi stringlere özgüdür. Ancak daha genel bir dilim türü de vardır. Şu diziyi (array) ele alalım:
+### Diğer Dilimler
+
+String dilimleri, tahmin edebileceğiniz gibi stringlere özgüdür. Ancak daha genel bir dilim türü de vardır. Şu diziyi ele alalım:
 
 ```rust
 let d = [1, 2, 3, 4, 5];
 ```
 
-Tıpkı bir stringin bir kısmına başvurmak (referans vermek) isteyebileceğimiz gibi, bir dizinin bir kısmına da başvurmak isteyebiliriz. Bunu şu şekilde yapardık:
+Tıpkı bir stringin belirli bir bölümüne başvurmak isteyebileceğimiz gibi, bir dizinin belirli bir bölümüne de başvurmak isteyebiliriz. Bunu şu şekilde yaparız:
 
 ```rust
 let d = [1, 2, 3, 4, 5];
@@ -216,13 +236,16 @@ let dilim = &d[1..3];
 assert_eq!(dilim, &[2, 3]);
 ```
 
-Bu dilim `&[i32]` türündedir. İlk elemana bir referans ve bir uzunluk depolayarak tıpkı string dilimlerinin çalıştığı gibi çalışır. Bu tür dilimleri her türlü diğer koleksiyon için kullanacaksınız. Bu koleksiyonları, Bölüm 8'de vektörler hakkında konuştuğumuzda ayrıntılı olarak tartışacağız.
+Bu dilim `&[i32]` türündedir. İlk elemana yönelen bir referansı ve bir uzunluk bilgisini yığında saklayarak tıpkı string dilimleri gibi çalışır. Bu tür dilimleri diğer pek çok koleksiyon türüyle birlikte sıkça kullanacaksınız. Bu koleksiyonları Bölüm 8'de vektörleri incelerken ayrıntılı olarak ele alacağız.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="summary"></a>
 
 ## Özet
 
-Sahiplik, ödünç alma ve dilimler kavramları Rust programlarında bellek güvenliğini (memory safety) derleme zamanında sağlar. Rust dili, tıpkı diğer sistem programlama dilleri gibi bellek kullanımınız üzerinde size kontrol verir. Ancak, veri sahibinin kapsam dışına çıktığında o veriyi otomatik olarak temizlemesi, bu kontrolü elde etmek için ekstra kod yazıp ayıklamak zorunda olmadığınız anlamına gelir.
+Sahiplik, ödünç alma ve dilim kavramları Rust programlarında bellek güvenliğini derleme zamanında güvence altına alır. Rust dili, tıpkı diğer sistem programlama dilleri gibi bellek kullanımınız üzerinde size tam denetim verir; ancak verinin sahibi kapsam dışına çıktığında veriyi otomatik olarak temizlemesi sayesinde bu denetimi elde etmek için fazladan bellek yönetimi kodu yazmak ve bu kodların hatalarını ayıklamak zorunda kalmazsınız.
 
-Sahiplik, Rust'ın diğer pek çok parçasının çalışma şeklini etkiler, bu nedenle kitabın geri kalanında bu kavramlar hakkında daha fazla konuşacağız. Şimdi Bölüm 5'e geçelim ve veri parçalarını bir `struct` içinde gruplandırmaya bakalım.
+Sahiplik kavramı Rust'ın diğer pek çok parçasının nasıl çalıştığını doğrudan etkiler; bu nedenle kitabın geri kalanı boyunca bu kavramlara sık sık geri döneceğiz. Şimdi Bölüm 5'e geçelim ve birbiriyle ilişkili veri parçalarını bir `struct` içinde gruplandırmaya bakalım.
 
 [ch13]: ch13-02-iteratorler.html
 [ch6]: ch06-02-match-kontrol-akisi.html#değerlere-bağlanan-desenler

@@ -2,20 +2,23 @@
 
 <a id="turning-our-single-threaded-server-into-a-multithreaded-server"></a>
 <a id="from-single-threaded-to-multithreaded-server"></a>
+<a id="from-a-single-threaded-to-a-multithreaded-server"></a>
+<a id="tek-iş-parçacıklı-sunucudan-çok-iş-parçacıklı-sunucuya"></a>
 
-## Tek İş Parçacıklı Sunucudan Çok İş Parçacıklı Sunucuya
+## Tek Kanallıdan Çok Kanallı Sunucuya Geçiş
 
-Şu anda sunucu istekleri sırayla işliyor. Yani ilk bağlantı bitmeden ikincisine geçemiyor. Kısa süren istekler ile uzun süren istekler karışınca bu yaklaşım verimsiz hâle geliyor. Özellikle uzun süren bir istek geldiğinde, arkasından gelen bütün istekler gereksiz yere beklemek zorunda kalıyor. Önce bu sorunu görünür hâle getireceğiz, sonra çözeceğiz.
+Şu anda sunucu her isteği sırayla işliyor; yani ilk bağlantının işlenmesi tamamlanmadan ikinci bir bağlantıyı işlemeye geçmiyor. Sunucu giderek daha fazla istek aldığında, bu sıralı çalıştırma biçimi gitgide daha verimsiz hâle gelecektir. Sunucu işlenmesi uzun süren bir istek alırsa, sonradan gelen yeni istekler hızlıca işlenebilecek olsa bile uzun isteğin bitmesini beklemek zorunda kalacaktır. Bu sorunu çözmemiz gerekecek; ancak önce sorunu çalışırken gözlemleyelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="simulating-a-slow-request-in-the-current-server-implementation"></a>
+<a id="simulating-a-slow-request"></a>
 
 ### Yavaş Bir İsteği Taklit Etmek
 
-Sorunu görmek için _/sleep_ yoluna gelen isteği yapay olarak yavaşlatalım. Liste 21-10, bu istekte yanıt göndermeden önce beş saniye bekleyen sürümü gösteriyor.
+Yavaş işlenen bir isteğin, mevcut sunucu uygulamamıza yapılan diğer istekleri nasıl etkileyebileceğine bakalım. Liste 21-10, sunucunun yanıt vermeden önce beş saniye uyumasına neden olacak yapay bir yavaş yanıtla _/sleep_ yoluna gelen bir isteğin işlenmesini uygular.
 
-<Listing number="21-10" file-name="src/main.rs" caption="Beş saniye uyuyarak yavaş istek taklit etmek">
+<Listing number="21-10" file-name="src/main.rs" caption="Beş saniye uyuyarak yavaş bir isteği taklit etmek">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-10/src/main.rs:here}}
@@ -23,33 +26,48 @@ Sorunu görmek için _/sleep_ yoluna gelen isteği yapay olarak yavaşlatalım. 
 
 </Listing>
 
-Artık üç durumumuz olduğu için `if` yerine `match` kullanıyoruz. `istek_satiri` dilimini eşleştirerek:
+Artık üç durumumuz olduğu için `if` yapısından `match` yapısına geçtik. String sabiti (*string literal*) değerleriyle desen eşleştirmesi yapabilmek için `istek_satiri` değişkeninin bir dilimi (`&istek_satiri[..]`) üzerinde açıkça eşleştirme yapmamız gerekir; çünkü `match`, eşitlik metodunun (`==`) yaptığı gibi otomatik referans alma ve başvuru çözme (*dereferencing*) işlemi yapmaz.
 
-- _/_ isteğinde başarılı sayfayı
-- _/sleep_ isteğinde beş saniye bekledikten sonra yine başarılı sayfayı
-- diğer bütün isteklerde 404 sayfasını
+İlk kol, Liste 21-9'daki `if` bloğuyla aynıdır. İkinci kol, _/sleep_ yoluna yapılan bir istekle eşleşir. Bu istek alındığında sunucu, başarılı HTML sayfasını oluşturup göndermeden önce beş saniye uyuyacaktır. Üçüncü kol ise Liste 21-9'daki `else` bloğuyla aynıdır.
 
-döndürüyoruz.
+Sunucumuzun ne kadar ilkel olduğunu görebilirsiniz: Gerçek kütüphaneler birden fazla isteğin tanınmasını çok daha az ayrıntılı ve özlü bir biçimde ele alır!
 
-Sunucuyu çalıştırıp iki tarayıcı sekmesi açın: biri _http://127.0.0.1:7878_, diğeri _http://127.0.0.1:7878/sleep_. Önce _/sleep_ isteğini gönderip sonra _/_ isteğini yenilerseniz, ikinci isteğin de beklemek zorunda kaldığını görürsünüz. Sorun tam olarak bu: tek iş parçacıklı yapı, bağımsız istekleri birbirinin arkasına diziyor.
+`cargo run` kullanarak sunucuyu başlatın. Ardından iki tarayıcı penceresi açın: biri _http://127.0.0.1:7878_, diğeri ise _http://127.0.0.1:7878/sleep_ için olsun. Daha önce yaptığınız gibi _/_ URI adresini birkaç kez girerseniz hızlıca yanıt verdiğini görürsünüz. Ancak önce _/sleep_ adresine girip hemen ardından _/_ sayfasını yüklerseniz, _/_ sayfasının yüklenmeden önce `sleep` çağrısının beş saniyelik uykusunu tamamen bitirmesini beklediğini görürsünüz.
 
-### İş Parçacığı Havuzuyla Aktarım Kapasitesini Artırmak
+Yavaş bir isteğin arkasında diğer isteklerin birikmesini önlemek için Bölüm 17'de yaptığımız gibi `async` kullanmak da dahil olmak üzere başvurabileceğimiz birden fazla teknik vardır; bizim uygulayacağımız teknik ise bir thread havuzu (*thread pool*) olacaktır.
 
-_İş parçacığı havuzu_ (thread pool), önceden başlatılmış ve görev bekleyen bir iş parçacıkları grubudur. Program yeni görev aldığında, havuzdaki uygun iş parçacıklarından biri bu görevi üstlenir. İşini bitiren iş parçacığı tekrar havuza döner ve yeni görev bekler.
+<!-- Old headings. Do not remove or links may break. -->
 
-Bu yaklaşım sayesinde bağlantıları eşzamanlı işleyebilir, dolayısıyla sunucunun toplam aktarım kapasitesini artırabiliriz.
+<a id="improving-throughput-with-a-thread-pool"></a>
+<a id="iş-parçacığı-havuzuyla-aktarım-kapasitesini-artırmak"></a>
 
-Havuzdaki iş parçacığı sayısını küçük bir sabit sayı ile sınırlayacağız. Eğer her istek geldiğinde yeni iş parçacığı oluştursaydık, çok sayıda istek gönderen biri tüm sistem kaynaklarını tüketebilir ve sunucuyu kullanılmaz hâle getirebilirdi.
+### Thread Havuzuyla İşleme Kapasitesini Artırmak
 
-Biz bunun yerine, sabit sayıda iş parçacığı oluşturup gelen istekleri bu havuza vereceğiz. Havuz bir görev kuyruğu tutacak. Her iş parçacığı bu kuyruktan görev alacak, görevi çalıştıracak ve sonra yeni görev isteyecek. Böylece aynı anda en fazla _N_ istek işlenebilir; burada _N_, havuzdaki iş parçacığı sayısıdır.
+_Thread havuzu (thread pool)_, bir görevi ele almaya hazır olarak bekleyen, önceden başlatılmış bir thread grubudur. Program yeni bir görev aldığında, havuzdaki thread'lerden birini bu göreve atar ve o thread görevi işler. Havuzda kalan diğer thread'ler, ilk thread çalışmaya devam ederken gelen başka görevleri ele almak üzere hazırdır. İlk thread görevini işlemeyi bitirdiğinde, yeni bir görevi üstlenmeye hazır biçimde boşta bekleyen thread'ler havuzuna geri döner. Bir thread havuzu, bağlantıları eşzamanlı olarak işlemenize olanak tanıyarak sunucunuzun işleme kapasitesini (*throughput*) artırır.
 
-Bu, aktarım kapasitesini artırmanın tek yolu değildir. `fork/join`, tek iş parçacıklı asenkron G/Ç, çok iş parçacıklı asenkron G/Ç gibi başka modeller de vardır. Ama burada bizim hedefimiz düşük seviyede temel fikri öğrenmek.
+Bizi hizmet aksatma (*Denial of Service* — *DoS*) saldırılarından koruması için havuzdaki thread sayısını küçük bir sayıyla sınırlandıracağız; programımızın gelen her istek için yeni bir thread oluşturmasını sağlasaydık, sunucumuza 10 milyon istek gönderen biri sunucumuzun tüm kaynaklarını tüketip isteklerin işlenmesini durma noktasına getirerek büyük bir yıkıma yol açabilirdi.
 
-### Her İstek İçin Ayrı İş Parçacığı Oluşturmak
+Dolayısıyla sınırsız sayıda thread başlatmak yerine, havuzda bekleyen sabit sayıda thread bulunduracağız. Gelen istekler işlenmek üzere havuza gönderilir. Havuz, gelen isteklerden oluşan bir kuyruk tutar. Havuzdaki thread'lerin her biri bu kuyruktan bir istek çeker, isteği işler ve ardından kuyruktan başka bir istek ister. Bu tasarımla aynı anda en fazla _`N`_ isteği eşzamanlı olarak işleyebiliriz; burada _`N`_ thread sayısıdır. Her bir thread uzun süren bir isteğe yanıt veriyorsa, sonradan gelen istekler yine kuyrukta birikebilir; ancak o noktaya ulaşmadan önce ele alabileceğimiz uzun süreli istek sayısını artırmış oluruz.
 
-İlk olarak, sanki her bağlantı için yeni iş parçacığı açacakmışız gibi düşünelim. Bu nihai çözümümüz olmayacak; ama çok iş parçacıklı çalışan ilk sürümü görmek için iyi bir başlangıçtır. Liste 21-11, `for` döngüsünde her akış için yeni iş parçacığı başlatan kodu gösteriyor.
+Bu teknik, bir web sunucusunun işleme kapasitesini artırmanın pek çok yolundan yalnızca biridir. İnceleyebileceğiniz diğer seçenekler arasında *fork/join* modeli, tek kanallı asenkron G/Ç (*single-threaded async I/O*) modeli ve çok kanallı asenkron G/Ç (*multithreaded async I/O*) modeli yer alır. Bu konuya ilgi duyuyorsanız diğer çözümler hakkında daha fazla okuma yapabilir ve bunları uygulamayı deneyebilirsiniz; Rust gibi alt seviyeli bir dille bu seçeneklerin tamamı mümkündür.
 
-<Listing number="21-11" file-name="src/main.rs" caption="Her akış için yeni iş parçacığı başlatmak">
+Bir thread havuzu uygulamaya başlamadan önce, havuzu kullanmanın nasıl görünmesi gerektiği üzerine konuşalım. Kod tasarlamaya çalışırken önce istemci arayüzünü (*client interface*) yazmak tasarımınıza yön vermeye yardımcı olabilir. Kodun API'sini, onu çağırmak istediğiniz biçimde yapılandırarak yazın; işlevselliği uygulayıp ardından açık (*public*) API'yi tasarlamak yerine, önce bu yapıyı kurup işlevselliği onun içinde uygulayın.
+
+Bölüm 12'deki projede test güdümlü geliştirmeyi (*test-driven development*) kullandığımıza benzer biçimde, burada da derleyici yönlendirmeli geliştirme (*compiler-driven development*) kullanacağız. İstediğimiz fonksiyonları çağıran kodu yazacağız ve ardından kodun çalışmasını sağlamak üzere bir sonraki adımda neyi değiştirmemiz gerektiğini belirlemek için derleyiciden gelen hatalara bakacağız. Ancak bunu yapmadan önce, başlangıç noktası olarak kullanmayacağımız tekniği inceleyelim.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="code-structure-if-we-could-spawn-a-thread-for-each-request"></a>
+<a id="spawning-a-thread-for-each-request"></a>
+<a id="her-istek-için-ayrı-iş-parçacığı-oluşturmak"></a>
+
+#### Her İstek İçin Bir Thread Başlatmak
+
+İlk olarak, her bağlantı için gerçekten yeni bir thread oluştursaydı kodumuzun nasıl görüneceğini inceleyelim. Daha önce belirttiğimiz gibi, sınırsız sayıda thread başlatma olasılığının doğuracağı sorunlar nedeniyle nihai planımız bu değil; ancak önce çalışan çok kanallı bir sunucu elde etmek için iyi bir başlangıç noktasıdır. Ardından iyileştirme olarak thread havuzunu ekleyeceğiz ve iki çözümü karşılaştırmak daha kolay olacak.
+
+Liste 21-11, `for` döngüsü içinde her akışı ele almak üzere yeni bir thread başlatmak için `main` fonksiyonunda yapılacak değişiklikleri göstermektedir.
+
+<Listing number="21-11" file-name="src/main.rs" caption="Her akış için yeni bir thread başlatmak">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-11/src/main.rs:here}}
@@ -57,15 +75,21 @@ Bu, aktarım kapasitesini artırmanın tek yolu değildir. `fork/join`, tek iş 
 
 </Listing>
 
-Bu sürümü çalıştırıp bir sekmede _/sleep_, başka sekmelerde _/_ isteği gönderirseniz, kısa isteklerin artık uzun isteği beklemediğini görürsünüz. Ama bu yaklaşımın da sınırı yoktur; istek geldikçe yeni iş parçacığı açılır. Uzun vadede bu sistemi zorlar.
+Bölüm 16'da öğrendiğiniz gibi `thread::spawn`, yeni bir thread oluşturur ve ardından kapanış içindeki kodu bu yeni thread'de çalıştırır. Bu kodu çalıştırıp tarayıcınızda _/sleep_ sayfasını ve hemen ardından iki tarayıcı sekmesinde daha _/_ sayfasını yüklerseniz, _/_ yoluna yapılan isteklerin gerçekten de _/sleep_ isteğinin bitmesini beklemek zorunda kalmadığını görürsünüz. Ne var ki belirttiğimiz gibi, herhangi bir sınır olmaksızın yeni thread'ler oluşturacağınız için bu yaklaşım eninde sonunda sistemi aşırı yükleyecektir.
 
-17. bölümde gördüğümüz `async` ve `await` tam da böyle senaryolarda çok güçlüdür. Ama burada önce iş parçacığı havuzunu elle kuracağız.
+Bölüm 17'den hatırlayacağınız üzere, bu tam da `async` ve `await`'in parladığı türden bir senaryodur! Thread havuzunu inşa ederken bunu aklınızda bulundurun ve `async` kullanılsaydı nelerin farklı görüneceğini, nelerin aynı kalacağını düşünün.
 
-### Sınırlı Sayıda İş Parçacığı Oluşturmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Amacımız, `thread::spawn` ile çok benzer bir arayüze sahip bir iş parçacığı havuzu yazmak. Böylece kodu kullanan taraf için geçiş çok büyük olmaz. Liste 21-12, kullanmak istediğimiz hayali `IsParcacigiHavuzu` arayüzünü gösteriyor.
+<a id="creating-a-similar-interface-for-a-finite-number-of-threads"></a>
+<a id="creating-a-finite-number-of-threads"></a>
+<a id="sınırlı-sayıda-iş-parçacığı-oluşturmak"></a>
 
-<Listing number="21-12" file-name="src/main.rs" caption="Ulaşmak istediğimiz `IsParcacigiHavuzu` arayüzü">
+#### Sınırlı Sayıda Thread Oluşturmak
+
+Thread'lerden thread havuzuna geçişin API'mizi kullanan kodda büyük değişiklikler gerektirmemesi için thread havuzumuzun benzer ve tanıdık bir biçimde çalışmasını istiyoruz. Liste 21-12, `thread::spawn` yerine kullanmak istediğimiz `IsParcacigiHavuzu` struct'ı için tasarladığımız varsayımsal arayüzü göstermektedir.
+
+<Listing number="21-12" file-name="src/main.rs" caption="İdeal `IsParcacigiHavuzu` arayüzümüz">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-12/src/main.rs:here}}
@@ -73,23 +97,35 @@ Amacımız, `thread::spawn` ile çok benzer bir arayüze sahip bir iş parçacı
 
 </Listing>
 
-Burada `IsParcacigiHavuzu::new(4)` ile dört iş parçacıklı yeni havuz oluşturuyoruz. Ardından `havuz.calistir(...)` ile her bağlantı için çalıştırılacak kapanışı veriyoruz. Kod henüz derlenmeyecek; ama bu iyi. Derleyicinin yönlendirmesiyle adım adım havuzu oluşturacağız.
+Yapılandırılabilir sayıda —bu örnekte dört— thread içeren yeni bir thread havuzu oluşturmak için `IsParcacigiHavuzu::new` kullanıyoruz. Ardından `for` döngüsünde `havuz.calistir`, havuzun her akış için çalıştırması gereken bir kapanış alması bakımından `thread::spawn` ile benzer bir arayüze sahiptir. `havuz.calistir` metodunu, kapanışı alıp çalıştırılmak üzere havuzdaki bir thread'e verecek şekilde uygulamamız gerekiyor. Bu kod henüz derlenmeyecektir; ancak derleyicinin onu nasıl düzelteceğimiz konusunda bize rehberlik edebilmesi için derlemeyi deneyeceğiz.
 
-### Derleyici Yönlendirmeli Geliştirme ile `IsParcacigiHavuzu` Kurmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Önce Liste 21-12'deki değişikliği yapıp `cargo check` çalıştırın. İlk hata, bize bir `IsParcacigiHavuzu` türü ya da modülü eksik olduğunu söyleyecektir. Güzel; şimdi onu yazalım.
+<a id="building-the-threadpool-struct-using-compiler-driven-development"></a>
+<a id="building-threadpool-using-compiler-driven-development"></a>
+<a id="derleyici-yönlendirmeli-geliştirme-ile-isparcacigihavuzu-kurmak"></a>
 
-Bu havuz uygulamasının web sunucusundan bağımsız olmasını istiyoruz. Bu yüzden `merhaba` crate'ini yalnızca ikili crate olmaktan çıkarıp kütüphane crate olarak da kullanalım. _src/lib.rs_ içine Liste 21-13'teki en basit yapıyı ekleyin.
+#### Derleyici Yönlendirmeli Geliştirme ile `IsParcacigiHavuzu` Oluşturmak
 
-<Listing number="21-13" file-name="src/lib.rs" caption="Şimdilik en basit `IsParcacigiHavuzu` tanımı">
+Liste 21-12'deki değişiklikleri _src/main.rs_ dosyasına uygulayın ve ardından geliştirme sürecimizi yönlendirmek için `cargo check` komutundan gelen derleyici hatalarını kullanalım. Aldığımız ilk hata şöyledir:
+
+```console
+{{#include ../listings/ch21-web-server/listing-21-12/output.txt}}
+```
+
+Harika! Bu hata bize bir `IsParcacigiHavuzu` türüne veya modülüne ihtiyacımız olduğunu söylüyor; şimdi bunu oluşturalım. `IsParcacigiHavuzu` uygulamamız, web sunucumuzun yaptığı işin türünden bağımsız olacaktır. Bu nedenle `IsParcacigiHavuzu` uygulamamızı barındırmak üzere `merhaba` paketini yalnızca bir ikili crate (*binary crate*) olmaktan çıkarıp bir kütüphane crate'i (*library crate*) de içerecek hâle getirelim. Kütüphane crate'ine geçtikten sonra, bu ayrı thread havuzu kütüphanesini yalnızca web isteklerine yanıt vermek için değil, thread havuzu kullanarak yapmak istediğimiz herhangi bir iş için de kullanabiliriz.
+
+Şimdilik sahip olabileceğimiz en basit `IsParcacigiHavuzu` struct tanımını içeren aşağıdaki _src/lib.rs_ dosyasını oluşturun:
+
+<Listing file-name="src/lib.rs">
 
 ```rust,noplayground
-{{#rustdoc_include ../listings/ch21-web-server/listing-21-13/src/lib.rs:here}}
+{{#rustdoc_include ../listings/ch21-web-server/no-listing-01-define-threadpool-struct/src/lib.rs}}
 ```
 
 </Listing>
 
-Sonra _main.rs_ içine bu türü kapsam içine alan satırı ekleyin:
+Ardından _src/main.rs_ dosyasının en üstüne aşağıdaki kodu ekleyerek `IsParcacigiHavuzu` türünü kütüphane crate'inden kapsama dahil edecek şekilde _main.rs_ dosyasını düzenleyin:
 
 <Listing file-name="src/main.rs">
 
@@ -99,7 +135,13 @@ Sonra _main.rs_ içine bu türü kapsam içine alan satırı ekleyin:
 
 </Listing>
 
-Şimdi derleyici bize `new` metodunun eksik olduğunu söyleyecek. En basit biçimiyle bunu yazalım:
+Bu kod hâlâ çalışmayacaktır; ancak ele almamız gereken bir sonraki hatayı görmek için kodu yeniden kontrol edelim:
+
+```console
+{{#include ../listings/ch21-web-server/no-listing-01-define-threadpool-struct/output.txt}}
+```
+
+Bu hata, bir sonraki adımda `IsParcacigiHavuzu` için `new` adında bir ilişkili fonksiyon oluşturmamız gerektiğini belirtiyor. Ayrıca `new` fonksiyonunun argüman olarak `4` değerini kabul edebilen bir parametreye sahip olması ve bir `IsParcacigiHavuzu` örneği döndürmesi gerektiğini de biliyoruz. Bu özelliklere sahip en basit `new` fonksiyonunu uygulayalım:
 
 <Listing file-name="src/lib.rs">
 
@@ -109,9 +151,29 @@ Sonra _main.rs_ içine bu türü kapsam içine alan satırı ekleyin:
 
 </Listing>
 
-Burada `boyut` için `usize` kullanıyoruz; çünkü negatif sayıda iş parçacığı zaten anlamlı değildir ve koleksiyon boyutları için Rust'ta doğal tür `usize`'dır.
+Negatif sayıda thread olmasının hiçbir anlam taşımadığını bildiğimiz için `boyut` parametresinin türü olarak `usize` seçtik. Ayrıca Bölüm 3'teki [“Tam Sayı Türleri”][integer-types]<!-- ignore --> alt bölümünde ele aldığımız üzere, bu `4` değerini bir thread koleksiyonundaki öğe sayısı olarak kullanacağımızı ve `usize` türünün tam da bu amaç için var olduğunu biliyoruz.
 
-Bir sonraki hata, `calistir` metodunun eksik olduğunu söyleyecek. Şimdilik en basit sürümünü tanımlayalım:
+Kodu bir kez daha kontrol edelim:
+
+```console
+{{#include ../listings/ch21-web-server/no-listing-02-impl-threadpool-new/output.txt}}
+```
+
+Şimdi hata, `IsParcacigiHavuzu` üzerinde bir `calistir` metodumuz olmadığı için ortaya çıkıyor. [“Sınırlı Sayıda Thread Oluşturmak”](#creating-a-similar-interface-for-a-finite-number-of-threads)<!-- ignore --> bölümünden hatırlayacağınız üzere, thread havuzumuzun `thread::spawn` fonksiyonuna benzer bir arayüze sahip olmasına karar vermiştik. Ek olarak `calistir` fonksiyonunu, kendisine verilen kapanışı alıp çalıştırması için havuzdaki boşta bekleyen bir thread'e verecek biçimde uygulayacağız.
+
+`IsParcacigiHavuzu` üzerindeki `calistir` metodunu parametre olarak bir kapanış alacak şekilde tanımlayacağız. Bölüm 13'teki [“Yakalanan Değerleri Kapanışların Dışına Taşımak”][moving-out-of-closures]<!-- ignore --> alt bölümünden hatırlayacağınız üzere, kapanışları üç farklı trait ile parametre olarak alabiliriz: `Fn`, `FnMut` ve `FnOnce`. Burada ne tür bir kapanış kullanacağımıza karar vermemiz gerekiyor. Sonunda standart kütüphanedeki `thread::spawn` uygulamasına benzer bir şey yapacağımızı bildiğimiz için `thread::spawn` imzasının parametresi üzerinde hangi sınırların (*bounds*) bulunduğuna bakabiliriz. Belgelendirme bize şunu gösterir:
+
+```rust,ignore
+pub fn spawn<F, T>(f: F) -> JoinHandle<T>
+    where
+        F: FnOnce() -> T,
+        F: Send + 'static,
+        T: Send + 'static,
+```
+
+Burada bizi ilgilendiren `F` tür parametresidir; `T` tür parametresi dönüş değeriyle ilgilidir ve bizim onunla bir işimiz yoktur. `spawn` fonksiyonunun `F` üzerindeki trait sınırı olarak `FnOnce` kullandığını görebiliriz. `calistir` içinde aldığımız argümanı nihayetinde `spawn` fonksiyonuna aktaracağımız için muhtemelen bizim de istediğimiz budur. Bir isteği çalıştıracak olan thread, o isteğin kapanışını yalnızca bir kez yürüteceği için —ki bu da `FnOnce` adındaki `Once` (bir kez) ifadesiyle tam örtüşür— kullanmak istediğimiz trait'in `FnOnce` olduğundan daha da emin olabiliriz.
+
+`F` tür parametresi ayrıca bizim durumumuzda da oldukça yararlı olan `Send` trait sınırına ve `'static` ömür (*lifetime*) sınırına sahiptir: Kapanışı bir thread'den diğerine aktarmak için `Send` sınırına, thread'in çalışmasının ne kadar süreceğini bilmediğimiz için de `'static` sınırına ihtiyacımız vardır. `IsParcacigiHavuzu` üzerinde bu sınırlara sahip `F` türünde jenerik bir parametre alan `calistir` metodunu oluşturalım:
 
 <Listing file-name="src/lib.rs">
 
@@ -121,23 +183,67 @@ Bir sonraki hata, `calistir` metodunun eksik olduğunu söyleyecek. Şimdilik en
 
 </Listing>
 
-`calistir`, bir kapanış alıyor. Bu kapanış için `FnOnce + Send + 'static` sınırını kullanıyoruz. Bunun nedeni, görevi tek seferlik çalıştıracak olmamız, bu görevin başka iş parçacığına aktarılabilmesi gerekmesi ve ömrünün çağıran kapsamdan bağımsız olmasıdır.
+`FnOnce` sonrasında yine de `()` kullanıyoruz; çünkü buradaki `FnOnce`, hiç parametre almayan ve birim türü (*unit type*) `()` döndüren bir kapanışı temsil eder. Tıpkı fonksiyon tanımlarında olduğu gibi dönüş türü imzadan çıkarılabilir; ancak hiç parametremiz olmasa bile parantezlere yine de ihtiyacımız vardır.
 
-Bu noktada kod derlenir; ama havuz henüz hiçbir şey yapmaz. Yine de arayüzün iskeleti hazır.
+Yine bu, `calistir` metodunun olabilecek en basit uygulamasıdır: Hiçbir iş yapmaz; ancak şimdilik yalnızca kodumuzun derlenmesini sağlamaya çalışıyoruz. Kodu yeniden kontrol edelim:
 
-### `new` İçinde İş Parçacığı Sayısını Doğrulamak
+```console
+{{#include ../listings/ch21-web-server/no-listing-03-define-execute/output.txt}}
+```
 
-`boyut = 0` da `usize` için geçerli bir değer olduğu hâlde, sıfır iş parçacıklı havuz anlamsızdır. Bu yüzden `new` içinde `assert!` ile `boyut > 0` kontrolü yapacağız. Liste 21-13'teki belgeli sürüm bunu gösteriyor.
+Derleniyor! Ancak `cargo run` komutunu deneyip tarayıcıda bir istek yaparsanız, tarayıcıda bölümün başında gördüğümüz hataları göreceğinize dikkat edin. Kütüphanemiz henüz `calistir` metoduna aktarılan kapanışı gerçekten çağırmıyor!
 
-Bu örnekte `new` panikler. İstersek bunun yerine `build` adında `Result` döndüren bir API de tasarlayabilirdik; ama burada sıfır iş parçacıklı havuz oluşturmayı kurtarılamaz hata sayıyoruz.
+> Not: Haskell ve Rust gibi sıkı derleyicilere sahip diller hakkında duyabileceğiniz bir söz vardır: “Kod derleniyorsa çalışıyordur.” Ancak bu söz her durumda geçerli değildir. Projemiz derleniyor ama kesinlikle hiçbir iş yapmıyor! Gerçek ve eksiksiz bir proje geliştiriyor olsaydık, kodun hem derlendiğini _hem de_ istediğimiz davranışa sahip olduğunu doğrulamak üzere birim testleri (*unit tests*) yazmaya başlamak için iyi bir zaman olurdu.
 
-### İş Parçacıklarını Saklayacak Yer Açmak
+Düşünün: Burada bir kapanış yerine bir *future* çalıştıracak olsaydık neler farklı olurdu?
 
-Şimdi geçerli sayıda iş parçacığı oluşturup bunları havuz içinde saklamamız gerekiyor. `thread::spawn` bize `JoinHandle<T>` döndürür. Bizim kapanışlarımız bir değer döndürmeyeceği için bu tür `JoinHandle<()>` olur.
+<!-- Old headings. Do not remove or links may break. -->
 
-Liste 21-14, doğrudan iş parçacıklarını tutan vektörlü ilk sürümü gösteriyor.
+<a id="validating-the-number-of-threads-in-new"></a>
+<a id="new-içinde-iş-parçacığı-sayısını-doğrulamak"></a>
 
-<Listing number="21-14" file-name="src/lib.rs" caption="`IsParcacigiHavuzu` içinde iş parçacıklarını tutacak vektör oluşturmak">
+#### `new` İçinde Thread Sayısını Doğrulamak
+
+`new` ve `calistir` parametreleriyle henüz hiçbir şey yapmıyoruz. Şimdi bu fonksiyonların gövdelerini istediğimiz davranışla uygulayalım. Başlangıç olarak `new` fonksiyonunu düşünelim. Daha önce negatif sayıda thread içeren bir havuzun anlamı olmadığı için `boyut` parametresinde işaretsiz (*unsigned*) bir tür seçmiştik. Ne var ki sıfır thread içeren bir havuz da anlamsızdır; buna rağmen sıfır, son derece geçerli bir `usize` değeridir. Liste 21-13'te gösterildiği gibi, bir `IsParcacigiHavuzu` örneği döndürmeden önce `boyut` değerinin sıfırdan büyük olduğunu denetleyen kodu ekleyecek ve sıfır değeri gelirse `assert!` makrosunu kullanarak programın paniklemesini sağlayacağız.
+
+<Listing number="21-13" file-name="src/lib.rs" caption="`boyut` sıfır olduğunda panikleyecek biçimde `IsParcacigiHavuzu::new` fonksiyonunu uygulamak">
+
+```rust,noplayground
+{{#rustdoc_include ../listings/ch21-web-server/listing-21-13/src/lib.rs:here}}
+```
+
+</Listing>
+
+Ayrıca belgelendirme yorumlarıyla (*doc comments*) `IsParcacigiHavuzu` yapımız için biraz belgelendirme de ekledik. Bölüm 14'te ele aldığımız üzere, fonksiyonumuzun hangi durumlarda panikleyebileceğini açıkça belirten bir bölüm ekleyerek iyi belgelendirme pratiklerini izlediğimize dikkat edin. `new` için üretilen belgelerin nasıl göründüğünü incelemek üzere `cargo doc --open` komutunu çalıştırıp `IsParcacigiHavuzu` struct'ına tıklamayı deneyin!
+
+Burada yaptığımız gibi `assert!` makrosunu eklemek yerine, G/Ç (I/O) projesindeki Liste 12-9'da `Yapilandirma::olustur` (`Config::build`) ile yaptığımız gibi `new` fonksiyonunu `build` olarak değiştirip bir `Result` da döndürebilirdik. Ancak bu durumda, hiç thread içermeyen bir thread havuzu oluşturmaya çalışmanın kurtarılamaz bir hata olmasına karar verdik. Kendinizi iddialı hissediyorsanız, `new` fonksiyonuyla karşılaştırmak üzere aşağıdaki imzaya sahip `build` adında bir fonksiyon yazmayı deneyin:
+
+```rust,ignore
+pub fn build(boyut: usize) -> Result<IsParcacigiHavuzu, HavuzOlusturmaHatasi> {
+```
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="creating-space-to-store-the-threads"></a>
+<a id="iş-parçacıklarını-saklayacak-yer-açmak"></a>
+
+#### Thread'leri Saklayacak Alan Oluşturmak
+
+Artık havuzda saklamak için geçerli sayıda thread'e sahip olduğumuzdan emin olmanın bir yolu bulunduğuna göre, bu thread'leri oluşturabilir ve struct'ı döndürmeden önce `IsParcacigiHavuzu` struct'ı içinde saklayabiliriz. Peki bir thread'i nasıl “saklarız”? `thread::spawn` imzasına bir kez daha göz atalım:
+
+```rust,ignore
+pub fn spawn<F, T>(f: F) -> JoinHandle<T>
+    where
+        F: FnOnce() -> T,
+        F: Send + 'static,
+        T: Send + 'static,
+```
+
+`spawn` fonksiyonu bir `JoinHandle<T>` döndürür; burada `T`, kapanışın döndürdüğü türdür. Biz de `JoinHandle` kullanmayı deneyelim ve ne olacağını görelim. Bizim durumumuzda thread havuzuna aktardığımız kapanışlar bağlantıyı işleyecek ve hiçbir değer döndürmeyecektir; dolayısıyla `T`, birim türü `()` olacaktır.
+
+Liste 21-14'teki kod derlenecektir ancak henüz hiçbir thread oluşturmaz. `IsParcacigiHavuzu` tanımını `thread::JoinHandle<()>` örneklerinden oluşan bir vektör (`threadler`) tutacak şekilde değiştirdik, vektörü `boyut` kapasitesiyle ilklendirdik, thread'leri oluşturacak kodu çalıştıracak bir `for` döngüsü kurduk ve bunları barındıran bir `IsParcacigiHavuzu` örneği döndürdük.
+
+<Listing number="21-14" file-name="src/lib.rs" caption="`IsParcacigiHavuzu` için thread'leri tutacak bir vektör oluşturmak">
 
 ```rust,ignore,not_desired_behavior
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-14/src/lib.rs:here}}
@@ -145,22 +251,40 @@ Liste 21-14, doğrudan iş parçacıklarını tutan vektörlü ilk sürümü gö
 
 </Listing>
 
-Bu sürüm henüz gerçek iş parçacığı oluşturmuyor; ama yapıyı hazırlıyor.
+`IsParcacigiHavuzu` içindeki vektörün öğe türü olarak `thread::JoinHandle` kullandığımız için kütüphane crate'inde `std::thread` modülünü kapsama dahil ettik.
 
-### `IsParcacigiHavuzu` İçinden İş Parçacığına Kod Göndermek
+Geçerli bir boyut alındığında `IsParcacigiHavuzu` yapımız `boyut` adet öğe tutabilen yeni bir vektör oluşturur. `with_capacity` fonksiyonu `Vec::new` ile aynı görevi yerine getirir, ancak önemli bir farkı vardır: Vektörde alanı önceden ayırır (*pre-allocates*). Vektörde `boyut` adet öğe saklamamız gerektiğini bildiğimizden, bu bellek ayırma işlemini baştan yapmak, öğeler eklendikçe kendisini yeniden boyutlandıran `Vec::new` kullanımına kıyasla biraz daha verimlidir.
 
-Asıl zorluk burada başlıyor: `thread::spawn`, iş parçacığı oluşturulduğu anda çalıştırılacak kod bekler. Oysa biz iş parçacıklarını önceden oluşturup, çalıştıracakları işi daha sonra vermek istiyoruz.
+`cargo check` komutunu yeniden çalıştırdığınızda derleme başarılı olmalıdır.
 
-Bunu çözmek için araya yeni bir yapı ekleyeceğiz: `Calisan`. Her `Calisan`, bir `JoinHandle<()>` ve ayırt edici bir `kimlik` taşıyacak. Böylece:
+<!-- Old headings. Do not remove or links may break. -->
 
-1. `Calisan`, `kimlik` ve `JoinHandle<()>` tutacak
-2. `IsParcacigiHavuzu`, doğrudan iş parçacıkları yerine `Calisan` vektörü tutacak
-3. `Calisan::new`, bir `kimlik` alıp boş kapanışla başlatılmış iş parçacığına sahip `Calisan` döndürecek
-4. `IsParcacigiHavuzu::new`, bu `Calisan` örneklerini oluşturup saklayacak
+<a id="a-worker-struct-responsible-for-sending-code-from-the-threadpool-to-a-thread"></a>
+<a id="sending-code-from-the-threadpool-to-a-thread"></a>
+<a id="isparcacigihavuzu-içinden-iş-parçacığına-kod-göndermek"></a>
 
-Liste 21-15 bu düzeni gösteriyor.
+#### `IsParcacigiHavuzu`'ndan Bir Thread'e Kod Göndermek
 
-<Listing number="21-15" file-name="src/lib.rs" caption="Doğrudan iş parçacıkları yerine `Calisan` örnekleri tutacak şekilde `IsParcacigiHavuzu` yapısını değiştirmek">
+Liste 21-14'teki `for` döngüsünde thread'lerin oluşturulmasına ilişkin bir yorum bırakmıştık. Şimdi thread'leri gerçekte nasıl oluşturacağımıza bakalım. Standart kütüphane, thread oluşturmanın bir yolu olarak `thread::spawn` fonksiyonunu sunar ve `thread::spawn`, thread oluşturulur oluşturulmaz çalıştırması gereken bir kod almayı bekler. Ancak bizim durumumuzda thread'leri oluşturmak ve daha sonra göndereceğimiz kodu _beklemelerini_ istiyoruz. Standart kütüphanenin thread uygulaması bunu yapmanın herhangi bir yolunu içermez; bunu bizim elle uygulamamız gerekir.
+
+Bu davranışı, `IsParcacigiHavuzu` ile thread'ler arasına bu yeni davranışı yönetecek yeni bir veri yapısı ekleyerek uygulayacağız. Havuzlama (*pooling*) uygulamalarında yaygın bir terim olan *Worker* (çalışan) kavramına karşılık bu veri yapısına `Calisan` adını vereceğiz. `Calisan`, çalıştırılması gereken kodu alır ve bu kodu kendi thread'inde çalıştırır.
+
+Bir restoranın mutfağında çalışan insanları düşünün: Çalışanlar müşterilerden sipariş gelene kadar bekler, ardından bu siparişleri alıp hazırlamaktan sorumludurlar.
+
+Thread havuzunda `JoinHandle<()>` örneklerinden oluşan bir vektör saklamak yerine, `Calisan` struct'ının örneklerini saklayacağız. Her `Calisan` tek bir `JoinHandle<()>` örneği tutacaktır. Ardından `Calisan` üzerinde, çalıştırılacak kodun kapanışını alıp bunu hâlihazırda çalışmakta olan thread'e yürütülmek üzere gönderecek bir metot uygulayacağız. Ayrıca günlük kaydı tutarken (*logging*) veya hata ayıklarken havuzdaki farklı `Calisan` örneklerini birbirinden ayırt edebilmek için her `Calisan` örneğine bir `kimlik` vereceğiz.
+
+Bir `IsParcacigiHavuzu` oluşturduğumuzda gerçekleşecek yeni süreç şöyledir. `Calisan` yapısını bu şekilde kurduktan sonra kapanışı thread'e gönderen kodu uygulayacağız:
+
+1. Bir `kimlik` ve bir `JoinHandle<()>` tutan `Calisan` struct'ını tanımlamak.
+2. `IsParcacigiHavuzu` yapısını `Calisan` örneklerinden oluşan bir vektör tutacak şekilde değiştirmek.
+3. Bir `kimlik` numarası alan ve bu `kimlik` ile boş bir kapanışla başlatılmış bir thread tutan `Calisan` örneğini döndüren `Calisan::new` fonksiyonunu tanımlamak.
+4. `IsParcacigiHavuzu::new` içinde, bir `kimlik` üretmek için `for` döngüsü sayacını kullanmak, bu `kimlik` ile yeni bir `Calisan` oluşturmak ve bu `Calisan` örneğini vektörde saklamak.
+
+Kendinizi sınamak isterseniz, Liste 21-15'teki koda bakmadan önce bu değişiklikleri kendi başınıza uygulamayı deneyin.
+
+Hazır mısınız? İşte önceki değişiklikleri yapmanın bir yolunu gösteren Liste 21-15.
+
+<Listing number="21-15" file-name="src/lib.rs" caption="Thread'leri doğrudan tutmak yerine `Calisan` örneklerini tutacak şekilde `IsParcacigiHavuzu` yapısını değiştirmek">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-15/src/lib.rs:here}}
@@ -168,23 +292,36 @@ Liste 21-15 bu düzeni gösteriyor.
 
 </Listing>
 
-`IsParcacigiHavuzu` içindeki alan adı artık doğrudan iş parçacığı tutmadığı için `calisanlar` oldu. `Calisan` ve onun `new` fonksiyonu dış dünyaya açık değil; bu, havuzun iç ayrıntısı.
+`IsParcacigiHavuzu` üzerindeki alanın adını `threadler` yerine `calisanlar` olarak değiştirdik; çünkü bu alan artık `JoinHandle<()>` örnekleri yerine `Calisan` örneklerini tutuyor. `for` döngüsündeki sayacı `Calisan::new` fonksiyonuna argüman olarak veriyor ve oluşturulan her yeni `Calisan` örneğini `calisanlar` adlı vektörde saklıyoruz.
 
-### Kanallar Üzerinden Görev Göndermek
+Dış kodların (_src/main.rs_ içindeki sunucumuz gibi) `IsParcacigiHavuzu` içinde bir `Calisan` struct'ı kullanıldığına dair uygulama ayrıntılarını bilmesine gerek yoktur; bu nedenle `Calisan` struct'ını ve onun `new` fonksiyonunu gizli (*private*) yapıyoruz. `Calisan::new` fonksiyonu kendisine verdiğimiz `kimlik` değerini kullanır ve boş bir kapanışla yeni bir thread başlatılarak oluşturulan `JoinHandle<()>` örneğini `thread` alanında saklar.
 
-Şimdi `calistir` metodunun aldığı kapanışı, önceden çalışan `Calisan` iş parçacıklarına nasıl ulaştıracağımızı çözmeliyiz. Bunun için 16. bölümde gördüğümüz kanalları kullanacağız.
+> Not: Yeterli sistem kaynağı bulunmadığı için işletim sistemi yeni bir thread oluşturamazsa `thread::spawn` panikleyecektir. Bazı thread'lerin oluşturulması başarılı olsa bile bu durum tüm sunucumuzun paniklemesine neden olur. Basitlik adına bu davranış kabul edilebilirdir; ancak üretime yönelik bir thread havuzu uygulamasında bunun yerine muhtemelen [`std::thread::Builder`][builder]<!-- ignore --> türünü ve onun `Result` döndüren [`spawn`][builder-spawn]<!-- ignore --> metodunu kullanmak istersiniz.
 
-Fikir şu:
+Bu kod derlenecek ve `IsParcacigiHavuzu::new` fonksiyonuna argüman olarak belirttiğimiz sayıda `Calisan` örneğini saklayacaktır. Ancak `calistir` içinde aldığımız kapanışı _hâlâ_ işlemiyor. Şimdi bunu nasıl yapacağımıza bakalım.
 
-1. `IsParcacigiHavuzu`, bir kanal oluşturup gönderici tarafını tutacak
-2. Her `Calisan`, alıcı tarafına erişecek
-3. Kapanışları taşımak için `Gorev` adlı bir tür tanımlayacağız
-4. `calistir`, gelen görevi kanal üzerinden gönderecek
-5. Her `Calisan`, kendi iş parçacığında alıcıyı dinleyip gelen görevi çalıştıracak
+<!-- Old headings. Do not remove or links may break. -->
 
-Liste 21-16, bu yapının başlangıcını gösteriyor.
+<a id="sending-requests-to-threads-via-channels"></a>
+<a id="kanallar-üzerinden-görev-göndermek"></a>
 
-<Listing number="21-16" file-name="src/lib.rs" caption="`Gorev` örneklerini ileten kanalın göndericisini saklayacak biçimde `IsParcacigiHavuzu` yapısını değiştirmek">
+#### Kanallar Aracılığıyla Thread'lere İstek Göndermek
+
+Ele alacağımız bir sonraki sorun, `thread::spawn` fonksiyonuna verilen kapanışların kesinlikle hiçbir iş yapmamasıdır. Şu anda çalıştırmak istediğimiz kapanışı `calistir` metodunda alıyoruz. Oysa `IsParcacigiHavuzu` oluşturulurken her bir `Calisan` örneğini oluşturduğumuz sırada `thread::spawn` fonksiyonuna çalıştıracağı bir kapanış vermemiz gerekiyor.
+
+Az önce oluşturduğumuz `Calisan` struct'larının, çalıştırılacak kodu `IsParcacigiHavuzu` içinde tutulan bir kuyruktan almasını ve çalıştırılmak üzere kendi thread'ine göndermesini istiyoruz.
+
+Bölüm 16'da öğrendiğimiz kanallar —iki thread arasında iletişim kurmanın basit bir yolu— bu kullanım senaryosu için biçilmiş kaftandır. Görev kuyruğu işlevi görmesi için bir kanal kullanacağız ve `calistir` metodu `IsParcacigiHavuzu`'ndan `Calisan` örneklerine bir görev gönderecek; `Calisan` örnekleri de bu görevi kendi thread'ine iletecektir. Planımız şöyledir:
+
+1. `IsParcacigiHavuzu` bir kanal oluşturacak ve gönderici ucunu (`gonderici`) elinde tutacak.
+2. Her `Calisan` alıcı ucunu (`alici`) elinde tutacak.
+3. Kanal üzerinden göndermek istediğimiz kapanışları tutacak yeni bir `Gorev` struct'ı oluşturacağız.
+4. `calistir` metodu, çalıştırmak istediği görevi gönderici aracılığıyla gönderecek.
+5. `Calisan`, kendi thread'i içinde alıcısı üzerinde döngü kuracak ve aldığı tüm görevlerin kapanışlarını çalıştıracak.
+
+Liste 21-16'da gösterildiği gibi `IsParcacigiHavuzu::new` içinde bir kanal oluşturarak ve göndericiyi `IsParcacigiHavuzu` örneğinde tutarak işe başlayalım. `Gorev` struct'ı şimdilik hiçbir şey tutmuyor, ancak kanal üzerinden göndereceğimiz öğenin türü olacaktır.
+
+<Listing number="21-16" file-name="src/lib.rs" caption="`Gorev` örneklerini ileten bir kanalın göndericisini saklayacak şekilde `IsParcacigiHavuzu` yapısını değiştirmek">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-16/src/lib.rs:here}}
@@ -192,11 +329,33 @@ Liste 21-16, bu yapının başlangıcını gösteriyor.
 
 </Listing>
 
-Ardından alıcıyı her `Calisan` içine geçirmeye çalışıyoruz. Ama bir alıcıyı birden çok `Calisan` arasında paylaşmak istediğimizde derleyici hata verir; çünkü Rust'ın kanal modeli tek tüketicilidir.
+`IsParcacigiHavuzu::new` içinde yeni kanalımızı oluşturuyor ve havuzun `gonderici` ucunu tutmasını sağlıyoruz. Bu kod başarıyla derlenecektir.
 
-Bu yüzden alıcıyı `Arc<Mutex<T>>` içine koymamız gerekir. `Arc`, birden fazla `Calisan`ın aynı alıcıyı paylaşmasını; `Mutex` ise aynı anda yalnızca bir `Calisan`ın görev çekmesini sağlar. Liste 21-18 bunu gösteriyor.
+Thread havuzu kanalı oluştururken kanalın alıcı ucunu her bir `Calisan` örneğine aktarmayı deneyelim. Alıcıyı `Calisan` örneklerinin başlattığı thread içinde kullanmak istediğimizi bildiğimizden, kapanış içinde `alici` parametresine başvuracağız. Liste 21-17'deki kod henüz tam olarak derlenmeyecektir.
 
-<Listing number="21-18" file-name="src/lib.rs" caption="Alıcıyı `Arc` ve `Mutex` kullanarak `Calisan` örnekleri arasında paylaşmak">
+<Listing number="21-17" file-name="src/lib.rs" caption="Alıcıyı her `Calisan` örneğine aktarmak">
+
+```rust,ignore,does_not_compile
+{{#rustdoc_include ../listings/ch21-web-server/listing-21-17/src/lib.rs:here}}
+```
+
+</Listing>
+
+Küçük ve doğrudan birkaç değişiklik yaptık: Alıcıyı `Calisan::new` fonksiyonuna aktarıyor ve ardından kapanışın içinde kullanıyoruz.
+
+Bu kodu kontrol etmeyi denediğimizde şu hatayı alırız:
+
+```console
+{{#include ../listings/ch21-web-server/listing-21-17/output.txt}}
+```
+
+Derleyici `use of moved value: alici` (*taşınmış değerin kullanımı: `alici`*) hatası veriyor; çünkü kodumuz `alici` değerini döngü içinde birden fazla `Calisan` örneğine aktarmaya çalışıyor. Bölüm 16'dan hatırlayacağınız üzere bu işe yaramaz: Rust'ın sunduğu kanal uygulaması çok _üreticili_, tek _tüketicilidir_ (*multiple producer, single consumer* — `mpsc`). Bu da kodu düzeltmek için kanalın tüketici ucunu öylece klonlayamayacağımız anlamına gelir. Zaten bir mesajı birden fazla tüketiciye birden çok kez göndermek de istemiyoruz; her mesajın yalnızca bir kez işleneceği biçimde, birden fazla `Calisan` örneğinin paylaştığı tek bir mesaj listesi istiyoruz.
+
+Ek olarak, kanal kuyruğundan bir görev almak `alici` değerini değiştirmeyi (*mutating*) içerir; dolayısıyla thread'lerin `alici` değerini paylaşmak ve değiştirmek için güvenli bir yola ihtiyacı vardır; aksi takdirde yarış durumlarıyla (*race conditions*, Bölüm 16'da ele aldığımız gibi) karşılaşabiliriz.
+
+Bölüm 16'da ele aldığımız thread açısından güvenli (*thread-safe*) akıllı işaretçileri hatırlayın: Sahipliği birden fazla thread arasında paylaşmak ve thread'lerin değeri değiştirmesine izin vermek için `Arc<Mutex<T>>` kullanmamız gerekir. `Arc` türü birden fazla `Calisan` örneğinin alıcıya sahip olmasına olanak tanırken, `Mutex` aynı anda yalnızca tek bir `Calisan` örneğinin alıcıdan görev almasını güvence altına alır. Liste 21-18 yapmamız gereken değişiklikleri göstermektedir.
+
+<Listing number="21-18" file-name="src/lib.rs" caption="`Arc` ve `Mutex` kullanarak alıcıyı `Calisan` örnekleri arasında paylaşmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-18/src/lib.rs:here}}
@@ -204,11 +363,19 @@ Bu yüzden alıcıyı `Arc<Mutex<T>>` içine koymamız gerekir. `Arc`, birden fa
 
 </Listing>
 
-### `calistir` Metodunu Uygulamak
+`IsParcacigiHavuzu::new` içinde alıcıyı bir `Arc` ve bir `Mutex` içine koyuyoruz. Her yeni `Calisan` için, `Calisan` örneklerinin alıcının sahipliğini paylaşabilmesi amacıyla referans sayısını artırmak üzere `Arc` değerini klonluyoruz (`Arc::clone(&alici)`).
 
-Şimdi `Gorev` türünü, `calistir` içinde aldığımız kapanışı tutan `Box<dyn FnOnce() + Send + 'static>` takma adı hâline getirebiliriz. Liste 21-19 bunu yapıyor.
+Bu değişikliklerle kod derleniyor! Hedefe yaklaşıyoruz!
 
-<Listing number="21-19" file-name="src/lib.rs" caption="Her kapanışı tutan `Box` için `Gorev` takma adı oluşturmak ve görevi kanal üzerinden göndermek">
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="implementing-the-execute-method"></a>
+
+#### `calistir` Metodunu Uygulamak
+
+Sonunda `IsParcacigiHavuzu` üzerindeki `calistir` metodunu uygulayalım. Ayrıca `Gorev` tanımını bir struct olmaktan çıkarıp `calistir` metodunun aldığı kapanış türünü tutan bir trait nesnesi için tür takma adına (*type alias*) dönüştüreceğiz. Bölüm 20'deki [“Tür Eşanlamlıları ve Tür Takma Adları”][type-aliases]<!-- ignore --> alt bölümünde ele aldığımız üzere, tür takma adları kullanım kolaylığı sağlamak amacıyla uzun türleri daha kısa hâle getirmemize olanak tanır. Liste 21-19'a bakın.
+
+<Listing number="21-19" file-name="src/lib.rs" caption="Her kapanışı tutan bir `Box` için `Gorev` tür takma adı oluşturmak ve ardından görevi kanal üzerinden göndermek">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-19/src/lib.rs:here}}
@@ -216,9 +383,11 @@ Bu yüzden alıcıyı `Arc<Mutex<T>>` içine koymamız gerekir. `Arc`, birden fa
 
 </Listing>
 
-Sonrasında, `Calisan::new` içinde başlatılan iş parçacığının gerçekten görev alıp çalıştırmasını sağlamalıyız. Liste 21-20'de, her `Calisan`ın sürekli olarak kanaldan görev çekip bunları çalıştırdığı sürüm var.
+`calistir` içinde aldığımız kapanışı kullanarak yeni bir `Gorev` örneği oluşturduktan sonra, bu görevi kanalın gönderici ucundan gönderiyoruz. Gönderme işleminin başarısız olma ihtimaline karşı `send` üzerinde `unwrap` çağırıyoruz. Bu durum, örneğin tüm thread'lerimizin çalışmasını durdurursak —yani alıcı uç yeni mesajlar almayı bırakırsa— meydana gelebilir. Şu an için thread'lerimizin çalışmasını durduramıyoruz: Havuz var olduğu sürece thread'lerimiz çalışmaya devam ediyor. `unwrap` kullanmamızın nedeni, hata durumunun gerçekleşmeyeceğini bizim bilmemiz, ancak derleyicinin bunu bilmemesidir.
 
-<Listing number="21-20" file-name="src/lib.rs" caption="`Calisan` iş parçacığı içinde görevleri alıp çalıştırmak">
+Ancak işimiz henüz tam olarak bitmedi! `Calisan` içinde `thread::spawn` fonksiyonuna aktarılan kapanışımız hâlâ kanalın alıcı ucuna yalnızca _başvuruda bulunuyor_. Bunun yerine kapanışın sonsuza dek döngüde kalmasını, kanalın alıcı ucundan bir görev istemesini ve bir görev aldığında onu çalıştırmasını sağlamamız gerekiyor. `Calisan::new` üzerinde Liste 21-20'de gösterilen değişikliği yapalım.
+
+<Listing number="21-20" file-name="src/lib.rs" caption="`Calisan` örneğinin thread'inde görevleri almak ve çalıştırmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-20/src/lib.rs:here}}
@@ -226,15 +395,68 @@ Sonrasında, `Calisan::new` içinde başlatılan iş parçacığının gerçekte
 
 </Listing>
 
-Burada önce `lock` ile `Mutex` kilidi alıyoruz, sonra `recv` ile kanaldan görev bekliyoruz. `recv` engelleyicidir; yani görev yoksa iş parçacığı bekler. Yeni görev geldiğinde de onu çalıştırır.
+Burada önce mutex kilidini edinmek için `alici` üzerinde `lock` çağırıyor, ardından olası herhangi bir hatada paniklemek üzere `unwrap` çağırıyoruz. Mutex _zehirlenmiş (poisoned)_ bir durumdaysa kilit edinme işlemi başarısız olabilir; bu durum, başka bir thread kilidi serbest bırakmak yerine kilidi elinde tutarken paniklediyse gerçekleşebilir. Böyle bir durumda bu thread'in de paniklemesi için `unwrap` çağırmak yapılacak doğru eylemdir. Bu `unwrap` çağrısını sizin için anlamlı bir hata mesajı içeren bir `expect` çağrısıyla değiştirmekte özgürsünüz.
 
-Bu noktada havuz artık gerçekten çalışır. `cargo run` ile çalıştırıp birkaç istek gönderdiğinizde, dört farklı `Calisan`ın sırayla görev aldığını görmelisiniz.
+Mutex üzerindeki kilidi alırsak kanaldan bir `Gorev` almak için `recv` çağırırız. Son bir `unwrap` buradaki olası hataları da geçer; alıcı kapandığında `send` metodunun `Err` döndürmesine benzer biçimde, göndericiyi tutan thread kapandıysa burada hata oluşabilir.
 
-İsterseniz burada durup şunu da düşünebilirsiniz: Eğer kapanış yerine `Future` çalıştırıyor olsaydık neler farklı olurdu? Hangi türler değişirdi, hangileri aynı kalırdı?
+`recv` çağrısı engelleyicidir (*blocking*); yani henüz bir görev yoksa mevcut thread bir görev hazır olana kadar bekleyecektir. `Mutex<T>`, aynı anda yalnızca bir `Calisan` thread'inin görev istemeye çalışmasını güvence altına alır.
 
-Son olarak, `while let` kullanarak başka bir yazım biçimi de mümkün. Liste 21-21 bunu gösteriyor; ama orada kilidin yaşam süresi daha uzun kaldığı için tercih etmiyoruz.
+Thread havuzumuz artık çalışır durumda! `cargo run` komutunu çalıştırın ve birkaç istek gönderin:
 
-<Listing number="21-21" file-name="src/lib.rs" caption="`Calisan::new` için `while let` kullanan alternatif uygulama">
+<!-- manual-regeneration
+cd listings/ch21-web-server/listing-21-20
+cargo run
+make some requests to 127.0.0.1:7878
+Can't automate because the output depends on making requests
+-->
+
+```console
+$ cargo run
+   Compiling merhaba v0.1.0 (file:///projects/merhaba)
+warning: field `calisanlar` is never read
+ --> src/lib.rs:7:5
+  |
+6 | pub struct IsParcacigiHavuzu {
+  |            ----------------- field in this struct
+7 |     calisanlar: Vec<Calisan>,
+  |     ^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` on by default
+
+warning: fields `kimlik` and `thread` are never read
+  --> src/lib.rs:51:5
+   |
+50 | struct Calisan {
+   |        ------- fields in this struct
+51 |     kimlik: usize,
+   |     ^^^^^^
+52 |     thread: thread::JoinHandle<()>,
+   |     ^^^^^^
+
+warning: `merhaba` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.91s
+     Running `target/debug/merhaba`
+Çalışan 0 bir görev aldı; çalıştırılıyor.
+Çalışan 2 bir görev aldı; çalıştırılıyor.
+Çalışan 1 bir görev aldı; çalıştırılıyor.
+Çalışan 3 bir görev aldı; çalıştırılıyor.
+Çalışan 0 bir görev aldı; çalıştırılıyor.
+Çalışan 2 bir görev aldı; çalıştırılıyor.
+Çalışan 1 bir görev aldı; çalıştırılıyor.
+Çalışan 3 bir görev aldı; çalıştırılıyor.
+Çalışan 0 bir görev aldı; çalıştırılıyor.
+Çalışan 2 bir görev aldı; çalıştırılıyor.
+```
+
+Başardık! Artık bağlantıları eşzamansız olarak yürüten bir thread havuzumuz var. Hiçbir zaman dörtten fazla thread oluşturulmadığından, sunucu çok sayıda istek alsa bile sistemimiz aşırı yüklenmeyecektir. _/sleep_ yoluna bir istek yaparsak, sunucu diğer istekleri başka bir thread'e çalıştırarak yanıtlayabilecektir.
+
+> Not: Aynı anda birden fazla tarayıcı penceresinde _/sleep_ adresini açarsanız, sayfalar beşer saniyelik aralıklarla teker teker yüklenebilir. Bazı web tarayıcıları, önbellekleme (*caching*) nedenleriyle aynı isteğin birden fazla örneğini sırayla yürütür. Bu kısıtlama bizim web sunucumuzdan kaynaklanmamaktadır.
+
+Burası durup yapılacak iş için kapanış yerine *future* kullanıyor olsaydık Liste 21-18, 21-19 ve 21-20'deki kodların nasıl farklılaşacağını düşünmek için iyi bir noktadır. Hangi türler değişirdi? Metot imzaları —eğer değişecekse— nasıl farklı olurdu? Kodun hangi kısımları aynı kalırdı?
+
+Bölüm 17 ve Bölüm 19'da `while let` döngüsünü öğrendikten sonra, `Calisan` thread kodunu neden Liste 21-21'de gösterildiği gibi yazmadığımızı merak ediyor olabilirsiniz.
+
+<Listing number="21-21" file-name="src/lib.rs" caption="`Calisan::new` için `while let` kullanan alternatif bir uygulama">
 
 ```rust,ignore,not_desired_behavior
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-21/src/lib.rs:here}}
@@ -242,4 +464,14 @@ Son olarak, `while let` kullanarak başka bir yazım biçimi de mümkün. Liste 
 
 </Listing>
 
-Bu sürümde `gorev()` çağrısı bitene kadar kilit tutulabildiği için diğer `Calisan`lar yeni görev alamaz. Bu da istemediğimiz bir darboğaz yaratır.
+Bu kod derlenir ve çalışır, ancak istediğimiz çoklu thread davranışını üretmez: Yavaş bir istek yine diğer isteklerin işlenmek için beklemesine neden olur. Bunun nedeni biraz inceliklidir: `Mutex` struct'ının açık (*public*) bir `unlock` metodu yoktur; çünkü kilidin sahipliği, `lock` metodunun döndürdüğü `LockResult<MutexGuard<T>>` içindeki `MutexGuard<T>` değerinin ömrüne (*lifetime*) dayanır. Böylece ödünç alma denetleyicisi (*borrow checker*), `Mutex` tarafından korunan bir kaynağa kilidi elimizde tutmadığımız sürece erişilemeyeceği kuralını derleme zamanında zorunlu kılabilir. Ne var ki `MutexGuard<T>` ömrüne dikkat etmezsek, bu tasarım kilidin amaçlanandan daha uzun süre tutulmasıyla da sonuçlanabilir.
+
+Liste 21-20'de `let gorev = alici.lock().unwrap().recv().unwrap();` kullanan kod sorunsuz çalışır; çünkü `let` ile, eşittir işaretinin sağ tarafındaki ifadede kullanılan tüm geçici değerler (*temporary values*), `let` deyimi sona erdiği anda derhal düşürülür (`drop`). Buna karşılık `while let` (ve `if let` ile `match`), geçici değerleri ilişkili bloğun sonuna kadar düşürmez. Liste 21-21'de kilit, `gorev()` çağrısı süresince tutulmaya devam eder; bu da diğer `Calisan` örneklerinin görev alamaması anlamına gelir.
+
+> Not: Rust 2024 Sürümü'nde `if let` ifadelerinde (`else` koluna geçmeden önce) ve blok sonu kuyruk ifadelerinde (*tail expressions*) geçici değer düşürme (*temporary lifetime*) kuralları iyileştirilmiş olsa bile `while let` döngülerinde koşul ifadesinde üretilen geçici `MutexGuard` hâlâ döngü gövdesi boyunca tutulmaya devam eder. Bu nedenle `Mutex` kilitlerini mümkün olan en dar kapsamda serbest bırakmak ve kilit tutarken uzun süren işlemleri çalıştırmaktan kaçınmak için `let gorev = alici.lock().unwrap().recv().unwrap();` gibi açık bir `let` deyimi kullanmak Rust'ta en güvenli idiyomdur: Noktalı virgüle ulaşıldığı anda geçici `MutexGuard` düşürülür ve kilit, `gorev()` çağrısı başlamadan hemen önce serbest bırakılır.
+
+[type-aliases]: ch20-03-gelismis-turler.html#type-synonyms-and-type-aliases
+[integer-types]: ch03-02-veri-turleri.html#tam-sayı-türleri-integer-types
+[moving-out-of-closures]: ch13-01-kapanislar.html#yakalanan-değerleri-kapanışların-dışına-taşımak-moving
+[builder]: ../std/thread/struct.Builder.html
+[builder-spawn]: ../std/thread/struct.Builder.html#method.spawn

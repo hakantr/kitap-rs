@@ -4,7 +4,7 @@ fn main() {
 
     let s = veri.to_string();
 
-    // The method also works on a literal directly:
+    // Bu metot doğrudan bir string sabiti üzerinde de çalışır:
     let s = "başlangıç içeriği".to_string();
     // ANCHOR_END: here
 }

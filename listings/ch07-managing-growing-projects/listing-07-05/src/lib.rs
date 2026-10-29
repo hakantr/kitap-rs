@@ -8,9 +8,9 @@ mod restoran_on_kisim {
 // -- snip --
 // ANCHOR_END: here
 pub fn restoranda_yemek_ye() {
-    // Mutlak (absolute) yol
+    // Mutlak yol
     crate::restoran_on_kisim::karsilama::bekleme_listesine_ekle();
 
-    // Göreceli (relative) yol
+    // Göreli yol
     restoran_on_kisim::karsilama::bekleme_listesine_ekle();
 }

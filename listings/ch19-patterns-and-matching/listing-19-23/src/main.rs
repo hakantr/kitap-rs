@@ -9,7 +9,7 @@ fn main() {
     let koken = Nokta { x: 0, y: 0, z: 0 };
 
     match koken {
-        Nokta { x, .. } => println!("x su: {x}"),
+        Nokta { x, .. } => println!("x şu: {x}"),
     }
     // ANCHOR_END: here
 }

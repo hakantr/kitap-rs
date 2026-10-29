@@ -5,5 +5,5 @@ fn main() {
 }
 
 fn baska_bir_fonksiyon() {
-    println!("Baska bir fonksiyon.");
+    println!("Başka bir fonksiyon.");
 }

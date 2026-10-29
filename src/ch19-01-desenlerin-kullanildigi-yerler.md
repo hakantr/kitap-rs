@@ -1,51 +1,99 @@
-## Desenlerin Kullanılabildiği Tüm Yerler
+<!-- Old headings. Do not remove or links may break. -->
+<a id="all-the-places-patterns-can-be-used"></a>
+<a id="desenlerin-kullanılabildiği-tüm-yerler"></a>
 
-Desenler Rust'ta pek çok yerde karşımıza çıkar ve farkında olmadan onları sıkça
-kullanmışsınızdır. Bu bölüm, desenlerin geçerli olduğu yerleri tek tek ele alır.
+## Desenlerin Kullanılabileceği Tüm Yerler
+
+Desenler Rust'ta pek çok yerde karşımıza çıkar ve farkında bile olmadan onları
+sıkça kullanmışsınızdır! Bu bölümde desenlerin geçerli olduğu tüm yerleri ele
+alacağız.
+
+<a id="match-arms"></a>
 
 ### `match` Kolları
 
-6. bölümde konuştuğumuz gibi, `match` ifadelerinin kollarında desen kullanırız.
-Biçimsel olarak bir `match` ifadesi, `match` anahtar sözcüğü, eşleştirilecek bir
-değer ve her biri bir desen ile o desene uyunca çalışacak ifadeden oluşan bir
-veya daha fazla koldan oluşur:
+Bölüm 6'da ele aldığımız gibi, `match` ifadelerinin kollarında desenleri
+kullanırız. Biçimsel olarak `match` ifadeleri; `match` anahtar kelimesi,
+üzerinde eşleştirme yapılacak bir değer ve her biri bir desen ile değerin o
+kolun deseniyle eşleşmesi durumunda çalıştırılacak bir ifadeden oluşan bir veya
+daha fazla `match` kolu olarak tanımlanır:
 
-<pre><code>match <em>DEGER</em> {
-    <em>DESEN</em> => <em>IFADE</em>,
-    <em>DESEN</em> => <em>IFADE</em>,
-    <em>DESEN</em> => <em>IFADE</em>,
+<!--
+  Manually formatted rather than using Markdown intentionally: Markdown does not
+  support italicizing code in the body of a block like this!
+-->
+
+<pre><code>match <em>DEĞER</em> {
+    <em>DESEN</em> => <em>İFADE</em>,
+    <em>DESEN</em> => <em>İFADE</em>,
+    <em>DESEN</em> => <em>İFADE</em>,
 }</code></pre>
 
-Örneğin 6. bölümdeki `Option<i32>` eşleştirmesinde desenler `None` ve `Some(i)`
-idi. Okun solunda kalan bu kısımlar, her kolun desen kısmıdır.
+Örneğin, Liste 6-5'teki `x` değişkeninde bulunan bir `Option<i32>` değeri
+üzerinde eşleştirme yapan `match` ifadesi şöyledir:
 
-`match` ifadelerinin önemli bir şartı, _kapsamlı_ olmalarıdır. Yani `match`
-edilen değer için bütün olasılıklar ele alınmış olmalıdır. Bunu sağlamanın bir
-yolu, son kola her şeyi yakalayan bir desen koymaktır. Herhangi bir değerle
-eşleşen değişken adı desenleri buna örnek verilebilir.
+```rust,ignore
+match x {
+    None => None,
+    Some(i) => Some(i + 1),
+}
+```
 
-Özel `_` deseni de her şeyle eşleşir; ama hiçbir değeri bağlamaz. Bu yüzden
-özellikle son kolda sık kullanılır. `_` desenini bölümün ilerleyen kısmında
-daha ayrıntılı göreceğiz.
+Bu `match` ifadesindeki desenler, her okun sol tarafında yer alan `None` ve
+`Some(i)` kısımlarıdır.
 
-### `let` İfadeleri
+`match` ifadelerinin temel gereksinimlerinden biri _kapsamlı (exhaustive)_
+olmalarıdır; yani `match` ifadesindeki değerin alabileceği tüm olasılıkların
+hesaba katılması gerekir. Her olasılığı kapsadığınızdan emin olmanın bir yolu,
+son kol için tümünü yakalayan (*catch-all*) bir desen kullanmaktır: Örneğin,
+herhangi bir değerle eşleşen bir değişken adı asla başarısız olmaz ve
+dolayısıyla geriye kalan tüm durumları kapsar.
 
-Bu bölüme kadar desenlerin `match` ve `if let` içinde kullanıldığını açıkça
-konuşmuştuk; ama aslında `let` ifadelerinde de desen kullanıyoruz. Örneğin şu
-çok sıradan görünen atama bile bir desen içerir:
+Özel `_` deseni her şeyle eşleşir ancak hiçbir zaman bir değişkene bağlanmaz;
+bu nedenle son `match` kolunda sıklıkla kullanılır. Örneğin, açıkça
+belirtilmeyen herhangi bir değeri yoksaymak istediğinizde `_` deseni oldukça
+kullanışlıdır. `_` desenini bu bölümün ilerleyen kısımlarında yer alan
+[“Desende Değerleri Yoksaymak”][ignoring-values-in-a-pattern]<!-- ignore -->
+başlığında daha ayrıntılı olarak ele alacağız.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="let-statements"></a>
+<a id="let-ifadeleri"></a>
+
+### `let` Deyimleri
+
+Bu bölümden önce desen kullanımını yalnızca `match` ve `if let` bağlamında
+açıkça ele almıştık; ancak aslında `let` deyimleri de dahil olmak üzere başka
+yerlerde de desenleri kullandık. Örneğin, `let` ile yapılan şu doğrudan değişken
+atamasını düşünün:
 
 ```rust
 let x = 5;
 ```
 
-Biçimsel olarak bir `let` ifadesi şöyledir:
+Farkında olmasanız da bu şekilde bir `let` deyimi kullandığınız her seferinde
+aslında desen kullanıyordunuz! Daha biçimsel olarak bir `let` deyimi şöyle
+görünür:
 
-<pre><code>let <em>DESEN</em> = <em>IFADE</em>;</code></pre>
+<!--
+  Manually formatted rather than using Markdown intentionally: Markdown does not
+  support italicizing code in the body of a block like this!
+-->
 
-Buradaki `x`, "buraya gelen değeri `x` adına bağla" diyen basit bir desendir.
+<pre>
+<code>let <em>DESEN</em> = <em>İFADE</em>;</code>
+</pre>
 
-Desen eşleştirme yönünü daha net görmek için 19-1 numaralı listeye bakalım.
-Burada `let`, bir demeti ayrıştırmak için kullanılıyor.
+*DESEN* yuvasında bir değişken adının yer aldığı `let x = 5;` gibi deyimlerde,
+değişken adı yalnızca bir desenin son derece basit bir biçimidir. Rust ifadeyi
+desenle karşılaştırır ve bulduğu tüm adları atar. Dolayısıyla `let x = 5;`
+örneğinde `x`, “burada eşleşen şeyi `x` değişkenine bağla” anlamına gelen bir
+desendir. `x` adı desenin tamamını oluşturduğundan bu desen fiilen “değer ne
+olursa olsun her şeyi `x` değişkenine bağla” anlamına gelir.
+
+`let` deyiminin desen eşleştirme yönünü daha net görmek için, bir demeti
+ayrıştırmak (*destructure*) üzere `let` ile desen kullanan Liste 19-1'i
+inceleyelim.
 
 <Listing number="19-1" caption="Bir demeti ayrıştırmak ve aynı anda üç değişken oluşturmak için desen kullanmak">
 
@@ -55,15 +103,18 @@ Burada `let`, bir demeti ayrıştırmak için kullanılıyor.
 
 </Listing>
 
-Burada `(1, 2, 3)` değeri `(birinci, ikinci, ucuncu)` desenine karşı
-eşleştiriliyor. Öğe sayısı aynı olduğu için eşleşme başarılı oluyor ve sırasıyla
-`1`, `2`, `3` değerleri bu adlara bağlanıyor.
+Burada bir demeti bir desene karşı eşleştiriyoruz. Rust `(1, 2, 3)` değerini
+`(birinci, ikinci, ucuncu)` deseniyle karşılaştırır ve değerin desenle
+eşleştiğini — yani her ikisindeki öğe sayısının aynı olduğunu — görür; böylece
+`1` değerini `birinci`ye, `2` değerini `ikinci`ye ve `3` değerini `ucuncu`ye
+bağlar. Bu demet desenini, kendi içinde üç ayrı değişken desenini iç içe
+barındıran bir yapı olarak düşünebilirsiniz.
 
-Eğer desendeki öğe sayısı ile değerdeki öğe sayısı uyuşmazsa, türler de
-uyuşmaz ve derleyici hata verir. 19-2 numaralı liste bunun başarısız örneğini
-gösteriyor.
+Desendeki öğe sayısı demetteki öğe sayısıyla eşleşmezse genel tür uyuşmaz ve bir
+derleyici hatası alırız. Örneğin Liste 19-2, üç öğeli bir demeti iki değişkene
+ayrıştırma girişimini gösterir ki bu çalışmayacaktır.
 
-<Listing number="19-2" caption="Demetteki öğe sayısıyla uyuşmayan değişken sayısına sahip yanlış desen">
+<Listing number="19-2" caption="Demetteki öğe sayısıyla eşleşmeyen değişkenlere sahip hatalı bir desen oluşturmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-02/src/main.rs:here}}
@@ -71,25 +122,40 @@ gösteriyor.
 
 </Listing>
 
-Bu kodu derlemeye çalıştığınızda tür hatası alırsınız:
+Bu kodu derlemeye çalışmak aşağıdaki tür hatasıyla sonuçlanır:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-02/output.txt}}
 ```
 
-Bu tür durumlarda çözüm ya `_` veya `..` ile bazı değerleri yok saymak ya da
-desendeki değişken sayısını değerin yapısına uygun hale getirmektir.
+Hatayı düzeltmek için, [“Desende Değerleri Yoksaymak”][ignoring-values-in-a-pattern]<!-- ignore -->
+bölümünde göreceğiniz gibi `_` veya `..` kullanarak demetteki değerlerden birini
+ya da birkaçını yoksayabiliriz. Eğer sorun desende çok fazla değişken
+bulunmasıysa, çözüm değişken sayısını demetteki öğe sayısına eşitleyecek şekilde
+fazladan değişkenleri kaldırarak türlerin eşleşmesini sağlamaktır.
+
+<a id="conditional-if-let-expressions"></a>
 
 ### Koşullu `if let` İfadeleri
 
-6. bölümde `if let` yapısını, tek durumu ilgilendiren kısa `match` biçimi
-olarak görmüştük. İsterseniz buna `else` veya `else if let` kolları da
-ekleyebilirsiniz.
+Bölüm 6'da `if let` ifadelerini esas olarak yalnızca tek bir durumla eşleşen bir
+`match` ifadesinin eşdeğerini daha kısa yazmanın bir yolu olarak ele almıştık.
+İsteğe bağlı olarak `if let`, içindeki desen eşleşmediğinde çalıştırılacak kodu
+barındıran bir `else` bloğuna da sahip olabilir.
 
-19-3 numaralı liste, `if let`, `else if`, `else if let` ve `else` yapılarını
-birlikte kullanmanın mümkün olduğunu gösteriyor.
+Liste 19-3; `if let`, `else if` ve `else if let` ifadelerini bir arada ve
+karışık biçimde kullanmanın da mümkün olduğunu göstermektedir. Bunu yapmak,
+desenlerle karşılaştırmak üzere yalnızca tek bir değeri ifade edebildiğimiz bir
+`match` ifadesine kıyasla bize daha fazla esneklik sağlar. Ayrıca Rust, bir dizi
+`if let`, `else if` ve `else if let` kolundaki koşulların birbiriyle ilişkili
+olmasını da şart koşmaz.
 
-<Listing number="19-3" file-name="src/main.rs" caption="`if let`, `else if`, `else if let` ve `else` yapılarını karıştırmak">
+Liste 19-3'teki kod, çeşitli koşullara yönelik bir dizi kontrole dayanarak arka
+plan renginizin ne olacağını belirler. Bu örnek için, gerçek bir programın
+kullanıcı girdisinden alabileceği değerleri doğrudan koda sabitlenmiş
+(*hardcoded*) değişkenler olarak oluşturduk.
+
+<Listing number="19-3" file-name="src/main.rs" caption="`if let`, `else if`, `else if let` ve `else` ifadelerini bir arada kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-03/src/main.rs}}
@@ -97,29 +163,62 @@ birlikte kullanmanın mümkün olduğunu gösteriyor.
 
 </Listing>
 
-Bu kod, birkaç koşula göre arka plan rengini seçiyor. Kullanıcının favori rengi
-varsa onu kullanıyor. Favori renk yoksa ve bugün salıysa yeşil kullanıyor.
-Yok, yaş bilgisi dizgi olarak verildiyse ve başarıyla sayıya çevrilebildiyse bu
-kez yaşa göre mor veya turuncu seçiyor. Bunların hiçbiri yoksa maviye düşüyor.
+Kullanıcı favori bir renk belirtirse arka plan olarak o renk kullanılır. Favori
+bir renk belirtilmemişse ve bugün salıysa arka plan rengi yeşil olur. Aksi
+takdirde, kullanıcı yaşını bir string olarak belirtir ve biz bunu başarıyla bir
+sayı olarak ayrıştırabilirsek (*parse*), sayının değerine bağlı olarak renk mor
+veya turuncu olur. Bu koşulların hiçbiri geçerli değilse arka plan rengi mavi
+olur.
 
-Bu yapı bize `match`'ten daha fazla esneklik verir; çünkü tek bir değer üstünde
-eşleştirme yapmak zorunda değiliz.
+Bu koşullu yapı karmaşık gereksinimleri desteklememize olanak tanır. Burada
+kullandığımız sabitlenmiş değerlerle bu örnek ekrana
+`Arka plan rengi olarak mor kullanılıyor` yazdıracaktır.
 
-Burada önemli bir ayrıntı da şudur: `if let Ok(yas) = yas` satırı, dışarıdaki
-`yas` değişkenini gölgeleyen yeni bir `yas` üretir. Bu yüzden `yas > 30`
-kontrolünü o bloğun içinde yapmak zorundayız.
+`if let` ifadesinin de tıpkı `match` kolları gibi mevcut değişkenleri gölgeleyen
+(*shadowing*) yeni değişkenler tanımlayabildiğini görebilirsiniz:
+`if let Ok(yas) = yas` satırı, `Ok` varyantının içindeki değeri tutan yeni bir
+`yas` değişkeni tanımlayarak mevcut `yas` değişkenini gölgeler. Bu da
+`if yas > 30` koşulunu o bloğun içine yerleştirmemiz gerektiği anlamına gelir:
+Bu iki koşulu `if let Ok(yas) = yas && yas > 30` şeklinde birleştiremeyiz. 30
+ile karşılaştırmak istediğimiz yeni `yas` değişkeni, süslü parantezle yeni
+kapsam başlayana kadar geçerli değildir.
 
-`if let` ifadelerinin dezavantajı, derleyicinin kapsamlılık denetimi yapmamasıdır.
-Yani son `else` kolunu unutursanız olası bir mantık hatası hakkında uyarı
-almazsınız.
+> Not: Kitabın bu bölümündeki anlatım geleneksel kapsam kuralını gösterse de,
+> **Rust 1.88** (ve **Rust 2024 Sürümü** / `edition = "2024"`) itibarıyla
+> **zincirleme `if let` (*`let` chains*)** özelliği kararlı hale getirilmiştir!
+> Dolayısıyla `edition = "2024"` kullanan güncel Rust derleyicisinde `if let` ve
+> `while let` koşullarını `&&` operatörüyle normal mantıksal ifadelerle veya
+> başka `let` desenleriyle doğrudan birleştirebilirsiniz:
+>
+> ```rust
+> let yas: Result<u8, _> = "34".parse();
+>
+> if let Ok(yas) = yas && yas > 30 {
+>     println!("Arka plan rengi olarak mor kullanılıyor");
+> }
+> ```
+>
+> Bu sözdiziminde `let` deseninin bağladığı yeni `yas` değişkeni hem `&&`
+> sonrasındaki koşulda hem de süslü parantez bloğunun içinde geçerlidir; böylece
+> Liste 19-3'teki `else if let Ok(yas) = yas && yas > 30 { ... }` kolu da iç içe
+> `if` bloğu açmaya gerek kalmadan doğrudan derlenip çalıştırılabilir.
+
+`if let` ifadelerini kullanmanın dezavantajı, `match` ifadelerinin aksine
+derleyicinin kapsamlılık (*exhaustiveness*) denetimi yapmamasıdır. Son `else`
+bloğunu atlarsak ve bu nedenle bazı durumları ele almayı kaçırırsak, derleyici
+bizi olası mantık hatasına karşı uyarmaz.
+
+<a id="while-let-conditional-loops"></a>
 
 ### Koşullu `while let` Döngüleri
 
-`if let` ile benzer biçimde, `while let` de desen eşleştiği sürece döngüyü
-devam ettirir. 19-4 numaralı listede, bu yapıyı bir kanaldan gelen iletileri
-yazdırmak için kullanıyoruz.
+Yapıca `if let`'e benzeyen koşullu `while let` döngüsü, bir desenin eşleşmeye
+devam ettiği sürece bir `while` döngüsünün çalışmasına olanak tanır. Liste
+19-4'te thread'ler arasında gönderilen mesajları bekleyen, ancak bu kez bir
+`Option` yerine bir `Result` değerini kontrol eden bir `while let` döngüsü
+gösteriyoruz.
 
-<Listing number="19-4" caption="`alici.recv()` `Ok` döndürdüğü sürece değerleri yazdırmak için `while let` kullanmak">
+<Listing number="19-4" caption="`alici.recv()` çağrısı `Ok` döndürdüğü sürece değerleri yazdırmak için bir `while let` döngüsü kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-04/src/main.rs:here}}
@@ -127,15 +226,22 @@ yazdırmak için kullanıyoruz.
 
 </Listing>
 
-Bu örnek `1`, `2` ve `3` yazar. `recv`, gönderici taraf açık olduğu sürece
-`Ok(deger)` döndürür; gönderici kapandığında ise `Err` gelir. `while let`, bu
-yapıyı doğal biçimde ifade etmemizi sağlar.
+Bu örnek sırasıyla `1`, `2` ve ardından `3` yazdırır. `recv` metodu kanalın
+alıcı (*receiver*) tarafından ilk mesajı alır ve bir `Ok(deger)` döndürür. Bölüm
+16'da `recv` metodunu ilk gördüğümüzde hatayı doğrudan `unwrap` ile açmış ya da
+bir `for` döngüsü kullanarak kanal ile bir iteratör olarak etkileşime geçmiştik.
+Ancak Liste 19-4'ün gösterdiği gibi `while let` de kullanabiliriz; çünkü `recv`
+metodu gönderici var olduğu sürece her mesaj ulaştığında bir `Ok` döndürür,
+gönderici taraf bağlantıyı kestiğinde ise bir `Err` üretir.
+
+<a id="for-loops"></a>
 
 ### `for` Döngüleri
 
-`for` döngüsünde `for` anahtar sözcüğünden hemen sonra gelen kısım da bir
-desendir. Örneğin `for x in y` ifadesinde `x` bir desendir. 19-5 numaralı
-liste, demeti ayrıştırmak için `for` içinde desen kullanımını gösteriyor.
+Bir `for` döngüsünde `for` anahtar kelimesinden hemen sonra gelen kısım bir
+desendir. Örneğin `for x in y` ifadesinde `x` bir desendir. Liste 19-5, bir
+demeti `for` döngüsünün bir parçası olarak ayrıştırmak — yani parçalarına
+ayırmak — için `for` döngüsünde nasıl desen kullanılacağını göstermektedir.
 
 <Listing number="19-5" caption="Bir demeti ayrıştırmak için `for` döngüsünde desen kullanmak">
 
@@ -145,22 +251,27 @@ liste, demeti ayrıştırmak için `for` içinde desen kullanımını gösteriyo
 
 </Listing>
 
-Bu kod şu çıktıyı üretir:
+Liste 19-5'teki kod aşağıdaki çıktıyı yazdıracaktır:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-05/output.txt}}
 ```
 
-Burada `enumerate`, yineleyiciyi `(indeks, deger)` demetleri üretecek biçimde
-uyarlıyor. Desen de bu demeti iki parçaya ayırıp her birini ayrı adla
-kullanabilmemizi sağlıyor.
+Bir iteratörü `enumerate` metodunu kullanarak bir değer ve o değerin indeksini
+bir demet içine yerleştirilmiş şekilde üretecek biçimde uyarlıyoruz. Üretilen
+ilk değer `(0, 'a')` demetidir. Bu değer `(indeks, deger)` deseniyle
+eşleştirildiğinde `indeks` değişkeni `0`, `deger` değişkeni ise `'a'` olur ve
+çıktının ilk satırı yazdırılır.
+
+<a id="function-parameters"></a>
 
 ### Fonksiyon Parametreleri
 
-Fonksiyon parametreleri de desendir. 19-6 numaralı listedeki `foo` fonksiyonuna
-bakın:
+Fonksiyon parametreleri de birer desen olabilir. `i32` türünde `deger` adlı tek
+bir parametre alan `bir_fonksiyon` adında bir fonksiyon bildiren Liste 19-6'daki
+kod artık size tanıdık geliyor olmalıdır.
 
-<Listing number="19-6" caption="Parametrelerde desen kullanan bir fonksiyon imzası">
+<Listing number="19-6" caption="Parametrelerinde desen kullanan bir fonksiyon imzası">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-06/src/main.rs:here}}
@@ -168,11 +279,11 @@ bakın:
 
 </Listing>
 
-Buradaki `deger` de bir desendir. Tıpkı `let` gibi, fonksiyon parametreleri
-yerinde de demet ayrıştırması yapabilirsiniz. 19-7 numaralı liste bunu
-gösteriyor.
+Buradaki `deger` kısmı bir desendir! Tıpkı `let` ile yaptığımız gibi, bir
+fonksiyonun argümanlarındaki bir demeti de desenle eşleştirebiliriz. Liste 19-7,
+bir demeti fonksiyona aktarırken içindeki değerleri birbirinden ayırır.
 
-<Listing number="19-7" file-name="src/main.rs" caption="Bir demeti ayrıştıran parametrelere sahip fonksiyon">
+<Listing number="19-7" file-name="src/main.rs" caption="Bir demeti ayrıştıran parametrelere sahip bir fonksiyon">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-07/src/main.rs}}
@@ -180,15 +291,17 @@ gösteriyor.
 
 </Listing>
 
-Bu kod `Güncel konum: (3, 5)` yazar. `&(3, 5)` değeri `&(x, y)` desenine
-eşleşir; böylece `x` ile `y` sırasıyla `3` ve `5` olur.
+Bu kod ekrana `Güncel konum: (3, 5)` yazdırır. `&(3, 5)` değerleri `&(x, y)`
+deseniyle eşleşir; böylece `x` değişkeni `3`, `y` değişkeni ise `5` değerini
+alır.
 
-Kapanış parametrelerinde de aynı şekilde desen kullanabilirsiniz; çünkü
-kapanışlar bu açıdan fonksiyonlara benzer.
+Bölüm 13'te ele aldığımız gibi kapanışlar (*closures*) fonksiyonlara
+benzediğinden, desenleri fonksiyon parametre listelerinde kullandığımız şekilde
+kapanış parametre listelerinde de kullanabiliriz.
 
-Bu noktada desenlerin birkaç farklı yerde kullanılabildiğini gördünüz. Ancak
-her yerde aynı tür desenler kullanılamaz. Bazı yerlerde desenlerin
-çürütülemez olması gerekir; bazı yerlerde çürütülebilir desenler de kabul
-edilir. Şimdi buna bakalım.
+Bu noktaya kadar desenleri kullanmanın çeşitli yollarını gördünüz; ancak
+desenler onları kullanabildiğimiz her yerde aynı şekilde çalışmaz. Bazı yerlerde
+desenlerin çürütülemez (*irrefutable*) olması zorunludur; başka durumlarda ise
+çürütülebilir (*refutable*) olabilirler. Sırada bu iki kavramı ele alacağız.
 
 [ignoring-values-in-a-pattern]: ch19-03-desen-sozdizimi.html#desende-değerleri-yoksaymak

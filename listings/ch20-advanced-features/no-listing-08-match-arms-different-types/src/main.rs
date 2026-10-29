@@ -1,9 +1,9 @@
 fn main() {
-    let guess = "3";
+    let tahmin = "3";
     // ANCHOR: here
-    let guess = match guess.trim().parse() {
+    let tahmin = match tahmin.trim().parse() {
         Ok(_) => 5,
-        Err(_) => "dunya",
+        Err(_) => "merhaba",
     };
     // ANCHOR_END: here
 }

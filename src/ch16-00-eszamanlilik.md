@@ -1,51 +1,83 @@
-# Korkusuz Eşzamanlılık
+<!-- Old headings. Do not remove or links may break. -->
+<a id="fearless-concurrency"></a>
+<a id="korkusuz-eşzamanlılık"></a>
+<a id="korkusuz-eszamanlilik"></a>
 
-Rust'ın büyük hedeflerinden biri de eşzamanlı programlamayı güvenli ve verimli
-bir şekilde ele almaktır. _Eşzamanlı programlama (concurrent programming)_,
-programın farklı bölümlerinin birbirinden bağımsız ilerlemesidir. _Paralel
-programlama (parallel programming)_ ise farklı bölümlerin gerçekten aynı anda
-çalışmasıdır. Bilgisayarlar çok çekirdekli işlemcilerden daha fazla
-yararlandıkça bu iki yaklaşım da giderek daha önemli hale geliyor. Tarihsel
-olarak bu tür programlar yazmak zordu ve hataya açıktı. Rust bunu değiştirmeyi
-amaçlıyor.
+# Korkusuz Eşzamanlılık (Fearless Concurrency)
 
-İlk başta Rust ekibi, bellek güvenliğini sağlamakla eşzamanlılık sorunlarını
-önlemenin farklı yöntemlerle çözülecek iki ayrı problem olduğunu düşünüyordu.
-Zamanla sahiplik ve tür sisteminin, hem bellek güvenliğini hem de
-eşzamanlılıktaki sorunları yönetmek için çok güçlü araçlar sunduğunu fark
-ettiler. Sahiplik ve tür denetiminden yararlanıldığı için, eşzamanlılığa dair
-pek çok hata Rust'ta çalışma zamanı hatası değil derleme zamanı hatası olur.
-Böylece çalışma zamanında ortaya çıkan bir hatayı tekrar üretmeye uzun zaman
-harcamak yerine, yanlış kod doğrudan derlenmez ve size sorunu açıklayan bir
-hata verir. Sonuç olarak kodunuzu üretime çıktıktan sonra değil, daha
-yazarken düzeltebilirsiniz. Rust'ın bu yönüne _korkusuz eşzamanlılık_ adı
-veriliyor. Korkusuz eşzamanlılık, ince ve sinsi hatalardan uzak; aynı zamanda
-yeniden düzenlemesi kolay kod yazmanızı sağlar.
+Eşzamanlı programlamayı güvenli ve verimli bir şekilde ele almak, Rust'ın temel
+hedeflerinden bir diğeridir. Bir programın farklı bölümlerinin birbirinden
+bağımsız olarak yürütüldüğü _eşzamanlı programlama (concurrent programming)_ ve
+bir programın farklı bölümlerinin aynı anda yürütüldüğü _paralel programlama
+(parallel programming)_, giderek daha fazla bilgisayarın çoklu işlemcilerinden
+yararlanmasıyla birlikte her geçen gün daha büyük önem kazanmaktadır. Geçmişten
+bugüne bu bağlamlarda program yazmak hep zor ve hataya açık olmuştur. Rust bu
+durumu değiştirmeyi hedefliyor.
 
-> Not: Sade tutmak için bu bölümde birçok sorundan söz ederken daha kesin bir
-> ayrım yapıp "_eşzamanlı ve/veya paralel_" demek yerine yalnızca
-> "_eşzamanlı_" diyeceğiz. Bu bölüm boyunca "_eşzamanlı_" gördüğünüz yerlerde
-> zihninizde "_eşzamanlı ve/veya paralel_" diye okuyun. Bir sonraki bölümde
-> bu ayrım daha önemli hale geldiğinde daha net konuşacağız.
+Başlangıçta Rust ekibi, bellek güvenliğini sağlamanın ve eşzamanlılık
+sorunlarını önlemenin farklı yöntemlerle çözülmesi gereken iki ayrı zorluk
+olduğunu düşünüyordu. Zamanla ekip, sahiplik ve tür sistemlerinin hem bellek
+güvenliğini _hem de_ eşzamanlılık sorunlarını yönetmeye yardımcı olan çok güçlü
+bir araç seti olduğunu keşfetti! Sahiplik ve tür denetiminden yararlanılması
+sayesinde pek çok eşzamanlılık hatası, Rust'ta çalışma zamanı hatası yerine
+derleme zamanı hatası haline gelir. Böylece, çalışma zamanında ortaya çıkan bir
+eşzamanlılık hatasının oluştuğu birebir aynı koşulları yeniden üretmeye
+çalışarak uzun zaman harcamanız yerine, hatalı kod derlenmeyi reddeder ve sorunu
+açıklayan bir hata mesajı sunar. Sonuç olarak kodunuzu, belki de canlı ortama
+(üretime) alındıktan sonra değil, henüz üzerinde çalışırken düzeltebilirsiniz.
+Rust'ın bu yönüne _korkusuz eşzamanlılık_ adını verdik. Korkusuz eşzamanlılık,
+fark edilmesi güç sinsi hatalardan arınmış ve yeni hatalara yol açmadan kolayca
+yeniden düzenlenebilen kodlar yazmanıza olanak tanır.
 
-Birçok dil, eşzamanlılık sorunlarına sunduğu çözümler konusunda oldukça katı
-davranır. Örneğin Erlang, mesaj iletimine dayalı eşzamanlılık için zarif
-olanaklar sunar; ama iş parçacıkları arasında durum paylaşmak için pek açık
-yollar vermez. Olası çözümlerin yalnızca bir kısmını desteklemek, üst seviye
-diller için makul bir yaklaşımdır; çünkü bu diller belli soyutlamaları
-kazanmak için biraz denetimden vazgeçmeyi zaten vaat eder. Buna karşılık daha
-alt seviyeli dillerden, eldeki duruma göre en iyi performansı verecek çözümü
-sunması ve donanım üstünde daha az soyutlama kurması beklenir. Bu yüzden Rust,
-sorununuzu ve gereksinimlerinizi hangi model daha iyi karşılıyorsa onu
-kullanabilmeniz için çeşitli araçlar sunar.
+> Not: Anlatımı sade tutmak adına, pek çok sorundan söz ederken daha kesin bir
+> ifadeyle _eşzamanlı ve/veya paralel_ demek yerine kısaca _eşzamanlı_
+> diyeceğiz. Bu bölüm boyunca _eşzamanlı_ ifadesini gördüğünüz her yerde
+> zihninizde bunu _eşzamanlı ve/veya paralel_ olarak düşünebilirsiniz. Bu
+> ayrımın daha büyük önem taşıdığı bir sonraki bölümde (Bölüm 17'de `async` ve
+> `await` yapısını incelerken) daha kesin bir dil kullanacağız.
 
-Bu bölümde şu konuları işleyeceğiz:
+Pek çok dil, eşzamanlı sorunları ele almak için sunduğu çözümler konusunda katı
+(dogmatik) bir yaklaşım benimser. Örneğin Erlang, _mesaj iletimine (message
+passing)_ dayalı eşzamanlılık için zarif olanaklar sunar; ancak _thread'ler (iş
+parçacıkları)_ arasında durum paylaşmak için yalnızca dolaylı ve anlaşılması güç
+yollar barındırır. Olası çözümlerin yalnızca bir alt kümesini desteklemek üst
+düzey diller için makul bir stratejidir; çünkü üst düzey bir dil, soyutlamalar
+kazanmak adına bir miktar denetimden feragat etmenin karşılığında çeşitli
+avantajlar sağlamayı vaat eder. Buna karşılık alt düzey dillerden, her durumda
+en yüksek performansı sağlayan çözümü sunmaları ve donanım üzerinde daha az
+soyutlama katmanı bulundurmaları beklenir. Bu nedenle Rust, problemleri kendi
+durumunuza ve gereksinimlerinize en uygun biçimde modelleyebilmeniz için çeşitli
+araçlar sunar.
 
-- Aynı anda birden fazla kod parçası çalıştırmak için iş parçacıkları nasıl
-  oluşturulur?
-- Kanalların iş parçacıkları arasında mesaj taşıdığı _mesaj iletimli
-  eşzamanlılık_
-- Birden çok iş parçacığının aynı veriye eriştiği _paylaşımlı durum
-  eşzamanlılığı_
-- Rust'ın eşzamanlılık güvencelerini, standart kütüphanedeki türlerin yanında
-  kullanıcı tanımlı türlere de taşıyan `Sync` ve `Send` trait'leri
+Bu bölümde ele alacağımız konular şunlardır:
+
+- Aynı anda birden fazla kod parçasını çalıştırmak için thread'lerin nasıl
+  oluşturulacağı
+- Kanalların thread'ler arasında mesaj gönderdiği _mesaj iletimli_ eşzamanlılık
+- Birden fazla thread'in belirli bir veriye erişebildiği _paylaşımlı durum
+  (shared-state)_ eşzamanlılığı
+- Rust'ın eşzamanlılık güvencelerini, standart kütüphanenin sunduğu türlerin
+  yanı sıra kullanıcı tanımlı türlere de genişleten `Sync` ve `Send` trait'leri
+
+> Not: Bilgisayar biliminde sıkça birbiriyle karıştırılan **eşzamanlılık
+> (*concurrency*)** ve **paralellik (*parallelism*)** kavramları arasındaki
+> farkı ve Rust'ın yaklaşımını şu iki temel noktayla özetleyebiliriz:
+>
+> - **Eşzamanlılık yapı ile, paralellik yürütme ile ilgilidir:** *Eşzamanlılık*,
+>   birden fazla işin ilerleyişini birbirini bloklamayacak şekilde **yapısal
+>   olarak yönetmektir**; tek çekirdekli bir işlemci bile görevler arasında
+>   hızla geçiş yaparak eşzamanlı ilerleme sağlayabilir (Bölüm 17'de göreceğimiz
+>   `async`/`await` modelinin tek bir thread üzerinde çok sayıda G/Ç görevini
+>   nöbetleşe yürütmesi gibi). *Paralellik* ise birden fazla işin çok çekirdekli
+>   donanım üzerinde fiziksel olarak **kelimenin tam anlamıyla aynı anda
+>   çalışmasıdır** (birden fazla işletim sistemi thread'inin farklı CPU
+>   çekirdeklerinde eş anlı hesaplama yapması gibi).
+> - **Veri yarışlarının (*data races*) derleme zamanında önlenmesi:** İki veya
+>   daha fazla thread'in aynı bellek alanına senkronizasyon olmaksızın erişip en
+>   az birinin yazma işlemi yapması *veri yarışı* doğurur. Rust'ın Bölüm 4'te
+>   gördüğümüz temel ödünç alma kuralı —aynı anda ya birden fazla değiştirilemez
+>   referans (`&T`) ya da yalnızca tek bir değiştirilebilir referans (`&mut T`)
+>   bulunabilmesi— `Send` ve `Sync` trait'leri aracılığıyla thread sınırları
+>   boyunca da zorunlu tutulur. Böylece başka dillerde yalnızca çalışma
+>   zamanında ve belirli yük koşullarında tesadüfen patlak veren veri yarışları,
+>   Rust'ta henüz kod derlenirken yakalanıp engellenir.

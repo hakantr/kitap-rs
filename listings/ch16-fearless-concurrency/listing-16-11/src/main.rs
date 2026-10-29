@@ -12,9 +12,9 @@ fn main() {
     thread::spawn(move || {
         let degerler = vec![
             String::from("merhaba"),
-            String::from("olusturulan"),
-            String::from("is"),
-            String::from("parcacigindan"),
+            String::from("oluşturulan"),
+            String::from("iş"),
+            String::from("parçacığından"),
         ];
 
         for deger in degerler {

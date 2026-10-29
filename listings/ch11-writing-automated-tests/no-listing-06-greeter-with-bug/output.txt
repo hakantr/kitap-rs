@@ -10,7 +10,7 @@ failures:
 
 ---- tests::selamlama_isim_iceriyor stdout ----
 
-thread 'tests::selamlama_isim_iceriyor' panicked at src/lib.rs:12:9:
+thread 'tests::selamlama_isim_iceriyor' (6021143) panicked at src/lib.rs:12:9:
 assertion failed: sonuc.contains("Carol")
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 

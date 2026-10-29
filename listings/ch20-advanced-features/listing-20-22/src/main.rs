@@ -18,6 +18,6 @@ impl Hayvan for Kopek {
 
 // ANCHOR: here
 fn main() {
-    println!("Bir yavru köpeğe {}", <Kopek as Hayvan>::baby_name());
+    println!("Bir yavru köpeğe {} denir", <Kopek as Hayvan>::baby_name());
 }
 // ANCHOR_END: here

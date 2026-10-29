@@ -1,17 +1,17 @@
 $ cargo run
-   Compiling rectangles v0.1.0 (file:///projects/rectangles)
+   Compiling dikdortgenler v0.1.0 (file:///projects/dikdortgenler)
 error[E0277]: `Dikdortgen` doesn't implement `std::fmt::Display`
-  --> src/main.rs:12:25
+  --> src/main.rs:12:37
    |
 12 |     println!("dikdortgen1 şöyledir: {dikdortgen1}");
-   |                                     -^^^^^^^^^^^-
-   |                                     ||
-   |                                     |`Dikdortgen` cannot be formatted with the default formatter
-   |                                     required by this formatting parameter
+   |                                     ^^^^^^^^^^^^^ `Dikdortgen` cannot be formatted with the default formatter
    |
-   = help: the trait `std::fmt::Display` is not implemented for `Dikdortgen`
-   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
-   = note: this error originates in the macro `$crate::format_args_nl` which comes from the expansion of the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: the trait `std::fmt::Display` is not implemented for `Dikdortgen`
+  --> src/main.rs:1:1
+   |
+ 1 | struct Dikdortgen {
+   | ^^^^^^^^^^^^^^^^^
+   = note: in format strings you may be able to use `{:?}` (or `{:#?}` for pretty-print) instead
 
 For more information about this error, try `rustc --explain E0277`.
-error: could not compile `rectangles` (bin "rectangles") due to 1 previous error
+error: could not compile `dikdortgenler` (bin "dikdortgenler") due to 1 previous error

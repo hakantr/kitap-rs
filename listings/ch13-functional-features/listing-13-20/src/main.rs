@@ -6,13 +6,14 @@ use std::process;
 use minigrep::{ara, buyuk_kucuk_harf_duyarsiz_ara};
 
 fn main() {
-    let config = Yapilandirma::olustur(env::argumanlar()).unwrap_or_else(|err| {
-        eprintln!("Problem parsing arguments: {err}");
-        process::exit(1);
-    });
+    let yapilandirma =
+        Yapilandirma::olustur(env::args()).unwrap_or_else(|hata| {
+            eprintln!("Argümanları ayrıştırırken problem oluştu: {hata}");
+            process::exit(1);
+        });
 
-    if let Err(e) = calistir(config) {
-        eprintln!("Application error: {e}");
+    if let Err(e) = calistir(yapilandirma) {
+        eprintln!("Uygulama hatası: {e}");
         process::exit(1);
     }
 }
@@ -32,12 +33,12 @@ impl Yapilandirma {
 
         let sorgu = match argumanlar.next() {
             Some(arg) => arg,
-            None => return Err("Didn't get a sorgu string"),
+            None => return Err("Sorgu metni alınamadı"),
         };
 
         let dosya_yolu = match argumanlar.next() {
             Some(arg) => arg,
-            None => return Err("Didn't get a file path"),
+            None => return Err("Dosya yolu alınamadı"),
         };
 
         let buyuk_kucuk_harf_yoksay = env::var("IGNORE_CASE").is_ok();
@@ -51,13 +52,13 @@ impl Yapilandirma {
 }
 // ANCHOR_END: here
 
-fn calistir(config: Yapilandirma) -> Result<(), Box<dyn Error>> {
-    let icerik = fs::read_to_string(config.dosya_yolu)?;
+fn calistir(yapilandirma: Yapilandirma) -> Result<(), Box<dyn Error>> {
+    let icerik = fs::read_to_string(yapilandirma.dosya_yolu)?;
 
-    let sonuclar = if config.buyuk_kucuk_harf_yoksay {
-        buyuk_kucuk_harf_duyarsiz_ara(&config.sorgu, &icerik)
+    let sonuclar = if yapilandirma.buyuk_kucuk_harf_yoksay {
+        buyuk_kucuk_harf_duyarsiz_ara(&yapilandirma.sorgu, &icerik)
     } else {
-        ara(&config.sorgu, &icerik)
+        ara(&yapilandirma.sorgu, &icerik)
     };
 
     for satir in sonuclar {

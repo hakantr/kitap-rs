@@ -1,5 +1,5 @@
-pub fn prints_and_returns_10(a: i32) -> i32 {
-    println!("I got the value {a}");
+pub fn yazdir_ve_10_dondur(a: i32) -> i32 {
+    println!("{a} değerini aldım");
     10
 }
 
@@ -8,14 +8,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn this_test_will_pass() {
-        let value = prints_and_returns_10(4);
-        assert_eq!(value, 10);
+    fn bu_test_gececek() {
+        let deger = yazdir_ve_10_dondur(4);
+        assert_eq!(deger, 10);
     }
 
     #[test]
-    fn this_test_will_fail() {
-        let value = prints_and_returns_10(8);
-        assert_eq!(value, 5);
+    fn bu_test_basarisiz_olacak() {
+        let deger = yazdir_ve_10_dondur(8);
+        assert_eq!(deger, 5);
     }
 }

@@ -1,4 +1,4 @@
-use aggregator::{self, SosyalGonderi, Ozet};
+use toplayici::{self, Ozet, SosyalGonderi};
 
 fn main() {
     // ANCHOR: here

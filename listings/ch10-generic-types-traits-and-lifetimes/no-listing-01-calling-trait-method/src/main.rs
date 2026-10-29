@@ -1,4 +1,4 @@
-use aggregator::{Ozet, SosyalGonderi};
+use toplayici::{Ozet, SosyalGonderi};
 
 fn main() {
     let gonderi = SosyalGonderi {

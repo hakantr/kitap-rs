@@ -1,16 +1,21 @@
-## Metotlar (Methods)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="methods"></a>
+<a id="metotlar-methods"></a>
 
-Metotlar fonksiyonlara oldukça benzer: Onları da `fn` anahtar kelimesi ve bir isimle tanımlarız, parametre alabilirler, bir değer döndürebilirler ve başka bir yerden çağrıldıklarında çalıştırılacak bazı kodlar barındırırlar. Ancak fonksiyonlardan farklı olarak metotlar, bir yapının (struct) (veya [Bölüm 6][enums]<!-- ignore --> ve [Bölüm 18][trait-objects]<!-- ignore -->'de göreceğimiz üzere bir `enum` veya `trait` nesnesinin) bağlamı içinde tanımlanırlar. Metotların ilk parametresi her zaman `self` olmalıdır; bu parametre, metodun üzerinde çağrıldığı yapı (struct) örneğini temsil eder.
+## Metotlar
+
+Metotlar fonksiyonlara benzer: Bunları da `fn` anahtar kelimesi ve bir adla bildiririz; parametreleri ve bir dönüş değerleri olabilir ve metot başka bir yerden çağrıldığında çalıştırılacak kodu barındırırlar. Fonksiyonlardan farklı olarak metotlar bir struct'ın (ya da sırasıyla [Bölüm 6][enums]<!-- ignore --> ve [Bölüm 18][trait-objects]<!-- ignore -->'de ele alacağımız bir enum'ın veya *trait nesnesinin*) bağlamında tanımlanır ve ilk parametreleri her zaman metodun üzerinde çağrıldığı struct örneğini temsil eden `self` olur.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="defining-methods"></a>
+<a id="method-syntax"></a>
+<a id="metot-sözdizimi-method-syntax"></a>
 
-### Metot Sözdizimi (Method Syntax)
+### Metot Sözdizimi
 
-Hadi parametre olarak bir `Dikdortgen` örneği alan eski `alan` fonksiyonumuzu değiştirelim ve bunun yerine Liste 5-13'te gösterildiği gibi `Dikdortgen` yapısı (struct) üzerinde tanımlı bir `alan` metodu oluşturalım.
+Parametre olarak bir `Dikdortgen` örneği alan `alan` fonksiyonunu değiştirelim ve bunun yerine Liste 5-13'te gösterildiği gibi `Dikdortgen` struct'ı üzerinde tanımlı bir `alan` metodu oluşturalım.
 
-<Listing number="5-13" file-name="src/main.rs" caption="`Dikdortgen` struct'ı üzerinde bir `alan` metodu tanımlanması">
+<Listing number="5-13" file-name="src/main.rs" caption="`Dikdortgen` struct'ı üzerinde bir `alan` metodu tanımlama">
 
 ```rust
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-13/src/main.rs}}
@@ -18,15 +23,20 @@ Hadi parametre olarak bir `Dikdortgen` örneği alan eski `alan` fonksiyonumuzu 
 
 </Listing>
 
-Fonksiyonu `Dikdortgen` bağlamında tanımlamak için, `Dikdortgen` adına bir `impl` (uygulama/implementation) bloğu başlatıyoruz. Bu `impl` bloğu içindeki her şey `Dikdortgen` tipiyle ilişkilendirilecektir. Daha sonra `alan` fonksiyonunu `impl` süslü parantezlerinin içine taşıyoruz ve imzadaki ilk (ve bu durumda tek) parametreyi hem tanımda hem de gövdede `self` olacak şekilde değiştiriyoruz. Önceden `alan` fonksiyonunu çağırıp `dikdortgen1`'i argüman olarak ilettiğimiz `main` fonksiyonunun içinde, artık `Dikdortgen` örneğimiz üzerinde `alan` metodunu çağırmak için *metot sözdizimini* (method syntax) kullanabiliriz. Metot sözdizimi doğrudan örneğin adından sonra gelir: Bir nokta ekleriz, ardından metodun adını, parantezleri ve varsa argümanları yazarız.
+Fonksiyonu `Dikdortgen` bağlamında tanımlamak için `Dikdortgen` adına bir `impl` (*uygulama / implementation*) bloğu başlatırız. Bu `impl` bloğu içindeki her şey `Dikdortgen` türüyle ilişkilendirilir. Ardından `alan` fonksiyonunu `impl` süslü parantezlerinin içine taşır ve ilk (bu örnekte aynı zamanda tek) parametreyi hem imzada hem de gövdenin her yerinde `self` olacak şekilde değiştiririz. Daha önce `alan` fonksiyonunu çağırıp `dikdortgen1`'i argüman olarak geçirdiğimiz `main` fonksiyonunda ise artık `Dikdortgen` örneğimiz üzerindeki `alan` metodunu çağırmak için *metot sözdizimini (method syntax)* kullanabiliriz. Metot sözdizimi bir örnekten hemen sonra gelir: Bir nokta koyar, ardından metodun adını, parantezleri ve varsa argümanları yazarız.
 
-`alan` metodunun imzasında `dikdortgen: &Dikdortgen` yerine `&self` kullanıyoruz. Buradaki `&self`, aslında `self: &Self` ifadesinin kısaltmasıdır. Bir `impl` bloğu içerisinde `Self` tipi, o `impl` bloğunun ait olduğu tipin kısa adıdır. Metotların ilk parametresinin adı `self` ve tipi `Self` olmak zorundadır; bu nedenle Rust, ilk parametre alanında bunu sadece `self` ismiyle kısaltmanıza olanak tanır. Ancak tıpkı `dikdortgen: &Dikdortgen` kullanımında olduğu gibi, bu metodun `Self` örneğini ödünç aldığını belirtmek için `self` kısaltmasının önüne `&` işareti koymamız gerektiğini unutmayın. Metotlar; aynen diğer parametrelerde olduğu gibi `self`'in sahipliğini alabilir, burada yaptığımız gibi `self`'i değiştirilemez şekilde ödünç alabilir veya `self`'i değiştirilebilir şekilde ödünç alabilirler.
+`alan` metodunun imzasında `dikdortgen: &Dikdortgen` yerine `&self` kullanırız. Buradaki `&self` aslında `self: &Self` ifadesinin kısaltmasıdır. Bir `impl` bloğu içinde `Self` türü, o `impl` bloğunun ait olduğu türün takma adıdır. Metotların ilk parametresi `Self` türünde `self` adında bir parametre olmak zorundadır; bu nedenle Rust, ilk parametre konumunda bunu yalnızca `self` adıyla kısaltmanıza olanak tanır. Yine de tıpkı `dikdortgen: &Dikdortgen` kullanımında olduğu gibi, bu metodun `Self` örneğini ödünç aldığını belirtmek için `self` kısaltmasının önüne `&` koymamız gerektiğine dikkat edin. Metotlar, diğer herhangi bir parametrede olduğu gibi `self`'in sahipliğini alabilir, burada yaptığımız gibi `self`'i değiştirilemez biçimde ödünç alabilir veya `self`'i değiştirilebilir biçimde ödünç alabilir.
 
-Fonksiyon versiyonunda neden `&Dikdortgen` kullandıysak, burada da aynı nedenden ötürü `&self` kullandık: Sahipliği almak istemiyoruz; yalnızca yapıdaki verileri okumak istiyoruz, onlara yazmak istemiyoruz. Eğer metodun, çağrıldığı örneği değiştirmesini isteseydik, ilk parametre olarak `&mut self` kullanırdık. İlk parametre olarak sadece `self` kullanarak örneğin sahipliğini tamamen alan bir metot yazmak nadir görülen bir durumdur; bu teknik genellikle metot `self`'i başka bir şeye dönüştürdüğünde ve dönüşümden sonra çağıran kişinin orijinal örneği kullanmasını engellemek istediğinizde kullanılır.
+Fonksiyon sürümünde `&Dikdortgen` kullanmamızla aynı nedenden ötürü burada da `&self` seçtik: Sahipliği devralmak istemiyoruz; struct içindeki verileri yalnızca okumak istiyoruz, onlara yazmak istemiyoruz. Metodun yaptığı işin bir parçası olarak üzerinde çağrıldığı örneği değiştirmesini isteseydik ilk parametre olarak `&mut self` kullanırdık. İlk parametre olarak yalnızca `self` yazıp örneğin sahipliğini alan bir metot tanımlamak nadirdir; bu teknik genellikle metot `self`'i başka bir şeye dönüştürdüğünde ve dönüşümden sonra çağıran kodun orijinal örneği kullanmasını engellemek istediğinizde tercih edilir.
 
-Metot sözdiziminin sağladığı kolaylıklar ve her metodun imzasında `self` tipini tekrar etme zorunluluğunun ortadan kalkmasının yanı sıra, fonksiyonlar yerine metotları kullanmanın asıl ana nedeni kod organizasyonudur. Bir tipin örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda topladık. Böylece kodumuzu kullanacak kişilerin, `Dikdortgen`'in yeteneklerini kütüphanemizin çeşitli yerlerinde aramak zorunda kalmalarını engellemiş olduk.
+> Not: Bir metot tanımlarken ilk parametreyi seçmek için şu pratik ölçütü kullanabilirsiniz:
+> - **`&self` (varsayılan tercih)**: Metot yalnızca örneğin alanlarını okuyup bir sonuç hesaplıyorsa kullanılır. Çağıran kod örneğin sahipliğini korur ve metot çağrısından sonra da örneği kullanmaya devam edebilir.
+> - **`&mut self`**: Metot örneğin alanlarını yerinde güncelliyorsa kullanılır. Bu tür bir metodu çağırabilmek için ilgili değişkenin `let mut dikdortgen1 = ...` şeklinde değiştirilebilir tanımlanmış olması gerekir.
+> - **`self` (tüketen metot)**: Metot mevcut örneği tüketip içindeki veriyi başka bir türe dönüştürüyorsa (örneğin bir `String`'i ham bayt vektörüne dönüştüren `String::into_bytes`) veya bir kaynağı kapatıp geçersiz kılıyorsa kullanılır; derleyici çağrıdan sonra eski örneğin yanlışlıkla tekrar kullanılmasını derleme zamanında engeller.
 
-Ayrıca, bir metoda yapının (struct) alanlarından (field) biriyle aynı ismi vermeyi de seçebiliriz. Örneğin, `Dikdortgen` üzerinde aynı zamanda `genislik` adında bir metot tanımlayabiliriz:
+Metot sözdizimi sunmasının ve her metodun imzasında `self`'in türünü tekrarlama zorunluluğunu ortadan kaldırmasının yanı sıra, fonksiyonlar yerine metotları kullanmanın temel nedeni kod düzenidir. Bir türün örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda toplarız; böylece kodumuzu ileride kullanacak kişilerin `Dikdortgen`'in yeteneklerini sunduğumuz kütüphanenin farklı yerlerinde aramak zorunda kalmasını önleriz.
+
+Bir metoda struct'ın alanlarından biriyle aynı adı vermeyi de seçebileceğimize dikkat edin. Örneğin `Dikdortgen` üzerinde yine `genislik` adında bir metot tanımlayabiliriz:
 
 <Listing file-name="src/main.rs">
 
@@ -36,17 +46,23 @@ Ayrıca, bir metoda yapının (struct) alanlarından (field) biriyle aynı ismi 
 
 </Listing>
 
-Burada `genislik` metodunun, örnekteki `genislik` alanının değeri `0`'dan büyükse `true`, `0` ise `false` döndürmesini istedik: Kısacası, bir alanı aynı isimli bir metot içinde herhangi bir amaçla kullanabiliriz. `main` fonksiyonunda, `dikdortgen1.genislik` ifadesinden sonra parantez kullandığımızda, Rust bizim `genislik` *metodunu* kastettiğimizi anlar. Parantez kullanmadığımızda ise Rust bizim `genislik` *alanını* (field) kastettiğimizi bilir.
+Burada `genislik` metodunun, örneğin `genislik` alanındaki değer `0`'dan büyükse `true`, `0` ise `false` döndürmesini seçtik: Aynı adlı bir metot içinde bir alanı herhangi bir amaçla kullanabiliriz. `main` içinde `dikdortgen1.genislik` ifadesinin ardından parantez kullandığımızda Rust `genislik` metodunu kastettiğimizi anlar. Parantez kullanmadığımızda ise Rust `genislik` alanını kastettiğimizi bilir.
 
-Sıklıkla (ama her zaman değil), bir metoda yapıdaki alanla aynı ismi verdiğimizde, bu metodun yalnızca o alandaki değeri döndürmesini ve başka hiçbir şey yapmamasını isteriz. Bu tür metotlara *alıcılar* (getters) denir. Bazı diğer dillerin aksine Rust, yapı alanları için alıcıları (getter) otomatik olarak uygulamaz. Alıcılar faydalıdır, çünkü alanı gizli (private), ancak metodu açık yapabilirsiniz. Böylece bu alana sadece okunabilir (read-only) bir erişim sağlayarak onu tipin genel API'sinin bir parçası haline getirebilirsiniz. "Açık" ve "gizli" (private) kavramlarının ne olduğunu ve bir alanın veya metodun nasıl bu şekilde tasarlanacağını Bölüm 7'de tartışacağız.
+Her zaman olmasa da çoğu durumda, bir metoda bir alanla aynı adı verdiğimizde yalnızca alandaki değeri döndürmesini ve başka hiçbir şey yapmamasını isteriz. Bu tür metotlara *alıcı metotlar (getters)* denir ve Rust, bazı diğer dillerin aksine struct alanları için bunları otomatik olarak uygulamaz. Alıcı metotlar oldukça kullanışlıdır; çünkü alanı gizli (*private*), metodu ise açık (*public*) yaparak bu alana türün açık API'sinin bir parçası olarak salt okunur erişim sağlayabilirsiniz. Açık ve gizli kavramlarının ne olduğunu ve bir alanı ya da metodu nasıl açık veya gizli olarak belirleyeceğimizi [Bölüm 7][public]<!-- ignore -->'de ele alacağız.
 
-> ### `->` Operatörüne Ne Oldu?
+<!-- Old headings. Do not remove or links may break. -->
+<a id="wheres-the---operator"></a>
+<a id="--operatörüne-ne-oldu"></a>
+
+> ### `->` Operatörü Nerede?
 >
-> C ve C++ dillerinde metot çağırmak için iki farklı operatör kullanılır: Eğer metodu doğrudan obje üzerinde çağırıyorsanız `.`, eğer metodu objeye işaret eden bir işaretçi (pointer) üzerinden çağırıyorsanız ve önce işaretçinin referansını kaldırmanız (dereference) gerekiyorsa `->` kullanırsınız. Diğer bir deyişle, eğer `obje` bir işaretçiyse, `obje->bir_seyler_yap()` ifadesi aslında `(*obje).bir_seyler_yap()` ifadesine benzer.
+> C ve C++ dillerinde metot çağırmak için iki farklı operatör kullanılır: Metodu doğrudan nesne üzerinde çağırıyorsanız `.`, nesneyi gösteren bir işaretçi (*pointer*) üzerinden çağırıyorsanız ve önce işaretçinin *başvurusunu çözmeniz (dereference)* gerekiyorsa `->` kullanırsınız. Başka bir deyişle, `nesne` bir işaretçiyse `nesne->bir_seyler_yap()` ifadesi `(*nesne).bir_seyler_yap()` ifadesine benzer.
 >
-> Rust'ta `->` operatörünün doğrudan bir karşılığı yoktur; bunun yerine Rust'ta *otomatik referans alma ve kaldırma (automatic referencing and dereferencing)* adı verilen bir özellik vardır. Metot çağırma işlemi, Rust'ta bu davranışın görüldüğü nadir yerlerden biridir.
+> Rust'ta `->` operatörünün bir karşılığı yoktur; bunun yerine Rust'ta *otomatik referanslama ve başvuru çözme (automatic referencing and dereferencing)* adı verilen bir özellik bulunur. Metot çağırma işlemi, Rust'ta bu davranışın görüldüğü sayılı yerlerden biridir.
 >
-> Sistem şu şekilde işler: Siz `obje.bir_seyler_yap()` şeklinde bir metot çağırdığınızda, Rust otomatik olarak `&`, `&mut` veya `*` işaretlerini ekleyerek `obje`'nin metodun imzasına uymasını sağlar. Yani, aşağıdaki iki ifade aslında tamamen aynıdır:
+> Mekanizma şöyle çalışır: `nesne.bir_seyler_yap()` şeklinde bir metot çağırdığınızda Rust, `nesne`'nin metodun imzasıyla eşleşmesi için gereken `&`, `&mut` veya `*` operatörlerini otomatik olarak ekler. Başka bir deyişle, aşağıdaki iki çağrı birbiriyle tamamen aynıdır:
+>
+> <!-- CAN'T EXTRACT SEE BUG https://github.com/rust-lang/mdBook/issues/1127 -->
 >
 > ```rust
 > # #[derive(Debug,Copy,Clone)]
@@ -69,13 +85,16 @@ Sıklıkla (ama her zaman değil), bir metoda yapıdaki alanla aynı ismi verdi�
 > (&n1).mesafe(&n2);
 > ```
 >
-> İlk ifade göze çok daha temiz görünür. Bu otomatik referans alma davranışı sorunsuz çalışır çünkü metotların net bir alıcısı (receiver) vardır: `self`'in tipi. Metodun ismine ve alıcısına bakan Rust, bu metodun okuma (`&self`), değiştirme (`&mut self`) veya tüketme (`self`) işlemi yapıp yapmadığını kesin olarak anlayabilir. Rust'ın, metot alıcıları için ödünç almayı örtülü (implicit) hale getirmesi, sahiplik kurallarının pratikte çok daha ergonomik kullanılabilmesinin büyük bir parçasıdır.
+> İlk yazım çok daha temiz görünür. Bu otomatik referanslama davranışı sorunsuz çalışır, çünkü metotların net bir *alıcısı (receiver)* vardır: `self`'in türü. Bir metodun alıcısı ve adı belli olduğunda Rust, metodun okuma (`&self`), değiştirme (`&mut self`) veya tüketme (`self`) işlemlerinden hangisini yaptığını kesin olarak belirleyebilir. Rust'ın metot alıcıları için ödünç almayı örtük (*implicit*) hâle getirmesi, sahiplik kurallarını pratikte ergonomik kılan en önemli etkenlerden biridir.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="methods-with-more-parameters"></a>
 
 ### Daha Fazla Parametre Alan Metotlar
 
-Şimdi `Dikdortgen` yapımız üzerinde ikinci bir metot yazarak pratik yapalım. Bu kez, bir `Dikdortgen` örneğinin başka bir `Dikdortgen` örneğini parametre olarak almasını istiyoruz. Eğer ikinci `Dikdortgen`, tamamen `self`'in (yani birinci `Dikdortgen`'in) içine sığabiliyorsa `true`, sığamıyorsa `false` döndürmeli. Yani, `kapsayabilir_mi` metodunu tanımladığımızda, Liste 5-14'te gösterilen programı yazabilmek istiyoruz.
+`Dikdortgen` struct'ı üzerinde ikinci bir metot uygulayarak metot kullanımı konusunda pratik yapalım. Bu kez bir `Dikdortgen` örneğinin başka bir `Dikdortgen` örneğini almasını ve ikinci `Dikdortgen` tamamen `self`'in (birinci `Dikdortgen`'in) içine sığabiliyorsa `true`, aksi hâlde `false` döndürmesini istiyoruz. Yani `kapsayabilir_mi` metodunu tanımladıktan sonra Liste 5-14'te gösterilen programı yazabilmek istiyoruz.
 
-<Listing number="5-14" file-name="src/main.rs" caption="Henüz yazılmamış olan `kapsayabilir_mi` metodunun kullanımı">
+<Listing number="5-14" file-name="src/main.rs" caption="Henüz yazılmamış `kapsayabilir_mi` metodunun kullanımı">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-14/src/main.rs}}
@@ -83,18 +102,16 @@ Sıklıkla (ama her zaman değil), bir metoda yapıdaki alanla aynı ismi verdi�
 
 </Listing>
 
-Beklenen çıktı aşağıdaki gibi olmalıdır; çünkü `dikdortgen2`'nin her iki boyutu da `dikdortgen1`'den küçüktür, ancak `dikdortgen3` `dikdortgen1`'den daha geniştir:
+`dikdortgen2`'nin her iki boyutu da `dikdortgen1`'in boyutlarından küçük olduğu, buna karşılık `dikdortgen3` `dikdortgen1`'den daha geniş olduğu için beklenen çıktı şöyle görünmelidir:
 
 ```text
 dikdortgen1, dikdortgen2'yi kapsayabilir mi? true
 dikdortgen1, dikdortgen3'ü kapsayabilir mi? false
 ```
 
-Bir metot tanımlamak istediğimizi biliyoruz, bu yüzden bunu `impl Dikdortgen` bloğunun içine yazacağız. Metodun adı `kapsayabilir_mi` olacak ve parametre olarak başka bir `Dikdortgen`'in değiştirilemez referansını alacak. Parametrenin tipinin ne olması gerektiğini, metodu çağıran koda bakarak da anlayabiliriz: `dikdortgen1.kapsayabilir_mi(&dikdortgen2)` satırı argüman olarak `&dikdortgen2`'yi iletiyor, ki bu da bir `Dikdortgen` örneği olan `dikdortgen2`'nin değiştirilemez bir ödünç alımıdır. Bu oldukça mantıklı; çünkü sadece `dikdortgen2`'yi okumaya ihtiyacımız var (eğer yazmaya/değiştirmeye ihtiyacımız olsaydı değiştirilebilir -mutable- bir referans alırdık) ve `kapsayabilir_mi` metodunu çağırdıktan sonra `dikdortgen2`'yi tekrar kullanabilmek için `main` fonksiyonunun onun sahipliğini elinde tutmasını istiyoruz.
+Bir metot tanımlamak istediğimizi biliyoruz, dolayısıyla bu tanım `impl Dikdortgen` bloğunun içinde yer alacak. Metodun adı `kapsayabilir_mi` olacak ve parametre olarak başka bir `Dikdortgen` örneğinin değiştirilemez ödünç alımını kabul edecek. Parametrenin türünün ne olacağını metodu çağıran koda bakarak da anlayabiliriz: `dikdortgen1.kapsayabilir_mi(&dikdortgen2)` çağrısı argüman olarak bir `Dikdortgen` örneği olan `dikdortgen2`'nin değiştirilemez ödünç alımını, yani `&dikdortgen2` ifadesini geçirir. Bu oldukça mantıklıdır; çünkü `dikdortgen2`'yi yalnızca okumamız yeterlidir (yazmamız gerekseydi değiştirilebilir bir ödünç alıma ihtiyaç duyardık) ve `kapsayabilir_mi` metodunu çağırdıktan sonra `dikdortgen2`'yi tekrar kullanabilmek için `main` fonksiyonunun sahipliği elinde tutmasını isteriz. `kapsayabilir_mi` metodunun dönüş değeri bir mantıksal değer (`bool`) olacak ve metodun uygulaması `self`'in genişlik ve yüksekliğinin diğer `Dikdortgen` örneğinin sırasıyla genişlik ve yüksekliğinden büyük olup olmadığını kontrol edecektir. Yeni `kapsayabilir_mi` metodunu Liste 5-13'teki `impl` bloğuna ekleyelim; sonuç Liste 5-15'te gösterilmiştir.
 
-`kapsayabilir_mi` metodunun dönüş değeri bir Boolean (mantıksal değer) olacak ve metodun gövdesinde `self`'in genişlik ve yüksekliğinin, diğer `Dikdortgen`'in genişlik ve yüksekliğinden büyük olup olmadığını kontrol edeceğiz. Hadi Liste 5-13'teki `impl` bloğumuza yeni `kapsayabilir_mi` metodunu ekleyelim (Liste 5-15).
-
-<Listing number="5-15" file-name="src/main.rs" caption="`Dikdortgen` üzerinde başka bir `Dikdortgen` örneğini parametre olarak alan `kapsayabilir_mi` metodunun uygulanması">
+<Listing number="5-15" file-name="src/main.rs" caption="`Dikdortgen` üzerinde başka bir `Dikdortgen` örneğini parametre olarak alan `kapsayabilir_mi` metodunu uygulama">
 
 ```rust
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-15/src/main.rs:here}}
@@ -102,13 +119,18 @@ Bir metot tanımlamak istediğimizi biliyoruz, bu yüzden bunu `impl Dikdortgen`
 
 </Listing>
 
-Bu kodu Liste 5-14'teki `main` fonksiyonu ile birlikte çalıştırdığımızda istediğimiz çıktıyı alacağız. Metotlar, `self` parametresinden sonra eklediğimiz birden fazla parametreyi alabilirler ve bu parametreler tıpkı standart fonksiyonlardaki parametreler gibi çalışır.
+Bu kodu Liste 5-14'teki `main` fonksiyonuyla birlikte çalıştırdığımızda istediğimiz çıktıyı elde ederiz. Metotlar, imzada `self` parametresinden sonra eklediğimiz birden fazla parametre alabilir ve bu parametreler tıpkı fonksiyonlardaki parametreler gibi çalışır.
 
-### İlişkili Fonksiyonlar (Associated Functions)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="associated-functions"></a>
+<a id="i̇lişkili-fonksiyonlar-associated-functions"></a>
+<a id="ilişkili-fonksiyonlar-associated-functions"></a>
 
-Bir `impl` bloğu içinde tanımlanan tüm fonksiyonlara *ilişkili fonksiyonlar* (associated functions) denir; çünkü bu fonksiyonlar `impl` kelimesinden sonra adı yazılan tiple ilişkilendirilmişlerdir. İlk parametresi `self` olmayan (ve dolayısıyla metot olmayan) ilişkili fonksiyonlar da tanımlayabiliriz. Bunlar metot değildir çünkü çalışmak için ilgili tipin bir örneğine ihtiyaç duymazlar. Biz zaten bu tarz bir fonksiyonu daha önce kullandık: `String` tipi üzerinde tanımlı olan `String::from` fonksiyonu.
+### İlişkili Fonksiyonlar
 
-Metot olmayan ilişkili fonksiyonlar genellikle, yapının yeni bir örneğini döndürecek "kurucular" (constructors) olarak kullanılırlar. Bunlara çoğunlukla `new` adı verilir, ancak `new` dilde yerleşik olarak bulunan veya özel bir anlam taşıyan bir kelime değildir. Örneğin, genişlik ve yükseklik için aynı değeri kullanan ve böylece bir kare oluşturmayı kolaylaştıran `kare` adında bir ilişkili fonksiyon tanımlayabiliriz. Bu sayede aynı değeri iki kez girmek zorunda kalmayız:
+Bir `impl` bloğu içinde tanımlanan tüm fonksiyonlara *ilişkili fonksiyonlar (associated functions)* denir; çünkü bu fonksiyonlar `impl` kelimesinden sonra adı verilen türle ilişkilendirilmiştir. İlk parametresi `self` olmayan (ve dolayısıyla metot olmayan) ilişkili fonksiyonlar da tanımlayabiliriz; çünkü bunların çalışmak için ilgili türün bir örneğine ihtiyacı yoktur. Bu tarz bir fonksiyonu daha önce zaten kullanmıştık: `String` türü üzerinde tanımlı olan `String::from` fonksiyonu.
+
+Metot olmayan ilişkili fonksiyonlar çoğunlukla struct'ın yeni bir örneğini döndüren *yapıcılar (constructors)* olarak kullanılır. Bunlara sıklıkla `new` adı verilir, ancak `new` özel bir ad değildir ve dile yerleşik bir anahtar kelime olarak tanımlanmamıştır. Örneğin tek bir boyut parametresi alıp bunu hem genişlik hem de yükseklik olarak kullanan `kare` adında bir ilişkili fonksiyon sunmayı seçebiliriz; böylece aynı değeri iki kez belirtmek zorunda kalmadan kare bir `Dikdortgen` oluşturmayı kolaylaştırırız:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -116,15 +138,20 @@ Metot olmayan ilişkili fonksiyonlar genellikle, yapının yeni bir örneğini d
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/no-listing-03-associated-functions/src/main.rs:here}}
 ```
 
-Dönüş tipindeki ve fonksiyon gövdesindeki `Self` anahtar kelimesi, `impl` anahtar kelimesinden sonra görünen tip için bir kısaltmadır; yani bu durumda `Dikdortgen`'i temsil eder.
+Dönüş türündeki ve fonksiyon gövdesindeki `Self` anahtar kelimeleri, `impl` anahtar kelimesinden sonra gelen türün — bu örnekte `Dikdortgen` türünün — takma adıdır.
 
-Bu ilişkili fonksiyonu çağırmak için yapının (struct) adıyla birlikte `::` sözdizimini kullanırız; `let kare_obje = Dikdortgen::kare(3);` buna güzel bir örnektir. Bu fonksiyon, yapı tarafından isim alanına (namespace) dahil edilmiştir: `::` sözdizimi hem ilişkili fonksiyonlar hem de modüllerin oluşturduğu isim alanları (namespaces) için kullanılır. Modülleri [Bölüm 7][modules]<!-- ignore -->'de detaylıca tartışacağız.
+Bu ilişkili fonksiyonu çağırmak için struct adıyla birlikte `::` sözdizimini kullanırız; `let k = Dikdortgen::kare(3);` ifadesi buna bir örnektir. Bu fonksiyon struct'ın *ad alanı (namespace)* altında yer alır: `::` sözdizimi hem ilişkili fonksiyonlar hem de modüllerin oluşturduğu ad alanları için kullanılır. Modülleri [Bölüm 7][modules]<!-- ignore -->'de ele alacağız.
+
+> Not: Rust'ta diğer pek çok nesne yönelimli dildeki gibi özel bir `new` anahtar kelimesi veya aynı adla farklı parametreler alan *aşırı yüklenmiş (overloaded)* yapıcılar yoktur. Bunun yerine `Turu::new(...)`, `Vec::with_capacity(...)`, `String::from(...)` veya `Dikdortgen::kare(...)` gibi açıklayıcı adlara sahip ilişkili fonksiyonlar tanımlamak standart Rust idiyomudur; böylece bir değerin nasıl oluşturulduğu çağrı noktasında ilk bakışta anlaşılır. Ayrıca tanımda `Self` kullanmak, ileride struct'ın adını değiştirseniz bile `impl` bloğu içindeki dönüş türlerini ve örneklemeleri tek tek güncelleme zahmetini ortadan kaldırır.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="multiple-impl-blocks"></a>
 
 ### Birden Fazla `impl` Bloğu
 
-Her yapının (struct) birden fazla `impl` bloğuna sahip olmasına izin verilir. Örneğin, Liste 5-15, her metodun kendi ayrı `impl` bloğunda yer aldığı Liste 5-16'daki kodla tamamen eşdeğerdir.
+Her struct'ın birden fazla `impl` bloğuna sahip olmasına izin verilir. Örneğin Liste 5-15, her metodun kendi ayrı `impl` bloğunda yer aldığı Liste 5-16'daki kodla tamamen eşdeğerdir.
 
-<Listing number="5-16" caption="Liste 5-15'in birden fazla `impl` bloğu kullanılarak yeniden yazılması">
+<Listing number="5-16" caption="Liste 5-15'i birden fazla `impl` bloğu kullanarak yeniden yazma">
 
 ```rust
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-16/src/main.rs:here}}
@@ -132,15 +159,18 @@ Her yapının (struct) birden fazla `impl` bloğuna sahip olmasına izin verilir
 
 </Listing>
 
-Burada metotları birden fazla `impl` bloğuna ayırmak için geçerli bir nedenimiz olmasa da, bu tamamen geçerli bir sözdizimidir. Jenerik tipleri ve özellikleri (traits) tartışacağımız Bölüm 10'da, birden fazla `impl` bloğunun oldukça faydalı olduğu durumları göreceğiz.
+Burada bu metotları birden fazla `impl` bloğuna ayırmak için geçerli bir neden yoktur, ancak bu geçerli bir sözdizimidir. Jenerik türleri ve trait'leri ele alacağımız Bölüm 10'da, birden fazla `impl` bloğunun yararlı olduğu bir durumu göreceğiz.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="summary"></a>
 
 ## Özet
 
-Yapılar (Structs), çalıştığınız problem alanına (domain) uygun ve anlamlı özel tipler oluşturmanızı sağlar. Yapıları kullanarak, birbiriyle ilişkili veri parçalarını birbirine bağlı tutabilir ve kodunuzu netleştirmek için her bir parçaya anlamlı bir isim verebilirsiniz. `impl` bloklarında ise tipinizle ilişkili fonksiyonları tanımlayabilirsiniz. Metotlar da bir tür ilişkili fonksiyondur ve yapı örneklerinizin sergileyeceği davranışları (behavior) belirlemenize olanak tanır.
+Struct'lar, çalıştığınız problem alanı için anlamlı özel türler oluşturmanızı sağlar. Struct kullanarak birbiriyle ilişkili veri parçalarını bir arada tutabilir ve kodunuzu anlaşılır kılmak için her bir parçaya açıklayıcı bir ad verebilirsiniz. `impl` bloklarında ise türünüzle ilişkili fonksiyonlar tanımlayabilirsiniz; metotlar da struct örneklerinizin sahip olacağı davranışı belirlemenize olanak tanıyan bir tür ilişkili fonksiyondur.
 
-Ancak özel tipler (custom types) oluşturmanın tek yolu yapılar (structs) değildir: Şimdi araç çantanıza yeni bir araç daha eklemek için Rust'ın `enum` özelliğine geçelim.
+Ancak özel türler oluşturmanın tek yolu struct'lar değildir: Araç çantanıza yeni bir araç daha eklemek için şimdi Rust'ın enum özelliğine geçelim.
 
 [enums]: ch06-00-enumlar-ve-desen-eslestirme.html
-[trait-objects]: ch18-02-trait-nesneleri.md
+[trait-objects]: ch18-02-trait-nesneleri.html
 [public]: ch07-03-oge-yollari.html#yolları-pub-anahtar-kelimesiyle-açığa-çıkarmak-exposing
 [modules]: ch07-02-kapsam-ve-gizliligi-kontrol-etme.html

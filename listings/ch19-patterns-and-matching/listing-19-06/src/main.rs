@@ -1,6 +1,6 @@
 // ANCHOR: here
 fn bir_fonksiyon(deger: i32) {
-    // code goes here
+    // kod buraya gelir
 }
 // ANCHOR_END: here
 

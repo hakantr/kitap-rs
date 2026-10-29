@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 
-bir_ekle = { path = "../bir_ekle", package = "bir_ekle" }
+bir_ekle = { path = "../bir_ekle" }

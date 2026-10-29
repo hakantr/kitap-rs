@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling functions v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters)
+   Compiling fonksiyonlar v0.1.0 (file:///projects/fonksiyonlar)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
-     Running `target/debug/functions`
+     Running `target/debug/fonksiyonlar`
 x'in değeri: 5

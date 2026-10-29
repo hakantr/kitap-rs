@@ -19,13 +19,13 @@ fn main() {}
     assert_eq!(
         &result.unwrap(),
         r##"<figure class="listing" id="listing-1-2">
-<span class="file-name">Filename: src/main.rs</span>
+<span class="file-name">Dosya adı: src/main.rs</span>
 
 ````rust
 fn main() {}
 ````
 
-<figcaption><a href="#listing-1-2">Listing 1-2</a>: A write-up which <em>might</em> include inline Markdown like <code>code</code> etc.</figcaption>
+<figcaption><a href="#listing-1-2">Liste 1-2</a>: A write-up which <em>might</em> include inline Markdown like <code>code</code> etc.</figcaption>
 </figure>"##
     );
 }
@@ -57,7 +57,7 @@ src/main.rs
 fn main() {}
 ```
 
-Listing 1-2: A write-up which *might* include inline Markdown like `code` etc.
+Liste 1-2: A write-up which *might* include inline Markdown like `code` etc.
 
 Trailing text."#
     );
@@ -88,7 +88,7 @@ fn get_a_box_of<T>(t: T) -> Box<T> {
 }
 ````
 
-<figcaption><a href="#listing-34-5">Listing 34-5</a>: This has a <code>Box&lt;T&gt;</code> in it.</figcaption>
+<figcaption><a href="#listing-34-5">Liste 34-5</a>: This has a <code>Box&lt;T&gt;</code> in it.</figcaption>
 </figure>"##
     );
 }
@@ -118,7 +118,7 @@ Save the file and go back to your terminal window"#,
         r##"Now open the *main.rs* file you just created and enter the code in Listing 1-1.
 
 <figure class="listing" id="listing-1-1">
-<span class="file-name">Filename: main.rs</span>
+<span class="file-name">Dosya adı: main.rs</span>
 
 ````rust
 fn main() {
@@ -126,7 +126,7 @@ fn main() {
 }
 ````
 
-<figcaption><a href="#listing-1-1">Listing 1-1</a>: A program that prints <code>Hello, world!</code></figcaption>
+<figcaption><a href="#listing-1-1">Liste 1-1</a>: A program that prints <code>Hello, world!</code></figcaption>
 </figure>
 
 Save the file and go back to your terminal window"##
@@ -161,7 +161,7 @@ This is the closing."#,
 fn main() {}
 ````
 
-<figcaption><a href="#listing-1-1">Listing 1-1</a>: This is the caption</figcaption>
+<figcaption><a href="#listing-1-1">Liste 1-1</a>: This is the caption</figcaption>
 </figure>
 
 This is the closing."##
@@ -185,7 +185,7 @@ fn main() {}
     assert_eq!(
         result.unwrap(),
         r#"<figure class="listing">
-<span class="file-name">Filename: src/main.rs</span>
+<span class="file-name">Dosya adı: src/main.rs</span>
 
 ````rust
 fn main() {}

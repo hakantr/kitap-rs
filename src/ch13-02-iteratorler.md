@@ -1,10 +1,15 @@
-## Yineleyiciler (Iterators) ile Bir Dizi Ögeyi (Item) İşlemek
+<!-- Old headings. Do not remove or links may break. -->
 
-Yineleyici deseni (iterator pattern), bir dizi öge üzerinde sırayla bazı görevleri (task) yerine getirmenize olanak tanır. Bir yineleyici, her bir öge üzerinde yineleme yapma ve dizinin (sequence) ne zaman bittiğini belirleme mantığından sorumludur. Yineleyicileri kullandığınızda bu mantığı kendiniz yeniden uygulamak (reimplement) zorunda kalmazsınız.
+<a id="processing-a-series-of-items-with-iterators"></a>
+<a id="yineleyiciler-iterators-ile-bir-dizi-ögeyi-item-işlemek"></a>
 
-Rust'ta yineleyiciler _tembeldir_ (lazy), yani siz yineleyiciyi tüketmek (consume) ve kullanmak (use it up) için metotlar çağırana kadar hiçbir etkileri yoktur. Örneğin, Liste 13-10'daki kod `Vec<T>` üzerinde tanımlı olan `iter` metodunu çağırarak `v1` vektöründeki ögeler üzerinde bir yineleyici yaratır. Bu kod tek başına yararlı hiçbir şey yapmaz.
+## İteratörlerle Bir Dizi Öğeyi İşleme
 
-<Listing number="13-10" file-name="src/main.rs" caption="Bir yineleyici oluşturmak">
+*İteratör (yineleyici / iterator)* deseni, bir dizi öğe üzerinde sırayla belirli bir işlemi gerçekleştirmenize olanak tanır. Bir iteratör, her bir öğe üzerinde ilerleme ve dizinin ne zaman sona erdiğini belirleme mantığından sorumludur. İteratörleri kullandığınızda bu mantığı her seferinde kendiniz yeniden uygulamak zorunda kalmazsınız.
+
+Rust'ta iteratörler _tembeldir (lazy)_; yani iteratörü tüketip sonuna kadar kullanan metotları çağırana kadar hiçbir etkileri olmaz. Örneğin Liste 13-10'daki kod, `Vec<T>` üzerinde tanımlı `iter` metodunu çağırarak `v1` vektöründeki öğeler üzerinde bir iteratör oluşturur. Bu kod tek başına yararlı bir iş yapmaz.
+
+<Listing number="13-10" file-name="src/main.rs" caption="Bir iteratör oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-10/src/main.rs:here}}
@@ -12,11 +17,11 @@ Rust'ta yineleyiciler _tembeldir_ (lazy), yani siz yineleyiciyi tüketmek (consu
 
 </Listing>
 
-Yineleyici `v1_iter` değişkeninde saklanır. Bir yineleyici oluşturduğumuzda, onu çeşitli şekillerde kullanabiliriz. Liste 3-5'te, bir dizideki (array) her bir öge üzerinde kod çalıştırmak için bir `for` döngüsü kullanarak dizi üzerinde yineleme yapmıştık. Arka planda bu, örtük olarak bir yineleyici yarattı ve sonra onu tüketti, ancak bunun tam olarak nasıl çalıştığının üstünkörü geçmiştik.
+Oluşturulan iteratör `v1_iter` değişkeninde saklanır. Bir iteratör oluşturduktan sonra onu çeşitli şekillerde kullanabiliriz. Liste 3-5'te, bir dizinin her bir öğesi üzerinde kod çalıştırmak için `for` döngüsü kullanarak dizi boyunca ilerlemiştik. Arka planda bu döngü örtük olarak bir iteratör oluşturup ardından onu tüketmişti; ancak bunun tam olarak nasıl çalıştığını şimdiye dek ayrıntısına girmeden geçmiştik.
 
-Liste 13-11'deki örnekte, yineleyicinin oluşturulmasını, yineleyicinin `for` döngüsünde kullanımından ayırıyoruz. `for` döngüsü `v1_iter` içindeki yineleyici kullanılarak çağrıldığında, yineleyicideki her bir eleman, döngünün her bir iterasyonunda (iteration) kullanılır ve bu da her bir değeri ekrana yazdırır.
+Liste 13-11'deki örnekte, iteratörün oluşturulmasını `for` döngüsü içinde kullanımından ayırıyoruz. `for` döngüsü `v1_iter` içindeki iteratörle çalıştırıldığında, iteratördeki her bir öğe döngünün bir adımında (iterasyonunda) kullanılır ve her değer ekrana yazdırılır.
 
-<Listing number="13-11" file-name="src/main.rs" caption="`for` döngüsünde bir yineleyici kullanmak">
+<Listing number="13-11" file-name="src/main.rs" caption="Bir iteratörü `for` döngüsünde kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-11/src/main.rs:here}}
@@ -24,13 +29,18 @@ Liste 13-11'deki örnekte, yineleyicinin oluşturulmasını, yineleyicinin `for`
 
 </Listing>
 
-Standart kütüphanelerinde (standard libraries) yineleyici bulunmayan dillerde, aynı işlevselliği muhtemelen 0 indeksinden (index) başlayan bir değişken oluşturarak, bir değeri almak üzere vektöre indeksleme yapmak için bu değişkeni kullanarak ve değişkendeki değeri, vektördeki ögelerin toplam sayısına ulaşana kadar bir döngü içerisinde artırarak yazardınız.
+Standart kütüphanelerinde iteratör bulunmayan dillerde aynı işlevselliği muhtemelen 0 indeksinden başlayan bir sayaç değişkeni tanımlayarak, vektörden değer okumak için bu değişkenle indeksleme yaparak ve sayaç vektördeki toplam öğe sayısına ulaşana dek döngü içinde değişkenin değerini artırarak yazardınız.
 
-Yineleyiciler, hata yapma ihtimaliniz olan tekrarlayan kodları ortadan kaldırarak tüm bu mantığı sizin için halleder. Yineleyiciler, yalnızca vektörler gibi indeksleyebileceğiniz (index into) veri yapılarıyla (data structures) değil, pek çok farklı türdeki diziyle (sequence) aynı mantığı kullanmanız için size daha fazla esneklik sağlar. Yineleyicilerin bunu nasıl yaptığına bakalım.
+İteratörler tüm bu mantığı sizin yerinize üstlenerek hata yapmaya açık, kendini tekrarlayan kodları azaltır. Üstelik yalnızca vektörler gibi indekslenebilen veri yapılarıyla değil, çok farklı türdeki öğe dizileriyle de aynı mantığı kullanabilmeniz için size büyük esneklik kazandırır. Gelin iteratörlerin bunu nasıl başardığını inceleyelim.
 
-### `Iterator` Trait'i (Özelliği) ve `next` (Sonraki) Metodu
+<!-- Old headings. Do not remove or links may break. -->
 
-Tüm yineleyiciler standart kütüphanede tanımlanan `Iterator` adlı bir trait'i uygular. Trait'in tanımı şuna benzer:
+<a id="the-iterator-trait-and-the-next-method"></a>
+<a id="iterator-traiti-özelliği-ve-next-sonraki-metodu"></a>
+
+### `Iterator` Trait'i ve `next` Metodu
+
+Tüm iteratörler standart kütüphanede tanımlanan `Iterator` adlı bir trait'i uygular. Bu trait'in tanımı şöyledir:
 
 ```rust
 pub trait Iterator {
@@ -38,17 +48,17 @@ pub trait Iterator {
 
     fn next(&mut self) -> Option<Self::Item>;
 
-    // varsayılan (default) uygulamalara sahip metotlar atlanmıştır
+    // varsayılan uygulamaya sahip metotlar gösterilmemiştir
 }
 ```
 
-Bu tanımın bazı yeni sözdizimleri kullandığına dikkat edin: `type Item` ve `Self::Item` (Bölüm 20'de ilişkili türler hakkında derinlemesine konuşacağız). Şimdilik bilmeniz gereken tek şey, bu kodun, `Iterator` trait'ini uygulamanın bir `Item` (Öge) türü de tanımlamanızı gerektirdiğini ve bu `Item` türünün `next` (sonraki) metodunun dönüş türünde kullanıldığını söylediğidir. Başka bir deyişle, `Item` türü, yineleyiciden döndürülecek tür olacaktır.
+Bu tanımda yeni bir sözdizimi kullanıldığına dikkat edin: `type Item` ve `Self::Item`, bu trait ile bağlantılı bir *ilişkili tür (associated type)* tanımlar. İlişkili türleri Bölüm 20'de derinlemesine ele alacağız. Şimdilik bilmeniz gereken tek şey, bu kodun `Iterator` trait'ini uygularken aynı zamanda bir `Item` türü tanımlamanızı zorunlu kıldığı ve bu `Item` türünün `next` metodunun dönüş türünde kullanıldığıdır. Başka bir deyişle `Item` türü, iteratörden döndürülecek öğelerin türü olacaktır.
 
-`Iterator` trait'i, uygulayıcıların (implementors) yalnızca bir metodu tanımlamasını gerektirir: her seferinde yineleyicinin bir ögesini `Some` içine sarılmış olarak döndüren ve yineleme bittiğinde `None` döndüren `next` metodu.
+`Iterator` trait'i, onu uygulayan türlerin yalnızca tek bir metodu tanımlamasını gerektirir: her çağrıldığında iteratörün sıradaki bir öğesini `Some` içine sarılmış olarak döndüren, yineleme sona erdiğinde ise `None` döndüren `next` metodu.
 
-Yineleyiciler üzerinde doğrudan `next` metodunu çağırabiliriz; Liste 13-12, vektörden oluşturulan yineleyici üzerinde yapılan tekrarlı `next` çağrılarından hangi değerlerin döndürüldüğünü gösterir.
+İteratörler üzerinde `next` metodunu doğrudan çağırabiliriz; Liste 13-12, vektörden oluşturulan iteratör üzerinde art arda yapılan `next` çağrılarının hangi değerleri döndürdüğünü göstermektedir.
 
-<Listing number="13-12" file-name="src/lib.rs" caption="Bir yineleyici üzerinde `next` metodu çağırmak">
+<Listing number="13-12" file-name="src/lib.rs" caption="Bir iteratör üzerinde `next` metodunu çağırmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-12/src/lib.rs:here}}
@@ -56,17 +66,28 @@ Yineleyiciler üzerinde doğrudan `next` metodunu çağırabiliriz; Liste 13-12,
 
 </Listing>
 
-`v1_iter`'i değiştirilebilir yapmamız gerektiğine dikkat edin: Bir yineleyici üzerinde `next` metodunu çağırmak, yineleyicinin dizide (sequence) nerede olduğunu takip etmek (keep track) için kullandığı iç durumu (internal state) değiştirir. Diğer bir deyişle bu kod yineleyiciyi _tüketir_ veya kullanır. `next`'e yapılan her çağrı yineleyiciden bir öge tüketir. Bir `for` döngüsü kullandığımızda `v1_iter`'i `mut` (değiştirilebilir) yapmamıza gerek kalmamıştı, çünkü döngü `v1_iter`'in sahipliğini almış ve arka planda onu değiştirilebilir hale getirmişti.
+`v1_iter` değişkenini değiştirilebilir (`mut`) olarak tanımlamamız gerektiğine dikkat edin: Bir iteratör üzerinde `next` metodunu çağırmak, iteratörün dizinin neresinde kaldığını takip etmek için tuttuğu iç durumu değiştirir. Başka bir deyişle bu kod iteratörü _tüketir_, yani sonuna dek harcar. Her `next` çağrısı iteratörden bir öğeyi alıp tüketir. `for` döngüsü kullandığımızda ise `v1_iter`'i `mut` yapmamıza gerek kalmamıştı; çünkü döngü `v1_iter`'in sahipliğini almış ve arka planda onu değiştirilebilir hale getirmişti.
 
-Ayrıca `next` çağrılarından aldığımız değerlerin vektördeki değerlere değiştirilemez referanslar (immutable references) olduğuna dikkat edin. `iter` metodu, değiştirilemez referanslar üzerinde bir yineleyici üretir. Eğer `v1`'in sahipliğini alan ve sahip olunan değerler (owned values) döndüren bir yineleyici oluşturmak istiyorsak, `iter` yerine `into_iter` çağırabiliriz. Benzer şekilde, eğer değiştirilebilir referanslar (mutable references) üzerinde yineleme yapmak istiyorsak `iter` yerine `iter_mut` çağırabiliriz.
+Ayrıca `next` çağrılarından elde ettiğimiz değerlerin vektördeki değerlere değiştirilemez referanslar olduğuna dikkat edin. `iter` metodu, değiştirilemez referanslar üreten bir iteratör oluşturur. Eğer `v1`'in sahipliğini alan ve doğrudan sahip olunan değerler döndüren bir iteratör oluşturmak istersek `iter` yerine `into_iter` çağırabiliriz. Benzer şekilde, değiştirilebilir referanslar üzerinde ilerlemek istersek `iter` yerine `iter_mut` çağırabiliriz.
 
-### Yineleyiciyi Tüketen (Consume) Metotlar
+> Not: Rust koleksiyonlarında (`Vec<T>`, `[T; N]`, `HashMap<K, V>` vb.) iteratör oluşturmanın bu üç yolu, sahiplik ve ödünç alma kurallarıyla birebir örtüşür ve `for` döngüsü sözdizimiyle doğrudan eşleşir:
+>
+> - **`v.iter()`** ↔ **`for x in &v`**: Öğeleri değiştirilemez olarak ödünç alır (`Item = &T`). Koleksiyon okunur; döngü bittikten sonra `v` olduğu gibi kullanılmaya devam edilebilir.
+> - **`v.iter_mut()`** ↔ **`for x in &mut v`**: Öğeleri değiştirilebilir olarak ödünç alır (`Item = &mut T`). Öğeler yerinde güncellenebilir (`*x += 1` gibi) ve döngü sonrasında `v` varlığını korur.
+> - **`v.into_iter()`** ↔ **`for x in v`**: Koleksiyonun sahipliğini alır ve onu tüketir (`Item = T`). Öğelerin sahipliği tek tek dışarı taşınır; döngüden sonra `v` artık kullanılamaz (`for` döngüsü arka planda `IntoIterator` trait'i üzerinden `into_iter` çağırır).
 
-`Iterator` trait'i, standart kütüphane tarafından sağlanan varsayılan uygulamalara (default implementations) sahip bir dizi farklı metoda sahiptir; bu metotlar hakkında standart kütüphane API belgelerinde `Iterator` trait'i altına bakarak bilgi edinebilirsiniz. Bu metotlardan bazıları tanımlarında `next` metodunu çağırırlar ki bu da `Iterator` trait'ini uygularken `next` metodunu uygulamanız gerekmesinin nedenidir.
+<!-- Old headings. Do not remove or links may break. -->
 
-`next`'i çağıran metotlara _tüketici adaptörler_ (consuming adapters) adı verilir çünkü onları çağırmak yineleyiciyi tüketir. Buna bir örnek, yineleyicinin sahipliğini alan ve art arda `next` çağırarak ögeler üzerinde yineleme yapan ve böylece yineleyiciyi tüketen `sum` (toplam) metodudur. Yineleme yaptıkça her bir ögeyi çalışan bir toplama ekler ve yineleme tamamlandığında toplamı döndürür. Liste 13-13, `sum` metodunun kullanımını gösteren bir teste sahiptir.
+<a id="methods-that-consume-the-iterator"></a>
+<a id="yineleyiciyi-tüketen-consume-metotlar"></a>
 
-<Listing number="13-13" file-name="src/lib.rs" caption="Yineleyicideki tüm ögelerin toplamını almak için `sum` metodunu çağırmak">
+### İteratörü Tüketen Metotlar
+
+`Iterator` trait'i, standart kütüphane tarafından varsayılan uygulamaları sağlanmış pek çok farklı metoda sahiptir; bu metotların tamamını standart kütüphane API belgelerindeki `Iterator` trait'i sayfasında inceleyebilirsiniz. Bu metotlardan bazıları kendi tanımları içinde `next` metodunu çağırır; kendi türünüz için `Iterator` trait'ini uygularken `next` metodunu tanımlamanızın zorunlu olmasının nedeni de budur.
+
+`next` metodunu çağıran bu metotlara _tüketen adaptörler (consuming adapters)_ adı verilir; çünkü bunları çağırmak iteratörü sonuna kadar kullanıp tüketir. Bunun bir örneği `sum` metodudur: İteratörün sahipliğini alır ve art arda `next` çağırarak öğeler üzerinde ilerler, dolayısıyla iteratörü tüketir. İlerledikçe her bir öğeyi ara toplama ekler ve yineleme tamamlandığında genel toplamı döndürür. Liste 13-13, `sum` metodunun kullanımını gösteren bir test içermektedir.
+
+<Listing number="13-13" file-name="src/lib.rs" caption="İteratördeki tüm öğelerin toplamını almak için `sum` metodunu çağırmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-13/src/lib.rs:here}}
@@ -74,15 +95,20 @@ Ayrıca `next` çağrılarından aldığımız değerlerin vektördeki değerler
 
 </Listing>
 
-`sum` çağrısından sonra `v1_iter`'i kullanmamıza izin verilmez, çünkü `sum` üzerinde çağırdığımız yineleyicinin sahipliğini alır.
+`sum` metodu üzerinde çağrıldığı iteratörün sahipliğini aldığı için, `sum` çağrısından sonra `v1_iter`'i tekrar kullanmamıza izin verilmez.
 
-### Başka Yineleyiciler (Iterators) Üreten Metotlar
+<!-- Old headings. Do not remove or links may break. -->
 
-_Yineleyici adaptörleri_ (Iterator adapters), `Iterator` trait'inde tanımlanan ve yineleyiciyi tüketmeyen metotlardır. Bunun yerine, orijinal yineleyicinin bazı özelliklerini değiştirerek farklı yineleyiciler üretirler.
+<a id="methods-that-produce-other-iterators"></a>
+<a id="başka-yineleyiciler-iterators-üreten-metotlar"></a>
 
-Liste 13-14, ögeler yinelendikçe her bir öge için çağrılacak bir kapanış alan `map` (haritalandır) yineleyici adaptörü metodunun çağrılmasına bir örnek gösterir. `map` metodu, değiştirilen ögeleri üreten yeni bir yineleyici döndürür. Buradaki kapanış, vektördeki her bir ögenin 1 artırılacağı yeni bir yineleyici oluşturur.
+### Başka İteratörler Üreten Metotlar
 
-<Listing number="13-14" file-name="src/main.rs" caption="Yeni bir yineleyici oluşturmak için `map` yineleyici adaptörünü çağırmak">
+_İteratör adaptörleri (iterator adapters)_, `Iterator` trait'i üzerinde tanımlanan ve iteratörü tüketmeyen metotlardır. Bunun yerine orijinal iteratörün belirli bir yönünü değiştirerek yeni ve farklı iteratörler üretirler.
+
+Liste 13-14, öğeler üzerinde ilerlenirken her bir öğe için çağrılacak bir kapanış alan `map` iteratör adaptörünün kullanımını göstermektedir. `map` metodu, değiştirilmiş öğeleri üreten yeni bir iteratör döndürür. Buradaki kapanış, vektördeki her bir öğenin 1 artırılacağı yeni bir iteratör oluşturur.
+
+<Listing number="13-14" file-name="src/main.rs" caption="Yeni bir iteratör oluşturmak için `map` iteratör adaptörünü çağırmak">
 
 ```rust,not_desired_behavior
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-14/src/main.rs:here}}
@@ -90,19 +116,19 @@ Liste 13-14, ögeler yinelendikçe her bir öge için çağrılacak bir kapanı�
 
 </Listing>
 
-Ancak bu kod bir uyarı üretir:
+Ancak bu kod derlendiğinde bir uyarı üretir:
 
 ```console
 {{#include ../listings/ch13-functional-features/listing-13-14/output.txt}}
 ```
 
-Liste 13-14'teki kod hiçbir şey yapmaz; belirttiğimiz kapanış asla çağrılmaz. Uyarı bize bunun nedenini hatırlatıyor: Yineleyici adaptörleri tembeldir (lazy) ve bizim yineleyiciyi burada tüketmemiz gerekir.
+Liste 13-14'teki kod gerçekte hiçbir iş yapmaz; belirttiğimiz kapanış hiçbir zaman çağrılmaz. Derleyici uyarısı (`iterators are lazy and do nothing unless consumed` — *"iteratörler tembeldir ve tüketilmedikçe hiçbir şey yapmaz"*) bize bunun nedenini hatırlatır: İteratör adaptörleri tembeldir ve sonuç elde etmek için iteratörü burada tüketmemiz gerekir.
 
-Bu uyarıyı düzeltmek ve yineleyiciyi tüketmek için, Liste 12-1'de `env::args` ile kullandığımız `collect` (topla) metodunu kullanacağız. Bu metot yineleyiciyi tüketir ve ortaya çıkan değerleri bir koleksiyon veri tipine toplar.
+Bu uyarıyı gidermek ve iteratörü tüketmek için, Liste 12-1'de `env::args` ile birlikte kullandığımız `collect` metodundan yararlanacağız. Bu metot iteratörü tüketir ve üretilen değerleri bir koleksiyon veri türünde toplar.
 
-Liste 13-15'te, `map` (haritalandır) çağrısından dönen yineleyici üzerinde yineleme yapmanın sonuçlarını bir vektörde topluyoruz. Bu vektör sonuç olarak orijinal vektördeki her bir ögenin 1 artırılmış halini barındıracaktır.
+Liste 13-15'te, `map` çağrısından dönen iteratör üzerindeki yineleme sonuçlarını bir vektörde topluyoruz. Elde edilen bu vektör, orijinal vektördeki her bir öğenin 1 artırılmış halini içerir.
 
-<Listing number="13-15" file-name="src/main.rs" caption="Yeni bir yineleyici oluşturmak için `map` metodunu ve ardından yeni yineleyiciyi tüketip bir vektör oluşturmak için `collect` metodunu çağırmak">
+<Listing number="13-15" file-name="src/main.rs" caption="Yeni bir iteratör oluşturmak için `map` metodunu, ardından yeni iteratörü tüketip bir vektör oluşturmak için `collect` metodunu çağırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-15/src/main.rs:here}}
@@ -110,23 +136,30 @@ Liste 13-15'te, `map` (haritalandır) çağrısından dönen yineleyici üzerind
 
 </Listing>
 
-`map` bir kapanış aldığından, her bir öge üzerinde gerçekleştirmek istediğimiz herhangi bir işlemi belirtebiliriz. Bu, kapanışların `Iterator` trait'inin sağladığı yineleme davranışını yeniden kullanırken bazı davranışları özelleştirmenize (customize) nasıl olanak tanıdığının harika bir örneğidir.
+`map` bir kapanış aldığından, her bir öğe üzerinde gerçekleştirmek istediğimiz herhangi bir işlemi belirtebiliriz. Bu durum, `Iterator` trait'inin sağladığı yineleme davranışını yeniden kullanırken kapanışların belirli davranışları özelleştirmenize nasıl olanak tanıdığını gösteren harika bir örnektir.
 
-Karmaşık eylemleri okunabilir bir şekilde gerçekleştirmek için birden fazla yineleyici adaptörü (iterator adapters) çağrısını birbirine zincirleyebilirsiniz. Ancak tüm yineleyiciler tembel olduğundan, yineleyici adaptörlerine yapılan çağrılardan sonuç almak için tüketen adaptör (consuming adapter) metotlarından birini çağırmalısınız.
+Karmaşık işlemleri okunabilir bir biçimde gerçekleştirmek için birden fazla iteratör adaptörü çağrısını birbirine zincirleyebilirsiniz. Ancak tüm iteratörler tembel olduğundan, iteratör adaptörü çağrılarından somut sonuçlar elde etmek için zincirin sonunda mutlaka tüketen adaptör metotlarından birini çağırmanız gerekir.
+
+> Not: **İteratör Adaptörleri ile Tüketen Adaptörler Arasındaki Fark**: Bir iteratör hattını kurarken metotları iki gruba ayırmak zihinsel modeli çok netleştirir:
+>
+> - **İteratör adaptörleri** (`map`, `filter`, `take`, `skip`, `enumerate`, `zip` vb.) hattın *ara halkalarıdır*: Yalnızca yapılacak dönüşümün tarifini taşıyan yeni bir iteratör sarmalayıcısı (örneğin `Map` veya `Filter` struct'ı) döndürürler; tek başlarına `next` çağırmaz ve hiçbir öğeyi işlemezler. Standart kütüphanede bu türler `#[must_use]` niteliğiyle işaretlendiğinden, zinciri tüketmeyi unuttuğunuzda derleyici `unused_must_use` uyarısıyla sizi uyarır.
+> - **Tüketen adaptörler** (`collect`, `sum`, `count`, `for_each`, `any`, `all`, `find` vb. ya da bir `for` döngüsü) hattın *son halkasıdır*: Arka planda `next` metodunu tekrar tekrar çağırarak tüm zinciri harekete geçirir ve nihai sonucu üretir. Ayrıca `collect` yalnızca `Vec<T>` değil, `String` veya `HashMap<K, V>` gibi pek çok farklı koleksiyon üretebildiğinden, Liste 13-15'teki `let v2: Vec<_>` gibi bir tür açıklamasıyla hedef koleksiyonu belirtmek (öğe türünü `_` ile yine derleyiciye bırakarak) yaygın bir Rust deyimidir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-closures-that-capture-their-environment"></a>
+<a id="closures-that-capture-their-environment"></a>
+<a id="ortamlarını-yakalayan-kapanışlar-closures-that-capture-their-environment"></a>
 
-### Ortamlarını Yakalayan Kapanışlar (Closures That Capture Their Environment)
+### Çevrelerini Yakalayan Kapanışlar
 
-Birçok yineleyici adaptörü kapanışları argüman olarak alır ve yineleyici adaptörlerine argüman olarak belirteceğimiz kapanışlar genellikle ortamlarını yakalayan kapanışlar olacaktır.
+Pek çok iteratör adaptörü argüman olarak kapanış alır ve iteratör adaptörlerine argüman olarak vereceğimiz kapanışlar çoğu zaman kendi çevrelerini yakalayan kapanışlar olacaktır.
 
-Bu örnek için, bir kapanış alan `filter` (filtrele) metodunu kullanacağız. Kapanış, yineleyiciden bir öge alır ve bir `bool` (mantıksal değer) döndürür. Kapanış `true` (doğru) döndürürse, değer `filter` tarafından üretilen yinelemeye (iteration) dahil edilecektir. Kapanış `false` döndürürse değer dahil edilmeyecektir.
+Bu örnekte, argüman olarak bir kapanış alan `filter` metodunu kullanacağız. Kapanış iteratörden bir öğe alır ve bir `bool` döndürür. Kapanış `true` döndürürse değer, `filter` tarafından üretilen iteratöre dahil edilir; `false` döndürürse dahil edilmez.
 
-Liste 13-16'da, bir `Ayakkabi` struct örneği koleksiyonu üzerinde yineleme yapmak için `ayakkabi_numarasi` değişkenini ortamından yakalayan bir kapanış ile birlikte `filter`'ı (filtrele) kullanıyoruz. Yalnızca belirtilen numaradaki ayakkabıları döndürecektir.
+Liste 13-16'da, `Ayakkabi` struct örneklerinden oluşan bir koleksiyon üzerinde ilerlemek için çevresinden `ayakkabi_numarasi` değişkenini yakalayan bir kapanışla birlikte `filter` metodunu kullanıyoruz. Bu işlem yalnızca belirtilen numaradaki ayakkabıları döndürecektir.
 
-<Listing number="13-16" file-name="src/lib.rs" caption="`ayakkabi_numarasi`nı yakalayan bir kapanış ile `filter` metodunu kullanmak">
+<Listing number="13-16" file-name="src/lib.rs" caption="`ayakkabi_numarasi` değişkenini yakalayan bir kapanışla `filter` metodunu kullanmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-16/src/lib.rs}}
@@ -134,10 +167,10 @@ Liste 13-16'da, bir `Ayakkabi` struct örneği koleksiyonu üzerinde yineleme ya
 
 </Listing>
 
-`numaradaki_ayakkabilar` fonksiyonu, parametre olarak bir ayakkabı vektörünün (vector of shoes) ve bir ayakkabı numarasının sahipliğini alır. Yalnızca belirtilen numaranın olduğu ayakkabıları içeren bir vektör döndürür.
+`numaradaki_ayakkabilar` fonksiyonu, parametre olarak bir ayakkabı vektörünün sahipliğini ve bir ayakkabı numarasını alır. Yalnızca belirtilen numaradaki ayakkabıları içeren bir vektör döndürür.
 
-`numaradaki_ayakkabilar`'ın gövdesinde, vektörün sahipliğini alan bir yineleyici oluşturmak için `into_iter` çağırıyoruz. Ardından, bu yineleyiciyi yalnızca kapanışın `true` (doğru) değerini döndürdüğü ögeleri barındıran yeni bir yineleyiciye uyarlamak (adapt) için `filter` çağırıyoruz.
+`numaradaki_ayakkabilar` fonksiyonunun gövdesinde, vektörün sahipliğini alan bir iteratör oluşturmak için `into_iter` çağırıyoruz. Ardından bu iteratörü, yalnızca kapanışın `true` döndürdüğü öğeleri barındıran yeni bir iteratöre uyarlamak üzere `filter` çağırıyoruz (`into_iter` öğelerin sahipliğini taşısa da `filter`, öğeyi tutup tutmayacağına karar verirken onu henüz tüketmemek için kapanışa öğenin referansını aktarır).
 
-Kapanış, ortamdan `ayakkabi_numarasi` parametresini yakalar (captures) ve bu değeri her ayakkabının numarasıyla karşılaştırarak yalnızca belirtilen numara olan ayakkabıları tutar. Son olarak `collect` komutunu çağırmak, uyarlanmış yineleyicinin döndürdüğü değerleri fonksiyonun döndürdüğü bir vektörde toplar.
+Kapanış, çevreden `ayakkabi_numarasi` parametresini yakalar ve bu değeri her bir ayakkabının numarasıyla karşılaştırarak yalnızca belirtilen numaradaki ayakkabıları tutar. Son olarak `collect` çağrısı, uyarlanmış iteratörün ürettiği değerleri fonksiyon tarafından döndürülecek bir vektörde toplar.
 
-Test, `numaradaki_ayakkabilar` metodunu çağırdığımızda sadece belirlediğimiz değerle aynı numaraya sahip olan ayakkabıların geri döndüğünü gösterir.
+Test, `numaradaki_ayakkabilar` fonksiyonunu çağırdığımızda yalnızca belirttiğimiz değerle aynı numaraya sahip ayakkabıların geri döndüğünü göstermektedir.

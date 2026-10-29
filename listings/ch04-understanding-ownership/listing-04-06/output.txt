@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling ownership v0.1.0 ($PROJE/listings/ch04-understanding-ownership/listing-04-06)
+   Compiling ownership v0.1.0 (file:///projects/ownership)
 error[E0596]: cannot borrow `*bir_metin` as mutable, as it is behind a `&` reference
  --> src/main.rs:8:5
   |

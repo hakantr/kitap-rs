@@ -1,6 +1,6 @@
 /// Verilen sayıya bir ekler.
 ///
-/// # Ornekler
+/// # Örnekler
 ///
 /// ```
 /// let girdi = 5;

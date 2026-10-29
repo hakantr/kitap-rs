@@ -9,6 +9,6 @@ impl fmt::Display for Sarmalayici {
 }
 
 fn main() {
-    let w = Sarmalayici(vec![String::from("dunya"), String::from("Rust")]);
+    let w = Sarmalayici(vec![String::from("merhaba"), String::from("dünya")]);
     println!("w = {w}");
 }

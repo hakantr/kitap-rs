@@ -21,6 +21,16 @@ fn with_note() {
 }
 
 #[test]
+fn with_turkish_note() {
+    let text = "> Not: Bu bir Türkçe nottur.\n> Devam ediyor.";
+    let processed = rewrite(text);
+    assert_eq!(
+        render_markdown(&processed),
+        "<section class=\"note\" aria-role=\"note\">\n<p>Not: Bu bir Türkçe nottur.\nDevam ediyor.</p>\n</section>"
+    );
+}
+
+#[test]
 fn regular_blockquote() {
     let text = "> This is some text.\n> It keeps going.";
     let processed = rewrite(text);

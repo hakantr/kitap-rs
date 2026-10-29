@@ -1,6 +1,11 @@
-## Komut Satırı Argümanlarını Kabul Etmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="accepting-command-line-arguments"></a>
+<a id="komut-satırı-argümanlarını-kabul-etmek"></a>
+<a id="komut-satiri-argumanlarini-kabul-etmek"></a>
 
-Her zaman olduğu gibi `cargo new` ile yeni bir proje oluşturalım. Sisteminizde zaten var olabilecek `grep` aracından ayırt etmek için projemize `minigrep` adını vereceğiz:
+## Komut Satırı Argümanlarını Kabul Etme
+
+Her zaman olduğu gibi `cargo new` komutuyla yeni bir proje oluşturalım. Sisteminizde halihazırda kurulu olabilecek `grep` aracından ayırt edebilmek için projemize `minigrep` adını vereceğiz:
 
 ```console
 $ cargo new minigrep
@@ -8,21 +13,26 @@ $ cargo new minigrep
 $ cd minigrep
 ```
 
-İlk görev `minigrep`'in iki komut satırı argümanını kabul etmesini sağlamaktır: dosya yolu ve aranacak string (dizgi). Yani, programımızı `cargo run` ile, sonraki argümanların `cargo` için değil programımız için olduğunu belirtmek için iki tire (`--`), aranacak string ve içinde aranacak dosyanın yolu ile şu şekilde çalıştırabilmek istiyoruz:
+İlk görevimiz, `minigrep` aracının iki komut satırı argümanını kabul etmesini sağlamaktır: dosya yolu ve aranacak string. Başka bir deyişle programımızı `cargo run` komutu, ardından gelen argümanların `cargo` yerine programımıza ait olduğunu belirten iki tire (`--`), aranacak string ve içinde arama yapılacak dosyanın yoluyla şu şekilde çalıştırabilmek istiyoruz:
 
 ```console
 $ cargo run -- aranacakstring ornek-dosyaadi.txt
 ```
 
-Şu anda `cargo new` tarafından üretilen program verdiğimiz argümanları işleyemez. [crates.io](https://crates.io/)'daki mevcut bazı kütüphaneler komut satırı argümanlarını kabul eden bir program yazmaya yardımcı olabilir, ancak bu kavramı yeni öğrendiğiniz için bu yeteneği kendimiz uygulayalım.
+Şu anda `cargo new` tarafından oluşturulan program, kendisine verdiğimiz argümanları işleyemez. [crates.io](https://crates.io/) üzerinde komut satırı argümanlarını kabul eden bir program yazmayı kolaylaştıran hazır kütüphaneler bulunsa da bu kavramı yeni öğrendiğiniz için bu özelliği kendimiz uygulayalım.
 
-### Argüman Değerlerini Okumak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="reading-the-argument-values"></a>
+<a id="argüman-değerlerini-okumak"></a>
+<a id="arguman-degerlerini-okumak"></a>
 
-`minigrep`'in ona ilettiğimiz komut satırı argümanlarının değerlerini okumasını sağlamak için, Rust'ın standart kütüphanesinde sağlanan `std::env::args` fonksiyonuna ihtiyacımız olacak. Bu fonksiyon, `minigrep`'e iletilen komut satırı argümanlarının bir yineleyicisini döndürür. Yineleyicileri (iteratörleri) [Bölüm 13][ch13]<!-- ignore -->'te tam olarak ele alacağız. Şimdilik yineleyiciler hakkında yalnızca iki ayrıntı bilmeniz gerekir: Yineleyiciler bir dizi değer üretir ve yineleyicinin ürettiği tüm öğeleri barındıran vektör gibi bir koleksiyona dönüştürmek için yineleyici üzerinde `collect` (topla) metodunu çağırabiliriz.
+### Argüman Değerlerini Okuma
 
-Liste 12-1'deki kod, `minigrep` programınızın kendisine aktarılan tüm komut satırı argümanlarını okumasını ve ardından değerleri bir vektörde toplamasını sağlar.
+`minigrep`'in kendisine ilettiğimiz komut satırı argümanlarının değerlerini okuyabilmesi için Rust standart kütüphanesinde yer alan `std::env::args` fonksiyonuna ihtiyacımız vardır. Bu fonksiyon, `minigrep`'e aktarılan komut satırı argümanları üzerinde bir *iteratör (yineleyici)* döndürür. İteratörleri [Bölüm 13][ch13]<!-- ignore -->'te ayrıntılı olarak ele alacağız. Şimdilik iteratörler hakkında yalnızca iki ayrıntıyı bilmeniz yeterlidir: İteratörler bir dizi değer üretir ve bir iteratör üzerinde `collect` metodunu çağırarak onu, ürettiği tüm öğeleri barındıran vektör gibi bir koleksiyona dönüştürebiliriz.
 
-<Listing number="12-1" file-name="src/main.rs" caption="Komut satırı argümanlarını bir vektöre toplamak ve yazdırmak">
+Liste 12-1'deki kod, `minigrep` programınızın kendisine aktarılan tüm komut satırı argümanlarını okumasını ve ardından bu değerleri bir vektörde toplamasını sağlar.
+
+<Listing number="12-1" file-name="src/main.rs" caption="Komut satırı argümanlarını bir vektörde toplama ve yazdırma">
 
 ```rust
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-01/src/main.rs}}
@@ -30,15 +40,17 @@ Liste 12-1'deki kod, `minigrep` programınızın kendisine aktarılan tüm komut
 
 </Listing>
 
-İlk olarak, `args` (argümanlar) fonksiyonunu kullanabilmek için `use` ifadesiyle `std::env` modülünü kapsama dahil ediyoruz. `std::env::args` fonksiyonunun iki seviyeli modüllerin içine yerleştirildiğine dikkat edin. [Bölüm 7][ch7-idiomatic-use]<!-- ignore -->'de tartıştığımız gibi, istenen fonksiyonun birden fazla modül içine yerleştirildiği durumlarda fonksiyon yerine ebeveyn modülü kapsama almayı seçtik. Bunu yaparak, `std::env`'deki diğer fonksiyonları kolayca kullanabiliriz. Ayrıca, `use std::env::args` eklemekten ve ardından fonksiyonu yalnızca `args` ile çağırmaktan daha az belirsizdir, çünkü `args` kolayca mevcut modülde tanımlanmış bir fonksiyon sanılabilir.
+İlk olarak, `args` fonksiyonunu kullanabilmek için bir `use` deyimiyle `std::env` modülünü kapsama dahil ediyoruz. `std::env::args` fonksiyonunun iç içe iki modül katmanında yer aldığına dikkat edin. [Bölüm 7][ch7-idiomatic-use]<!-- ignore -->'de ele aldığımız gibi, kullanmak istediğimiz fonksiyon birden fazla modül katmanının içinde yer aldığında doğrudan fonksiyonun kendisini değil, üst modülünü kapsama dahil etmeyi tercih ederiz. Böylece `std::env` içindeki diğer fonksiyonları da kolayca kullanabiliriz. Ayrıca bu yaklaşım, `use std::env::args` ekleyip fonksiyonu yalnızca `args` adıyla çağırmaktan çok daha nettir; çünkü tek başına `args` çağrısı kolaylıkla mevcut modülde tanımlanmış yerel bir fonksiyon sanılabilir.
 
 > ### `args` Fonksiyonu ve Geçersiz Unicode
 >
-> Herhangi bir argüman geçersiz Unicode içeriyorsa `std::env::args`'ın panikleyeceğini unutmayın. Programınızın geçersiz Unicode barındıran argümanları kabul etmesi gerekiyorsa, bunun yerine `std::env::args_os` kullanın. Bu fonksiyon, `String` değerleri yerine `OsString` değerleri üreten bir yineleyici döndürür. Basitlik adına burada `std::env::args` kullanmayı seçtik, çünkü `OsString` değerleri platforma göre farklılık gösterir ve üzerinde çalışılması `String` değerlerinden daha karmaşıktır.
+> Argümanlardan herhangi biri geçersiz Unicode içeriyorsa `std::env::args` fonksiyonunun panikleyeceğini unutmayın. Programınızın geçersiz Unicode barındıran argümanları da kabul etmesi gerekiyorsa bunun yerine `std::env::args_os` fonksiyonunu kullanın. Bu fonksiyon, `String` değerleri yerine `OsString` değerleri üreten bir iteratör döndürür. `OsString` değerleri platformdan platforma farklılık gösterdiği ve `String` değerlerine kıyasla kullanımı daha karmaşık olduğu için burada sadelik adına `std::env::args` kullanmayı tercih ettik. (Türkçe karakterler geçerli Unicode kodlamasına sahip olduğundan `std::env::args` Türkçe metin ve dosya adlarıyla sorunsuz çalışır; "geçersiz Unicode" durumu yalnızca UTF-8/UTF-16 kurallarına uymayan bozuk ham bayt dizilerinde ortaya çıkar.)
 
-`main` fonksiyonunun ilk satırında `env::args` çağırıyoruz ve yineleyiciyi, yineleyicinin ürettiği tüm değerleri barındıran bir vektöre dönüştürmek için hemen `collect` kullanıyoruz. Birçok türde koleksiyon oluşturmak için `collect` fonksiyonunu kullanabiliriz, bu nedenle stringlerden oluşan bir vektör istediğimizi belirtmek için `argumanlar` değişkeninin türünü açıkça açıklıyoruz. Rust'ta türleri açıklamanız çok nadiren gerekse de, Rust istediğiniz koleksiyon türünü çıkaramadığı için `collect` genellikle açıklamanız gereken bir fonksiyondur.
+`main` fonksiyonunun ilk satırında `env::args` fonksiyonunu çağırıyor ve döndürdüğü iteratörü, ürettiği tüm değerleri içeren bir vektöre dönüştürmek için hemen ardından `collect` metodunu kullanıyoruz. `collect` metoduyla pek çok farklı koleksiyon türü oluşturulabildiğinden, string'lerden oluşan bir vektör (`Vec<String>`) istediğimizi belirtmek için `argumanlar` değişkeninin türünü açıkça bildiriyoruz. Rust'ta değişkenlerin türünü açıkça belirtmeniz çok nadiren gerekse de derleyici hangi koleksiyon türünü istediğinizi tek başına çıkaramadığı için `collect`, tür bildirimi eklemeniz gereken başlıca metotlardan biridir.
 
-Son olarak, `dbg!` (hata ayıklama) makrosunu kullanarak vektörü yazdırıyoruz. Önce argüman olmadan sonra iki argümanla kodu çalıştırmayı deneyelim:
+> Not: `collect` metodu dönüş türü üzerinde jeneriktir ve standart kütüphanedeki `FromIterator` trait'ini uygulayan `Vec<String>`, `String` veya `HashSet<String>` gibi pek çok farklı tür üretebilir; bu yüzden hiçbir tür bilgisi vermezseniz derleyici `error[E0283]: type annotations needed` (*tür bildirimleri gerekli*) hatası üretir. Liste 12-1'deki `let argumanlar: Vec<String> = ...` yazımına alternatif olarak, öğe türünü derleyicinin çıkarmasına bırakan `let argumanlar: Vec<_> = env::args().collect();` biçimini ya da türü doğrudan metot çağrısında belirten *turbofish* sözdizimini (`let argumanlar = env::args().collect::<Vec<String>>();`) de sıkça görebilirsiniz.
+
+Son olarak hata ayıklama makrosu `dbg!` ile vektörü yazdırıyoruz. Kodu önce hiçbir argüman vermeden, ardından iki argümanla çalıştırmayı deneyelim:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-01/output.txt}}
@@ -48,13 +60,22 @@ Son olarak, `dbg!` (hata ayıklama) makrosunu kullanarak vektörü yazdırıyoru
 {{#include ../listings/ch12-an-io-project/output-only-01-with-args/output.txt}}
 ```
 
-Vektördeki ilk değerin `"target/debug/minigrep"` olduğuna dikkat edin; bu, bizim ikili dosyamızın adıdır. Bu, C'deki argüman listesinin davranışıyla eşleşerek, programların çalıştırılmalarında çağrıldıkları adı kullanmalarına izin verir. Mesajlarda program adını yazdırmak isterseniz veya programı çağırmak için hangi komut satırı takma adının kullanıldığına bağlı olarak programın davranışını değiştirmek isterseniz program ismine erişebilmek genellikle kullanışlıdır. Ancak bu bölümün amaçları doğrultusunda bunu görmezden geleceğiz ve yalnızca ihtiyacımız olan iki argümanı kaydedeceğiz.
+Vektördeki ilk değerin, ikili dosyamızın adı olan `"target/debug/minigrep"` olduğuna dikkat edin. Bu davranış, C dilindeki argüman listesi kuralıyla örtüşür ve programların çalıştırıldıkları adı çalışma sırasında öğrenmesine olanak tanır. Mesajlarda programın adını yazdırmak ya da programı çağırmak için kullanılan komut satırı takma adına göre programın davranışını değiştirmek istediğinizde program adına erişebilmek genellikle kullanışlıdır. Ancak bu bölümün amaçları doğrultusunda bu ilk değeri yok sayacak ve yalnızca ihtiyacımız olan iki argümanı kaydedeceğiz.
 
-### Argüman Değerlerini Değişkenlere Kaydetmek (Saving)
+> Not: İkinci komuttaki `--` ayırıcısı, Cargo'ya kendisinden sonra gelen argümanları Cargo seçeneği olarak yorumlamayıp doğrudan derlenen ikili dosyaya iletmesini söyler; örneğin programınıza `--help` gibi tireyle başlayan bir argüman göndermek istediğinizde `--` kullanmazsanız Cargo kendi yardım ekranını gösterir. Vektörün `argumanlar[0]` konumunda çalıştırılabilir dosya yolunun yer alması ise C ve POSIX standartlarındaki `argv[0]` geleneğinden gelir: Örneğin Linux'taki `busybox` veya Rust araç zincirini yöneten `rustup` gibi çok amaçlı ikili dosyalar, hangi sembolik bağlantı adıyla (`cargo`, `rustc`, `rustdoc` vb.) çağrıldıklarını bu ilk elemandan okuyarak tek bir ikili dosya üzerinden farklı araçlar gibi davranabilir.
 
-Program şu anda komut satırı argümanları olarak belirtilen değerlere erişebiliyor. Şimdi iki argümanın değerini, değerleri programın geri kalanı boyunca kullanabilmemiz için değişkenlere kaydetmemiz gerekiyor. Bunu Liste 12-2'de yapıyoruz.
+<!-- Old headings. Do not remove or links may break. -->
+<a id="saving-the-argument-values-in-variables"></a>
+<a id="argüman-değerlerini-değişkenlere-kaydetmek-saving"></a>
+<a id="arguman-degerlerini-degiskenlere-kaydetmek-saving"></a>
+<a id="argüman-değerlerini-değişkenlere-kaydetmek"></a>
+<a id="arguman-degerlerini-degiskenlere-kaydetmek"></a>
 
-<Listing number="12-2" file-name="src/main.rs" caption="Sorgu argümanını ve dosya yolu argümanını tutacak değişkenler oluşturmak">
+### Argüman Değerlerini Değişkenlere Kaydetme
+
+Programımız şu anda komut satırı argümanları olarak belirtilen değerlere erişebiliyor. Şimdi bu iki argümanın değerini programın geri kalanı boyunca kullanabilmek üzere değişkenlere kaydetmemiz gerekiyor. Bunu Liste 12-2'de yapıyoruz.
+
+<Listing number="12-2" file-name="src/main.rs" caption="Sorgu argümanını ve dosya yolu argümanını tutacak değişkenler oluşturma">
 
 ```rust,should_panic,noplayground
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-02/src/main.rs}}
@@ -62,15 +83,15 @@ Program şu anda komut satırı argümanları olarak belirtilen değerlere eriş
 
 </Listing>
 
-Vektörü yazdırdığımızda gördüğümüz gibi programın adı vektördeki ilk değeri `argumanlar[0]`'da alıyor, bu yüzden argümanlara 1. indeksten başlıyoruz. `minigrep`'in aldığı ilk argüman aradığımız string'dir (dizgidir), bu nedenle ilk argümana bir referansı `sorgu` değişkenine koyuyoruz. İkinci argüman dosya yolu olacaktır, bu yüzden ikinci argümana bir referansı `dosya_yolu` değişkenine yerleştiriyoruz.
+Vektörü yazdırdığımızda gördüğümüz gibi programın adı vektördeki ilk değeri, yani `argumanlar[0]` konumunu kaplar; bu yüzden kendi argümanlarımızı `1` numaralı indeksten itibaren okumaya başlıyoruz. `minigrep`'in aldığı ilk argüman aradığımız string olduğundan, ilk argümana ait bir referansı `sorgu` değişkenine atıyoruz. İkinci argüman ise dosya yolu olacağından, ikinci argümana ait bir referansı `dosya_yolu` değişkenine yerleştiriyoruz.
 
-Kodun amaçladığımız gibi çalıştığını kanıtlamak için bu değişkenlerin değerlerini geçici olarak yazdırıyoruz. Hadi bu programı tekrar `test` ve `ornek.txt` (sample.txt) argümanlarıyla çalıştıralım:
+Kodun amaçladığımız gibi çalıştığını kanıtlamak için bu değişkenlerin değerlerini geçici olarak ekrana yazdırıyoruz. Programı bu kez `test` ve `ornek.txt` argümanlarıyla tekrar çalıştıralım:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-02/output.txt}}
 ```
 
-Harika, program çalışıyor! İhtiyacımız olan argümanların değerleri doğru değişkenlere kaydediliyor. Daha sonra kullanıcının argüman sağlamaması gibi bazı olası hatalı durumlarla başa çıkmak için bazı hata yönetimi ekleyeceğiz; şimdilik bu durumu göz ardı edeceğiz ve bunun yerine dosya okuma özellikleri eklemeye çalışacağız.
+Harika, program çalışıyor! İhtiyacımız olan argümanların değerleri doğru değişkenlere kaydediliyor. Daha sonra, kullanıcının hiç argüman girmemesi gibi olası hatalı durumlarla başa çıkmak için hata yönetimi ekleyeceğiz (örneğin şu hâliyle programı argümansız çalıştırırsanız `&argumanlar[1]` erişimi sınır aşımı nedeniyle panikleyecektir); şimdilik bu durumu göz ardı edip programa dosya okuma yeteneği kazandırmaya odaklanacağız.
 
 [ch13]: ch13-00-fonksiyonel-ozellikler.html
-[ch7-idiomatic-use]: ch07-04-use-anahtar-kelimesi.html#idiomatik-use-yolları-oluşturmak
+[ch7-idiomatic-use]: ch07-04-use-anahtar-kelimesi.html#deyimsel-use-yolları-oluşturma

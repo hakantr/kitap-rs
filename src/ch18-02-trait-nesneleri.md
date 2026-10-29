@@ -1,46 +1,85 @@
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-trait-objects-that-allow-for-values-of-different-types"></a>
+<a id="using-trait-objects-to-abstract-over-shared-behavior"></a>
+<a id="ortak-davranış-üzerinden-soyutlamak-için-trait-nesnelerini-kullanmak"></a>
+<a id="ortak-davranis-uzerinden-soyutlamak-icin-trait-nesnelerini-kullanmak"></a>
 
-## Ortak Davranış Üzerinden Soyutlamak İçin Trait Nesnelerini Kullanmak
+## Ortak Davranışı Soyutlamak İçin Trait Nesnelerini Kullanma
 
-8. bölümde vektörlerin bir sınırlamasından söz etmiştik: yalnızca tek bir türün
-öğelerini tutabilirler. Bunu aşmak için, tamsayı, ondalıklı sayı ve metin
-tutabilen varyantlara sahip bir enum tanımlamıştık. Bu çözüm, değiş tokuş
-edilebilir türlerin kümesi derleme zamanında sabitse gayet iyidir.
+Bölüm 8'de vektörlerin kısıtlamalarından birinin yalnızca tek bir türdeki
+öğeleri saklayabilmek olduğundan bahsetmiştik. Liste 8-9'da tam sayıları, kayan
+noktalı sayıları ve metinleri tutacak varyantlara sahip bir
+`ElektronikTabloHucresi` enum'ı tanımlayarak buna geçici bir çözüm üretmiştik.
+Bu sayede her hücrede farklı türde veriler saklayabiliyor ve yine de bir hücre
+satırını temsil eden tek bir vektöre sahip olabiliyorduk. Birbiri yerine
+geçebilen öğelerimiz kodumuz derlendiği sırada bildiğimiz sabit bir tür
+kümesinden oluştuğunda bu son derece iyi bir çözümdür.
 
-Ama bazen kütüphanemizi kullanan kişinin bu tür kümesini genişletebilmesini
-isteriz. Bunu göstermek için, ekrandaki öğelerin listesini dolaşıp her biri
-için `ciz` metodunu çağıran küçük bir grafik arayüz aracı hayal edelim. Bunun
-için `arayuz` adında bir kütüphane crate'i yazacağız. Bu crate `Dugme` gibi
-bazı türler sunabilir. Fakat kullanıcılar kendi türlerini de tanımlamak
-isteyecektir; örneğin biri `SecimKutusu`, bir başkası farklı bir bileşen ekler.
+Ancak kimi zaman kütüphanemizi kullanan geliştiricilerin, belirli bir durumda
+geçerli olan tür kümesini genişletebilmesini isteriz. Bunu nasıl
+başarabileceğimizi göstermek için, bir öğe listesi üzerinde yineleme yaparak her
+öğeyi ekrana çizmek üzere üzerinde `ciz` metodunu çağıran örnek bir grafiksel
+kullanıcı arayüzü (*GUI*) aracı oluşturacağız; bu, GUI araçlarında yaygın olarak
+kullanılan bir tekniktir. Bir GUI kütüphanesinin iskeletini barındıran `arayuz`
+adında bir kütüphane crate'i oluşturacağız. Bu crate, geliştiricilerin
+kullanabileceği `Dugme` veya `MetinAlani` gibi bazı hazır türler içerebilir.
+Buna ek olarak, `arayuz` kullanıcıları ekrana çizilebilen kendi türlerini de
+oluşturmak isteyecektir: Örneğin bir programcı `Gorsel` türü eklerken, bir
+başkası `SecimKutusu` türü ekleyebilir.
 
-Kütüphaneyi yazarken, ileride herkesin hangi türleri tanımlayacağını bilemeyiz.
-Ama şunu biliyoruz: `arayuz`, farklı türlerden pek çok değeri izleyebilmeli ve
-her biri üzerinde `ciz` metodunu çağırabilmeli. Bize önemli olan, somut türün
-ne olduğu değil; bu metodun var olup olmadığıdır.
+Kütüphaneyi yazdığımız sırada diğer programcıların oluşturmak isteyebileceği tüm
+türleri bilmemiz ve tanımlamamız mümkün değildir. Ancak `arayuz` crate'inin
+farklı türlerden pek çok değeri takip etmesi ve bu farklı türdeki değerlerin her
+biri üzerinde bir `ciz` metodu çağırması gerektiğini biliyoruz. Kütüphanenin
+`ciz` metodunu çağırdığımızda tam olarak ne gerçekleşeceğini bilmesine gerek
+yoktur; yalnızca ilgili değerin çağırabileceğimiz bu metoda sahip olduğunu
+bilmesi yeterlidir.
 
-Kalıtımlı bir dilde bunu yapmak için `Component` gibi bir üst sınıf tanımlayıp
-ona `draw` metodu verebilir, `Dugme`, `Resim` ve `SecimKutusu` gibi türleri bu
-sınıftan türetebilirdik. Rust'ta kalıtım olmadığından, bunu başka bir yolla
-kurmamız gerekir.
+Kalıtıma sahip bir dilde bunu yapmak için, üzerinde `ciz` (`draw`) adında bir
+metot bulunan `Bilesen` (`Component`) adlı bir sınıf tanımlayabilirdik. `Dugme`,
+`Gorsel` ve `SecimKutusu` gibi diğer sınıflar `Bilesen` sınıfından miras alır ve
+dolayısıyla `ciz` metodunu da devralırdı. Her biri kendi özel davranışını
+tanımlamak için `ciz` metodunu geçersiz kılabilirdi (*override*), ancak çatı
+(*framework*) tüm bu türlere sanki `Bilesen` örnekleriymiş gibi davranıp
+üzerlerinde `ciz` metodunu çağırabilirdi. Ne var ki Rust'ta kalıtım
+bulunmadığından, kullanıcıların kütüphaneyle uyumlu yeni türler oluşturmasına
+olanak tanımak için `arayuz` kütüphanesini yapılandırmanın başka bir yoluna
+ihtiyacımız vardır.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="defining-a-trait-for-common-behavior"></a>
 
 ### Ortak Davranış İçin Bir Trait Tanımlamak
 
-Önce `Ciz` adında, tek metodu `ciz` olan bir trait tanımlayacağız. Sonra trait
-nesnesi alan bir vektör tanımlayacağız. _Trait nesnesi_, belirli bir trait'i
-uygulayan bir türün örneğine ve o tür için trait metodlarını çalışma zamanında
-bulmaya yarayan tabloya birlikte işaret eder. Trait nesnesi oluşturmak için
-referans veya `Box<T>` gibi bir işaretçi, ardından `dyn` anahtar sözcüğü ve
-ilgili trait yazılır.
+`arayuz` kütüphanesinin sahip olmasını istediğimiz davranışı uygulamak için,
+üzerinde `ciz` adında tek bir metot bulunan `Ciz` adlı bir trait tanımlayacağız.
+Ardından bir trait nesnesi alan bir vektör tanımlayabiliriz. Bir _trait nesnesi
+(trait object)_, hem belirttiğimiz trait'i uygulayan bir türün örneğine hem de
+çalışma zamanında o tür üzerindeki trait metotlarını bulmak için kullanılan bir
+tabloya işaret eder. Bir referans veya `Box<T>` akıllı işaretçisi gibi bir tür
+işaretçi, ardından `dyn` anahtar kelimesi ve son olarak ilgili trait'i
+belirterek bir trait nesnesi oluştururuz. (Trait nesnelerinin neden bir işaretçi
+kullanmak zorunda olduğunu Bölüm 20'deki
+[“Dinamik Boyutlu Türler ve `Sized` Trait'i”][dynamically-sized]<!-- ignore -->
+alt bölümünde ele alacağız.) Trait nesnelerini jenerik veya somut bir türün yerine kullanabiliriz. Bir trait
+nesnesi kullandığımız her yerde Rust'ın tür sistemi, o bağlamda kullanılan her
+değerin ilgili trait nesnesinin trait'ini uyguladığını derleme zamanında güvence
+altına alır. Sonuç olarak derleme zamanında olası tüm türleri bilmemize gerek
+kalmaz.
 
-Trait nesnelerini jenerik veya somut tür yerine kullanabiliriz. Nerede trait
-nesnesi kullanıyorsak, Rust tür sistemi o bağlamda kullanılacak her değerin bu
-trait'i uyguladığını derleme zamanında garanti eder. Böylece bütün olası türleri
-önceden bilmemiz gerekmez.
+Rust'ta struct'ları ve enum'ları diğer dillerdeki nesnelerden ayırt etmek için
+onlara "nesne" demekten kaçındığımızdan bahsetmiştik. Bir struct veya enum'da,
+struct alanlarındaki veri ile `impl` bloklarındaki davranış birbirinden
+ayrılmıştır; oysa diğer dillerde tek bir kavram altında birleştirilen veri ve
+davranış genellikle nesne olarak adlandırılır. Trait nesneleri, kendilerine veri
+ekleyemememiz bakımından diğer dillerdeki nesnelerden ayrılır. Trait nesneleri
+diğer dillerdeki nesneler kadar genel amaçlı değildir: Özgül amaçları, ortak
+davranış üzerinde soyutlama yapılmasına olanak tanımaktır.
 
-18-3 numaralı liste `Ciz` trait'ini tanımlar.
+Liste 18-3, `ciz` adında tek bir metoda sahip `Ciz` adlı bir trait'in nasıl
+tanımlanacağını gösterir.
 
 <Listing number="18-3" file-name="src/lib.rs" caption="`Ciz` trait'inin tanımı">
 
@@ -50,10 +89,14 @@ trait'i uyguladığını derleme zamanında garanti eder. Böylece bütün olas�
 
 </Listing>
 
-Şimdi `Ekran` adında, içinde `bilesenler` vektörü tutan bir struct
-tanımlayalım. Bu vektörün türü `Vec<Box<dyn Ciz>>` olur.
+Bu sözdizimi, Bölüm 10'da trait'lerin nasıl tanımlanacağına dair
+tartışmalarımızdan tanıdık gelecektir. Şimdi yeni bir sözdizimine geçiyoruz:
+Liste 18-4, `bilesenler` adında bir vektör tutan `Ekran` adlı bir struct
+tanımlar. Bu vektörün öğeleri bir trait nesnesi olan `Box<dyn Ciz>` türündedir;
+bu ifade, bir `Box` içinde yer alan ve `Ciz` trait'ini uygulayan herhangi bir
+türün yerini tutar.
 
-<Listing number="18-4" file-name="src/lib.rs" caption="`bilesenler` alanı `Ciz` trait'ini uygulayan trait nesneleri tutan `Ekran` struct'ı">
+<Listing number="18-4" file-name="src/lib.rs" caption="`Ciz` trait'ini uygulayan trait nesnelerinden oluşan bir vektör tutan `bilesenler` alanına sahip `Ekran` struct'ının tanımı">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-04/src/lib.rs:here}}
@@ -61,10 +104,24 @@ tanımlayalım. Bu vektörün türü `Vec<Box<dyn Ciz>>` olur.
 
 </Listing>
 
-`Ekran` üzerinde de her bileşen için `ciz` metodunu çağıran `calistir` metodunu
-tanımlarız.
+> Not: Bellek düzeni açısından `&dyn Ciz` veya `Box<dyn Ciz>` gibi bir trait
+> nesnesi işaretçisi, sıradan tek adreslik bir işaretçi değil; bellekte iki
+> `usize` genişliğinde yer kaplayan (64-bit mimarilerde 16 bayt) bir **geniş
+> işaretçidir (*fat pointer* / *wide pointer*)**. Bu iki işaretçiden ilki
+> öbekteki veya yığındaki somut verinin (`Dugme`, `SecimKutusu` vb.) bellek
+> adresini, ikincisi ise derleyicinin o somut tür ve trait çifti için ürettiği
+> **sanal metot tablosunu (*vtable*)** gösterir. Sanal metot tablosunda somut
+> türün boyutu, hizalaması (*alignment*), değer bellekten düşürülürken
+> çağrılacak `drop` fonksiyon işaretçisi ve `Ciz::ciz` gibi trait metotlarının
+> fonksiyon işaretçileri yer alır. Her `Box<dyn Ciz>` yığında sabit 16 bayt yer
+> kapladığından, `Vec<Box<dyn Ciz>>` vektörü öbek üzerindeki boyutları
+> birbirinden farklı bileşenleri güvenle yan yana tutabilir.
 
-<Listing number="18-5" file-name="src/lib.rs" caption="Her bileşen için `ciz` metodunu çağıran `calistir` metodu">
+`Ekran` struct'ı üzerinde, Liste 18-5'te gösterildiği gibi `bilesenler`
+alanındaki her bir öğe üzerinde `ciz` metodunu çağıracak `calistir` adlı bir
+metot tanımlayacağız.
+
+<Listing number="18-5" file-name="src/lib.rs" caption="`Ekran` üzerinde her bileşen için `ciz` metodunu çağıran bir `calistir` metodu">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-05/src/lib.rs:here}}
@@ -72,11 +129,14 @@ tanımlarız.
 
 </Listing>
 
-Bu yaklaşım, trait sınırı kullanan jenerik bir struct tanımlamaktan farklıdır.
-Jenerik kullanırsanız aynı anda yalnızca _tek_ somut türle çalışırsınız. Örneğin
-18-6 numaralı listedeki gibi yazsaydık:
+Bu yapı, trait sınırlarına sahip bir jenerik tür parametresi kullanan bir struct
+tanımlamaktan farklı çalışır. Bir jenerik tür parametresinin yerine her
+seferinde yalnızca tek bir somut tür geçirilebilirken, trait nesneleri çalışma
+zamanında birden fazla somut türün trait nesnesinin yerini almasına olanak
+tanır. Örneğin `Ekran` struct'ını Liste 18-6'daki gibi jenerik bir tür ve bir
+trait sınırı kullanarak tanımlayabilirdik.
 
-<Listing number="18-6" file-name="src/lib.rs" caption="`Ekran` ve `calistir` için jenerik ve trait sınırı kullanan alternatif yaklaşım">
+<Listing number="18-6" file-name="src/lib.rs" caption="`Ekran` struct'ı ve `calistir` metodunun jenerikler ve trait sınırları kullanan alternatif bir uygulaması">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-06/src/lib.rs:here}}
@@ -84,19 +144,31 @@ Jenerik kullanırsanız aynı anda yalnızca _tek_ somut türle çalışırsın�
 
 </Listing>
 
-Bu durumda bir `Ekran` örneğindeki bütün bileşenler ya `Dugme` olurdu ya da tek
-başka bir tür olurdu. Yalnızca homojen koleksiyonlarınız varsa jenerikler daha
-iyi seçimdir; çünkü derleyici somut türler için monomorfizasyon yapar.
+Bu yaklaşım bizi, bileşenlerinin tamamı `Dugme` türünde veya tamamı `MetinAlani`
+türünde olan bir listeye sahip bir `Ekran` örneğiyle sınırlar. Yalnızca homojen
+(tek türden oluşan) koleksiyonlarınız olacaksa jenerikleri ve trait sınırlarını
+kullanmak tercih edilir; çünkü tanımlar somut türleri kullanacak şekilde derleme
+zamanında tek biçimlileştirilecektir (*monomorphized*).
 
-Trait nesneleri kullandığımızdaysa tek bir `Ekran`, içinde hem `Dugme` hem de
-`SecimKutusu` gibi farklı türleri aynı anda taşıyabilir.
+Öte yandan trait nesneleri kullanan yaklaşımla tek bir `Ekran` örneği, hem bir
+`Box<Dugme>` hem de bir `Box<MetinAlani>` içeren bir `Vec<T>` tutabilir. Şimdi
+bunun nasıl çalıştığına bakalım, ardından da çalışma zamanı performansı
+üzerindeki etkilerini ele alalım.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="implementing-the-trait"></a>
 
 ### Trait'i Uygulamak
 
-Şimdi `Ciz` trait'ini uygulayan türler ekleyelim. Önce `Dugme` türünü
-tanımlayacağız.
+Şimdi `Ciz` trait'ini uygulayan bazı türler ekleyeceğiz. İlk olarak `Dugme`
+türünü sağlayacağız. Yine belirtelim ki gerçek bir GUI kütüphanesi yazmak bu
+kitabın kapsamı dışındadır; bu nedenle `ciz` metodunun gövdesinde işlevsel bir
+uygulama yer almayacaktır. Uygulamanın nasıl görünebileceğini canlandırmak için
+bir `Dugme` struct'ı, Liste 18-7'de gösterildiği gibi `genislik`, `yukseklik` ve
+`etiket` alanlarına sahip olabilir.
 
-<Listing number="18-7" file-name="src/lib.rs" caption="`Ciz` trait'ini uygulayan `Dugme` struct'ı">
+<Listing number="18-7" file-name="src/lib.rs" caption="`Ciz` trait'ini uygulayan bir `Dugme` struct'ı">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-07/src/lib.rs:here}}
@@ -104,16 +176,21 @@ tanımlayacağız.
 
 </Listing>
 
-`Dugme` içindeki `genislik`, `yukseklik` ve `etiket` alanları, başka
-bileşenlerin alanlarından farklı olabilir. Örneğin `SecimKutusu` da genişlik ve
-yükseklik taşırken ek olarak `secenekler` alanına sahip olabilir. Ekranda
-çizilmesini istediğimiz her tür `Ciz` trait'ini uygular, ama `ciz` metodu içinde
-her tür kendine özgü davranışı tanımlar.
+`Dugme` üzerindeki `genislik`, `yukseklik` ve `etiket` alanları diğer
+bileşenlerdeki alanlardan farklı olacaktır; örneğin bir `MetinAlani` türü aynı
+alanlara ek olarak bir `yer_tutucu` (`placeholder`) alanına sahip olabilir.
+Ekrana çizmek istediğimiz türlerin her biri `Ciz` trait'ini uygulayacak, ancak
+tıpkı burada `Dugme` türünün yaptığı gibi (belirttiğimiz üzere gerçek GUI kodu
+olmaksızın) o türe özgü çizim işleminin nasıl yapılacağını tanımlamak için `ciz`
+metodunda farklı kodlar kullanacaktır. Örneğin `Dugme` türü, kullanıcı düğmeye
+tıkladığında ne olacağıyla ilgili metotlar içeren ek bir `impl` bloğuna sahip
+olabilir. Bu tür metotlar `MetinAlani` gibi türler için geçerli olmayacaktır.
 
-Kütüphanemizi kullanan biri de 18-8 numaralı listedeki gibi kendi
-`SecimKutusu` türünü yazıp `Ciz` trait'ini uygulayabilir.
+Kütüphanemizi kullanan bir geliştirici `genislik`, `yukseklik` ve `secenekler`
+alanlarına sahip bir `SecimKutusu` struct'ı yazmaya karar verirse, Liste 18-8'de
+gösterildiği gibi `SecimKutusu` türü üzerinde de `Ciz` trait'ini uygulayacaktır.
 
-<Listing number="18-8" file-name="src/main.rs" caption="`arayuz` crate'ini kullanan başka bir crate'in `SecimKutusu` için `Ciz` trait'ini uygulaması">
+<Listing number="18-8" file-name="src/main.rs" caption="`arayuz` crate'ini kullanan ve bir `SecimKutusu` struct'ı üzerinde `Ciz` trait'ini uygulayan başka bir crate">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch18-oop/listing-18-08/src/main.rs:here}}
@@ -121,11 +198,14 @@ Kütüphanemizi kullanan biri de 18-8 numaralı listedeki gibi kendi
 
 </Listing>
 
-Artık kütüphaneyi kullanan kişi `main` içinde bir `Ekran` örneği oluşturabilir.
-Bu ekrana hem `SecimKutusu` hem `Dugme` ekleyip `calistir` metodunu çağırdığında,
-`Ekran` her bileşen üzerinde `ciz` metodunu çağıracaktır.
+Kütüphanemizin kullanıcısı artık bir `Ekran` örneği oluşturmak için kendi `main`
+fonksiyonunu yazabilir. Bir `SecimKutusu` ve bir `Dugme` örneğinin her birini
+trait nesnesine dönüştürmek üzere `Box<T>` içine koyarak `Ekran` örneğine
+ekleyebilir. Ardından `Ekran` örneği üzerinde, bileşenlerin her birinde `ciz`
+metodunu çağıracak olan `calistir` metodunu çağırabilir. Liste 18-9 bu
+uygulamayı gösterir.
 
-<Listing number="18-9" file-name="src/main.rs" caption="Aynı trait'i uygulayan farklı türlerdeki değerleri trait nesneleriyle saklamak">
+<Listing number="18-9" file-name="src/main.rs" caption="Aynı trait'i uygulayan farklı türlerdeki değerleri saklamak için trait nesnelerini kullanmak">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch18-oop/listing-18-09/src/main.rs:here}}
@@ -133,23 +213,33 @@ Bu ekrana hem `SecimKutusu` hem `Dugme` ekleyip `calistir` metodunu çağırdı�
 
 </Listing>
 
-Kütüphaneyi yazarken birilerinin `SecimKutusu` ekleyeceğini bilmiyorduk. Ama
-`SecimKutusu`, `Ciz` trait'ini uyguladığı için `Ekran` onu da problemsiz şekilde
-çalıştırabiliyor.
+Kütüphaneyi yazdığımız sırada birilerinin `SecimKutusu` türünü ekleyebileceğini
+bilmiyorduk; ancak `SecimKutusu` türü `Ciz` trait'ini —dolayısıyla da `ciz`
+metodunu— uyguladığı için `Ekran` uygulamamız bu yeni tür üzerinde çalışabildi
+ve onu çizebildi.
 
-Bu yaklaşım, dinamik dillerdeki _ördek tiplemesi_ fikrine biraz benzer: ördek
-gibi yürüyüp ördek gibi ses çıkarıyorsa ördektir. `Ekran` içindeki `calistir`
-metodu, bileşenin somut türünün `Dugme` mi `SecimKutusu` mu olduğunu bilmek
-zorunda değildir. Onun için önemli olan, `ciz` metodunun çağrılabilir olmasıdır.
+Bir değerin somut türünden ziyade yalnızca yanıt verdiği mesajlarla ilgilenme
+düşüncesi, dinamik tür sistemine sahip dillerdeki _ördek tiplemesi (duck
+typing)_ kavramına benzer: Bir şey ördek gibi yürüyor ve ördek gibi vaklıyorsa,
+o bir ördek olmalıdır! Liste 18-5'te `Ekran` üzerindeki `calistir` uygulamasında
+`calistir` metodunun her bir bileşenin somut türünün ne olduğunu bilmesine gerek
+yoktur. Bir bileşenin `Dugme` mi yoksa `SecimKutusu` örneği mi olduğunu
+denetlemez; yalnızca bileşen üzerinde `ciz` metodunu çağırır. `bilesenler`
+vektöründeki değerlerin türü olarak `Box<dyn Ciz>` belirterek, `Ekran`
+struct'ını üzerinde `ciz` metodunu çağırabileceğimiz değerlere ihtiyaç duyacak
+biçimde tanımlamış olduk.
 
-Trait nesneleri ve Rust'ın tür sistemi sayesinde bunu güvenli biçimde yaparız.
-Belirli bir metodun var olup olmadığını çalışma zamanında ayrıca sınamamız
-gerekmez. Eğer değer ilgili trait'i uygulamıyorsa, kod zaten derlenmez.
+Ördek tiplemesi kullanan koda benzer kodlar yazmak için trait nesnelerini ve
+Rust'ın tür sistemini kullanmanın avantajı, bir değerin belirli bir metodu
+uygulayıp uygulamadığını çalışma zamanında hiçbir zaman denetlemek zorunda
+kalmamamız ya da bir değer bir metodu uygulamadığı halde onu çağırdığımızda
+çalışma zamanı hatası alma endişesi yaşamamamızdır. Değerler trait nesnelerinin
+ihtiyaç duyduğu trait'leri uygulamıyorsa Rust kodumuzu derlemez.
 
-Örneğin 18-10 numaralı listedeki gibi `Ekran` içine `String` koymaya
-kalkarsak, `String` `Ciz` trait'ini uygulamadığı için derleyici hata verir:
+Örneğin Liste 18-10, bileşen olarak bir `String` içeren bir `Ekran` oluşturmaya
+çalışırsak ne olacağını gösterir.
 
-<Listing number="18-10" file-name="src/main.rs" caption="Trait nesnesinin trait'ini uygulamayan bir tür kullanmaya çalışmak">
+<Listing number="18-10" file-name="src/main.rs" caption="Trait nesnesinin trait'ini uygulamayan bir türü kullanmaya çalışmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch18-oop/listing-18-10/src/main.rs}}
@@ -157,39 +247,68 @@ kalkarsak, `String` `Ciz` trait'ini uygulamadığı için derleyici hata verir:
 
 </Listing>
 
+`String`, `Ciz` trait'ini uygulamadığı için şu hatayı alırız:
+
 ```console
 {{#include ../listings/ch18-oop/listing-18-10/output.txt}}
 ```
 
-Bu hata bize ya yanlış tür verdiğimizi ya da gerçekten istiyorsak `String` için
-`Ciz` trait'ini uygulamamız gerektiğini söyler.
+Bu hata bize ya `Ekran` örneğine istemediğimiz bir şey geçirdiğimizi ve
+dolayısıyla farklı bir tür geçirmemiz gerektiğini ya da `Ekran`'ın onun üzerinde
+`ciz` metodunu çağırabilmesi için `String` üzerinde `Ciz` trait'ini uygulamamız
+gerektiğini bildirir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="trait-objects-perform-dynamic-dispatch"></a>
+<a id="performing-dynamic-dispatch"></a>
+<a id="dinamik-dağıtım-yapmak"></a>
+<a id="dinamik-dagitim-yapmak"></a>
 
-### Dinamik Dağıtım Yapmak
+### Dinamik Gönderim Gerçekleştirmek
 
-10. bölümde, jenerik kullanan kodların performansını anlatırken
-_monomorfizasyon_ sürecinden söz etmiştik. Derleyici, jenerik fonksiyonlar ve
-metotlar için kullandığınız her somut tür adına somut sürümler üretir. Bu
-şekilde oluşan kod _statik dağıtım (static dispatch)_ yapar; yani hangi metodun
-çağrılacağı derleme zamanında bellidir.
+Bölüm 10'daki [“Jenerik Kullanan Kodların Performansı”][performance-of-code-using-generics]<!-- ignore -->
+alt bölümünde, derleyicinin jenerikler üzerinde gerçekleştirdiği tek
+biçimlileştirme (*monomorphization* / *monomorfizasyon*) sürecine dair
+tartışmamızı hatırlayın: Derleyici, jenerik bir tür parametresinin yerine
+kullandığımız her somut tür için fonksiyonların ve metotların jenerik olmayan
+uygulamalarını üretir. Tek biçimlileştirme sonucunda ortaya çıkan kod _statik
+gönderim_ (_statik dağıtım_, İng. _static dispatch_) yapar; yani derleyici hangi
+metodu çağırdığınızı derleme zamanında bilir. Bunun karşısında ise derleyicinin
+hangi metodu çağırdığınızı derleme zamanında bilemediği _dinamik gönderim_
+(_dinamik dağıtım_, İng. _dynamic dispatch_) yer alır. Dinamik gönderim
+durumlarında derleyici, hangi metodun çağrılacağını çalışma zamanında
+belirleyecek kodu üretir.
 
-Buna karşılık _dinamik dağıtım (dynamic dispatch)_ durumunda derleyici, hangi
-metodun çağrılacağını derleme zamanında bilemez. Gerekli kodu üretir; ama hangi
-metodun seçileceği çalışma zamanında belli olur.
+Trait nesneleri kullandığımızda Rust dinamik gönderim kullanmak zorundadır.
+Derleyici, trait nesneleri kullanan kodla birlikte kullanılabilecek tüm türleri
+bilmediği için hangi tür üzerinde uygulanmış hangi metodu çağıracağını da
+bilemez. Bunun yerine Rust, çalışma zamanında hangi metodu çağıracağını bulmak
+için trait nesnesinin içindeki işaretçileri kullanır. Bu arama işlemi, statik
+gönderimde meydana gelmeyen bir çalışma zamanı maliyeti doğurur. Dinamik
+gönderim ayrıca derleyicinin bir metodun kodunu satır içine açmayı (*inlining*)
+seçmesini de engeller ve bu durum bazı eniyilemeleri (*optimizations*) devre
+dışı bırakır. Bunun yanı sıra Rust'ın, dinamik gönderimi nerede kullanıp nerede
+kullanamayacağınıza ilişkin _dyn uyumluluğu (dyn compatibility)_ adı verilen
+bazı kuralları vardır. Bu kurallar buradaki tartışmamızın kapsamı dışındadır,
+ancak ayrıntılarını [referans kılavuzundan][dyn-compatibility]<!-- ignore -->
+okuyabilirsiniz. Yine de Liste 18-5'te yazdığımız ve Liste 18-9'da
+destekleyebildiğimiz kodda fazladan esneklik elde ettik; dolayısıyla bu, göz
+önünde bulundurulması gereken bir ödünleşimdir.
 
-Trait nesneleri kullandığımızda Rust dinamik dağıtım yapmak zorundadır. Çünkü o
-kodu hangi türlerin kullanacağını baştan bilemez. Bu yüzden trait nesnesinin
-içindeki işaretçiler ve tablolar yardımıyla çalışma zamanında doğru metod
-bulunur.
+> Not: Eski Rust sürümlerinde ve topluluk kaynaklarında _nesne güvenliği
+> (object safety)_ olarak adlandırılan kavram, güncel Rust sürümlerinde `dyn`
+> anahtar kelimesiyle doğrudan ilişkilendirilerek resmî olarak **`dyn`
+> uyumluluğu (*dyn compatibility*)** adını almıştır. Bir trait'in `dyn Trait`
+> biçiminde trait nesnesi olarak kullanılabilmesi için sağlaması gereken en
+> temel kurallar şunlardır: trait metotları geri dönüş türü veya parametre
+> olarak somut boyutu derleme zamanında bilinmeyen `Self` türünü doğrudan
+> kullanmamalı (örneğin standart kütüphanedeki `Clone` trait'i
+> `fn clone(&self) -> Self` imzasına sahip olduğu için `dyn Clone` yazılamaz) ve
+> metotların kendisi jenerik tür parametreleri (`fn islem<T>(&self, x: T)`)
+> içermemelidir (çünkü sanal metot tablosuna sonsuz sayıda olası `T` türü için
+> fonksiyon işaretçisi eklenemez).
 
-Bunun bir çalışma zamanı maliyeti vardır. Statik dağıtımda mümkün olan bazı
-iyileştirmeler dinamik dağıtımda yapılamaz. Yani burada biraz performans
-karşılığında ek esneklik kazanırız. 18-5'te yazdığımız kod ve 18-9'da
-sağlayabildiğimiz genişleyebilirlik, bu ödünleşimin ne kazandırdığını gösterir.
-
-[performance-of-code-using-generics]: ch10-01-jenerik-veri-turleri.html#jenerikleri-kullanan-kodların-performansı
+[performance-of-code-using-generics]: ch10-01-jenerik-veri-turleri.html#jenerik-kullanan-kodların-performansı
 [dynamically-sized]: ch20-03-gelismis-turler.html#dinamik-boyutlu-türler-ve-sized-traiti
 [dyn-compatibility]: https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility

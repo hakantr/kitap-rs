@@ -1,45 +1,55 @@
-## Kodu Aynı Anda Çalıştırmak İçin İş Parçacıkları Kullanmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Günümüzde çoğu işletim sisteminde çalışan program kodu bir _süreç (process)_
-içinde yürütülür ve işletim sistemi aynı anda birden fazla süreci yönetir.
-Bir programın içinde de aynı anda ilerleyen bağımsız parçalar olabilir. Bu
-bağımsız parçaları çalıştıran yapılara _iş parçacığı (thread)_ denir. Örneğin
-bir web sunucusu, aynı anda birden fazla isteğe yanıt verebilmek için birden
-çok iş parçacığı kullanabilir.
+<a id="using-threads-to-run-code-simultaneously"></a>
+<a id="kodu-aynı-anda-çalıştırmak-için-iş-parçacıkları-kullanmak"></a>
 
-Programınızdaki hesabı birden fazla iş parçacığına bölüp görevleri aynı anda
-çalıştırmak performansı artırabilir; ama bunun karşılığında karmaşıklık da
-artar. İş parçacıkları aynı anda çalışabildiği için, farklı iş parçacıklarında
-yer alan kodunuzun hangi sırayla işleyeceğine dair doğal bir garanti yoktur.
-Bu da şu tür sorunlara yol açabilir:
+## Kodu Aynı Anda Çalıştırmak İçin Thread'leri Kullanma
 
-- İş parçacıklarının veri ya da kaynaklara tutarsız bir sırayla eriştiği yarış
-  durumları
-- İki iş parçacığının birbirini beklediği ve ikisinin de devam edemediği
-  kilitlenmeler
-- Yalnızca bazı durumlarda ortaya çıkan, tekrar üretmesi ve güvenle düzeltmesi
-  zor hatalar
+Günümüzdeki çoğu işletim sisteminde çalıştırılan bir programın kodu bir _süreç
+(process)_ içinde yürütülür ve işletim sistemi aynı anda birden fazla süreci
+yönetir. Bir programın kendi içinde de aynı anda çalışan bağımsız bölümler
+bulunabilir. Bu bağımsız bölümleri çalıştıran yapılara _thread (iş parçacığı)_
+denir. Örneğin bir web sunucusu, aynı anda birden fazla isteğe yanıt verebilmek
+için birden çok thread kullanabilir.
 
-Rust, iş parçacığı kullanmanın olumsuz yanlarını azaltmaya çalışır; ama çok iş
-parçacıklı programlama yine de dikkatli düşünmeyi ve tek iş parçacıklı
-programlardan farklı bir kod yapısını gerektirir.
+Programınızdaki hesaplamayı birden fazla görevi aynı anda yürütecek şekilde
+birden çok thread'e bölmek performansı artırabilir, ancak beraberinde
+karmaşıklık da getirir. Thread'ler aynı anda çalışabildiği için, farklı
+thread'lerdeki kod parçalarının hangi sırayla çalışacağına dair doğal bir
+garanti yoktur. Bu durum aşağıdaki gibi sorunlara yol açabilir:
 
-Programlama dilleri iş parçacıklarını çeşitli şekillerde uygular; birçok
-işletim sistemi de yeni iş parçacığı oluşturmak için çağrılabilen bir API
-sunar. Rust standart kütüphanesi iş parçacıkları için _1:1_ modelini kullanır:
-Programdaki her dil düzeyi iş parçacığı için bir işletim sistemi iş parçacığı
-vardır. Farklı ödünleşimler sunan başka iş parçacığı modellerini uygulayan
-crate'ler de vardır. Bir sonraki bölümde göreceğimiz Rust'ın `async` sistemi de
-eşzamanlılığa farklı bir yaklaşım sunar.
+- Thread'lerin verilere veya kaynaklara tutarsız bir sırayla eriştiği _yarış
+  koşulları (race conditions)_
+- İki thread'in birbirini beklediği ve her ikisinin de devam etmesini engelleyen
+  _kilitlenmeler (deadlocks)_
+- Yalnızca belirli durumlarda ortaya çıkan, yeniden üretilmesi ve güvenilir
+  biçimde düzeltilmesi zor hatalar
 
-### `spawn` ile Yeni Bir İş Parçacığı Oluşturmak
+Rust, thread kullanmanın olumsuz etkilerini azaltmaya çalışır; ancak çok
+thread'li bir bağlamda programlama yapmak yine de dikkatli düşünmeyi ve tek bir
+thread üzerinde çalışan programlardan farklı bir kod yapısını gerektirir.
 
-Yeni bir iş parçacığı oluşturmak için `thread::spawn` fonksiyonunu çağırır ve
-ona, yeni iş parçacığında çalıştırmak istediğimiz kodu içeren bir kapanış
-veririz. 16-1 numaralı liste, ana iş parçacığından biraz metin; yeni oluşturulan
-iş parçacığından da başka metinler yazdırır.
+Programlama dilleri thread'leri birkaç farklı şekilde uygular ve pek çok işletim
+sistemi, programlama dilinin yeni thread'ler oluşturmak için çağırabileceği bir
+API sunar. Rust standart kütüphanesi _1:1_ thread uygulama modelini kullanır;
+yani program, dil düzeyindeki her bir thread için bir işletim sistemi thread'i
+kullanır. 1:1 modeline kıyasla farklı ödünleşimler sunan başka thread
+modellerini uygulayan crate'ler de mevcuttur. (Bir sonraki bölümde göreceğimiz
+Rust'ın `async` sistemi de eşzamanlılığa farklı bir yaklaşım sunar.)
 
-<Listing number="16-1" file-name="src/main.rs" caption="Ana iş parçacığı başka bir şey yazdırırken yeni bir iş parçacığı oluşturmak">
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="creating-a-new-thread-with-spawn"></a>
+<a id="spawn-ile-yeni-bir-iş-parçacığı-oluşturmak"></a>
+
+### `spawn` ile Yeni Bir Thread Oluşturma
+
+Yeni bir thread oluşturmak için `thread::spawn` fonksiyonunu çağırır ve ona yeni
+thread içinde çalıştırmak istediğimiz kodu içeren bir _kapanış (closure)_
+(kapanışları Bölüm 13'te ele almıştık) aktarırız. Liste 16-1'deki örnek, ana
+thread'den bazı metinler ve yeni bir thread'den başka metinler yazdırır.
+
+<Listing number="16-1" file-name="src/main.rs" caption="Ana thread başka bir şey yazdırırken farklı bir metin yazdırmak için yeni bir thread oluşturma">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-01/src/main.rs}}
@@ -47,9 +57,10 @@ iş parçacığından da başka metinler yazdırır.
 
 </Listing>
 
-Rust programında ana iş parçacığı tamamlandığında, oluşturulmuş bütün iş
-parçacıkları işleri bitmiş olsun ya da olmasın kapatılır. Bu programın çıktısı
-her çalıştırmada biraz farklı olabilir; ama aşağıdakine benzer görünür:
+Bir Rust programının ana thread'i tamamlandığında, oluşturulan tüm thread'lerin
+çalışmaları bitmiş olsun ya da olmasın kapatıldığına dikkat edin. Bu programın
+çıktısı her çalıştırmada biraz farklı olabilir, ancak aşağıdakine benzer
+görünecektir:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -67,39 +78,43 @@ oluşturulan iş parçacığından merhaba sayı 4!
 oluşturulan iş parçacığından merhaba sayı 5!
 ```
 
-`thread::sleep` çağrıları bir iş parçacığını kısa süreliğine durdurur ve başka
-bir iş parçacığının çalışmasına fırsat verir. Çoğu zaman iş parçacıkları sıra
-ile ilerler; ama bu garanti değildir. Her şey işletim sisteminizin iş
-parçacıklarını nasıl zamanladığına bağlıdır. Bu çalıştırmada, kodda önce
-oluşturulan iş parçacığındaki `println!` görünse de ilk yazdıran ana iş
-parçacığı oldu. Ayrıca oluşturulan iş parçacığına `i` değeri `9` olana kadar
-yazdırmasını söylemiş olsak da, ana iş parçacığı kapanmadan önce ancak `5`
-sayısına kadar gelebildi.
+`thread::sleep` çağrıları, bir thread'i yürütmesini kısa bir süreliğine
+durdurmaya zorlayarak farklı bir thread'in çalışmasına olanak tanır. Thread'ler
+muhtemelen sırayla çalışacaktır ancak bunun bir garantisi yoktur: bu durum
+tamamen işletim sisteminizin thread'leri nasıl zamanladığına bağlıdır. Bu
+çalıştırmada, oluşturulan thread'deki yazdırma ifadesi kodda daha önce yer
+almasına rağmen ilk çıktıyı ana thread verdi. Ayrıca oluşturulan thread'e `sira`
+değeri `9` olana kadar yazdırmasını söylemiş olmamıza rağmen, ana thread
+kapanmadan önce yalnızca `5` değerine kadar gelebildi.
 
-Bu kodu çalıştırıp yalnızca ana iş parçacığının çıktısını görürseniz ya da hiç
-örtüşme görmezseniz, aralıkları büyütmeyi deneyin. Böylece işletim sisteminin
-iki iş parçacığı arasında geçiş yapması için daha fazla fırsat oluşur.
+Bu kodu çalıştırdığınızda yalnızca ana thread'den gelen çıktıları görürseniz
+veya çıktılar arasında hiçbir örtüşme göremezseniz, işletim sisteminin
+thread'ler arasında geçiş yapmasına daha fazla fırsat tanımak için aralıklardaki
+sayıları artırmayı deneyin.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="waiting-for-all-threads-to-finish-using-join-handles"></a>
+<a id="waiting-for-all-threads-to-finish"></a>
+<a id="tüm-iş-parçacıklarının-bitmesini-beklemek"></a>
 
-### Tüm İş Parçacıklarının Bitmesini Beklemek
+### Tüm Thread'lerin Bitmesini Bekleme
 
-16-1 numaralı listedeki kodun sorunu şu: Ana iş parçacığı çoğu zaman daha erken
-bittiği için oluşturulan iş parçacığı yarıda kesiliyor. Üstelik iş parçacıkları
-hangi sırayla çalışacak belli olmadığından, oluşturulan iş parçacığının hiç
-çalışacağı da garanti değil.
+Liste 16-1'deki kod, ana thread'in sona ermesi yüzünden çoğu zaman oluşturulan
+thread'i yalnızca erken durdurmakla kalmaz; thread'lerin çalışma sırasına dair
+bir garanti olmadığından, oluşturulan thread'in hiç çalışıp çalışamayacağını
+bile garanti edemez!
 
-Bu sorunu çözmek için `thread::spawn` dönüş değerini bir değişkende
-saklayabiliriz. `thread::spawn` fonksiyonu `JoinHandle<T>` döndürür.
-`JoinHandle<T>`, sahip olunan bir değerdir; bunun üstünde `join` metodunu
-çağırdığımızda ilgili iş parçacığının tamamlanmasını bekleriz. 16-2 numaralı
-liste, 16-1'de oluşturduğumuz iş parçacığı için dönen `JoinHandle<T>` değerini
-nasıl kullandığımızı ve `main` sonlanmadan önce bu iş parçacığının bitmesini
-garanti etmek için `join` metodunu nasıl çağırdığımızı gösteriyor.
+Oluşturulan thread'in hiç çalışmaması ya da erken sonlanması sorununu,
+`thread::spawn` fonksiyonunun dönüş değerini bir değişkende saklayarak
+çözebiliriz. `thread::spawn` fonksiyonunun dönüş türü `JoinHandle<T>`'dir.
+`JoinHandle<T>`, üzerinde `join` metodunu çağırdığımızda ilgili thread'in
+bitmesini bekleyen sahipli bir değerdir. Liste 16-2, Liste 16-1'de
+oluşturduğumuz thread'in `JoinHandle<T>` değerinin nasıl kullanılacağını ve
+`main` sonlanmadan önce oluşturulan thread'in tamamlandığından emin olmak için
+`join` metodunun nasıl çağrılacağını göstermektedir.
 
-<Listing number="16-2" file-name="src/main.rs" caption="İş parçacığının sonuna kadar çalışmasını garanti etmek için `thread::spawn` dönüşündeki `JoinHandle<T>` değerini saklamak">
+<Listing number="16-2" file-name="src/main.rs" caption="Thread'in sonuna kadar çalışmasını güvence altına almak için `thread::spawn` çağrısından dönen `JoinHandle<T>` değerini saklama">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-02/src/main.rs}}
@@ -107,11 +122,11 @@ garanti etmek için `join` metodunu nasıl çağırdığımızı gösteriyor.
 
 </Listing>
 
-`tutamac` üzerinde `join` çağırmak, şu anda çalışan iş parçacığını, tutamacın
-temsil ettiği iş parçacığı bitene kadar _bloklar (blocking)_. Bir iş parçacığının
-bloklanması, onun iş yapmasının ya da sonlanmasının geçici olarak engellenmesi
-demektir. `join` çağrısını ana iş parçacığındaki `for` döngüsünden sonraya
-koyduğumuz için, 16-2 numaralı listenin çıktısı şuna benzer:
+`tutamac` üzerinde `join` çağırmak, tutamacın temsil ettiği thread sonlanana
+kadar o sırada çalışmakta olan thread'i bloklar. Bir thread'i _bloklamak
+(blocking)_, o thread'in iş yapmasının veya sonlanmasının engellenmesi anlamına
+gelir. `join` çağrısını ana thread'in `for` döngüsünden sonraya koyduğumuz için,
+Liste 16-2'yi çalıştırmak şuna benzer bir çıktı üretecektir:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -133,12 +148,12 @@ oluşturulan iş parçacığından merhaba sayı 8!
 oluşturulan iş parçacığından merhaba sayı 9!
 ```
 
-İki iş parçacığı dönüşümlü ilerlemeyi sürdürür; ama `tutamac.join()` çağrısı
-nedeniyle ana iş parçacığı sona ermez ve oluşturulan iş parçacığının
-tamamlanmasını bekler.
+İki thread dönüşümlü çalışmaya devam eder, ancak `tutamac.join()` çağrısı
+sayesinde ana thread bekler ve oluşturulan thread işini bitirene kadar
+sonlanmaz.
 
-Şimdi de `tutamac.join()` çağrısını `main` içindeki `for` döngüsünden önceye
-taşırsak ne olur, ona bakalım:
+Peki bunun yerine `tutamac.join()` çağrısını `main` içindeki `for` döngüsünden
+önceye taşırsak ne olacağına bakalım:
 
 <Listing file-name="src/main.rs">
 
@@ -148,8 +163,9 @@ taşırsak ne olur, ona bakalım:
 
 </Listing>
 
-Bu durumda ana iş parçacığı önce oluşturulan iş parçacığının bitmesini bekler,
-sonra kendi `for` döngüsünü çalıştırır. Yani çıktılar artık iç içe geçmez:
+Ana thread, oluşturulan thread'in bitmesini bekleyecek ve ardından kendi `for`
+döngüsünü çalıştıracaktır; dolayısıyla çıktı burada gösterildiği gibi artık iç
+içe geçmiş olmayacaktır:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -171,28 +187,44 @@ ana iş parçacığından merhaba sayı 3!
 ana iş parçacığından merhaba sayı 4!
 ```
 
-`join` çağrısının nereye yazıldığı gibi küçük ayrıntılar bile iş
-parçacıklarının gerçekten aynı anda çalışıp çalışmayacağını etkileyebilir.
+`join` metodunun nerede çağrıldığı gibi küçük ayrıntılar, thread'lerinizin aynı
+anda çalışıp çalışmayacağını etkileyebilir.
 
-### İş Parçacıklarıyla `move` Kapanışları Kullanmak
+> Not: `JoinHandle<T>` türündeki `<T>` parametresi, `thread::spawn` içine
+> verdiğiniz kapanışın dönüş değerinin türünü temsil eder (yukarıdaki
+> örneklerde kapanış bir değer döndürmediği için bu tür `JoinHandle<()>`'dir).
+> `join` metodu ise `std::thread::Result<T>` döndürür: oluşturulan thread
+> sorunsuz tamamlandığında kapanışın ürettiği değer `Ok(deger)` içinde döner;
+> ancak oluşturulan thread çalışırken paniklerse (`panic!`), bu panik ana
+> thread'i kendiliğinden çökertmez ve `join` çağrısı `Err` döndürür. Örneklerde
+> `tutamac.join().unwrap()` yazmamızın nedeni budur: alt thread'de bir panik
+> meydana gelmişse `unwrap()` çağrısı hatayı yakalayıp ana thread'i de
+> panikletir; böylece arka plandaki çökmelerin sessizce gözden kaçması önlenir.
 
-`thread::spawn` içine verdiğimiz kapanışlarla birlikte çoğu zaman `move`
-anahtar sözcüğünü de kullanırız. Çünkü bu durumda kapanış, kullandığı
-değerlerin sahipliğini çevresinden alır; böylece o değerlerin sahipliği bir iş
-parçacığından diğerine aktarılmış olur. 13. bölümde [“Referansları Yakalamak
-ya da Sahipliği Taşımak”][capture]<!-- ignore --> kısmında `move` anahtar
-sözcüğünü kapanışlar bağlamında görmüştük. Şimdi `move` ile `thread::spawn`
-arasındaki ilişkiye odaklanacağız.
+<!-- Old headings. Do not remove or links may break. -->
 
-16-1 numaralı listedeki kapanışın hiç parametre almadığına dikkat edin: Ana iş
-parçacığındaki hiçbir veriyi, oluşturulan iş parçacığındaki kodda
-kullanmıyoruz. Oluşturulan iş parçacığında ana iş parçacığından veri
-kullanabilmek için, kapanış ihtiyaç duyduğu değerleri yakalamalıdır. 16-3
-numaralı liste, ana iş parçacığında bir vektör oluşturup onu oluşturulan iş
-parçacığında kullanma girişimini gösteriyor. Ama birazdan göreceğiniz gibi bu
-halde çalışmaz.
+<a id="using-move-closures-with-threads"></a>
+<a id="iş-parçacıklarıyla-move-kapanışları-kullanmak"></a>
 
-<Listing number="16-3" file-name="src/main.rs" caption="Ana iş parçacığında oluşturulan bir vektörü başka bir iş parçacığında kullanmaya çalışmak">
+### Thread'lerle `move` Kapanışlarını Kullanma
+
+`thread::spawn` fonksiyonuna aktarılan kapanışlarla birlikte sıklıkla `move`
+anahtar kelimesini kullanırız; çünkü bu sayede kapanış, çevresinden kullandığı
+değerlerin sahipliğini alır ve böylece bu değerlerin sahipliğini bir thread'den
+diğerine devretmiş olur. Bölüm 13'teki [“Referansları Yakalamak veya Sahipliği
+Taşımak”][capture]<!-- ignore --> başlığında `move` anahtar kelimesini
+kapanışlar bağlamında ele almıştık. Şimdi ise `move` ile `thread::spawn`
+arasındaki etkileşime daha yakından odaklanacağız.
+
+Liste 16-1'de `thread::spawn` fonksiyonuna aktardığımız kapanışın hiçbir argüman
+almadığına dikkat edin: oluşturulan thread'in kodunda ana thread'den hiçbir veri
+kullanmıyoruz. Ana thread'deki verileri oluşturulan thread içinde kullanabilmek
+için, oluşturulan thread'in kapanışının ihtiyaç duyduğu değerleri yakalaması
+gerekir. Liste 16-3, ana thread'de bir vektör oluşturup onu oluşturulan
+thread'de kullanma girişimini göstermektedir. Ancak birazdan göreceğiniz üzere
+bu kod henüz çalışmayacaktır.
+
+<Listing number="16-3" file-name="src/main.rs" caption="Ana thread tarafından oluşturulan bir vektörü başka bir thread'de kullanmaya çalışma">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-03/src/main.rs}}
@@ -200,26 +232,25 @@ halde çalışmaz.
 
 </Listing>
 
-Kapanış `vektor` değişkenini kullandığı için onu yakalar ve kendi çevresinin
-bir parçası haline getirir. `thread::spawn` bu kapanışı yeni bir iş
-parçacığında çalıştırdığına göre, sanki bu yeni iş parçacığında `vektor`
-değerine erişebilmemiz gerekiyormuş gibi görünür. Fakat bu örneği derlediğimizde
-şu hatayı alırız:
+Kapanış `vektor` değişkenini kullandığı için `vektor`'ü yakalar ve kapanışın
+çevresinin bir parçası haline getirir. `thread::spawn` bu kapanışı yeni bir
+thread içinde çalıştırdığından, yeni thread'in içinden `vektor` değerine
+erişebilmemiz gerekir. Ancak bu örneği derlediğimizde aşağıdaki hatayı alırız:
 
 ```console
 {{#include ../listings/ch16-fearless-concurrency/listing-16-03/output.txt}}
 ```
 
-Rust, `vektor` değişkeninin nasıl yakalanacağını _çıkarsar (infer)_. Burada
-`println!` yalnızca `vektor` için bir referansa ihtiyaç duyduğu için kapanış
-onu ödünç almaya çalışır. Sorun şu ki Rust, oluşturulan iş parçacığının ne
-kadar yaşayacağını bilemez; bu yüzden `vektor` için alınan referansın her zaman
-geçerli kalıp kalmayacağını da bilemez.
+Rust, `vektor` değişkenini nasıl yakalayacağını _çıkarsar (infer)_ ve `println!`
+yalnızca `vektor`'e bir referans duyduğu için kapanış `vektor`'ü ödünç almaya
+çalışır. Ancak ortada bir sorun vardır: Rust, oluşturulan thread'in ne kadar
+süre çalışacağını bilemez; dolayısıyla `vektor` referansının her zaman geçerli
+kalıp kalmayacağını da bilemez.
 
-16-4 numaralı liste, `vektor` referansının geçersiz hale gelmesinin çok daha
-olası olduğu bir senaryo gösterir.
+Liste 16-4, `vektor` referansının geçersiz kalma olasılığının çok daha yüksek
+olduğu bir senaryoyu göstermektedir.
 
-<Listing number="16-4" file-name="src/main.rs" caption="Ana iş parçacığı `vektor` değerini düşürürken, kapanış içinde ona referans yakalamaya çalışan bir iş parçacığı">
+<Listing number="16-4" file-name="src/main.rs" caption="`vektor` değerini düşüren ana thread'den `vektor` referansı yakalamaya çalışan bir kapanışa sahip thread">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-04/src/main.rs}}
@@ -227,15 +258,15 @@ olası olduğu bir senaryo gösterir.
 
 </Listing>
 
-Rust bu kodu çalıştırmamıza izin verseydi, oluşturulan iş parçacığı hiç
-çalışmadan hemen arka plana alınabilirdi. O iş parçacığının içinde `vektor`e
-ait bir referans var; ama ana iş parçacığı 15. bölümde gördüğümüz `drop`
-fonksiyonunu kullanarak `vektor`ü anında serbest bırakıyor. Sonra oluşturulan
-iş parçacığı çalışmaya başladığında `vektor` artık geçerli olmuyor; dolayısıyla
-ona ait referans da geçersiz hale geliyor. Kötü haber!
+Rust bu kodu çalıştırmamıza izin verseydi, oluşturulan thread hiç çalışmadan
+anında arka plana alınabilirdi. Oluşturulan thread kendi içinde `vektor` için
+bir referans tutar, ancak ana thread Bölüm 15'te ele aldığımız `drop`
+fonksiyonunu kullanarak `vektor`'ü hemen bellekten düşürür. Ardından oluşturulan
+thread çalışmaya başladığında `vektor` artık geçerli değildir; dolayısıyla ona
+işaret eden referans da geçersizdir. Eyvah!
 
-16-3 numaralı listedeki derleyici hatasını düzeltmek için hata mesajındaki
-öneriyi uygulayabiliriz:
+Liste 16-3'teki derleyici hatasını düzeltmek için hata mesajındaki tavsiyeyi
+uygulayabiliriz:
 
 <!-- manual-regeneration
 after automatic regeneration, look at listings/ch16-fearless-concurrency/listing-16-03/output.txt and copy the relevant part
@@ -245,15 +276,15 @@ after automatic regeneration, look at listings/ch16-fearless-concurrency/listing
 help: to force the closure to take ownership of `vektor` (and any other referenced variables), use the `move` keyword
   |
 6 |     let tutamac = thread::spawn(move || {
-  |                                ++++
+  |                                 ++++
 ```
 
-Kapanışın önüne `move` eklediğimizde, Rust'ın ödünç alma çıkarımı yapmasına
-izin vermek yerine kullanılan değerlerin sahipliğini kapanışın almasını
-zorlamış oluruz. 16-3 numaralı listedeki örneğin 16-5'te gösterilen bu
-değiştirilmiş hali, istediğimiz gibi derlenir ve çalışır.
+Kapanıştan önce `move` anahtar kelimesini ekleyerek, Rust'ın değerleri ödünç
+alması gerektiğini çıkarsamasına izin vermek yerine kapanışı kullandığı
+değerlerin sahipliğini almaya zorlarız. Liste 16-3 üzerinde yapılan ve Liste
+16-5'te gösterilen bu değişiklik, amaçladığımız gibi derlenecek ve çalışacaktır.
 
-<Listing number="16-5" file-name="src/main.rs" caption="Bir kapanışın kullandığı değerlerin sahipliğini almasını zorlamak için `move` kullanmak">
+<Listing number="16-5" file-name="src/main.rs" caption="Bir kapanışı kullandığı değerlerin sahipliğini almaya zorlamak için `move` anahtar kelimesini kullanma">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-05/src/main.rs}}
@@ -261,16 +292,66 @@ değiştirilmiş hali, istediğimiz gibi derlenir ve çalışır.
 
 </Listing>
 
-16-4 numaralı listedeki kodu da aynı yolla düzeltmeyi düşünebiliriz. Orada ana
-iş parçacığı `drop` çağrısıyla `vektor`ü düşürüyordu. Fakat 16-5'teki gibi
-`move` kullandığımız anda, `vektor`ün sahipliği kapanışa aktarılır. Bu yüzden
-ana iş parçacığında artık `drop(vektor)` çağırmak mümkün olmaz. Bunu
-denediğimizde, bu kez aşağıdaki gibi farklı bir derleyici hatası alırız:
+Ana thread'in `drop` çağırdığı Liste 16-4'teki kodu düzeltmek için de aynı şeyi
+yapmayı, yani bir `move` kapanışı kullanmayı denemek isteyebiliriz. Ancak bu
+düzeltme işe yaramayacaktır; çünkü Liste 16-4'ün yapmaya çalıştığı şeye farklı
+bir nedenden ötürü izin verilmez. Kapanışa `move` eklersek `vektor` değerini
+kapanışın çevresine taşımış oluruz ve artık ana thread içinde onun üzerinde
+`drop` çağıramayız. Bunun yerine şu derleyici hatasını alırız:
 
 ```console
 {{#include ../listings/ch16-fearless-concurrency/output-only-01-move-drop/output.txt}}
 ```
 
-Rust'ın sahiplik kuralları bizi yine korumuş oldu.
+Rust'ın sahiplik kuralları bizi bir kez daha kurtardı! Liste 16-3'teki koddan
+hata almamızın nedeni, Rust'ın temkinli davranarak thread için `vektor` değerini
+yalnızca ödünç almasıydı; bu da ana thread'in teorik olarak oluşturulan
+thread'in referansını geçersiz kılabileceği anlamına geliyordu. Rust'a
+`vektor`'ün sahipliğini oluşturulan thread'e taşımasını söyleyerek, ana
+thread'in `vektor`'ü bir daha kullanmayacağını Rust'a garanti etmiş oluruz.
+Liste 16-4'ü aynı şekilde değiştirdiğimizde ise `vektor`'ü ana thread'de
+kullanmaya çalıştığımız anda sahiplik kurallarını ihlal etmiş oluruz. `move`
+anahtar kelimesi, Rust'ın ödünç alma yönündeki temkinli varsayılan davranışını
+geçersiz kılar; sahiplik kurallarını çiğnememize izin vermez.
 
-[capture]: ch13-01-kapanislar.html#referansları-yakalamak-capturing-veya-sahipliği-ownership-taşımak
+> Not: Liste 16-3'ün derleyici çıktısındaki `note: function requires argument
+> type to outlive 'static` (*fonksiyon, argüman türünün `'static` ömrü kadar
+> yaşamasını gerektiriyor*) açıklamasına dikkat edin. `std::thread::spawn`
+> fonksiyonu, başlatılan thread'in kendisini çağıran fonksiyondan daha uzun
+> yaşayabileceği varsayımıyla `F: Send + 'static` sınırı koyar; bu yüzden kısa
+> ömürlü yerel değişkenlere referans alınmasına izin vermez.
+>
+> Oysa oluşturacağınız thread'lerin belirli bir kod kapsamı bitmeden **kesinlikle
+> tamamlanacağını** biliyorsanız, verinin sahipliğini taşımak (`move`), klonlamak
+> veya `Arc<T>` kullanmak yerine Rust 1.63 ile standart kütüphaneye eklenen
+> **`std::thread::scope`** (*kapsamlı thread'ler*) API'sinden yararlanabilirsiniz.
+> `thread::scope`, kendi kapsam bloğu sona ermeden önce içeride başlatılan tüm
+> thread'lerin tamamlanmasını otomatik olarak bekler (`join` eder). Böylece
+> ödünç alma denetleyicisi, yerel değişken referanslarının thread'ler çalıştığı
+> sürece geçerli kalacağını derleme zamanında kanıtlayabilir:
+>
+> ```rust
+> use std::thread;
+>
+> fn main() {
+>     let vektor = vec![1, 2, 3];
+>
+>     thread::scope(|kapsam| {
+>         kapsam.spawn(|| {
+>             println!("1. thread vektörü ödünç aldı: {vektor:?}");
+>         });
+>
+>         kapsam.spawn(|| {
+>             println!("2. thread vektörü ödünç aldı: {vektor:?}");
+>         });
+>     }); // Tüm kapsamlı thread'ler bu noktada otomatik olarak beklenir (join edilir).
+>
+>     // Sahiplik taşınmadığı için `vektor` ana thread'de hâlâ kullanılabilir:
+>     println!("Ana thread vektörü kullanmaya devam ediyor: {vektor:?}");
+> }
+> ```
+
+Thread'lerin ne olduğunu ve thread API'sinin sunduğu metotları ele aldığımıza
+göre, şimdi thread'leri kullanabileceğimiz bazı durumlara bakalım.
+
+[capture]: ch13-01-kapanislar.html#referansları-yakalamak-veya-sahipliği-taşımak

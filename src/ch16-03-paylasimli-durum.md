@@ -1,61 +1,77 @@
-## Paylaşımlı Durum Eşzamanlılığı
+<!-- Old headings. Do not remove or links may break. -->
 
-Mesaj iletimi, eşzamanlılığı yönetmenin iyi yollarından biridir; ama tek yol
-bu değildir. Başka bir yöntem de birden fazla iş parçacığının aynı paylaşılan
-veriye erişmesidir. Go belgelerindeki şu sözün bu bölümünü yeniden düşünün:
-"Belleği paylaşarak iletişim kurmayın."
+<a id="shared-state-concurrency"></a>
+<a id="paylaşımlı-durum-eşzamanlılığı"></a>
 
-Peki belleği paylaşarak iletişim kurmak nasıl bir şeye benzerdi? Ayrıca mesaj
-iletimini savunanlar neden bellek paylaşımından özellikle kaçınmayı öneriyor?
+## Paylaşımlı Durum (Shared-State) Eşzamanlılığı
 
-Bir bakıma, herhangi bir programlama dilindeki kanallar tek sahipliğe benzer;
-çünkü bir değeri kanaldan gönderdiğinizde artık onu kullanmamanız gerekir.
-Paylaşımlı bellekle eşzamanlılık ise çoklu sahipliğe benzer: Birden çok iş
-parçacığı aynı anda aynı bellek konumuna erişebilir. 15. bölümde akıllı
-işaretçilerin çoklu sahipliği nasıl mümkün kıldığını görmüştünüz. Çoklu
-sahiplik, farklı sahiplerin yönetilmesini gerektirdiği için doğal olarak
-karmaşıklık da getirir. Rust'ın tür sistemi ve sahiplik kuralları bu yönetimi
-doğru yapma konusunda çok yardımcı olur. Bir örnek olarak, paylaşımlı bellek
-eşzamanlılığında sık kullanılan temel yapılardan biri olan mutex'e bakalım.
+Mesaj iletimi eşzamanlılığı ele almanın iyi bir yoludur, ancak tek yol değildir.
+Bir diğer yöntem de birden fazla thread'in aynı paylaşılan veriye erişmesidir.
+Go dili belgelerindeki sloganın şu kısmını yeniden düşünün: “Belleği paylaşarak
+iletişim kurmayın.”
+
+Belleği paylaşarak iletişim kurmak neye benzerdi? Ayrıca, mesaj iletimini
+savunanlar neden bellek paylaşımını kullanmamamız konusunda uyarıda bulunur?
+
+Bir bakıma, herhangi bir programlama dilindeki kanallar tekli sahipliğe benzer;
+çünkü bir değeri kanal üzerinden aktardığınızda o değeri artık kullanmamanız
+gerekir. Paylaşımlı bellek eşzamanlılığı ise çoklu sahipliğe benzer: birden
+fazla thread aynı anda aynı bellek konumuna erişebilir. Bölüm 15'te akıllı
+işaretçilerin çoklu sahipliği nasıl mümkün kıldığını gördüğünüz üzere, bu farklı
+sahiplerin yönetilmesi gerektiği için çoklu sahiplik beraberinde karmaşıklık
+getirebilir. Rust'ın tür sistemi ve sahiplik kuralları, bu yönetimi doğru
+biçimde gerçekleştirmenize büyük ölçüde yardımcı olur. Örnek olarak, paylaşımlı
+bellek için en yaygın eşzamanlılık ilkellerinden (_concurrency primitives_) biri
+olan mutex'lere bakalım.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-mutexes-to-allow-access-to-data-from-one-thread-at-a-time"></a>
+<a id="controlling-access-with-mutexes"></a>
+<a id="mutext-ile-erişimi-denetlemek"></a>
 
-### `Mutex<T>` ile Erişimi Denetlemek
+### Mutex'lerle Erişimi Kontrol Etme
 
-_Mutex_, _mutual exclusion_ ifadesinin kısaltmasıdır; yani bir mutex, belli bir
-anda yalnızca tek bir iş parçacığının bazı verilere erişmesine izin verir.
-Mutex içindeki veriye erişmek için, iş parçacığı önce erişim istediğini
-bildirmeli ve mutex'in _kilidini (lock)_ almalıdır. Kilit, mutex'in bir parçası
-olan ve o anda veriye kimin özel erişimi olduğunu takip eden veri yapısıdır.
-Bu yüzden mutex'in tuttuğu veriyi kilitleme sistemiyle _koruduğu_ söylenir.
+_Mutex_, _karşılıklı dışlama (mutual exclusion)_ ifadesinin kısaltmasıdır; yani
+bir mutex, herhangi bir anda yalnızca tek bir thread'in belirli bir veriye
+erişmesine izin verir. Bir mutex içindeki veriye erişmek için thread'in önce
+mutex'in _kilidini (lock)_ edinmeyi talep ederek erişim istediğini bildirmesi
+gerekir. _Kilit_, mutex'in bir parçası olan ve o anda veriye kimin münhasır
+(özel) erişim hakkına sahip olduğunu takip eden bir veri yapısıdır. Dolayısıyla
+mutex'in, barındırdığı veriyi bu kilitleme sistemi aracılığıyla _koruduğu
+(guarding)_ söylenir.
 
-Mutex'lerin kullanımı zor olmakla ünlüdür; çünkü iki kuralı sürekli akılda
-tutmanız gerekir:
+Mutex'ler, iki kuralı sürekli aklınızda tutmanız gerektiği için kullanımı zor
+yapılar olarak bilinir:
 
-1. Veriyi kullanmadan önce kilidi almaya çalışmalısınız.
-2. Mutex'in koruduğu veriyle işiniz bittiğinde, diğer iş parçacıkları da kilidi
-   alabilsin diye kilidi bırakmalısınız.
+1. Veriyi kullanmadan önce kilidi edinme girişiminde bulunmalısınız.
+2. Mutex'in koruduğu veriyle işiniz bittiğinde, diğer thread'lerin kilidi
+   edinebilmesi için verinin kilidini açmalısınız.
 
-Bunu gündelik bir benzetmeyle düşünelim: Tek mikrofonu olan bir panel
-oturumunu hayal edin. Konuşmacılardan biri konuşmadan önce mikrofonu
-istediğini belirtmelidir. Mikrofonu alınca istediği kadar konuşur; sonra da
-sıradaki kişiye verir. Bir konuşmacı işini bitirince mikrofonu devretmeyi
-unutursa, başka kimse konuşamaz. Paylaşılan mikrofonun yönetimi bozulursa
-panel planlandığı gibi ilerlemez.
+Bir mutex için gerçek dünyadan bir benzetme yapmak gerekirse, bir konferansta
+yalnızca tek bir mikrofonun bulunduğu bir panel tartışmasını hayal edin. Bir
+panelist konuşmaya başlamadan önce mikrofonu kullanmak istediğini söylemeli veya
+işaret etmelidir. Mikrofonu aldığında istediği süre boyunca konuşabilir ve
+ardından mikrofonu konuşma talebinde bulunan bir sonraki paneliste devreder.
+Eğer bir panelist konuşmasını bitirdiğinde mikrofonu devretmeyi unutursa, başka
+hiç kimse konuşamaz. Paylaşılan mikrofonun yönetimi ters giderse panel
+planlandığı gibi yürümeyecektir!
 
-Mutex yönetimini doğru yapmak gerçekten zordur; işte bu yüzden birçok kişi
-kanalları daha heyecan verici bulur. Ama Rust'ın tür sistemi ve sahiplik
-kuralları sayesinde, kilitleme ile kilidi bırakma işlerini yanlış yapmanız
-çok daha zordur.
+Mutex'lerin yönetimini doğru kurgulamak son derece çetrefilli olabilir; pek çok
+kişinin kanalları bu kadar coşkuyla tercih etmesinin nedeni de budur. Ancak
+Rust'ın tür sistemi ve sahiplik kuralları sayesinde, kilitleme ve kilit açma
+işlemlerini yanlış yapamazsınız.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="the-api-of-mutext"></a>
 
 #### `Mutex<T>` API'si
 
-Mutex'in nasıl kullanıldığını görmek için önce tek iş parçacıklı çok basit bir
-örnekle başlayalım; 16-12 numaralı liste bunu gösteriyor.
+Bir mutex'in nasıl kullanılacağına örnek olarak, Liste 16-12'de gösterildiği
+gibi öncelikle tek thread'li bir bağlamda mutex kullanarak başlayalım.
 
-<Listing number="16-12" file-name="src/main.rs" caption="Sade olması için `Mutex<T>` API'sini tek iş parçacıklı bağlamda incelemek">
+<Listing number="16-12" file-name="src/main.rs" caption="Sadelik adına `Mutex<T>` API'sini tek thread'li bir bağlamda inceleme">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-12/src/main.rs}}
@@ -63,44 +79,72 @@ Mutex'in nasıl kullanıldığını görmek için önce tek iş parçacıklı ç
 
 </Listing>
 
-Birçok türde olduğu gibi `Mutex<T>` değerini de `new` ilişkili fonksiyonuyla
-oluştururuz. İçindeki veriye erişmek için `lock` metoduyla kilidi alırız. Bu
-çağrı, kilidi alma sırası bize gelene kadar mevcut iş parçacığını bloklar.
+Pek çok türde olduğu gibi, bir `Mutex<T>` örneğini `new` ilişkili fonksiyonunu
+kullanarak oluştururuz. Mutex'in içindeki veriye erişmek için `lock` metodunu
+kullanarak kilidi ediniriz. Bu çağrı, kilidi alma sırası bize gelene kadar
+mevcut thread'i hiçbir iş yapamayacak şekilde bloke eder.
 
-Kilidi elinde tutan başka bir iş parçacığı paniklerse `lock` çağrısı hata
-verebilir. Böyle bir durumda artık hiç kimse kilidi alamayacağı için, burada
-`unwrap` kullanıp bu iş parçacığının da paniklemesini seçtik.
+Kilidi elinde tutan başka bir thread paniklediyse `lock` çağrısı başarısız olur.
+Böyle bir durumda kilidi bir daha hiç kimse alamayacağı için `unwrap` çağrısını
+tercih ettik ve bu durumla karşılaşırsak mevcut thread'in de paniklemesini
+sağladık.
 
-Kilidi aldıktan sonra, burada `sayi` adını verdiğimiz dönüş değerini içerideki
-veriye ait değiştirilebilir referans gibi kullanabiliriz. Tür sistemi, `kilit`
-değerinin içindeki veriyi kullanmadan önce gerçekten kilit aldığımızdan emin
-olur. `kilit` değişkeninin türü `i32` değil `Mutex<i32>` olduğu için, içerideki
-`i32` değeri kullanabilmek adına _zorunlu olarak_ `lock` çağırırız. Bunu
-unutamayız; tür sistemi başka türlü izin vermez.
+Kilidi edindikten sonra, bu örnekte `sayi` adını verdiğimiz dönüş değerine
+içerideki verinin değiştirilebilir bir referansı gibi davranabiliriz. Tür
+sistemi, `kilit` içindeki değeri kullanmadan önce bir kilit edindiğimizi garanti
+altına alır. `kilit` değişkeninin türü `i32` değil `Mutex<i32>` olduğundan,
+`i32` değerini kullanabilmek için `lock` metodunu çağırmamız _zorunludur_. Bunu
+unutamayız; aksi takdirde tür sistemi içerideki `i32` değerine erişmemize izin
+vermez.
 
-`lock` çağrısı, bizim `unwrap` ile ele aldığımız `LockResult` içine sarılmış
-bir `MutexGuard` döndürür. `MutexGuard`, `Deref` uygular; böylece içerideki
-veriyi işaret eder. Ayrıca `Drop` uygulaması sayesinde bir `MutexGuard` kapsam
-dışına çıktığında kilit otomatik olarak bırakılır. Bu da içteki kapsamın sonunda
-olur. Sonuç olarak kilidi bırakmayı unutup mutex'i başka iş parçacıklarının
-kullanmasına engel olma riski yaşamayız; kilit bırakma işi kendiliğinden olur.
+`lock` çağrısı, `unwrap` çağrısıyla ele aldığımız bir `LockResult` içine
+sarılmış `MutexGuard` adlı bir tür döndürür. `MutexGuard` türü, içerideki
+verimize işaret etmek üzere `Deref` trait'ini uygular; ayrıca bu türün, bir
+`MutexGuard` kapsam dışına çıktığında —ki bu örnekte iç kapsamın sonunda
+gerçekleşir— kilidi otomatik olarak serbest bırakan bir `Drop` uygulaması
+vardır. Sonuç olarak, kilidi bırakmayı unutup mutex'in diğer thread'ler
+tarafından kullanılmasını engelleme riskine girmeyiz; çünkü kilidin serbest
+bırakılması otomatik olarak gerçekleşir.
 
-Kilidi bıraktıktan sonra mutex değerini ekrana yazdırabilir ve içerideki `i32`
-değerini `6` yaptığımızı görebiliriz.
+Kilit düşürüldükten sonra mutex değerini ekrana yazdırabilir ve içerideki `i32`
+değerini `6` olarak değiştirebildiğimizi görebiliriz.
+
+> Not: `MutexGuard` ve `lock()` kullanımıyla ilgili iki pratik ayrıntıyı
+> aklınızda bulundurmak gerçek dünya projelerinde çok işinize yarayacaktır:
+>
+> - **Kritik Bölgeyi Dar Tutma (`{ ... }` veya `drop`):** Kilit, `MutexGuard`
+>   değeri kapsamda kaldığı sürece tutulur. Kilidi aldıktan sonra aynı kapsamda
+>   ağ isteği, dosya okuma/yazma gibi yavaş G/Ç (*I/O*) işlemleri veya uzun
+>   hesaplamalar yaparsanız, kilidi bekleyen diğer tüm thread'ler gereksiz yere
+>   bloklanır. Bunu önlemek için Liste 16-12'deki gibi `{ let mut sayi =
+>   kilit.lock().unwrap(); *sayi = 6; }` biçiminde dar bir iç kapsam açabilir ya
+>   da paylaşılan veriyle işiniz biter bitmez `drop(sayi);` çağırarak kilidi
+>   erkenden serbest bırakabilirsiniz.
+> - **Kilit Zehirlenmesi (*Lock Poisoning*):** Liste 16-12'yi çalıştırdığınızda
+>   ekrana `kilit = Mutex { data: 6, poisoned: false, .. }` yazdırılır. Eğer bir
+>   thread kilidi elinde tutarken paniklerse, içerideki veriyi yarım kalmış ve
+>   tutarsız bir durumda bırakmış olabileceğinden Rust bu mutex'i _zehirlenmiş
+>   (poisoned)_ olarak işaretler ve sonraki `lock()` çağrılarında `Err(PoisonError)`
+>   döndürür. Çoğu senaryoda `unwrap()` ile panik yaymak en güvenli yoldur; ancak
+>   veriyi onararak kurtarmak isterseniz hata değeri üzerinde `into_inner()`
+>   metodunu çağırarak alttaki `MutexGuard`'a yine de erişebilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="sharing-a-mutext-between-multiple-threads"></a>
+<a id="shared-access-to-mutext"></a>
+<a id="mutext-için-paylaşımlı-erişim"></a>
 
-#### `Mutex<T>` İçin Paylaşımlı Erişim
+#### `Mutex<T>`'ye Paylaşımlı Erişim
 
-Şimdi `Mutex<T>` kullanarak bir değeri birden fazla iş parçacığı arasında
-paylaştırmayı deneyelim. 10 iş parçacığı oluşturup her birinin sayacı `1`
-artırmasını isteyeceğiz; böylece sayaç `0`'dan `10`'a çıkacak. 16-13 numaralı
-listedeki örnek derleyici hatası verecek ve bu hata üzerinden `Mutex<T>` ile
-çalışırken Rust'ın bize nasıl yardım ettiğini daha iyi anlayacağız.
+Şimdi `Mutex<T>` kullanarak bir değeri birden fazla thread arasında paylaşmayı
+deneyelim. 10 adet thread başlatacağız ve her birinin bir sayaç değerini 1
+artırmasını sağlayacağız; böylece sayaç 0'dan 10'a çıkacak. Liste 16-13'teki
+örnek bir derleyici hatası verecek ve bu hatayı `Mutex<T>` kullanımı ile Rust'ın
+onu doğru kullanmamıza nasıl yardımcı olduğu hakkında daha fazla şey öğrenmek
+için değerlendireceğiz.
 
-<Listing number="16-13" file-name="src/main.rs" caption="Her biri `Mutex<T>` ile korunan sayacı artıran on iş parçacığı">
+<Listing number="16-13" file-name="src/main.rs" caption="Her biri bir `Mutex<T>` tarafından korunan sayacı artıran 10 thread">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-13/src/main.rs}}
@@ -108,38 +152,46 @@ listedeki örnek derleyici hatası verecek ve bu hata üzerinden `Mutex<T>` ile
 
 </Listing>
 
-16-12 numaralı listedekine benzer şekilde, `Mutex<T>` içindeki bir `i32`
-değerini tutmak için `sayac` değişkeni oluşturuyoruz. Ardından bir sayı aralığı
-üzerinde dönerek 10 iş parçacığı başlatıyoruz. `thread::spawn` çağrısına,
-sayacı iş parçacığına taşıyan, `lock` metoduyla `Mutex<T>` kilidini alan ve
-sonra içerdeki değere `1` ekleyen aynı kapanışı veriyoruz. Bir iş parçacığı
-kapanışı bitirdiğinde `sayi` kapsam dışına çıkar ve kilit bırakılır; böylece
-başka bir iş parçacığı kilidi alabilir.
+Liste 16-12'de yaptığımız gibi, bir `Mutex<T>` içinde `i32` tutmak üzere `sayac`
+değişkenini oluşturuyoruz. Ardından bir sayı aralığı üzerinde yineleme yaparak
+10 thread oluşturuyoruz. `thread::spawn` fonksiyonunu kullanıyor ve tüm
+thread'lere aynı kapanışı veriyoruz: sayacı thread içine taşıyan, `lock`
+metodunu çağırarak `Mutex<T>` üzerindeki kilidi edinen ve ardından mutex
+içindeki değere 1 ekleyen bir kapanış. Bir thread kapanışını çalıştırmayı
+bitirdiğinde `sayi` kapsam dışına çıkar ve kilidi serbest bırakır; böylece başka
+bir thread kilidi edinebilir.
 
-Ana iş parçacığında bütün tutamaçları bir vektörde topluyoruz. Sonra 16-2
-numaralı listedeki gibi her tutamaç üzerinde `join` çağırarak tüm iş
-parçacıklarının bitmesini bekliyoruz. En sonunda ana iş parçacığı kilidi alıp
-programın sonucunu yazdırıyor.
+Ana thread'de tüm birleştirme tutamaçlarını (`tutamaclar`) topluyoruz. Ardından,
+Liste 16-2'de yaptığımız gibi tüm thread'lerin tamamlandığından emin olmak için
+her bir `tutamac` üzerinde `join` metodunu çağırıyoruz. Bu noktada ana thread
+kilidi edinecek ve programın sonucunu ekrana yazdıracaktır.
 
-Bu örneğin derlenmeyeceğini söylemiştik. Şimdi nedenine bakalım:
+Bu örneğin derlenmeyeceğini çıtlatmıştık. Şimdi nedenini öğrenelim!
 
 ```console
 {{#include ../listings/ch16-fearless-concurrency/listing-16-13/output.txt}}
 ```
 
-Hata mesajı `sayac` değerinin döngünün önceki yinelemesinde taşındığını
-söylüyor. Yani Rust bize, kilitli `sayac` değerinin sahipliğini birden fazla iş
-parçacığına taşıyamayacağımızı anlatıyor. Bunu, 15. bölümde gördüğümüz çoklu
-sahiplik yaklaşımıyla düzeltmeye çalışalım.
+Hata mesajı, `sayac` değerinin döngünün bir önceki adımında taşındığını (`value
+moved into closure here, in previous iteration of loop`) belirtir. Rust bize
+`sayac` kilidinin sahipliğini birden fazla thread içine taşıyamayacağımızı
+söylüyor. Derleyici hatasını, Bölüm 15'te ele aldığımız çoklu sahiplik
+yöntemiyle düzeltelim.
 
-#### Birden Fazla İş Parçacığıyla Çoklu Sahiplik
+<!-- Old headings. Do not remove or links may break. -->
 
-15. bölümde bir değere birden fazla sahip vermek için `Rc<T>` akıllı
-işaretçisini kullanmıştık. Aynı şeyi burada da yapıp ne olacağına bakalım.
-16-14 numaralı listede `Mutex<T>` değerini `Rc<T>` içine sarıyor ve iş
-parçacığına taşımadan önce `Rc<T>` değerini klonluyoruz.
+<a id="multiple-ownership-with-multiple-threads"></a>
+<a id="birden-fazla-iş-parçacığıyla-çoklu-sahiplik"></a>
 
-<Listing number="16-14" file-name="src/main.rs" caption="Birden fazla iş parçacığının `Mutex<T>` değerine sahip olabilmesi için `Rc<T>` kullanmaya çalışmak">
+#### Birden Fazla Thread ile Çoklu Sahiplik
+
+Bölüm 15'te, referans sayımlı bir değer oluşturmak üzere `Rc<T>` akıllı
+işaretçisini kullanarak bir değere birden fazla sahip vermiştik. Burada da
+aynısını yapalım ve ne olacağını görelim. Liste 16-14'te `Mutex<T>` değerini
+`Rc<T>` içine saracağız ve sahipliği thread'e taşımadan önce `Rc<T>` örneğini
+klonlayacağız.
+
+<Listing number="16-14" file-name="src/main.rs" caption="Birden fazla thread'in `Mutex<T>` değerine sahip olabilmesi için `Rc<T>` kullanmayı deneme">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-14/src/main.rs}}
@@ -147,53 +199,60 @@ parçacığına taşımadan önce `Rc<T>` değerini klonluyoruz.
 
 </Listing>
 
-Yine derliyoruz ve... bu kez farklı hatalar alıyoruz. Derleyici bize çok şey
+Yeniden derliyoruz ve... farklı hatalar alıyoruz! Derleyici bize pek çok şey
 öğretiyor:
 
 ```console
 {{#include ../listings/ch16-fearless-concurrency/listing-16-14/output.txt}}
 ```
 
-Bu mesajın en önemli kısmı şudur:
-`` `Rc<std::sync::Mutex<i32>>` cannot be sent between threads safely ``.
-Derleyici bunun nedenini de söylüyor:
-`` the trait `Send` is not implemented for `Rc<std::sync::Mutex<i32>>` ``.
-Bir sonraki bölümde `Send` trait'ini ayrıntılı konuşacağız. Şimdilik şunu
-bilin: `Send`, iş parçacıklarıyla kullanılacak türlerin eşzamanlı bağlamlara
-uygun olduğunu garanti eden trait'lerden biridir.
+Vay canına, bu hata mesajı oldukça ayrıntılı! Odaklanmamız gereken önemli kısım
+şurasıdır: `` `Rc<std::sync::Mutex<i32>>` cannot be sent between threads safely ``
+(`Rc<Mutex<i32>>` thread'ler arasında güvenli bir şekilde gönderilemez).
+Derleyici bize bunun nedenini de söylüyor: `` the trait `Send` is not
+implemented for `Rc<std::sync::Mutex<i32>>` `` (`Send` trait'i `Rc<Mutex<i32>>`
+için uygulanmamıştır). `Send` hakkında bir sonraki bölümde konuşacağız:
+thread'lerle birlikte kullandığımız türlerin eşzamanlı durumlarda kullanıma
+uygun olmasını sağlayan trait'lerden biridir.
 
-Ne yazık ki `Rc<T>` iş parçacıkları arasında paylaşmak için güvenli değildir.
-`Rc<T>` referans sayısını yönettiğinde, her `clone` çağrısında sayıyı artırır,
-her klon düşürüldüğünde de azaltır. Fakat bu sayacın güncellenmesi sırasında
-başka bir iş parçacığının araya girmesini önleyecek bir eşzamanlılık ilkelini
-kullanmaz. Bu da yanlış sayımlara, dolayısıyla çok sinsi hatalara, bellek
-sızıntılarına ya da işimiz bitmeden bir değerin düşürülmesine yol açabilir.
-Burada bize gereken şey, `Rc<T>`ye çok benzeyen ama referans sayısını iş
-parçacığı güvenli biçimde güncelleyen bir türdür.
+Ne yazık ki `Rc<T>`, thread'ler arasında paylaşılmak için güvenli değildir.
+`Rc<T>` referans sayısını yönetirken her `clone` çağrısında sayaca ekleme yapar
+ve her klon bellekten düşürüldüğünde sayaçtan çıkarma yapar. Ancak sayaca
+yapılan değişikliklerin başka bir thread tarafından kesintiye
+uğratılamayacağından emin olmak için herhangi bir eşzamanlılık ilkeli kullanmaz.
+Bu durum yanlış sayımlara —bellek sızıntılarına veya bir değerin henüz onunla
+işimiz bitmeden düşürülmesine neden olabilecek sinsi hatalara— yol açabilir.
+İhtiyacımız olan şey, tıpkı `Rc<T>` gibi çalışan ancak referans sayısındaki
+değişiklikleri thread güvenli (_thread-safe_) bir biçimde yapan bir türdür.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="atomic-reference-counting-with-arct"></a>
 
 #### `Arc<T>` ile Atomik Referans Sayımı
 
-Neyse ki `Arc<T>`, `Rc<T>` gibi davranan ama eşzamanlı ortamlarda güvenle
-kullanılabilen bir türdür. Buradaki _a_, _atomic_ sözcüğünden gelir; yani bu
-tür _atomik referans sayımlıdır (atomically reference-counted)_. Atomikler,
-burada ayrıntısına girmeyeceğimiz ayrı bir eşzamanlılık ilkelidir. Daha fazla
-bilgi için standart kütüphanedeki [`std::sync::atomic`][atomic]<!-- ignore -->
-belgelerine bakabilirsiniz. Şimdilik bilmeniz gereken, atomik türlerin ilkel
-türler gibi çalıştığı ama iş parçacıkları arasında güvenle paylaşılabildiğidir.
+Neyse ki `Arc<T>`, eşzamanlı durumlarda güvenle kullanılabilen `Rc<T>` benzeri
+bir türdür. Başındaki _a_ harfi _atomik (atomic)_ kelimesinden gelir; yani bu
+bir _atomik referans sayımlı (atomically reference-counted)_ türdür. Atomikler,
+burada ayrıntılı olarak ele almayacağımız ek bir eşzamanlılık ilkeli türüdür:
+daha fazla ayrıntı için [`std::sync::atomic`][atomic]<!-- ignore --> standart
+kütüphane belgelerine bakabilirsiniz. Bu noktada yalnızca atomiklerin ilkel
+türler gibi çalıştığını, ancak thread'ler arasında paylaşılmak için güvenli
+olduğunu bilmeniz yeterlidir.
 
-Şu soru akla gelebilir: Madem öyle, neden bütün ilkel türler atomik değil ya da
-standart kütüphane türleri varsayılan olarak neden `Arc<T>` kullanmıyor?
-Cevap şu: İş parçacığı güvenliği bir performans bedeli getirir ve bu bedeli
-yalnızca gerçekten gerektiğinde ödemek istersiniz. Tek bir iş parçacığında
-çalışıyorsanız, atomik güvenceleri zorunlu kılmak zorunda kalmayan kod daha
-hızlı çalışabilir.
+Bu noktada neden tüm ilkel türlerin atomik olmadığını ve standart kütüphane
+türlerinin neden varsayılan olarak `Arc<T>` kullanacak şekilde uygulanmadığını
+merak edebilirsiniz. Bunun nedeni, thread güvenliğinin yalnızca gerçekten
+ihtiyaç duyduğunuzda ödemek isteyeceğiniz bir performans maliyeti getirmesidir.
+Değerler üzerinde yalnızca tek bir thread içinde işlemler gerçekleştiriyorsanız,
+kodunuz atomiklerin sağladığı güvenceleri zorunlu kılmak zorunda kalmadığında
+daha hızlı çalışabilir.
 
-Örneğimize geri dönelim: `Arc<T>` ile `Rc<T>` aynı API'yi sunar. Bu nedenle
-programı düzeltmek için yalnızca `use` satırını, `new` çağrısını ve `clone`
-çağrısını değiştirmemiz yeterlidir. 16-15 numaralı listedeki kod sonunda
-derlenir ve çalışır.
+Örneğimize geri dönelim: `Arc<T>` ve `Rc<T>` aynı API'ye sahiptir; dolayısıyla
+`use` satırını, `new` çağrısını ve `clone` çağrısını değiştirerek programımızı
+düzeltiriz. Liste 16-15'teki kod nihayet derlenecek ve çalışacaktır.
 
-<Listing number="16-15" file-name="src/main.rs" caption="Birden fazla iş parçacığı arasında sahipliği paylaşabilmek için `Mutex<T>` değerini `Arc<T>` ile sarmalamak">
+<Listing number="16-15" file-name="src/main.rs" caption="Birden fazla thread arasında sahipliği paylaşabilmek için `Mutex<T>` değerini bir `Arc<T>` ile sarmalama">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-15/src/main.rs}}
@@ -201,7 +260,7 @@ derlenir ve çalışır.
 
 </Listing>
 
-Bu kod aşağıdaki çıktıyı üretir:
+Bu kod aşağıdaki çıktıyı yazdıracaktır:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -211,48 +270,62 @@ changes in the compiler -->
 Sonuç: 10
 ```
 
-Başardık! `0`'dan `10`'a kadar saydık. Bu çok etkileyici görünmeyebilir; ama
-`Mutex<T>` ve iş parçacığı güvenliği hakkında pek çok şey öğrenmiş olduk.
-Aslında aynı yapı, yalnızca sayaç artırmak değil çok daha karmaşık hesaplar
-için de kullanılabilir. Bu stratejiyle bir hesabı bağımsız parçalara bölebilir,
-parçaları iş parçacıklarına dağıtabilir ve sonunda her parçanın sonucunu
-`Mutex<T>` aracılığıyla ortak sonuca yansıtabilirsiniz.
+Başardık! 0'dan 10'a kadar saydık; bu ilk bakışta çok etkileyici görünmeyebilir,
+ancak bize `Mutex<T>` ve thread güvenliği hakkında pek çok şey öğretti. Bu
+programın yapısını yalnızca bir sayacı artırmaktan daha karmaşık işlemler yapmak
+için de kullanabilirsiniz. Bu stratejiyi kullanarak bir hesaplamayı bağımsız
+parçalara bölebilir, bu parçaları thread'lere dağıtabilir ve ardından her bir
+thread'in nihai sonucu kendi parçasıyla güncellemesi için bir `Mutex<T>`
+kullanabilirsiniz.
 
-Şunu da unutmayın: Basit sayısal işlemler yapıyorsanız, standart
-kütüphanedeki [`std::sync::atomic` modülü][atomic]<!-- ignore --> altında
-`Mutex<T>`den daha sade türler bulunur. Bu türler ilkel verilere güvenli,
-eşzamanlı ve atomik erişim sağlar. Biz burada `Mutex<T>`yi ilkel bir türle
-kullanmayı özellikle seçtik; çünkü amacımız öncelikle `Mutex<T>`nin nasıl
-çalıştığını göstermekti.
+Basit sayısal işlemler yapıyorsanız, [standart kütüphanenin `std::sync::atomic`
+modülü][atomic]<!-- ignore --> tarafından sunulan ve `Mutex<T>` türlerinden daha
+basit olan türler bulunduğunu unutmayın. Bu türler ilkel türlere güvenli,
+eşzamanlı ve atomik erişim sağlar. Biz bu örnekte `Mutex<T>` türünün nasıl
+çalıştığına odaklanabilmek için `Mutex<T>` yapısını ilkel bir türle birlikte
+kullanmayı tercih ettik.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="similarities-between-refcelltrct-and-mutextarct"></a>
+<a id="comparing-refcelltrct-and-mutextarct"></a>
 
 ### `RefCell<T>`/`Rc<T>` ile `Mutex<T>`/`Arc<T>` Karşılaştırması
 
-`sayac` değişkeninin değiştirilemez tanımlandığını ama içindeki değere
-değiştirilebilir referans alabildiğimizi fark etmiş olabilirsiniz. Bu da
-`Mutex<T>`nin, `Cell` ailesindeki türler gibi içsel değiştirilebilirlik
-sağladığını gösterir. 15. bölümde `Rc<T>` içindeki değeri değiştirebilmek için
-`RefCell<T>` kullanmıştık; burada da aynı işi `Arc<T>` içindeki değer için
-`Mutex<T>` ile yapıyoruz.
+`sayac` değişkeninin değiştirilemez olmasına rağmen içindeki değere
+değiştirilebilir bir referans alabildiğimizi fark etmiş olabilirsiniz; bu durum,
+tıpkı `Cell` ailesinin yaptığı gibi `Mutex<T>` türünün de _içsel
+değiştirilebilirlik (interior mutability)_ sağladığı anlamına gelir. Bölüm 15'te
+bir `Rc<T>` içindeki içeriği değiştirebilmek için `RefCell<T>` kullandığımız
+gibi, bir `Arc<T>` içindeki içeriği değiştirmek için de `Mutex<T>` kullanırız.
 
-Dikkat edilmesi gereken başka bir nokta daha var: `Mutex<T>` kullanırken Rust
-sizi her türlü mantık hatasından koruyamaz. 15. bölümde, `Rc<T>` kullanırken
-iki değerin birbirini işaret etmesiyle referans döngüsü kurulabileceğini ve
-bunun bellek sızıntısına yol açabileceğini görmüştünüz. Benzer biçimde
-`Mutex<T>` de _kilitlenme (deadlock)_ riskini taşır. Bu durum, bir işlemin iki
-kaynak için kilit alması gerektiğinde ve iki iş parçacığının bu kilitlerden
-birer tanesini alıp birbirini sonsuza kadar beklemesiyle ortaya çıkar.
+Dikkat edilmesi gereken bir diğer ayrıntı, `Mutex<T>` kullandığınızda Rust'ın
+sizi her türlü mantık hatasından koruyamayacağıdır. Bölüm 15'ten
+hatırlayacağınız üzere `Rc<T>` kullanmak, iki `Rc<T>` değerinin birbirine atıfta
+bulunarak bellek sızıntılarına yol açtığı referans döngüleri oluşturma riskini
+taşıyordu. Benzer şekilde `Mutex<T>` de _kilitlenme (deadlock)_ oluşturma
+riskini beraberinde getirir. Bu durum, bir işlemin iki kaynağı birden
+kilitlemesi gerektiğinde ve iki farklı thread bu kilitlerden birer tanesini
+edinip sonsuza dek birbirini beklemeye başladığında meydana gelir. Kilitlenmeler
+ilginizi çekiyorsa, kilitlenme içeren bir Rust programı oluşturmayı deneyin;
+ardından herhangi bir dilde mutex'ler için uygulanan kilitlenme önleme
+stratejilerini araştırıp bunları Rust'ta uygulamaya çalışın. `Mutex<T>` ve
+`MutexGuard` için hazırlanan standart kütüphane API belgeleri bu konuda faydalı
+bilgiler sunar.
 
-Kilitlenmeler ilginizi çekiyorsa, bir kilitlenme içeren küçük bir Rust programı
-yazmayı deneyin. Ardından başka dillerde mutex kullanan sistemlerde uygulanan
-kilitlenme azaltma stratejilerini araştırın ve benzerini Rust'ta kurmayı
-deneyin. Standart kütüphanedeki `Mutex<T>` ve `MutexGuard` API belgeleri bu
-konuda yararlı bilgiler içerir.
+> Not: Bölüm 15'te gördüğünüz tek kanallı / tek thread'li (*single-threaded*)
+> akıllı işaretçi ve içsel değiştirilebilirlik araçları ile bu bölümde
+> tanıştığınız çok kanallı / çok thread'li (*multithreaded*) eşleniklerini tek
+> bakışta şöyle eşleştirebilirsiniz:
+>
+> | Amaç | Tek Thread'li (`!Send` / `!Sync`) | Çok Thread'li (`Send` + `Sync`) | Temel Fark ve Davranış |
+> | --- | --- | --- | --- |
+> | **Çoklu sahiplik** | `Rc<T>` | `Arc<T>` | `Rc<T>` sıradan sayaç kullanır (daha hızlıdır); `Arc<T>` sayacı atomik işlemlerle günceller. |
+> | **İçsel değiştirilebilirlik** | `RefCell<T>` | `Mutex<T>` / `RwLock<T>` | `RefCell<T>` ödünç çakışmasında `panic!` üretir; `Mutex<T>` tek erişim için, `RwLock<T>` ise çoklu okuyucu (`read`) veya tek yazıcı (`write`) için bekleyen thread'i bloklar. |
+> | **İlkel/kopyalanabilir içsel değişim** | `Cell<T>` | `Atomic*` (`AtomicUsize`, `AtomicBool` vb.) | `Cell<T>` referans vermeden değeri kopyalar/değiştirir; `std::sync::atomic` türleri donanım düzeyinde kilitsiz (*lock-free*) atomik erişim sunar. |
+> | **Paylaşımlı değiştirilebilir durum** | `Rc<RefCell<T>>` | `Arc<Mutex<T>>` / `Arc<RwLock<T>>` | Tek thread'de paylaşımlı değişim için `Rc<RefCell<T>>`, thread'ler arasında paylaşımlı değişim için `Arc<Mutex<T>>` (okuma ağırlıklı iş yüklerinde `Arc<RwLock<T>>`) kullanılır. |
 
-Bölümü `Send` ve `Sync` trait'lerinden ve bunları özel türlerle nasıl
-kullanabileceğimizden söz ederek tamamlayacağız.
+Bu bölümü `Send` ve `Sync` trait'lerinden ve bunları özel türlerle nasıl
+kullanabileceğimizden bahsederek tamamlayacağız.
 
 [atomic]: ../std/sync/atomic/index.html

@@ -22,8 +22,8 @@ impl Gonderi {
 impl TaslakGonderi {
     // --snip--
     // ANCHOR_END: here
-    pub fn metin_ekle(&mut self, text: &str) {
-        self.icerik.push_str(text);
+    pub fn metin_ekle(&mut self, metin: &str) {
+        self.icerik.push_str(metin);
     }
 
     // ANCHOR: here

@@ -2,13 +2,13 @@ pub struct IsParcacigiHavuzu;
 
 // ANCHOR: here
 impl IsParcacigiHavuzu {
-    /// Yeni bir IsParcacigiHavuzu olusturur.
+    /// Yeni bir IsParcacigiHavuzu oluşturur.
     ///
-    /// Boyut, havuzdaki is parcacigi sayisidir.
+    /// Boyut, havuzdaki thread sayısıdır.
     ///
     /// # Panics
     ///
-    /// `new` fonksiyonu, boyut sifirsa panikler.
+    /// `new` fonksiyonu, boyut sıfırsa panikler.
     pub fn new(boyut: usize) -> IsParcacigiHavuzu {
         assert!(boyut > 0);
 

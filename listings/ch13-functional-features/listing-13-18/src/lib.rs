@@ -31,28 +31,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn case_sensitive() {
-        let sorgu = "duct";
+    fn buyuk_kucuk_harf_duyarli() {
+        let sorgu = "güven";
         let icerik = "\
-Rust:
-safe, fast, productive.
-Pick three.
-Duct tape.";
+Güven:
+güvenli, hızlı, üretken.
+Üçünü de seç.
+Güven kolay kazanılmaz.";
 
-        assert_eq!(vec!["safe, fast, productive."], ara(sorgu, icerik));
+        assert_eq!(vec!["güvenli, hızlı, üretken."], ara(sorgu, icerik));
     }
 
     #[test]
-    fn case_insensitive() {
-        let sorgu = "rUsT";
+    fn buyuk_kucuk_harf_duyarsiz() {
+        let sorgu = "gÜvEn";
         let icerik = "\
-Rust:
-safe, fast, productive.
-Pick three.
-Trust me.";
+Güven:
+önce sağlamlık gelir.
+Planlı çalış, sakin ol.
+güven kazanılır.";
 
         assert_eq!(
-            vec!["Rust:", "Trust me."],
+            vec!["Güven:", "güven kazanılır."],
             buyuk_kucuk_harf_duyarsiz_ara(sorgu, icerik)
         );
     }

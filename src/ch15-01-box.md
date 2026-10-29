@@ -1,41 +1,57 @@
-## Öbekteki Veriyi İşaret Etmek İçin `Box<T>` Kullanmak
+<!-- Old headings. Do not remove or links may break. -->
 
-En sade akıllı işaretçi kutudur; türü `Box<T>` diye yazılır. _Kutular
-(boxes)_, veriyi yığın yerine öbekte (_heap_) saklamanızı sağlar. Yığında kalan
-şey, öbekteki veriyi gösteren işaretçinin kendisidir. Yığın ile öbek arasındaki
-farkı tazelemek için 4. bölüme bakabilirsiniz.
+<a id="using-boxt-to-point-to-data-on-the-heap"></a>
+<a id="öbekteki-veriyi-işaret-etmek-için-boxt-kullanmak"></a>
+<a id="obekteki-veriyi-isaret-etmek-icin-boxt-kullanmak"></a>
+<a id="yığındaki-veriyi-işaret-etmek-için-boxt-kullanımı"></a>
+<a id="yığındaki-veriyi-işaret-etmek-için-boxt-kullanmak"></a>
+<a id="yigindaki-veriyi-isaret-etmek-icin-boxt-kullanimi"></a>
 
-Kutuların, veriyi yığın yerine öbekte tutmak dışında belirgin bir ek maliyeti
-yoktur. Ama ek yetenekleri de çok fazla değildir. Genellikle şu durumlarda
-kullanırsınız:
+## Öbekteki Veriyi İşaret Etmek İçin `Box<T>` Kullanımı
 
-- Boyutu derleme zamanında bilinemeyen bir türünüz vardır ve bu türün değerini,
-  tam boyut gerektiren bir bağlamda kullanmak istersiniz.
-- Büyük miktarda veriniz vardır; sahipliği taşımak istersiniz ama bunu yaparken
-  verinin kopyalanmamasını istersiniz.
-- Belirli bir somut türü değil, belli bir trait'i uygulayan herhangi bir türü
-  sahiplenmek istersiniz.
+En yalın akıllı işaretçi, türü `Box<T>` biçiminde yazılan bir kutudur. _Kutular
+(boxes)_, verileri *yığın (stack)* yerine *öbekte (heap)* saklamanıza olanak
+tanır. Yığında kalan şey ise öbekteki veriye işaret eden işaretçinin kendisidir.
+Yığın ile öbek arasındaki farkları yeniden gözden geçirmek için Bölüm 4'e
+bakabilirsiniz.
+
+Kutuların, verilerini yığın yerine öbekte saklamak dışında bir performans ek
+maliyeti yoktur. Öte yandan çok fazla ekstra yetenek de sunmazlar. Kutuları en
+sık şu durumlarda kullanırsınız:
+
+- Boyutu derleme zamanında bilinemeyen bir türünüz olduğunda ve bu türden bir
+  değeri kesin boyut gerektiren bir bağlamda kullanmak istediğinizde
+- Büyük miktarda veriniz olduğunda ve bu verinin sahipliğini aktarırken
+  kopyalanmadığından emin olmak istediğinizde
+- Bir değerin sahibi olmak istediğinizde ve bu değerin belirli bir somut türde
+  olmasından ziyade yalnızca belirli bir trait'i uygulayan bir tür olmasını
+  önemsediğinizde
 
 İlk durumu [“Kutularla Özyineli Türleri Mümkün Kılmak”](#enabling-recursive-types-with-boxes)<!-- ignore -->
-bölümünde göstereceğiz. İkinci durumda, büyük verinin sahipliğini taşımak uzun
-sürebilir; çünkü veri yığın üzerinde kopyalanır. Bu performansı iyileştirmek
-için veriyi kutu içinde öbekte tutabiliriz. Böylece yığında yalnızca küçük
-işaretçi verisi kopyalanır, asıl veri ise öbekte aynı yerde kalır. Üçüncü
-durumaysa _trait nesnesi (trait object)_ denir; 18. bölümdeki [“Trait
-Nesneleriyle Ortak Davranışı Soyutlamak”][trait-objects]<!-- ignore --> başlığı
-tamamen buna ayrılmıştır. Burada öğrenecekleriniz orada da işinize yarayacak!
+alt bölümünde göstereceğiz. İkinci durumda, büyük miktarda verinin sahipliğini
+aktarmak uzun sürebilir; çünkü veri yığın üzerinde kopyalanarak taşınır. Bu
+durumda performansı artırmak için büyük miktardaki veriyi bir kutu içinde
+öbekte saklayabiliriz. Böylece yığın üzerinde yalnızca küçük boyutlu işaretçi
+verisi kopyalanırken, başvurulan asıl veri öbekte tek bir yerde sabit kalır.
+Üçüncü durum ise _trait nesnesi (trait object)_ olarak bilinir ve Bölüm 18'deki
+[“Ortak Davranışı Soyutlamak İçin Trait Nesnelerini Kullanma”][trait-objects]<!-- ignore -->
+bölümü tamamen bu konuya ayrılmıştır. Dolayısıyla burada öğrendiklerinizi o
+bölümde yeniden uygulayacaksınız!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-boxt-to-store-data-on-the-heap"></a>
+<a id="storing-data-on-the-heap"></a>
+<a id="veriyi-yığında-saklamak"></a>
 
 ### Veriyi Öbekte Saklamak
 
-`Box<T>` için öbekte saklama kullanım senaryosuna geçmeden önce sözdizimine ve
-`Box<T>` içindeki değerlerle nasıl etkileşim kurulduğuna bakalım.
+`Box<T>` türünün öbekte veri saklama kullanım senaryosunu ele almadan önce,
+sözdizimini ve bir `Box<T>` içinde saklanan değerlerle nasıl etkileşim
+kurulduğunu inceleyelim.
 
-Liste 15-1, bir kutunun `i32` değerini öbekte saklamak için nasıl
-kullanıldığını gösteriyor.
+Liste 15-1, bir `i32` değerini öbekte saklamak için kutunun nasıl kullanıldığını
+göstermektedir.
 
 <Listing number="15-1" file-name="src/main.rs" caption="Bir `i32` değerini kutu kullanarak öbekte saklamak">
 
@@ -45,68 +61,86 @@ kullanıldığını gösteriyor.
 
 </Listing>
 
-`k` değişkenine, öbekte ayrılmış `5` değerini işaret eden bir `Box` atıyoruz.
-Program `k = 5` yazdırır; bu durumda kutudaki veriye, veri yığındaymış gibi
-erişebiliriz. Her sahip olunan değer gibi, kutu kapsam dışına çıktığında
-serbest bırakılır. Bu serbest bırakma hem yığındaki kutunun kendisi hem de
-öbekte işaret ettiği veri için gerçekleşir.
+Burada `k` değişkenini, öbekte ayrılmış `5` değerine işaret eden bir `Box`
+değerine sahip olacak şekilde tanımlıyoruz. Bu program ekrana `k = 5` yazdırır;
+bu örnekte kutudaki veriye, sanki bu veri yığındaymış gibi erişebiliriz. Sahip
+olunan herhangi bir değerde olduğu gibi, bir kutu da `main` fonksiyonunun
+sonunda `k` değişkeninin yaptığı gibi kapsam dışına çıktığında bellekten serbest
+bırakılır. Bellekten serbest bırakma işlemi hem (yığında saklanan) kutunun
+kendisi hem de (öbekte saklanan) işaret ettiği veri için gerçekleşir.
 
-Tek bir değeri öbeğe koymak çok heyecan verici değildir; bu yüzden kutuları çoğu
-zaman tek başlarına bu şekilde kullanmazsınız. Tek bir `i32` gibi varsayılan
-olarak yığında duran değerler çoğu durumda zaten daha uygundur. Şimdi kutuların
-olmasaydı tanımlayamayacağımız türleri nasıl mümkün kıldığına bakalım.
+Tek bir değeri öbeğe koymak pek kullanışlı değildir; bu nedenle kutuları tek
+başlarına bu şekilde çok sık kullanmazsınız. Tek bir `i32` gibi değerlerin
+varsayılan olarak saklandıkları yer olan yığında tutulması, durumların büyük
+çoğunluğunda çok daha uygundur. Gelin şimdi, kutular olmasaydı tanımlamamıza
+izin verilmeyecek türleri kutular sayesinde nasıl tanımlayabildiğimiz bir duruma
+bakalım.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="enabling-recursive-types-with-boxes"></a>
+<a id="kutularla-özyineli-türleri-mümkün-kılmak"></a>
+<a id="kutularla-ozyineli-turleri-mumkun-kilmak"></a>
 
 ### Kutularla Özyineli Türleri Mümkün Kılmak
 
-_Özyineli tür (recursive type)_ değerleri, kendi içinde aynı türden başka bir
-değeri barındırabilir. Bu türler sorun yaratır çünkü Rust'ın bir türün ne kadar
-yer kapladığını derleme zamanında bilmesi gerekir. Oysa özyineli türlerde iç içe
-geçme teorik olarak sonsuza dek sürebilir; dolayısıyla Rust değer için gereken
-alanı bilemez. `Box<T>` bilinen bir boyuta sahip olduğu için, özyineli tür
-tanımına kutu ekleyerek bu sorunu çözeriz.
+_Özyineli bir türün (recursive type)_ değeri, kendi parçası olarak aynı türden
+başka bir değere sahip olabilir. Özyineli türler bir sorun oluşturur; çünkü
+Rust'ın bir türün bellekte ne kadar yer kapladığını derleme zamanında bilmesi
+gerekir. Ne var ki özyineli türlerde değerlerin iç içe geçmesi kuramsal olarak
+sonsuza dek sürebileceğinden, Rust değerin ne kadar alana ihtiyaç duyduğunu
+bilemez. Kutular bilinen bir boyuta sahip olduğu için, özyineli tür tanımının
+içine bir kutu yerleştirerek özyineli türleri mümkün kılabiliriz.
 
-Örnek olarak _cons list_ türüne bakalım. Bu veri türü fonksiyonel programlama
-dillerinde yaygındır. Tanımlayacağımız cons list, özyineleme dışında oldukça
-basittir; bu yüzden burada gördüğümüz fikirler, ileride daha karmaşık özyineli
-durumlarda da işinize yarar.
+Özyineli bir tür örneği olarak *cons listesini (cons list)* inceleyelim. Bu,
+fonksiyonel programlama dillerinde yaygın olarak karşılaşılan bir veri türüdür.
+Tanımlayacağımız cons listesi türü özyineleme dışında oldukça yalındır;
+dolayısıyla üzerinde çalışacağımız örnekteki kavramlar, özyineli türler içeren
+daha karmaşık durumlarla her karşılaştığınızda işinize yarayacaktır.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="more-information-about-the-cons-list"></a>
+<a id="understanding-the-cons-list"></a>
+<a id="cons-listeyi-anlamak"></a>
 
-#### Cons Listeyi Anlamak
+#### Cons Listesini Anlamak
 
-_Cons liste_, Lisp programlama dili ve türevlerinden gelen, iç içe çiftlerden
-oluşan ve bağlı listenin Lisp dünyasındaki karşılığı olan bir veri yapısıdır.
-Adını, Lisp'teki `cons` fonksiyonundan alır; bu ad aslında _construct
-function_'ın kısaltmasıdır. İki argümandan yeni bir çift oluşturur. Bir değerle
-başka bir çiftten oluşan yapılar üzerinde `cons` çağrıları yaparak özyineli
-çiftlerden oluşan cons listeler kurabiliriz.
+_Cons listesi_, Lisp programlama dili ve lehçelerinden gelen, iç içe geçmiş
+çiftlerden oluşan ve bağlı listenin (*linked list*) Lisp dünyasındaki karşılığı
+olan bir veri yapısıdır. Adını, Lisp'te iki argümanından yeni bir çift oluşturan
+`cons` fonksiyonundan (_construct function_ ifadesinin kısaltması) alır. Bir
+değer ve başka bir çiftten oluşan bir çift üzerinde `cons` fonksiyonunu
+çağırarak özyineli çiftlerden oluşan cons listeleri kurabiliriz.
 
-Örneğin `1, 2, 3` listesini içeren bir cons listenin sözde kod gösterimi şöyledir:
+Örneğin `1, 2, 3` listesini içeren bir cons listesinin her çiftin parantez
+içinde gösterildiği sözde kod gösterimi şöyledir:
 
 ```text
 (1, (2, (3, Nil)))
 ```
 
-Cons listedeki her öğe iki parçadan oluşur: mevcut öğenin değeri ve bir sonraki
-öğenin değeri. Listenin son öğesi, sonraki öğe olmadan yalnızca `Nil` denilen
-değeri taşır. Cons liste, `cons` fonksiyonunun özyineli biçimde çağrılmasıyla
-üretilir. Özyinelemenin taban durumu için geleneksel ad `Nil`dir. Bunun, 6.
-bölümde gördüğümüz geçersiz ya da eksik değer anlamındaki “null” veya “nil”
-fikriyle aynı şey olmadığını unutmayın.
+Bir cons listesindeki her öğe iki eleman içerir: mevcut öğenin değeri ve bir
+sonraki öğe. Listedeki son öğe ise bir sonraki öğe olmaksızın yalnızca `Nil`
+adlı bir değer içerir. Cons listesi, `cons` fonksiyonunun özyineli biçimde
+çağrılmasıyla üretilir. Özyinelemenin taban durumunu (*base case*) belirtmek
+için kullanılan geleneksel ad `Nil`'dir. Bunun, Bölüm 6'da ele aldığımız
+geçersiz veya mevcut olmayan bir değeri ifade eden “null” ya da “nil” kavramıyla
+aynı şey olmadığına dikkat edin.
 
-Cons liste Rust'ta pek yaygın değildir. Rust'ta çoğu durumda öğe listesi
-gerekiyorsa `Vec<T>` daha iyi seçimdir. Ama daha karmaşık özyineli veri türleri
-çeşitli durumlarda kullanışlıdır; bu bölümde cons listeyle başlamak, dikkat
-dağıtıcı ayrıntılara boğulmadan kutuların özyineli veri türünü nasıl mümkün
-kıldığını görmemizi sağlar.
+Cons listesi Rust'ta sık kullanılan bir veri yapısı değildir. Rust'ta bir öğe
+listesine sahip olduğunuz çoğu durumda `Vec<T>` kullanmak daha iyi bir
+seçenektir. Diğer, daha karmaşık özyineli veri türleri çeşitli senaryolarda
+_gerçekten_ kullanışlıdır; ancak bu bölümde cons listesiyle başlayarak, dikkat
+dağıtıcı ayrıntılara boğulmadan kutuların özyineli bir veri türünü tanımlamamıza
+nasıl olanak tanıdığını keşfedebiliriz.
 
-Liste 15-2, cons listeyi temsil edecek bir enum tanımı içeriyor. Bu kod henüz
-derlenmeyecek; çünkü birazdan göstereceğimiz gibi `Liste` türünün bilinen bir
-boyutu yoktur.
+Liste 15-2, bir cons listesi için enum tanımı içermektedir (burada Lisp'teki
+`Cons` çiftini `Dugum`, `Nil` taban durumunu ise `Bos` varyantıyla temsil
+ediyoruz). Bu kodun henüz derlenmeyeceğine dikkat edin; çünkü birazdan
+göstereceğimiz üzere `Liste` türünün bilinen bir boyutu yoktur.
 
-<Listing number="15-2" file-name="src/main.rs" caption="`i32` değerlerinden oluşan bir cons liste veri yapısını temsil etmek için enum tanımlamaya ilk deneme">
+<Listing number="15-2" file-name="src/main.rs" caption="`i32` değerlerinden oluşan bir cons listesi veri yapısını temsil etmek için ilk enum tanımlama denemesi">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-02/src/main.rs:here}}
@@ -114,13 +148,14 @@ boyutu yoktur.
 
 </Listing>
 
-> Not: Bu örnekte yalnızca `i32` değerleri tutan bir cons liste gerçekliyoruz.
-> 10. bölümde gördüğümüz gibi bunu jeneriklerle de yapabilir ve her türden
-> değeri saklayabilen bir cons liste tanımlayabilirdik.
+> Not: Bu örneğin amacı doğrultusunda yalnızca `i32` değerlerini tutan bir cons
+> listesi gerçekliyoruz. Bölüm 10'da ele aldığımız gibi jenerikleri kullanarak
+> her türden değeri saklayabilen bir cons listesi türü de tanımlayabilirdik.
 
-`1, 2, 3` listesini `Liste` türüyle saklamak, Liste 15-3'teki gibi görünür.
+`1, 2, 3` listesini saklamak için `Liste` türünü kullanmak, Liste 15-3'teki kod
+gibi görünürdü.
 
-<Listing number="15-3" file-name="src/main.rs" caption="`1, 2, 3` listesini saklamak icin `Liste` enumunu kullanmak">
+<Listing number="15-3" file-name="src/main.rs" caption="`1, 2, 3` listesini saklamak için `Liste` enum'ını kullanmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-03/src/main.rs:here}}
@@ -128,13 +163,15 @@ boyutu yoktur.
 
 </Listing>
 
-İlk `Dugum` değeri `1` ve başka bir `Liste` değeri taşır. Bu `Liste`, `2` ve
-başka bir `Liste` taşıyan başka bir `Dugum`dur. Sonraki `Liste` de `3` ve
-sonunda listenin bittiğini bildiren özyineli olmayan `Bos` varyantını tutar.
+İlk `Dugum` değeri `1` sayısını ve başka bir `Liste` değerini tutar. Bu `Liste`
+değeri, `2` sayısını ve bir başka `Liste` değerini tutan yeni bir `Dugum`
+değeridir. Bu `Liste` değeri ise `3` sayısını ve son olarak listenin bittiğini
+belirten özyineli olmayan `Bos` varyantına karşılık gelen bir `Liste` değerini
+tutan bir diğer `Dugum` değeridir.
 
-Liste 15-3'teki kodu derlemeye çalışırsak, Liste 15-4'teki hatayı alırız.
+Liste 15-3'teki kodu derlemeye çalışırsak Liste 15-4'te gösterilen hatayı alırız.
 
-<Listing number="15-4" caption="Özyineli bir enum tanımlamaya çalışırken alınan hata">
+<Listing number="15-4" caption="Özyineli bir enum tanımlamaya çalışırken aldığımız hata">
 
 ```console
 {{#include ../listings/ch15-smart-pointers/listing-15-03/output.txt}}
@@ -142,45 +179,61 @@ Liste 15-3'teki kodu derlemeye çalışırsak, Liste 15-4'teki hatayı alırız.
 
 </Listing>
 
-Hata bu türün “sonsuz boyuta” sahip olduğunu söyler. Bunun sebebi, `Liste`yi
-kendi türünden başka bir değeri doğrudan içinde taşıyan özyineli bir varyantla
-tanımlamış olmamızdır. Sonuç olarak Rust, bir `Liste` değerini saklamak için ne
-kadar yer gerektiğini hesaplayamaz. Şimdi bunun neden böyle olduğunu açalım.
-Önce Rust'ın özyineli olmayan bir türün boyutunu nasıl hesapladığını görelim.
+Hata mesajı bu türün “sonsuz boyuta sahip olduğunu” (`has infinite size`)
+belirtir. Bunun nedeni, `Liste` türünü özyineli bir varyantla tanımlamış
+olmamızdır: Varyant, kendi türünden başka bir değeri doğrudan içinde tutar. Bu
+yüzden Rust, bir `Liste` değerini saklamak için ne kadar alana ihtiyaç duyduğunu
+hesaplayamaz. Bu hatayı neden aldığımızı adım adım inceleyelim. Öncelikle
+Rust'ın özyineli olmayan bir türün değerini saklamak için ne kadar alana ihtiyaç
+duyduğuna nasıl karar verdiğine bakalım.
 
-#### Özyineli Olmayan Türün Boyutunu Hesaplamak
+<!-- Old headings. Do not remove or links may break. -->
 
-6. bölümde enum tanımlarını anlatırken Liste 6-2'de tanımladığımız `Message`
-enumunu hatırlayın:
+<a id="computing-the-size-of-a-non-recursive-type"></a>
+<a id="özyineli-olmayan-türün-boyutunu-hesaplamak"></a>
+
+#### Özyineli Olmayan Bir Türün Boyutunu Hesaplamak
+
+Bölüm 6'da enum tanımlarını ele alırken Liste 6-2'de tanımladığımız `Mesaj`
+enum'ını hatırlayın:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-02/src/main.rs:here}}
 ```
 
-Rust, `Message` için ne kadar alan ayıracağını belirlemek adına her varyanta
-bakar ve en fazla alan gerektiren varyantı bulur. `Message::Quit` hiç alana
-ihtiyaç duymaz, `Message::Move` iki `i32` saklayacak kadar alana ihtiyaç duyar,
-vb. Aynı anda yalnızca tek bir varyant kullanılacağı için, `Message` değerinin
-gerektirdiği en büyük alan, en büyük varyantın kapladığı alandır.
+Bir `Mesaj` değeri için ne kadar alan ayıracağını belirlemek amacıyla Rust,
+varyantların her birini tek tek inceler ve hangisinin en fazla alana ihtiyaç
+duyduğunu kontrol eder. Derleyici, `Mesaj::Cik` varyantının hiç alana ihtiyaç
+duymadığını, `Mesaj::Tasi` varyantının iki `i32` değerini saklayacak kadar
+alana ihtiyaç duyduğunu ve diğer varyantların gereksinimlerini görür. Aynı anda
+yalnızca tek bir varyant kullanılacağı için, bir `Mesaj` değerinin ihtiyaç
+duyacağı en fazla alan, varyantlarının en büyüğünü saklamak için gereken alan
+kadardır.
 
-Bunu, Liste 15-2'deki `Liste` enumu gibi özyineli bir türde Rust ne yapmaya
-çalıştığıyla karşılaştırın. Derleyici önce `Dugum` varyantına bakar; içinde bir
-`i32` ve bir `Liste` vardır. Demek ki `Dugum`, `i32` boyutu artı `Liste`
-boyutuna ihtiyaç duyar. `Liste`nin boyutunu bulmak için yine varyantlara bakar
-ve yine `Dugum`e gelir. Bu süreç sonsuza kadar sürer; Şekil 15-1 bunu gösterir.
+Şimdi bunu, Rust derleyicisi Liste 15-2'deki `Liste` enum'ı gibi özyineli bir
+türün ne kadar alana ihtiyaç duyduğunu belirlemeye çalıştığında olanlarla
+karşılaştırın. Derleyici işe `Dugum` varyantına bakarak başlar; bu varyant `i32`
+türünde bir değer ile `Liste` türünde bir değer tutmaktadır. Dolayısıyla `Dugum`,
+bir `i32` boyutu artı bir `Liste` boyutu kadar alana ihtiyaç duyar. `Liste`
+türünün ne kadar belleğe ihtiyaç duyduğunu bulmak için derleyici varyantlara
+yeniden `Dugum` varyantından başlayarak bakar. `Dugum` varyantı yine `i32`
+türünde bir değer ve `Liste` türünde bir değer tutar; bu süreç Şekil 15-1'de
+gösterildiği gibi sonsuza dek devam eder.
 
-<img alt="Sonsuz bir Dugum listesi: 'Dugum' etiketli bir dikdörtgen, biri 'i32' diğeri daha küçük bir 'Dugum' içeren bölmelere ayrılıyor; bu yapı sonsuza dek tekrar ediyor." src="img/trpl15-01.svg" class="center" style="width: 50%;" />
+<img alt="Sonsuz bir Cons (Dugum) listesi: 'Cons' etiketli bir dikdörtgen iki küçük dikdörtgene bölünmüştür. İlk küçük dikdörtgende 'i32' etiketi, ikinci küçük dikdörtgende ise 'Cons' etiketi ve dıştaki 'Cons' dikdörtgeninin daha küçük bir kopyası yer alır. 'Cons' dikdörtgenleri, okunabilecek en küçük dikdörtgenin içinde bu tekrarın sonsuza dek sürdüğünü belirten bir sonsuzluk sembolü görünene kadar kendilerinin giderek küçülen kopyalarını barındırmaya devam eder." src="img/trpl15-01.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Şekil 15-1: Sonsuz `Dugum` varyantlarından oluşan sonsuz bir `Liste`</span>
+<span class="caption">Şekil 15-1: Sonsuz `Dugum` (görselde `Cons`) varyantlarından oluşan sonsuz bir `Liste`</span>
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-boxt-to-get-a-recursive-type-with-a-known-size"></a>
+<a id="getting-a-recursive-type-with-a-known-size"></a>
+<a id="boyutu-bilinen-özyineli-tür-elde-etmek"></a>
 
-#### Boyutu Bilinen Özyineli Tür Elde Etmek
+#### Boyutu Bilinen Özyineli Bir Tür Elde Etmek
 
-Rust özyineli tanımlanmış türler için ne kadar yer ayıracağını hesaplayamadığı
-için, derleyici şu yardımcı öneriyi içeren bir hata verir:
+Rust özyineli olarak tanımlanmış türler için ne kadar alan ayıracağını
+hesaplayamadığından, derleyici şu yararlı öneriyi içeren bir hata verir:
 
 <!-- manual-regeneration
 after doing automatic regeneration, look at listings/ch15-smart-pointers/listing-15-03/output.txt and copy the relevant line
@@ -193,20 +246,23 @@ help: insert some indirection (e.g., a `Box`, `Rc`, or `&`) to break the cycle
   |                ++++     +
 ```
 
-Buradaki _indirection_, değeri doğrudan saklamak yerine ona işaret eden bir
-işaretçi saklamak demektir.
+Bu önerideki _dolaylılık (`indirection`)_ terimi, bir değeri doğrudan kendi
+içinde saklamak yerine veri yapısını değiştirerek o değere işaret eden bir
+işaretçi saklamak ve böylece değeri dolaylı yoldan tutmak anlamına gelir.
 
-`Box<T>` bir işaretçi olduğu için Rust onun ne kadar yer kapladığını her zaman
-bilir: işaretçinin boyutu, işaret ettiği verinin miktarına göre değişmez.
-Demek ki `Dugum` varyantına başka bir `Liste`yi doğrudan koymak yerine
-`Box<T>` koyabiliriz. `Box<T>`, bir sonraki `Liste` değerini `Dugum`ün içinde
-değil öbekte tutar. Kavramsal olarak yine aynı listeye sahibiz; ama bu kez
-öğeler birbirinin içine değil yanına yerleştirilmiş gibidir.
+`Box<T>` bir işaretçi olduğu için Rust bir `Box<T>` değerinin ne kadar alana
+ihtiyaç duyduğunu her zaman bilir: Bir işaretçinin boyutu, işaret ettiği verinin
+miktarına bağlı olarak değişmez. Bu da `Dugum` varyantının içine doğrudan başka
+bir `Liste` değeri koymak yerine bir `Box<T>` koyabileceğimiz anlamına gelir.
+`Box<T>`, `Dugum` varyantının içinde değil öbekte yer alacak bir sonraki `Liste`
+değerine işaret edecektir. Kavramsal olarak hâlâ diğer listeleri barındıran
+listelerden oluşturulmuş bir listemiz vardır; ancak bu gerçekleme artık öğeleri
+birbiri içine yerleştirmekten ziyade yan yana dizmeye benzer.
 
-Liste 15-2'deki `Liste` tanımını ve Liste 15-3'teki kullanımı Liste 15-5'teki
-koda çevirirsek, artık kod derlenir.
+Liste 15-2'deki `Liste` enum'ı tanımını ve Liste 15-3'teki `Liste` kullanımını,
+sorunsuzca derlenecek olan Liste 15-5'teki koda dönüştürebiliriz.
 
-<Listing number="15-5" file-name="src/main.rs" caption="Boyutu bilinsin diye `Box<T>` kullanan `Liste` tanımı">
+<Listing number="15-5" file-name="src/main.rs" caption="Bilinen bir boyuta sahip olmak için `Box<T>` kullanan `Liste` tanımı">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-05/src/main.rs}}
@@ -214,27 +270,36 @@ koda çevirirsek, artık kod derlenir.
 
 </Listing>
 
-`Dugum` varyantı şimdi bir `i32` boyutu ve kutu işaretçisinin boyutunu ister.
-`Bos` varyantıysa hiç değer taşımaz; dolayısıyla yığında `Dugum`den daha az yer
-kaplar. Artık herhangi bir `Liste`nin boyutunun, `i32` boyutu artı bir kutu
-işaretçisi boyutu kadar olacağını biliyoruz. Kutu kullanarak sonsuz özyineli
-zinciri kırdık; böylece derleyici `Liste`yi saklamak için gereken boyutu
-hesaplayabilir. Şekil 15-2 bunu gösteriyor.
+`Dugum` varyantı, bir `i32` boyutu artı kutunun işaretçi verisini saklamak için
+gereken alana ihtiyaç duyar. `Bos` varyantı hiçbir değer saklamaz; dolayısıyla
+yığında `Dugum` varyantından daha az alana ihtiyaç duyar. Artık herhangi bir
+`Liste` değerinin bir `i32` boyutu artı bir kutunun işaretçi verisi kadar yer
+kaplayacağını biliyoruz. Kutu kullanarak sonsuz ve özyineli zinciri kırdık;
+böylece derleyici bir `Liste` değerini saklamak için ihtiyaç duyduğu boyutu
+hesaplayabilir. Şekil 15-2, `Dugum` varyantının artık nasıl göründüğünü
+göstermektedir.
 
-<img alt="'Dugum' etiketli bir dikdörtgen; ilk parça 'i32', ikinci parça ise sonlu boyutlu bir işaretçiyi temsil eden 'Box' olarak gösteriliyor." src="img/trpl15-02.svg" class="center" />
+<img alt="'Cons' (Dugum) etiketli bir dikdörtgen iki küçük dikdörtgene bölünmüştür. İlk küçük dikdörtgende 'i32' etiketi, ikinci küçük dikdörtgende ise kutu işaretçisinin sonlu boyutunu temsil eden 'usize' etiketli bir iç dikdörtgene sahip 'Box' etiketi bulunur." src="img/trpl15-02.svg" class="center" />
 
-<span class="caption">Şekil 15-2: Sonsuz boyutlu olmayan bir `Liste`; çünkü `Dugum` bir `Box` tutuyor</span>
+<span class="caption">Şekil 15-2: `Dugum` (görselde `Cons`) bir `Box` tuttuğu için boyutu sonsuz olmayan bir `Liste`</span>
 
-Kutular yalnızca dolaylı erişim ve öbek tahsisi sağlar; ileride göreceğimiz
-diğer akıllı işaretçi türlerindeki gibi ek yetenekleri yoktur. Bu ek
-yeteneklerin getirdiği maliyetleri de taşımazlar; bu yüzden cons liste gibi,
-ihtiyacımız olan tek şey dolaylı erişim olduğunda çok kullanışlıdırlar. Kutular
-için başka kullanım alanlarını 18. bölümde yeniden göreceğiz.
+> Not: Şekil 15-2'de `Box` kutusunun içinde gördüğünüz `usize`, hedef işlemci mimarisinin bellek adresi genişliğini ifade eder. Bir `Box<T>` değeri, öbekte işaret ettiği `T` verisi ister 4 bayt ister 4 megabayt olsun, yığında yalnızca **tek bir `usize` genişliğinde** (64-bit mimaride **8 bayt**, 32-bit mimaride 4 bayt) bir işaretçi olarak durur; kapasite veya referans sayacı gibi hiçbir ek meta veri taşımaz.
+>
+> Üstelik Rust derleyicisi, bir `Box<T>` işaretçisinin tuttuğu bellek adresinin **asla sıfır (`null`) olamayacağını** garanti eder. Bu garanti sayesinde derleyici _boş işaretçi optimizasyonu (null-pointer optimization)_ uygular: Örneğin `Option<Box<T>>` kullandığınızda `None` varyantını temsil etmek için fazladan bayt harcamak yerine doğrudan `0` adresini kullanır; böylece 64-bit bir sistemde hem `Box<T>` hem de `Option<Box<T>>` yığında ek bellek tüketmeden tam olarak **8 bayt** yer kaplar (`std::mem::size_of::<Option<Box<i32>>>() == 8`). Aynı optimizasyon Liste 15-5'teki `Liste` enum'ı için de geçerlidir: `Bos` varyantı `Box<Liste>` içindeki sıfır adresi boşluğundan yararlandığı için ekstra bir ayrım etiketi eklenmez ve tüm `Liste` türü yığında yalnızca **16 bayt** (4 bayt `i32` + 4 bayt hizalama dolgusu + 8 bayt `Box` işaretçisi) yer tutar.
 
-`Box<T>` akıllı işaretçi sayılır; çünkü `Deref` trait'ini uygular. Bu sayede
-`Box<T>` değerlerine referansmış gibi davranılabilir. `Box<T>` kapsam dışına
-çıktığında, kutunun işaret ettiği öbek verisi de `Drop` trait'i sayesinde
-temizlenir. Bu iki trait, bu bölümün geri kalanında göreceğimiz diğer akıllı
-işaretçi türleri için daha da önemli olacak. Şimdi onlara bakalım.
+Kutular yalnızca bu dolaylılığı ve öbekte bellek ayırmayı sağlar; diğer akıllı
+işaretçi türlerinde göreceğimiz gibi başka özel yeteneklere sahip değildir.
+Ayrıca bu özel yeteneklerin getirdiği performans ek maliyetini de taşımazlar; bu
+nedenle cons listesi gibi ihtiyaç duyduğumuz tek özelliğin dolaylılık olduğu
+durumlarda son derece kullanışlıdırlar. Kutuların diğer kullanım senaryolarını
+Bölüm 18'de inceleyeceğiz.
+
+`Box<T>` türü bir akıllı işaretçidir; çünkü `Box<T>` değerlerine referanslar
+gibi davranılmasını sağlayan `Deref` trait'ini uygular. Bir `Box<T>` değeri
+kapsam dışına çıktığında, kutunun işaret ettiği öbek verisi de `Drop` trait'i
+uygulaması sayesinde temizlenir. Bu iki trait, bu bölümün geri kalanında ele
+alacağımız diğer akıllı işaretçi türlerinin sunduğu işlevsellik açısından daha da
+büyük önem taşıyacaktır. Gelin şimdi bu iki trait'i daha ayrıntılı olarak
+inceleyelim.
 
 [trait-objects]: ch18-02-trait-nesneleri.html#ortak-davranış-üzerinden-soyutlamak-için-trait-nesnelerini-kullanmak

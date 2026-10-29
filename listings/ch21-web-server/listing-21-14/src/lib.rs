@@ -2,30 +2,30 @@
 use std::thread;
 
 pub struct IsParcacigiHavuzu {
-    is_parcacigis: Vec<thread::JoinHandle<()>>,
+    threadler: Vec<thread::JoinHandle<()>>,
 }
 
 impl IsParcacigiHavuzu {
     // --snip--
     // ANCHOR_END: here
-    /// Yeni bir IsParcacigiHavuzu olusturur.
+    /// Yeni bir IsParcacigiHavuzu oluşturur.
     ///
-    /// Boyut, havuzdaki is parcacigi sayisidir.
+    /// Boyut, havuzdaki thread sayısıdır.
     ///
     /// # Panics
     ///
-    /// `new` fonksiyonu, boyut sifirsa panikler.
+    /// `new` fonksiyonu, boyut sıfırsa panikler.
     // ANCHOR: here
     pub fn new(boyut: usize) -> IsParcacigiHavuzu {
         assert!(boyut > 0);
 
-        let mut is_parcacigis = Vec::with_capacity(boyut);
+        let mut threadler = Vec::with_capacity(boyut);
 
         for _ in 0..boyut {
-            // create some is_parcacigis and store them in the vector
+            // thread'leri oluştur ve vektörde sakla
         }
 
-        IsParcacigiHavuzu { is_parcacigis }
+        IsParcacigiHavuzu { threadler }
     }
     // --snip--
     // ANCHOR_END: here

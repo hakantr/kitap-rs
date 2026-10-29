@@ -1,128 +1,186 @@
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="refcellt-and-the-interior-mutability-pattern"></a>
+<a id="refcellt-ve-içsel-değiştirilebilirlik-deseni"></a>
+<a id="refcellt-ve-icsel-degistirilebilirlik-deseni"></a>
+
 ## `RefCell<T>` ve İçsel Değiştirilebilirlik Deseni
 
-_İçsel değiştirilebilirlik (interior mutability)_, elde yalnızca değiştirilemez
-referanslar olsa bile veriyi değiştirmeye izin veren bir Rust tasarım desenidir.
-Normalde ödünç alma kuralları buna izin vermez. Bu desen, değişiklik ve ödünç
-alma kurallarını yöneten normal Rust davranışını esnetmek için veri yapısının
-içinde `unsafe` kod kullanır. `Unsafe`, kuralları derleyiciye değil bizim
-manuel denetlediğimizi söyler; ayrıntısını 20. bölümde göreceğiz.
+_İçsel değiştirilebilirlik (interior mutability)_, bir veriye yönelik
+değiştirilemez referanslar varken bile o veriyi değiştirmenize olanak tanıyan bir
+Rust tasarım desenidir; normalde ödünç alma kuralları bu işleme izin vermez.
+Veriyi değiştirmek için bu desen, bir veri yapısının içinde `unsafe` (güvenli
+olmayan) kod kullanarak Rust'ın değiştirme ve ödünç almayı yöneten olağan
+kurallarını esnetir. Güvenli olmayan kod, kuralları bizim adımıza derleyicinin
+denetlemesine güvenmek yerine onları elle denetlediğimizi derleyiciye bildirir;
+güvenli olmayan kodu Bölüm 20'de daha ayrıntılı ele alacağız.
 
-Bu deseni kullanan türleri ancak ödünç alma kurallarının çalışma zamanında da
-izleneceğinden eminseniz kullanmalısınız. İçteki `unsafe` kod güvenli bir API
-arkasına saklanır; dışarıdan bakınca tür yine değiştirilemez görünür.
+İçsel değiştirilebilirlik desenini kullanan türleri, derleyici bunu garanti
+edemese bile ödünç alma kurallarına çalışma zamanında uyulacağından emin
+olabildiğimiz durumlarda kullanabiliriz. İşin içindeki `unsafe` kod güvenli bir
+API ile sarmalanır ve dıştaki tür yine değiştirilemez kalır.
 
-Bu fikri, içsel değiştirilebilirliği kullanan `RefCell<T>` türü üzerinden
-inceleyelim.
+Bu kavramı, içsel değiştirilebilirlik desenini izleyen `RefCell<T>` türünü
+inceleyerek keşfedelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="enforcing-borrowing-rules-at-runtime-with-refcellt"></a>
+<a id="enforcing-borrowing-rules-at-runtime"></a>
+<a id="ödünç-alma-kurallarını-çalışma-zamanında-uygulamak"></a>
+<a id="odunc-alma-kurallarini-calisma-zamaninda-uygulamak"></a>
 
 ### Ödünç Alma Kurallarını Çalışma Zamanında Uygulamak
 
-`Rc<T>`den farklı olarak `RefCell<T>`, tuttuğu veri üzerinde tek sahipliği
-temsil eder. Peki onu `Box<T>`den ayıran nedir? 4. bölümdeki ödünç alma
-kurallarını hatırlayın:
+`Rc<T>` türünden farklı olarak `RefCell<T>` türü, tuttuğu veri üzerinde tek
+sahipliği temsil eder. Peki `RefCell<T>` türünü `Box<T>` gibi bir türden farklı
+kılan nedir? Bölüm 4'te öğrendiğiniz ödünç alma kurallarını hatırlayın:
 
-- Aynı anda ya tek bir değiştirilebilir referansınız olabilir ya da istediğiniz
-  kadar değiştirilemez referansınız olabilir; ikisi bir arada olamaz.
+- Herhangi bir anda _ya_ tek bir değiştirilebilir referansa _ya da_ istediğiniz
+  sayıda değiştirilemez referansa sahip olabilirsiniz (ancak ikisine birden sahip
+  olamazsınız).
 - Referanslar her zaman geçerli olmalıdır.
 
-Referanslar ve `Box<T>` ile bu kuralların değişmezleri derleme zamanında
-uygulanır. `RefCell<T>` ileyse _çalışma zamanında_ uygulanır. Referanslarla
-kuralları bozarsanız derleyici hata verir. `RefCell<T>` ile bozarsanız program
-`panic!` ile kapanır.
+Referanslar ve `Box<T>` ile ödünç alma kurallarının değişmezleri (*invariants*)
+derleme zamanında uygulanır. `RefCell<T>` ile bu değişmezler _çalışma zamanında_
+uygulanır. Referanslarda bu kuralları çiğnerseniz bir derleyici hatası
+alırsınız. `RefCell<T>` ile bu kuralları çiğnerseniz programınız panikler ve
+sonlanır.
 
-Derleme zamanında denetlemenin avantajı, hataların daha erken yakalanması ve
-çalışma zamanı maliyeti olmamasıdır. Bu yüzden Rust'ta varsayılan yaklaşım
-budur.
+Ödünç alma kurallarını derleme zamanında denetlemenin avantajları, hataların
+geliştirme sürecinde daha erken yakalanması ve tüm analiz önceden tamamlandığı
+için çalışma zamanı performansı üzerinde hiçbir etkisinin olmamasıdır. Bu
+nedenlerle ödünç alma kurallarını derleme zamanında denetlemek vakaların büyük
+çoğunluğunda en iyi seçimdir; Rust'ta varsayılan yaklaşımın bu olmasının nedeni
+de budur.
 
-Çalışma zamanında denetlemenin avantajıysa, derleme zamanında fazla katı kalan
-denetimlerin reddedeceği bazı bellek-güvenli senaryoları mümkün kılmasıdır.
-Rust derleyicisi gibi durağan analiz araçları doğaları gereği temkinlidir.
-Bazı özellikleri yalnızca kodu analiz ederek belirlemek imkânsızdır; en bilinen
-örnek Duruş Problemi'dir.
+Ödünç alma kurallarını bunun yerine çalışma zamanında denetlemenin avantajı ise
+derleme zamanı denetimlerinin izin vermeyeceği bazı bellek açısından güvenli
+senaryolara olanak tanımasıdır. Rust derleyicisi gibi statik analiz araçları
+doğaları gereği temkinlidir (*conservative*). Kodun bazı özelliklerini yalnızca
+kodu analiz ederek tespit etmek imkânsızdır: Bunun en ünlü örneği, bu kitabın
+kapsamı dışında kalan ancak araştırmak için ilginç bir konu olan _Durma
+Problemi'dir (Halting Problem)_.
 
-Bu yüzden derleyici kurallara uyulduğundan emin değilse, doğru bir programı
-bile reddedebilir. Bu rahatsız edicidir ama felaket değildir. Buna karşılık
-yanlış programı kabul etseydi, Rust'ın verdiği güvencelere güvenemezdik.
-`RefCell<T>`, kurallara uyduğunuzdan emin olduğunuz ama derleyicinin bunu
-kanıtlayamadığı durumlarda işe yarar.
+Bazı analizler imkânsız olduğundan, Rust derleyicisi kodun sahiplik kurallarına
+uyduğundan emin olamazsa doğru bir programı bile reddedebilir; işte bu açıdan
+temkinlidir. Rust hatalı bir programı kabul etseydi, kullanıcılar Rust'ın
+sunduğu güvencelere güvenemezdi. Buna karşılık Rust doğru bir programı
+reddederse programcı biraz zahmete girer, ancak felaketle sonuçlanacak hiçbir
+şey meydana gelmez. `RefCell<T>` türü, kodunuzun ödünç alma kurallarına
+uyduğundan emin olduğunuz, ancak derleyicinin bunu anlayıp garanti edemediği
+durumlarda kullanışlıdır.
 
-`RefCell<T>` de `Rc<T>` gibi yalnızca tek iş parçacıklı kullanım içindir.
-Çok iş parçacıklı bağlamda kullanırsanız derleme hatası alırsınız. 16. bölümde,
-aynı işlevselliğin çok iş parçacıklı sürümünü göreceğiz.
+`Rc<T>` türüne benzer şekilde `RefCell<T>` de yalnızca tek kanallı
+(*single-threaded*) senaryolarda kullanım içindir ve onu çok kanallı
+(*multithreaded*) bir bağlamda kullanmaya çalışırsanız derleme zamanı hatası
+verir. Çok kanallı bir programda `RefCell<T>` işlevselliğini nasıl elde
+edeceğimizi Bölüm 16'da ele alacağız.
 
-`Box<T>`, `Rc<T>` ve `RefCell<T>` arasında seçim yaparken akılda tutulacak kısa
-özet şöyledir:
+`Box<T>`, `Rc<T>` veya `RefCell<T>` türlerinden birini seçme nedenlerinin özeti
+şöyledir:
 
-- `Rc<T>` aynı verinin birden çok sahibi olmasına izin verir; `Box<T>` ve
+- `Rc<T>` aynı verinin birden fazla sahibi olmasını sağlar; `Box<T>` ve
   `RefCell<T>` tek sahiplidir.
-- `Box<T>`, derleme zamanında denetlenen değiştirilemez ya da değiştirilebilir
-  ödünçler sunar; `Rc<T>` yalnızca derleme zamanında denetlenen değiştirilemez
-  ödünçler sunar; `RefCell<T>` ise çalışma zamanında denetlenen her iki türü de
-  sunar.
-- `RefCell<T>` çalışma zamanında denetlenen değiştirilebilir ödünçlere izin
-  verdiği için, kendisi değiştirilemez olsa bile içindeki değeri
-  değiştirebilirsiniz.
+- `Box<T>` derleme zamanında denetlenen değiştirilemez veya değiştirilebilir
+  ödünç almalara izin verir; `Rc<T>` yalnızca derleme zamanında denetlenen
+  değiştirilemez ödünç almalara izin verir; `RefCell<T>` ise çalışma zamanında
+  denetlenen değiştirilemez veya değiştirilebilir ödünç almalara izin verir.
+- `RefCell<T>` çalışma zamanında denetlenen değiştirilebilir ödünç almalara izin
+  verdiği için, `RefCell<T>` değerinin kendisi değiştirilemez olsa bile
+  `RefCell<T>` içindeki değeri değiştirebilirsiniz.
 
-Değiştirilemez bir değerin içindeki veriyi değiştirmek, işte bu içsel
-değiştirilebilirlik desenidir.
+Değiştirilemez bir değerin içindeki değeri değiştirmek, içsel değiştirilebilirlik
+desenidir. Şimdi içsel değiştirilebilirliğin yararlı olduğu bir duruma bakalım ve
+bunun nasıl mümkün olduğunu inceleyelim.
+
+> Not: Bölüm boyunca incelediğimiz üç temel akıllı işaretçi türünü (ve sıkça
+> birlikte kullanılan `Rc<RefCell<T>>` bileşimini) tek bakışta şöyle
+> karşılaştırabilirsiniz. `Box<T>` ve `Rc<T>` veriyi her zaman öbekte (*heap*)
+> ayırırken, `RefCell<T>` ek bir öbek tahsisi yapmaz; içindeki `T` değerini ve
+> ödünç sayacını doğrudan bulunduğu yerde (örneğin yığında veya bir struct/enum
+> alanının içinde) sarmalar:
+>
+> | Tür | Sahiplik Sayısı | İzin Verilen Ödünç Alma Türü | Kural Denetim Zamanı | Kural İhlali Sonucu |
+> | --- | --- | --- | --- | --- |
+> | `Box<T>` | Tek sahip | Değiştirilemez (`&T`) veya değiştirilebilir (`&mut T`) | Derleme zamanı | Derleme hatası |
+> | `Rc<T>` | Çoklu sahip | Yalnızca değiştirilemez (`&T`) | Derleme zamanı | Derleme hatası |
+> | `RefCell<T>` | Tek sahip | Değiştirilemez (`Ref<T>`) veya değiştirilebilir (`RefMut<T>`) | Çalışma zamanı | Çalışma zamanında `panic!` |
+> | `Rc<RefCell<T>>` | Çoklu sahip | Değiştirilemez veya değiştirilebilir (içteki `RefCell<T>` üzerinden) | Çalışma zamanı | Çalışma zamanında `panic!` |
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="interior-mutability-a-mutable-borrow-to-an-immutable-value"></a>
+<a id="using-interior-mutability"></a>
+<a id="içsel-değiştirilebilirlik-kullanmak"></a>
+<a id="icsel-degistirilebilirlik-kullanmak"></a>
 
 ### İçsel Değiştirilebilirlik Kullanmak
 
-Ödünç alma kurallarının sonucu olarak, elinizde değiştirilemez bir değer
-varken onu değiştirilebilir olarak ödünç alamazsınız. Örneğin şu kod derlenmez:
+Ödünç alma kurallarının bir sonucu olarak, değiştirilemez bir değeriniz olduğunda
+onu değiştirilebilir biçimde ödünç alamazsınız. Örneğin şu kod derlenmeyecektir:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/no-listing-01-cant-borrow-immutable-as-mutable/src/main.rs}}
 ```
 
-Derlerseniz şu hatayı alırsınız:
+Bu kodu derlemeye çalışırsanız aşağıdaki hatayı alırsınız:
 
 ```console
 {{#include ../listings/ch15-smart-pointers/no-listing-01-cant-borrow-immutable-as-mutable/output.txt}}
 ```
 
-Bununla birlikte, bazı durumlarda bir değerin kendi metotları içinde kendini
-değiştirmesi ama dış dünyaya değiştirilemez görünmesi faydalıdır. `RefCell<T>`
-bunu yapmanın yollarından biridir. Tam anlamıyla kurallardan kaçmaz; yalnızca
-kontrolü derleme zamanından çalışma zamanına taşır. Kuralı ihlal ederseniz
-derleme hatası değil `panic!` alırsınız.
+Bununla birlikte, bir değerin kendi metotları içinde kendisini değiştirmesinin
+ancak diğer kodlara değiştirilemez görünmesinin yararlı olacağı durumlar vardır.
+Değerin kendi metotları dışındaki kodlar değeri değiştiremeyecektir. `RefCell<T>`
+kullanmak içsel değiştirilebilirlik yeteneği kazanmanın bir yoludur; ancak
+`RefCell<T>` ödünç alma kurallarını tamamen aşmaz: Derleyicideki _ödünç alma
+denetleyicisi (borrow checker)_ bu içsel değiştirilebilirliğe izin verir ve ödünç
+alma kuralları bunun yerine çalışma zamanında denetlenir. Kuralları ihlal
+ederseniz derleyici hatası yerine bir `panic!` alırsınız.
 
-Şimdi `RefCell<T>`yi gerçekten işimize yarayan bir örnek üzerinde görelim.
+Değiştirilemez bir değeri değiştirmek için `RefCell<T>` kullanabileceğimiz pratik
+bir örnek üzerinde çalışalım ve bunun neden yararlı olduğunu görelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="a-use-case-for-interior-mutability-mock-objects"></a>
+<a id="testing-with-mock-objects"></a>
+<a id="sahte-nesnelerle-test-yazmak"></a>
+<a id="taklit-nesnelerle-test-yazmak"></a>
 
-#### Sahte Nesnelerle Test Yazmak
+#### Taklit Nesnelerle Test Yazmak
 
-Test sırasında programcı bazen bir türün yerine başka bir tür kullanır; amaç
-belirli davranışı gözlemek ve doğru uygulanıp uygulanmadığını denetlemektir.
-Bu geçici türe _test double_ denir. Bunun özel bir biçimi olan _mock object_,
-test boyunca neler olduğunu kaydeder; böylece doğru eylemlerin gerçekleşip
-gerçekleşmediğini doğrulayabilirsiniz.
+Test sırasında bir programcı bazen belirli bir davranışı gözlemlemek ve doğru
+gerçeklenip gerçeklenmediğini doğrulamak amacıyla bir türün yerine başka bir tür
+kullanır. Bu yer tutucu türe _test dublörü (test double)_ denir. Bunu film
+yapımcılığındaki dublör (*stunt double*) kavramı gibi düşünebilirsiniz: Özellikle
+zorlu bir sahneyi çekmek için bir kişinin oyuncunun yerine geçmesi gibi, test
+dublörleri de testleri çalıştırırken diğer türlerin yerine geçer. _Taklit
+nesneler (mock objects)_ ise test sırasında neler olup bittiğini kaydeden özel
+test dublörü türleridir; böylece doğru eylemlerin gerçekleştiğini
+doğrulayabilirsiniz.
 
-Rust'ta bazı dillerdeki anlamıyla nesne yoktur ve standart kütüphanede hazır
-mock altyapısı gelmez. Ama aynı işi görecek struct'ları rahatlıkla
-tanımlayabilirsiniz.
+Rust'ta diğer dillerdeki anlamıyla nesneler yoktur ve bazı dillerin aksine
+Rust'ın standart kütüphanesinde yerleşik bir taklit nesne işlevselliği bulunmaz.
+Ancak taklit nesneyle aynı amaçlara hizmet edecek bir struct'ı rahatlıkla
+oluşturabilirsiniz.
 
-Şu senaryoyu test edelim: bir değerin üst sınıra ne kadar yaklaştığını izleyen
-ve mevcut değerin sınıra yaklaşmasına göre mesaj gönderen bir kütüphane
-yazacağız. Örneğin bir kullanıcının yapabileceği API çağrısı kotasını izlemek
-için kullanılabilir.
+Test edeceğimiz senaryo şudur: Bir değeri bir üst sınıra karşı izleyen ve mevcut
+değerin üst sınıra ne kadar yaklaştığına bağlı olarak iletiler gönderen bir
+kütüphane oluşturacağız. Bu kütüphane, örneğin bir kullanıcının yapmasına izin
+verilen API çağrısı sayısına ilişkin kotasını takip etmek için kullanılabilir.
 
-Bu kütüphane yalnızca sınıra yakınlığı ve hangi eşiklerde hangi mesajın
-gönderileceğini bilir. Mesajların nasıl gönderileceğini ise kütüphaneyi kullanan
-uygulama sağlayacaktır. Bunun için `Iletici` adlı bir trait tanımlıyoruz.
-Liste 15-20 kütüphane kodunu gösterir.
+Kütüphanemiz yalnızca bir değerin üst sınıra ne kadar yakın olduğunu takip etme
+ve hangi durumlarda hangi iletilerin gönderilmesi gerektiğini belirleme
+işlevselliğini sunacaktır. Kütüphanemizi kullanan uygulamaların ise iletileri
+gönderme mekanizmasını sağlaması beklenecektir: Uygulama iletiyi doğrudan
+kullanıcıya gösterebilir, e-posta gönderebilir, kısa mesaj atabilir veya başka
+bir şey yapabilir. Kütüphanenin bu ayrıntıyı bilmesine gerek yoktur. Tek ihtiyacı
+olan, bizim sağlayacağımız `Iletici` adlı trait'i uygulayan bir türdür. Liste
+15-20 bu kütüphane kodunu göstermektedir.
 
-<Listing number="15-20" file-name="src/lib.rs" caption="Bir değerin üst sınıra ne kadar yaklaştığını izleyen ve belirli seviyelerde uyaran kütüphane">
+<Listing number="15-20" file-name="src/lib.rs" caption="Bir değerin üst sınıra ne kadar yaklaştığını takip eden ve belirli seviyelerde uyarı veren bir kütüphane">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-20/src/lib.rs}}
@@ -130,22 +188,27 @@ Liste 15-20 kütüphane kodunu gösterir.
 
 </Listing>
 
-Buradaki önemli noktalardan biri, `Iletici` trait'inin `self`i değiştirilemez
-referans alan `gonder` metodunu tanımlamasıdır. Sahte nesnemiz, gerçek nesneyle
-aynı şekilde kullanılabilmek için bu arayüzü uygulamalıdır. İkinci önemli nokta
-ise `SinirIzleyici` üzerindeki `deger_ata` davranışını test etmek istememizdir.
-`deger` parametresine verdiğimiz şeyi değiştirebiliriz ama `deger_ata` bize
-doğrulama yapacağımız bir sonuç döndürmez. Biz de “belirli bir `en_buyuk`
-değeriyle oluşturulmuş `SinirIzleyici`, farklı sayılar verildiğinde doğru
-iletileri gönderiyor mu?” sorusunu sınamak isteriz.
+Bu kodun önemli bir parçası, `Iletici` trait'inin `self`'e değiştirilemez bir
+referans ve iletinin metnini alan `gonder` adında tek bir metoda sahip olmasıdır.
+Bu trait, taklit nesnemizin gerçek bir nesneyle aynı şekilde kullanılabilmesi
+için uygulaması gereken arayüzdür. Diğer önemli parça ise `SinirIzleyici`
+üzerindeki `deger_ata` metodunun davranışını test etmek istememizdir. `deger`
+parametresi için geçirdiğimiz sayıyı değiştirebiliriz, ancak `deger_ata` üzerinde
+doğrulama (*assertion*) yapabileceğimiz hiçbir şey döndürmez. `Iletici` trait'ini
+uygulayan bir tür ve belirli bir `en_buyuk` değeriyle bir `SinirIzleyici`
+oluşturduğumuzda, `deger` için farklı sayılar geçirdiğimizde ileticiye uygun
+iletileri göndermesinin söylendiğini doğrulayabilmek istiyoruz.
 
-Gerçekten e-posta ya da mesaj göndermek yerine, yalnızca gönderilmesi istenen
-mesajları kaydeden bir sahte nesneye ihtiyacımız var. Sahte nesnenin örneğini
-oluşturup `SinirIzleyici`ye verecek, sonra `deger_ata` çağıracak ve sonrasında
-beklediğimiz mesajların kaydedilip kaydedilmediğine bakacağız. Liste 15-21 bu
-yönde bir girişimi gösteriyor; ama ödünç alma denetleyicisi buna izin vermiyor.
+`gonder` metodunu çağırdığımızda e-posta veya kısa mesaj göndermek yerine
+yalnızca göndermesi söylenen iletilerin kaydını tutacak bir taklit nesneye
+ihtiyacımız var. Taklit nesnenin yeni bir örneğini oluşturabilir, bu taklit
+nesneyi kullanan bir `SinirIzleyici` yaratabilir, `SinirIzleyici` üzerinde
+`deger_ata` metodunu çağırabilir ve ardından taklit nesnenin beklediğimiz
+iletilere sahip olup olmadığını kontrol edebiliriz. Liste 15-21 tam olarak bunu
+yapacak bir taklit nesne gerçekleme girişimini göstermektedir, ancak ödünç alma
+denetleyicisi buna izin vermez.
 
-<Listing number="15-21" file-name="src/lib.rs" caption="Odunc alma denetleyicisinin izin vermedigi `SahteIletici` gerceklemesi denemesi">
+<Listing number="15-21" file-name="src/lib.rs" caption="Ödünç alma denetleyicisinin izin vermediği bir `SahteIletici` gerçeklemesi denemesi">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-21/src/lib.rs:here}}
@@ -153,34 +216,44 @@ yönde bir girişimi gösteriyor; ama ödünç alma denetleyicisi buna izin verm
 
 </Listing>
 
-Bu test kodu, gönderilen iletileri tutmak için `Vec<String>` kullanan
-`SahteIletici` yapısını tanımlar. Boş ileti listesiyle başlayan örnekler
-oluşturmayı kolaylaştırmak için `yeni` ilişkili fonksiyonunu da ekleriz.
-Ardından `Iletici` trait'ini uygularız.
+Bu test kodu, göndermesi söylenen iletileri takip etmek üzere `String`
+değerlerinden oluşan bir `Vec` tutan `gonderilen_iletiler` alanına sahip bir
+`SahteIletici` struct'ı tanımlar. Ayrıca boş bir ileti listesiyle başlayan yeni
+`SahteIletici` değerleri oluşturmayı kolaylaştırmak için `yeni` adında bir
+ilişkili fonksiyon tanımlarız. Ardından bir `SinirIzleyici`'ye `SahteIletici`
+verebilmek için `SahteIletici` üzerinde `Iletici` trait'ini uygularız. `gonder`
+metodunun tanımında ise parametre olarak geçirilen iletiyi alır ve
+`SahteIletici` içindeki `gonderilen_iletiler` listesinde saklarız.
 
-Testte, `SinirIzleyici`ye `deger` olarak `80` verdiğimizde, yani `100`lük
-sınırın yüzde 75'ini geçtiğimizde ne olduğunu sınarız. Önce yeni bir
-`SahteIletici`, sonra ona referans verilen bir `SinirIzleyici` oluştururuz.
-`deger_ata(80)` çağırdıktan sonra, sahte ileticinin bir mesaj kaydetmiş olmasını
-bekleriz.
+Testte, `SinirIzleyici`'ye `deger` alanını `en_buyuk` değerinin yüzde 75'inden
+büyük bir sayıya ayarlaması söylendiğinde ne olduğunu sınıyoruz. İlk olarak, boş
+bir ileti listesiyle başlayacak yeni bir `SahteIletici` oluşturuyoruz. Ardından
+yeni bir `SinirIzleyici` oluşturuyor ve ona yeni `SahteIletici`'ye bir referans
+ile `en_buyuk` değeri olarak `100` veriyoruz. `SinirIzleyici` üzerindeki
+`deger_ata` metodunu, 100'ün yüzde 75'inden fazla olan `80` değeriyle
+çağırıyoruz. Sonrasında `SahteIletici`'nin kaydını tuttuğu ileti listesinde artık
+bir adet ileti bulunması gerektiğini doğruluyoruz.
 
-Ama burada bir sorun var:
+Ancak aşağıda gösterildiği gibi bu testte bir sorun vardır:
 
 ```console
 {{#include ../listings/ch15-smart-pointers/listing-15-21/output.txt}}
 ```
 
-`gonder`, `self`i değiştirilemez referans aldığı için `SahteIletici` içindeki
-ileti listesini değiştiremiyoruz. Hata mesajının önerdiği gibi trait'i ve
-uygulamayı `&mut self` yapamayız; çünkü sırf test kolaylığı için `Iletici`
-trait'ini değiştirmek istemiyoruz.
+`gonder` metodu `self`'e değiştirilemez bir referans aldığı için iletileri
+kaydetmek üzere `SahteIletici`'yi değiştiremiyoruz. Hata metnindeki hem `impl`
+metodunda hem de trait tanımında `&mut self` kullanma önerisini de uygulayamayız.
+Yalnızca test uğruna `Iletici` trait'ini değiştirmek istemiyoruz. Bunun yerine,
+test kodumuzun mevcut tasarımımızla doğru biçimde çalışmasını sağlayacak bir yol
+bulmamız gerekir.
 
-İşte burada içsel değiştirilebilirlik devreye girer. `gonderilen_iletiler`
-alanını `RefCell<T>` içine alırız; böylece `gonder` metodu `self`
-değiştirilemez referans alsa bile, içerideki veriyi değiştirebilir. Liste 15-22
-bunu gösterir.
+İşte bu, içsel değiştirilebilirliğin yardımcı olabileceği bir durumdur!
+`gonderilen_iletiler` alanını bir `RefCell<T>` içinde saklayacağız; böylece
+`gonder` metodu gördüğümüz iletileri saklamak üzere `gonderilen_iletiler`
+üzerinde değişiklik yapabilecektir. Liste 15-22 bunun nasıl göründüğünü
+göstermektedir.
 
-<Listing number="15-22" file-name="src/lib.rs" caption="Dış değer değiştirilemez sayılırken iç değeri değiştirmek için `RefCell<T>` kullanmak">
+<Listing number="15-22" file-name="src/lib.rs" caption="Dıştaki değer değiştirilemez kabul edilirken içteki değeri değiştirmek için `RefCell<T>` kullanmak">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-22/src/lib.rs:here}}
@@ -188,41 +261,56 @@ bunu gösterir.
 
 </Listing>
 
-`gonderilen_iletiler` alanı artık `Vec<String>` değil
-`RefCell<Vec<String>>`dir. `yeni` içinde boş vektörün etrafına yeni bir
-`RefCell` örneği sararız.
+`gonderilen_iletiler` alanı artık `Vec<String>` yerine `RefCell<Vec<String>>`
+türündedir. `yeni` fonksiyonunda boş vektörün etrafında yeni bir
+`RefCell<Vec<String>>` örneği oluşturuyoruz.
 
-`gonder` uygulamasında ilk parametre hâlâ `self`in değiştirilemez ödüncüdür;
-trait tanımıyla uyumludur. `self.gonderilen_iletiler` üzerinde `borrow_mut`
-çağırarak içteki vektöre değiştirilebilir erişim alır, ardından `push`
-kullanarak iletiyi kaydederiz.
+`gonder` metodunun uygulamasında ilk parametre hâlâ `self`'in değiştirilemez
+ödünç alımıdır; bu da trait tanımıyla eşleşir. `self.gonderilen_iletiler`
+içindeki `RefCell<Vec<String>>` üzerinde `borrow_mut` çağırarak
+`RefCell<Vec<String>>` içindeki değere — yani vektöre — değiştirilebilir bir
+referans elde ederiz. Ardından test sırasında gönderilen iletilerin kaydını
+tutmak için vektöre olan değiştirilebilir referans üzerinde `push` çağırabiliriz.
 
-Doğrulamada da vektörün boyuna bakmak için `borrow` çağırıp değiştirilemez
-referans alırız.
+Yapmamız gereken son değişiklik doğrulama satırındadır: İçteki vektörde kaç öğe
+bulunduğunu görmek için `RefCell<Vec<String>>` üzerinde `borrow` çağırarak
+vektöre değiştirilemez bir referans alırız.
+
+`RefCell<T>` türünün nasıl kullanıldığını gördüğünüze göre, şimdi nasıl
+çalıştığının ayrıntılarına inelim!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="keeping-track-of-borrows-at-runtime-with-refcellt"></a>
+<a id="tracking-borrows-at-runtime"></a>
+<a id="ödünçleri-çalışma-zamanında-izlemek"></a>
+<a id="oduncleri-calisma-zamaninda-izlemek"></a>
 
-#### Ödünçleri Çalışma Zamanında İzlemek
+#### Ödünç Almaları Çalışma Zamanında İzlemek
 
-Normal referanslarda `&` ve `&mut` kullanırız. `RefCell<T>` ileyse `borrow` ve
-`borrow_mut` kullanırız. `borrow`, `Ref<T>`; `borrow_mut` ise `RefMut<T>`
-döndürür. Her iki tür de `Deref` uyguladığı için normal referanslar gibi
-davranabilir.
+Değiştirilemez ve değiştirilebilir referanslar oluştururken sırasıyla `&` ve
+`&mut` sözdizimini kullanırız. `RefCell<T>` ile ise `RefCell<T>` türüne ait
+güvenli API'nin bir parçası olan `borrow` ve `borrow_mut` metotlarını kullanırız.
+`borrow` metodu `Ref<T>` akıllı işaretçi türünü, `borrow_mut` metodu ise
+`RefMut<T>` akıllı işaretçi türünü döndürür. Her iki tür de `Deref` trait'ini
+uyguladığından onlara normal referanslar gibi davranabiliriz.
 
-`RefCell<T>`, o anda etkin olan `Ref<T>` ve `RefMut<T>` akıllı işaretçilerinin
-sayısını izler. `borrow` her çağrıldığında değiştirilemez ödünç sayısını
-artırır. `Ref<T>` kapsam dışına çıkınca sayı bir azalır. Tıpkı derleme zamanı
-kuralları gibi, `RefCell<T>` de aynı anda çok sayıda değiştirilemez ödünç ya da
-yalnızca tek değiştirilebilir ödünç olmasına izin verir.
+`RefCell<T>`, o anda kaç tane `Ref<T>` ve `RefMut<T>` akıllı işaretçisinin etkin
+olduğunu takip eder. `borrow` metodunu her çağırdığımızda `RefCell<T>`, etkin
+olan değiştirilemez ödünç almaların sayısını artırır. Bir `Ref<T>` değeri kapsam
+dışına çıktığında değiştirilemez ödünç almaların sayısı 1 azalır. Tıpkı derleme
+zamanı ödünç alma kuralları gibi, `RefCell<T>` de herhangi bir anda çok sayıda
+değiştirilemez ödünç almaya veya tek bir değiştirilebilir ödünç almaya sahip
+olmamıza izin verir.
 
-Kural ihlali yaparsak, referanslarda olduğu gibi derleme hatası değil çalışma
-zamanında `panic!` alırız. Liste 15-23, Liste 15-22'deki `gonder`
-uygulamasının bilerek bozulmuş sürümüdür: aynı kapsam içinde iki
-değiştirilebilir ödünç oluşturmaya çalışıyoruz.
+Bu kuralları ihlal etmeye çalışırsak, referanslarda olacağı gibi bir derleyici
+hatası almak yerine `RefCell<T>` uygulaması çalışma zamanında panikleyecektir.
+Liste 15-23, Liste 15-22'deki `gonder` uygulamasının değiştirilmiş bir hâlini
+göstermektedir. `RefCell<T>` türünün çalışma zamanında bunu yapmamızı
+engellediğini göstermek amacıyla aynı kapsam için etkin iki değiştirilebilir
+ödünç almayı bilerek oluşturmaya çalışıyoruz.
 
-<Listing number="15-23" file-name="src/lib.rs" caption="Aynı kapsamda iki değiştirilebilir referans oluşturup `RefCell<T>`nin panic vermesini görmek">
+<Listing number="15-23" file-name="src/lib.rs" caption="`RefCell<T>` türünün panikleyeceğini görmek için aynı kapsamda iki değiştirilebilir referans oluşturmak">
 
 ```rust,ignore,panics
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-23/src/lib.rs:here}}
@@ -230,36 +318,76 @@ değiştirilebilir ödünç oluşturmaya çalışıyoruz.
 
 </Listing>
 
-Önce `borrow_mut`ten dönen `RefMut<T>` için `ilk_odunc` değişkenini, ardından
-aynı kapsamda ikinci bir `RefMut<T>` için `ikinci_odunc`u oluşturuyoruz. Bu,
-aynı kapsamda iki değiştirilebilir referans demektir ve yasaktır. Kod derlenir
-ama test başarısız olur:
+`borrow_mut` çağrısından dönen `RefMut<T>` akıllı işaretçisi için `ilk_odunc`
+değişkenini oluşturuyoruz. Ardından `ikinci_odunc` değişkeninde aynı şekilde
+başka bir değiştirilebilir ödünç alma daha oluşturuyoruz. Bu durum aynı kapsamda
+iki değiştirilebilir referans oluşturur ki buna izin verilmez. Kütüphanemiz için
+testleri çalıştırdığımızda Liste 15-23'teki kod hiçbir hata vermeden derlenecek,
+ancak test başarısız olacaktır:
 
 ```console
 {{#include ../listings/ch15-smart-pointers/listing-15-23/output.txt}}
 ```
 
-Kodun `already borrowed: BorrowMutError` mesajıyla paniklediğine dikkat edin.
-`RefCell<T>`, kuralları çalışma zamanında işte böyle uygular.
+Kodun `RefCell already borrowed` (önceki Rust sürümlerinde `already borrowed:
+BorrowMutError`) mesajıyla paniklediğine dikkat edin. `RefCell<T>`, ödünç alma
+kurallarının ihlallerini çalışma zamanında işte bu şekilde ele alır.
 
-Bu yaklaşımın bedeli vardır: hataları geliştirme sürecinde daha geç fark
-edebilirsiniz ve çalışma zamanında küçük de olsa ek maliyet oluşur. Buna
-rağmen, yalnızca değiştirilemez değerlerin izin verildiği bağlamda kendini
-değiştirebilen sahte nesneler yazmak gibi durumlarda `RefCell<T>` çok işe yarar.
+Burada yaptığımız gibi ödünç alma hatalarını derleme zamanı yerine çalışma
+zamanında yakalamayı seçmek, kodunuzdaki hataları geliştirme sürecinin daha
+ileriki aşamalarında — belki de kodunuz canlı ortama (*production*) alınana dek —
+fark edemeyebileceğiniz anlamına gelir. Ayrıca ödünç almaları derleme zamanı
+yerine çalışma zamanında takip etmenin bir sonucu olarak kodunuz küçük bir
+çalışma zamanı performans maliyeti üstlenir. Bununla birlikte `RefCell<T>`
+kullanmak, yalnızca değiştirilemez değerlere izin verilen bir bağlamda
+kullanılırken bile gördüğü iletilerin kaydını tutmak üzere kendisini
+değiştirebilen bir taklit nesne yazmayı mümkün kılar. Ödünlerine rağmen, normal
+referansların sunduğundan daha fazla işlevsellik elde etmek için `RefCell<T>`
+kullanabilirsiniz.
+
+> Not: Çalışma zamanında ödünç çakışması ihtimali bulunan durumlarda programın
+> `panic!` ile çökmesini istemiyorsanız, `RefCell<T>` türünün paniklemeyen
+> alternatifleri olan `try_borrow()` ve `try_borrow_mut()` metotlarını
+> kullanabilirsiniz:
+>
+> - `try_borrow()`, değer zaten değiştirilebilir olarak ödünç alınmışsa
+>   paniklemek yerine `Err(BorrowError)` döndüren bir `Result<Ref<'_, T>, BorrowError>`
+>   üretir.
+> - `try_borrow_mut()`, değer o anda değiştirilemez veya değiştirilebilir olarak
+>   ödünç alınmışsa `Err(BorrowMutError)` döndüren bir `Result<RefMut<'_, T>, BorrowMutError>`
+>   üretir.
+>
+> Ayrıca `Ref<T>` ve `RefMut<T>` akıllı işaretçileri ödünç kilidini kapsam sonuna
+> kadar tuttuğu için, aynı fonksiyon içinde art arda ödünç almanız gerektiğinde
+> ilk ödüncü bir iç blok (`{ ... }`) içinde sınırlayabilir ya da Bölüm 15.3'te
+> öğrendiğiniz `drop(ilk_odunc)` çağrısıyla erken bırakabilirsiniz.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="having-multiple-owners-of-mutable-data-by-combining-rc-t-and-ref-cell-t"></a>
+<a id="allowing-multiple-owners-of-mutable-data-with-rct-and-refcellt"></a>
+<a id="allowing-multiple-owners-of-mutable-data"></a>
+<a id="değiştirilebilir-verinin-birden-fazla-sahibi-olmasına-i̇zin-vermek"></a>
+<a id="değiştirilebilir-verinin-birden-fazla-sahibi-olmasına-izin-vermek"></a>
+<a id="degistirilebilir-verinin-birden-fazla-sahibi-olmasina-izin-vermek"></a>
 
 ### Değiştirilebilir Verinin Birden Fazla Sahibi Olmasına İzin Vermek
 
-`RefCell<T>` çok sık `Rc<T>` ile birlikte kullanılır. `Rc<T>`, verinin birden
-çok sahibi olmasına izin verir ama yalnızca değiştirilemez erişim sunar. Eğer
-`Rc<T>` içinde `RefCell<T>` taşırsanız, hem birden çok sahipliğe hem de
-değiştirilebilirliğe sahip olursunuz.
+`RefCell<T>` kullanmanın yaygın bir yolu, onu `Rc<T>` ile birleştirmektir.
+`Rc<T>` türünün bir verinin birden fazla sahibi olmasına izin verdiğini, ancak o
+veriye yalnızca değiştirilemez erişim sağladığını hatırlayın. İçinde bir
+`RefCell<T>` tutan bir `Rc<T>` değeriniz varsa, hem birden fazla sahibi olabilen
+_hem de_ değiştirebileceğiniz bir değer elde edersiniz!
 
-Liste 15-18'de `Rc<T>` kullanarak bir listenin birden çok yerde
-paylaşılabildiğini görmüştük. Ama `Rc<T>` yalnızca değiştirilemez değerleri
-tuttuğu için, liste oluştuktan sonra içindeki değerleri değiştiremiyorduk.
-Şimdi `RefCell<T>` ekleyerek bunu mümkün kılacağız. Liste 15-24 bunu gösterir.
+Örneğin, birden fazla listenin başka bir listenin sahipliğini paylaşmasına olanak
+tanımak için `Rc<T>` kullandığımız Liste 15-18'deki cons listesi örneğini
+hatırlayın. `Rc<T>` yalnızca değiştirilemez değerler tuttuğu için, listeyi
+oluşturduktan sonra içindeki değerlerin hiçbirini değiştiremeyiz. Listelerdeki
+değerleri değiştirebilme yeteneği için işin içine `RefCell<T>` ekleyelim. Liste
+15-24, `Dugum` tanımında bir `RefCell<T>` kullanarak tüm listelerde saklanan
+değeri değiştirebileceğimizi göstermektedir.
 
-<Listing number="15-24" file-name="src/main.rs" caption="Değiştirilebilir `Liste` oluşturmak için `Rc<RefCell<i32>>` kullanmak">
+<Listing number="15-24" file-name="src/main.rs" caption="Değiştirebileceğimiz bir `Liste` oluşturmak için `Rc<RefCell<i32>>` kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-24/src/main.rs}}
@@ -267,30 +395,40 @@ tuttuğu için, liste oluştuktan sonra içindeki değerleri değiştiremiyorduk
 
 </Listing>
 
-Önce `Rc<RefCell<i32>>` türünden `deger` oluşturuyoruz ki sonra doğrudan
-erişebilelim. Ardından `a` listesini, `deger`i taşıyan `Dugum` varyantıyla
-kuruyoruz. Burada `deger`i klonlamamız gerekir; böylece içteki `5`in sahipliği
-hem `deger`de hem `a`da olur.
+`Rc<RefCell<i32>>` örneği olan bir değer oluşturuyor ve daha sonra doğrudan
+erişebilmek için onu `deger` adlı bir değişkende saklıyoruz. Ardından `a` içinde
+`deger`'i tutan bir `Dugum` varyantıyla bir `Liste` oluşturuyoruz. Sahipliği
+`deger`'den `a`'ya devretmek ya da `a`'nın `deger`'den ödünç almasını sağlamak
+yerine hem `a`'nın hem de `deger`'in içteki `5` değerinin sahipliğine sahip
+olması için `deger`'i klonlamamız gerekir.
 
-`a` listesini `Rc<T>` içine sarıyoruz ki `b` ve `c` oluşturulurken ikisi de
-`a`yı işaret edebilsin.
+`b` ve `c` listelerini oluşturduğumuzda her ikisinin de `a`'ya başvurabilmesi
+için `a` listesini bir `Rc<T>` içine sarıyoruz; bu da tıpkı Liste 15-18'de
+yaptığımız işlemdir.
 
-Listeler kurulduktan sonra `deger`e `10` eklemek istiyoruz. Bunun için
-`borrow_mut` çağırıyoruz. Rust'ın otomatik başvuru çözmesi, `Rc<T>`yi içteki
-`RefCell<T>`ye indirger. `borrow_mut`, `RefMut<T>` döndürür; biz de bunu
-çözerek iç değeri değiştiririz.
+`a`, `b` ve `c` içindeki listeleri oluşturduktan sonra `deger` içindeki sayıya 10
+eklemek istiyoruz. Bunu `deger` üzerinde `borrow_mut` çağırarak yapıyoruz; bu
+çağrı, `Rc<T>` türünün başvurusunu içteki `RefCell<T>` değerine çözmek için Bölüm
+5'teki [“`->` Operatörü Nerede?”][wheres-the---operator]<!-- ignore -->
+başlığında ele aldığımız otomatik başvuru çözme özelliğini kullanır.
+`borrow_mut` metodu bir `RefMut<T>` akıllı işaretçisi döndürür; biz de onun
+üzerinde başvuru çözme operatörünü (`*`) kullanarak içteki değeri değiştiririz.
 
-`a`, `b` ve `c`yi yazdırdığımızda hepsinin artık `15` içerdiğini görürüz:
+`a`, `b` ve `c`'yi yazdırdığımızda hepsinin `5` yerine değiştirilmiş `15`
+değerine sahip olduğunu görebiliriz:
 
 ```console
 {{#include ../listings/ch15-smart-pointers/listing-15-24/output.txt}}
 ```
 
-Bu teknik oldukça kullanışlıdır. Dışarıdan bakınca değiştirilemez bir `Liste`
-gibi görünür; ama `RefCell<T>`nin sunduğu API ile gerektiğinde iç veriyi
-değiştirebiliriz. Çalışma zamanındaki ödünç denetimi veri yarışlarını önler;
-bazı veri yapılarında biraz performans kaybına karşılık bu esneklik gayet
-değerlidir. Elbette `RefCell<T>` çok iş parçacıklı kodda çalışmaz; onun güvenli
-karşılığı olan `Mutex<T>`yi 16. bölümde göreceğiz.
+Bu teknik oldukça zariftir! `RefCell<T>` kullanarak dışarıdan bakıldığında
+değiştirilemez bir `Liste` değerine sahip oluruz. Ancak verimizi değiştirmemiz
+gerektiğinde içsel değiştirilebilirliğine erişim sağlayan `RefCell<T>`
+metotlarını kullanabiliriz. Ödünç alma kurallarının çalışma zamanı denetimleri
+bizi veri yarışlarından (*data race*) korur ve veri yapılarımızda bu esnekliği
+kazanmak için bazen bir miktar hızdan feragat etmeye değer. `RefCell<T>` türünün
+çok kanallı kodlarda çalışmadığını unutmayın! `Mutex<T>`, `RefCell<T>` türünün
+çok kanallı kullanıma güvenli (*thread-safe*) karşılığıdır ve `Mutex<T>` türünü
+Bölüm 16'da ele alacağız.
 
-[wheres-the---operator]: ch05-03-metotlar.html#--operatörüne-ne-oldu
+[wheres-the---operator]: ch05-03-metotlar.html#wheres-the---operator

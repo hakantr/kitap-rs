@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling tahmin_oyunu v0.1.0 ($PROJE/listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new)
+   Compiling tahmin_oyunu v0.1.0 (file:///projects/tahmin_oyunu)
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
      Running `target/debug/tahmin_oyunu`
 Merhaba, dünya!

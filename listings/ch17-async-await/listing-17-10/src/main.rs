@@ -9,9 +9,9 @@ fn main() {
 
         let degerler = vec![
             String::from("merhaba"),
-            String::from("-den"),
-            String::from("gelecek"),
-            String::from("icinden"),
+            String::from("gelecekten"),
+            String::from("selam"),
+            String::from("var"),
         ];
 
         for deger in degerler {
@@ -19,8 +19,8 @@ fn main() {
             trpl::sleep(Duration::from_millis(500)).await;
         }
 
-        while let Some(value) = alici.recv().await {
-            println!("alındı '{value}'");
+        while let Some(alinan) = alici.recv().await {
+            println!("alındı '{alinan}'");
         }
         // ANCHOR_END: many-messages
     });

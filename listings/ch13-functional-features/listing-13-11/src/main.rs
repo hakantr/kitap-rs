@@ -5,7 +5,7 @@ fn main() {
     let v1_iter = v1.iter();
 
     for deger in v1_iter {
-        println!("Got: {deger}");
+        println!("Alındı: {deger}");
     }
     // ANCHOR_END: here
 }

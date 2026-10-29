@@ -15,8 +15,8 @@ fn main() {
         Mesaj::Tasi { x, y } => {
             println!("x yönünde {x}, y yönünde {y} taşı");
         }
-        Mesaj::Yaz(text) => {
-            println!("Metin mesajı: {text}");
+        Mesaj::Yaz(metin) => {
+            println!("Metin mesajı: {metin}");
         }
         Mesaj::RenkDegistir(r, g, b) => {
             println!("Rengi kırmızı {r}, yeşil {g}, mavi {b} olarak değiştir");

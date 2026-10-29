@@ -1,5 +1,5 @@
 $ cargo run
-   Compiling variables v0.1.0 ($PROJE/listings/ch03-common-programming-concepts/no-listing-01-variables-are-immutable)
+   Compiling degiskenler v0.1.0 (file:///projects/degiskenler)
 error[E0384]: cannot assign twice to immutable variable `x`
  --> src/main.rs:4:5
   |
@@ -15,4 +15,4 @@ help: consider making this binding mutable
   |         +++
 
 For more information about this error, try `rustc --explain E0384`.
-error: could not compile `variables` (bin "variables") due to 1 previous error
+error: could not compile `degiskenler` (bin "degiskenler") due to 1 previous error

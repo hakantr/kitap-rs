@@ -1,8 +1,16 @@
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="concise-control-flow-with-if-let"></a>
+<a id="concise-control-flow-with-if-let-and-letelse"></a>
+<a id="if-let-ve-letelse-ile-ozlu-kontrol-akisi"></a>
+<a id="if-let-ile-özlü-kontrol-akışı"></a>
+<a id="if-let-ile-ozlu-kontrol-akisi"></a>
+
 ## `if let` ve `let...else` ile Özlü Kontrol Akışı
 
-`if let` sözdizimi, geri kalanları görmezden gelirken yalnızca bir desenle (pattern) eşleşen değerleri ele almak için `if` ve `let`'i daha az ayrıntılı bir şekilde birleştirmenize olanak tanır. `max_ayari` (config_max) değişkenindeki bir `Option<u8>` değerini eşleştiren ancak yalnızca değer `Some` varyantıysa kod çalıştırmak isteyen Liste 6-6'daki programı düşünün.
+`if let` sözdizimi, `if` ve `let` ifadelerini birleştirerek yalnızca tek bir desenle eşleşen değerleri işleyip geri kalanları yoksaymanın daha özlü bir yolunu sunar. Liste 6-6'da, `max_ayari` değişkenindeki `Option<u8>` değerini eşleştiren ancak yalnızca değer `Some` varyantı olduğunda kod çalıştırmak istediğimiz programı inceleyelim.
 
-<Listing number="6-6" caption="Sadece değer `Some` olduğunda kod çalıştırmayı önemseyen bir `match`">
+<Listing number="6-6" caption="Yalnızca değer `Some` olduğunda kod çalıştıran bir `match` ifadesi">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-06/src/main.rs:here}}
@@ -10,43 +18,48 @@
 
 </Listing>
 
-Eğer değer `Some` ise, değeri desendeki `max` değişkenine bağlayarak `Some` varyantının içindeki değeri yazdırırız. `None` değeriyle hiçbir şey yapmak istemiyoruz. `match` ifadesini tatmin etmek için, yalnızca bir varyantı işledikten sonra `_ => ()` eklemek zorundayız; bu da eklenmesi can sıkıcı ve gereksiz (boilerplate) bir koddur.
+Değer `Some` ise, varyantın içindeki veriyi desendeki `max` değişkenine bağlayarak ekrana yazdırırız. `None` değeriyle ise hiçbir işlem yapmak istemiyoruz. Ancak `match` ifadesinin tüm durumları kapsama zorunluluğunu karşılamak için, tek bir varyantı işledikten sonra bile `_ => ()` kolunu eklemek zorunda kalırız; bu da her seferinde yazılması can sıkıcı bir kalıp koddur.
 
-Bunun yerine, bunu `if let` kullanarak daha kısa bir şekilde yazabilirdik. Aşağıdaki kod Liste 6-6'daki `match` ile aynı şekilde davranır:
+Bunun yerine aynı mantığı `if let` kullanarak çok daha kısa bir biçimde yazabiliriz. Aşağıdaki kod, Liste 6-6'daki `match` ifadesiyle birebir aynı şekilde çalışır:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-12-if-let/src/main.rs:here}}
 ```
 
-`if let` sözdizimi, eşittir işaretiyle ayrılmış bir desen ve bir ifade alır. İfadenin `match`'e verildiği ve desenin onun ilk kolu olduğu bir `match` ile aynı şekilde çalışır. Bu durumda desen `Some(max)`'tir ve `max`, `Some` içindeki değere bağlanır. Daha sonra `max`'i, ilgili `match` kolunda kullandığımız gibi `if let` bloğunun gövdesinde de kullanabiliriz. `if let` bloğundaki kod yalnızca değer desenle eşleşirse çalışır.
+`if let` sözdizimi, aralarında eşittir (`=`) işareti bulunan bir desen ve bir ifade alır. Çalışma mantığı `match` ile aynıdır: Eşittir işaretinin sağındaki ifade `match` yapısına verilen değere, solundaki desen ise ilk `match` koluna karşılık gelir. Bu örnekte desen `Some(max)` şeklindedir ve `max` değişkeni `Some` varyantının içindeki değere bağlanır. Ardından `max` değişkenini, tıpkı eşdeğer `match` kolunda yaptığımız gibi `if let` bloğunun gövdesinde kullanabiliriz. `if let` bloğu içindeki kod, yalnızca değer belirtilen desenle eşleştiğinde çalışır.
 
-`if let` kullanmak daha az kod yazmak, daha az girinti (indentation) yapmak ve daha az tekrarlayan (boilerplate) kod kullanmak anlamına gelir. Ancak, `match`'in hiçbir durumu ele almayı unutmamanızı sağlayan kapsamlı denetimini kaybedersiniz. `match` ve `if let` arasında seçim yapmak, bulunduğunuz durumda ne yaptığınıza ve kısalık kazanmanın kapsamlı kontrolü kaybetmek için uygun bir takas olup olmadığına bağlıdır.
+`if let` kullanmak; daha az kod yazmak, daha az girinti kullanmak ve kalıp kodlardan kurtulmak demektir. Buna karşılık, `match` yapısının zorunlu kıldığı ve olası hiçbir durumu gözden kaçırmamanızı güvence altına alan *kapsamlılık denetiminden* vazgeçmiş olursunuz. `match` ile `if let` arasında seçim yapmak, içinde bulunduğunuz senaryoda ne amaçladığınıza ve kodda özlü bir anlatım kazanmanın kapsamlılık denetiminden vazgeçmeye değip değmeyeceğine bağlıdır.
 
-Başka bir deyişle, `if let`'i değer bir desenle eşleştiğinde kodu çalıştıran ve diğer tüm değerleri yoksayan bir `match` için pratik bir sözdizimi (syntax sugar) olarak düşünebilirsiniz.
+Başka bir deyişle `if let` yapısını, değer belirli bir desenle eşleştiğinde kod çalıştıran ve diğer tüm değerleri yoksayıp geçen bir `match` ifadesi için *sözdizimsel şeker (syntax sugar)* olarak düşünebilirsiniz.
 
-Bir `if let` ile birlikte bir `else` de ekleyebiliriz. `else` ile birlikte giden kod bloğu, `if let` ve `else` ile eşdeğer olan `match` ifadesindeki `_` durumunda gidecek olan kod bloğuyla aynıdır. `YirmiBesKurus` (Quarter) varyantının da bir `Eyalet` (UsState) değeri tuttuğu Liste 6-4'teki `MadeniPara` (Coin) enum tanımını hatırlayın. Gördüğümüz çeyreklik olmayan tüm paraları sayarken aynı zamanda çeyrekliklerin eyaletini duyurmak isteseydik, bunu şöyle bir `match` ifadesi ile yapabilirdik:
+Bir `if let` ifadesine `else` bloğu da ekleyebiliriz. `else` bloğunun içindeki kod, `if let` ve `else` yapısına eşdeğer bir `match` ifadesindeki `_` koluna yazacağımız kodla birebir aynı işlevi görür. Liste 6-4'te tanımladığımız ve `YirmiBesKurus` varyantının içinde bir `Eyalet` değeri barındırdığı `MadeniPara` enum'ını hatırlayın. Gördüğümüz çeyreklik (25 kuruşluk) dışındaki tüm madeni paraları saymak, aynı zamanda çeyrekliklerin hangi eyalete ait olduğunu duyurmak isteseydik bunu şöyle bir `match` ifadesiyle yazabilirdik:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-13-count-and-announce-match/src/main.rs:here}}
 ```
 
-Veya bunun gibi bir `if let` ve `else` ifadesi kullanabilirdik:
+Ya da aynı işlemi aşağıdaki gibi bir `if let` ve `else` ifadesiyle gerçekleştirebilirdik:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-14-count-and-announce-if-let-else/src/main.rs:here}}
 ```
 
-## `let...else` ile "Mutlu Yolda" (Happy Path) Kalmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Yaygın bir örüntü, bir değer mevcut olduğunda bazı hesaplamalar yapmak ve aksi takdirde varsayılan bir değer döndürmektir. `Eyalet` değerine sahip madeni paralar örneğimizle devam edersek, çeyrekliğin üzerindeki eyaletin ne kadar eski olduğuna bağlı olarak komik bir şey söylemek isteseydik, `Eyalet` üzerinde bir eyaletin yaşını kontrol etmek için şöyle bir metot tanıtabilirdik:
+<a id="staying-on-the-happy-path-with-letelse"></a>
+<a id="letelse-ile-mutlu-yolda-happy-path-kalmak"></a>
+
+## `let...else` ile "Mutlu Yolda" Kalmak
+
+Programlamada sıkça karşılaşılan bir akış biçimi, beklenen bir değer mevcut olduğunda bazı hesaplamalar yapmak, aksi takdirde ise doğrudan varsayılan bir değer döndürmektir. `Eyalet` verisi taşıyan madeni paralar örneğimizden devam edelim: Çeyrekliğin üzerindeki eyaletin ne kadar eski olduğuna bakarak esprili bir mesaj üretmek isteseydik, `Eyalet` üzerinde eyaletin kuruluş yılını kontrol eden şöyle bir metot tanımlayabilirdik:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-07/src/main.rs:state}}
 ```
 
-Daha sonra, Liste 6-7'de olduğu gibi koşulun gövdesi içinde bir `eyalet` (state) değişkeni tanıtarak madeni paranın türüyle eşleştirmek için `if let` kullanabiliriz.
+Ardından Liste 6-7'de olduğu gibi madeni paranın türünü eşleştirmek için `if let` kullanabilir ve koşul gövdesinin içinde bir `eyalet` değişkeni tanımlayabiliriz.
 
-<Listing number="6-7" caption="Bir `if let` içine yerleştirilmiş koşullar kullanarak bir eyaletin 1900'de var olup olmadığını kontrol etme">
+<Listing number="6-7" caption="Bir `if let` içine yerleştirilmiş koşullarla bir eyaletin 1900 yılında var olup olmadığını kontrol etme">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-07/src/main.rs:describe}}
@@ -54,9 +67,9 @@ Daha sonra, Liste 6-7'de olduğu gibi koşulun gövdesi içinde bir `eyalet` (st
 
 </Listing>
 
-Bu işi halleder, ancak işi `if let` ifadesinin gövdesine iter ve yapılacak iş daha karmaşıksa, üst düzey dalların (branches) birbiriyle tam olarak nasıl ilişkili olduğunu takip etmek zor olabilir. İfadelerin bir değer ürettiği gerçeğinden yararlanarak, Liste 6-8'de olduğu gibi `if let`'ten `eyalet`'i (state) üretebilir veya erken dönüş (return early) yapabiliriz. (Buna benzer bir şeyi `match` ile de yapabilirsiniz.)
+Bu yaklaşım işimizi görür, ancak asıl mantığı `if let` bloğunun içine doğru iter; yapılacak işlemler karmaşıklaştıkça en üst düzeydeki dalların birbirleriyle nasıl ilişkili olduğunu takip etmek zorlaşabilir. Rust'ta ifadelerin değer üretme özelliğinden yararlanarak, Liste 6-8'de olduğu gibi `if let` ifadesinden ya `eyalet` değerini üretebilir ya da fonksiyondan erken dönüş yapabiliriz. (Benzer bir yapıyı `match` ile de kurabilirsiniz.)
 
-<Listing number="6-8" caption="Bir değer üretmek veya erken dönmek için `if let` kullanmak">
+<Listing number="6-8" caption="Bir değer üretmek veya fonksiyondan erken dönmek için `if let` kullanma">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-08/src/main.rs:describe}}
@@ -64,13 +77,15 @@ Bu işi halleder, ancak işi `if let` ifadesinin gövdesine iter ve yapılacak i
 
 </Listing>
 
-Yine de bunu takip etmek kendine göre biraz can sıkıcı! `if let`'in bir dalı bir değer üretir ve diğeri fonksiyondan tamamen geri döner.
+Ne var ki bu yapıyı okumak da kendi içinde biraz yorucudur! `if let` ifadesinin bir dalı değişkene atanacak bir değer üretirken, diğer dalı fonksiyondan tamamen çıkış yapar.
 
-Bu yaygın kalıbı (pattern) daha güzel ifade etmek için Rust'ta `let...else` vardır. `let...else` sözdizimi, `if let`'e çok benzer şekilde sol tarafta bir desen ve sağ tarafta bir ifade alır, ancak bir `if` dalı yoktur, yalnızca bir `else` dalı vardır. Eğer desen eşleşirse, desendeki değeri dış kapsama (outer scope) bağlar. Eğer desen eşleşmezse, program fonksiyondan dönmesi _gereken_ `else` koluna akacaktır.
+Bu yaygın akış kalıbını çok daha temiz ifade edebilmek için Rust'ta `let...else` sözdizimi bulunur. `let...else` yapısı, `if let` sözdizimine çok benzer biçimde sol tarafta bir desen ve sağ tarafta bir ifade alır; ancak bir `if` bloğu yoktur, yalnızca `else` bloğu vardır. Desen eşleşirse, desendeki değer doğrudan dış kapsama bağlanır. Desen _eşleşmezse_ program akışı `else` koluna girer ve bu kolun fonksiyondan dönerek akışı sonlandırması gerekir.
 
-Liste 6-9'da, `if let` yerine `let...else` kullanıldığında Liste 6-8'in nasıl göründüğünü görebilirsiniz.
+> Not: `let...else` yapısında eşleşen değişkenin (`eyalet`) yeni bir iç blok yerine doğrudan **dış kapsama** bağlanabilmesi, derleyicinin `else` bloğuna uyguladığı kesin bir kurala dayanır: `else` bloğu mevcut kontrol akışını mutlaka kesmek, yani *ıraksamak (diverge)* zorundadır. Bunun için `else` bloğunun `return` ile fonksiyondan dönmesi, bir döngü içindeyse `break` veya `continue` ile akışı yönlendirmesi ya da `panic!` / `todo!()` gibi normal biçimde sonlanmayan (`!` — *asla* türü üreten) bir ifadeyle bitmesi gerekir. Eğer `else` bloğunun normal şekilde tamamlanıp alt satıra geçmesine izin verilseydi `eyalet` değişkeni ilk değerini almamış olurdu; Rust derleyicisi bunu ``error[E0308]: `else` clause of `let...else` does not diverge`` (*`let...else` yapısının `else` bloğu ıraksamıyor*) hatasıyla derleme zamanında engeller.
 
-<Listing number="6-9" caption="Fonksiyon boyunca akışı netleştirmek için `let...else` kullanmak">
+Liste 6-9'da, `if let` yerine `let...else` kullanıldığında Liste 6-8'deki kodun nasıl göründüğünü inceleyebilirsiniz.
+
+<Listing number="6-9" caption="Fonksiyon içindeki akışı netleştirmek için `let...else` kullanma">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-09/src/main.rs:describe}}
@@ -78,14 +93,25 @@ Liste 6-9'da, `if let` yerine `let...else` kullanıldığında Liste 6-8'in nas�
 
 </Listing>
 
-`if let`'in yaptığı gibi iki dal için önemli ölçüde farklı kontrol akışlarına sahip olmadan, fonksiyonun ana gövdesindeki "mutlu yolda" (happy path) kaldığına dikkat edin.
+Bu sayede fonksiyonun ana gövdesinin, `if let` örneğindeki gibi iki dal arasında bambaşka kontrol akışlarına bölünmeden, girintisiz biçimde doğrudan *"mutlu yolda" (happy path)* — yani beklenen ana işleyiş akışında — kaldığına dikkat edin.
 
-Programınızın `match` kullanarak ifade edilemeyecek kadar uzun veya karmaşık bir mantığa sahip olduğu bir durumla karşılaşırsanız, `if let` ve `let...else` yapılarının da Rust alet çantanızda (toolbox) olduğunu unutmayın.
+Programınızda `match` kullanarak ifade etmenin fazla ayrıntılı kaldığı bir mantıkla karşılaştığınızda, `if let` ve `let...else` yapılarının da Rust araç çantanızda bulunduğunu unutmayın.
+
+> Not: Bir kontrol akışı yapısı seçerken şu pratik ölçütleri kullanabilirsiniz:
+>
+> - **`match`:** Birden fazla varyantı ayrı ayrı ele almanız gerektiğinde veya ileride enum'a yeni bir varyant eklendiğinde derleyicinin sizi derleme hatasıyla uyarmasını (*kapsamlılık denetimi*) istediğinizde `match` kullanın (ve `_` joker deseninden kaçının).
+> - **`if let`:** Yalnızca tek bir desenle ilgilenip orada kısa bir işlem yapacak, diğer tüm durumları yoksayacak (veya tek bir `else` bloğunda toplayacak) iseniz `if let` tercih edin.
+> - **`let...else`:** Fonksiyonun devam edebilmesi için bir değerin belirli bir desenle eşleşmesi ön koşulsa (*erken doğrulama*), iç içe girintilerden kaçınıp çıkarılan veriyi doğrudan dış kapsamda kullanarak ana akışta ("mutlu yolda") kalmak için `let...else` kullanın.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="summary"></a>
+<a id="ozet"></a>
 
 ## Özet
 
-Şimdi, numaralandırılmış (enumerated) değerler kümesinden biri olabilen özel türler oluşturmak için enum'ların nasıl kullanılacağını ele aldık. Standart kütüphanenin `Option<T>` türünün, hataları önlemek için tür sistemini kullanmanıza nasıl yardımcı olduğunu gösterdik. Enum değerlerinin içinde veriler olduğunda, ele almanız gereken durumların sayısına bağlı olarak bu değerleri çıkarmak ve kullanmak için `match` veya `if let` kullanabilirsiniz.
+Bu bölümde, numaralandırılmış bir değerler kümesinden yalnızca biri olabilen özel türler tanımlamak için enum'ların nasıl kullanılacağını ele aldık. Standart kütüphanedeki `Option<T>` türünün, hataları derleme zamanında önlemek üzere tür sisteminden yararlanmanıza nasıl yardımcı olduğunu gördük. Enum değerleri kendi içlerinde veri barındırdığında, ele almanız gereken durum sayısına bağlı olarak bu verileri çıkarmak ve kullanmak için `match` veya `if let` yapılarından yararlanabilirsiniz.
 
-Rust programlarınız artık alanınızdaki (domain) kavramları struct'lar ve enum'lar kullanarak ifade edebilir. API'nizde kullanmak üzere özel türler (custom types) oluşturmak tip güvenliği (type safety) sağlar: Derleyici, fonksiyonlarınızın yalnızca her fonksiyonun beklediği türde değerler almasını garanti eder.
+Rust programlarınız artık çalıştığınız problem alanındaki kavramları struct'lar ve enum'lar aracılığıyla ifade edebilir. API'nizde kullanmak üzere özel türler oluşturmak *tür güvenliği* sağlar: Derleyici, her fonksiyonun yalnızca beklediği türdeki değerleri almasını güvence altına alır.
 
-Kullanıcılarınıza kullanımı kolay ve yalnızca tam olarak ihtiyaç duyacakları şeyleri ortaya çıkaran iyi organize edilmiş bir API sağlamak için şimdi Rust'ın modüllerine (modules) dönelim.
+Kullanıcılarınıza kullanımı anlaşılır ve yalnızca gerçekten ihtiyaç duyacakları öğeleri dışarıya açan iyi düzenlenmiş bir API sunabilmek için şimdi Rust'ın modül sistemine geçelim.

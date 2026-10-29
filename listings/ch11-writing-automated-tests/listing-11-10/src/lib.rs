@@ -1,5 +1,5 @@
 fn yazdir_ve_10_dondur(a: i32) -> i32 {
-    println!("{} değerini aldım", a);
+    println!("{a} değerini aldım");
     10
 }
 

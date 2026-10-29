@@ -1,18 +1,28 @@
-## Referansları Ömürlerle (Lifetimes) Doğrulamak
+<!-- Old headings. Do not remove or links may break. -->
 
-Ömürler, daha önce kullandığımız başka bir jenerik türüdür. Ömürler, bir türün istediğimiz davranışa sahip olduğundan emin olmak yerine, referansların onlara ihtiyacımız olduğu sürece geçerli kalmasını sağlar.
+<a id="validating-references-with-lifetimes"></a>
+<a id="referansları-ömürlerle-lifetimes-doğrulamak"></a>
+<a id="referanslari-omurlerle-lifetimes-dogrulamak"></a>
+<a id="referansları-ömürlerle-doğrulamak"></a>
 
-Bölüm 4'teki ["Referanslar ve Ödünç Alma (Borrowing)"][references-and-borrowing]<!-- ignore --> kısmında bahsetmediğimiz bir detay, Rust'taki her referansın bir ömrü (lifetime) olduğudur; bu, o referansın geçerli olduğu kapsamdır. Tıpkı çoğu zaman türlerin çıkarsanması gibi, çoğu zaman ömürler de örtüktür ve çıkarsanırlar. Yalnızca birden fazla türün mümkün olduğu durumlarda türleri açıklamamız gerekir. Benzer bir şekilde, referansların ömürlerinin birkaç farklı şekilde ilişkili olabileceği durumlarda da ömürleri açıklamamız gerekir. Rust, çalışma zamanında kullanılan gerçek referansların kesinlikle geçerli olacağından emin olmak için jenerik ömür parametrelerini kullanarak bu ilişkileri açıklamayı zorunlu tutar.
+## Ömürlerle Referansları Doğrulama
 
-Ömürleri açıklamak, diğer çoğu programlama dilinde var olan bir kavram bile değildir, bu yüzden bu size yabancı gelecektir. Bu bölümde ömürleri bütünüyle ele almayacak olsak da, bu kavrama alışabilmeniz için ömür sözdizimiyle karşılaşabileceğiniz yaygın durumları tartışacağız.
+_Ömürler (lifetimes)_, aslında şimdiye dek farkında olmadan kullandığımız bir başka jenerik türüdür. Ömürler, bir türün istediğimiz davranışa sahip olmasını sağlamak yerine, referansların onlara ihtiyaç duyduğumuz süre boyunca geçerli kalmasını güvence altına alır.
+
+Bölüm 4'teki [“Referanslar ve Ödünç Alma”][references-and-borrowing]<!-- ignore --> kısmında değinmediğimiz bir ayrıntı, Rust'taki her referansın bir _ömrü_ olmasıdır; yani o referansın geçerli olduğu kapsam. Tıpkı çoğu zaman türlerin derleyici tarafından çıkarılması gibi, ömürler de çoğu durumda örtüktür ve kendiliğinden çıkarılır. Nasıl yalnızca birden fazla türün mümkün olduğu belirsiz durumlarda açık tür bildirimi yazmamız gerekiyorsa, referansların ömürlerinin birbirleriyle birkaç farklı biçimde ilişkili olabileceği durumlarda da ömür bildirimleri eklememiz gerekir. Rust, çalışma zamanında kullanılan gerçek referansların kesinlikle geçerli olacağından emin olmak için bu ilişkileri jenerik ömür parametreleriyle bildirmemizi zorunlu tutar.
+
+Ömür bildirimi kavramı diğer programlama dillerinin neredeyse hiçbirinde bulunmadığından ilk başta size yabancı gelecektir. Bu bölümde ömürlerin tüm ayrıntılarını ele almayacak olsak da, kavrama aşinalık kazanabilmeniz için ömür sözdizimiyle karşılaşacağınız yaygın senaryoları inceleyeceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="preventing-dangling-references-with-lifetimes"></a>
+<a id="dangling-references"></a>
+<a id="sarkan-referanslar-dangling-references"></a>
+<a id="sarkan-referanslar"></a>
 
-### Sarkan Referanslar (Dangling References)
+### Sarkan Referanslar
 
-Ömürlerin temel amacı, sarkan referansları önlemektir. Eğer bunların var olmasına izin verilseydi, bir programın başvurmayı amaçladığı veriler dışındaki verilere referans vermesine neden olurdu. Bir dış kapsama ve bir iç kapsama sahip olan Liste 10-16'daki programı düşünün.
+Ömürlerin temel amacı, _sarkan referansları (dangling references)_ önlemektir. Sarkan referansların var olmasına izin verilseydi, bir program işaret etmeyi amaçladığı veri yerine bambaşka bir bellek alanındaki veriye başvururdu. Bir dış kapsama ve bir iç kapsama sahip olan Liste 10-16'daki programı ele alalım.
 
 <Listing number="10-16" caption="Değeri kapsam dışına çıkmış bir referansı kullanma girişimi">
 
@@ -22,21 +32,28 @@ Bölüm 4'teki ["Referanslar ve Ödünç Alma (Borrowing)"][references-and-borro
 
 </Listing>
 
-> Not: Liste 10-16, 10-17 ve 10-23'teki örnekler, değişkenlere ilk değer vermeden onları bildirir, bu nedenle değişken adı dış kapsamda mevcuttur. İlk bakışta bu, Rust'ın null (boş) değerlere sahip olmamasıyla çelişiyor gibi görünebilir. Ancak, bir değişkene değer vermeden onu kullanmaya çalışırsak, derleme zamanı hatası alırız; bu da Rust'ın gerçekten null değerlere izin vermediğini gösterir.
+> Not: Liste 10-16, 10-17 ve 10-23'teki örnekler değişkenleri ilk değer atamadan bildirir; böylece değişken adı dış kapsamda var olur. İlk bakışta bu durum, Rust'ta `null` (boş) değerlerin bulunmamasıyla çelişiyormuş gibi görünebilir. Ancak bir değişkene değer atamadan önce onu kullanmaya çalışırsak derleme zamanı hatası alırız; bu da Rust'ın gerçekten `null` değerlere izin vermediğini gösterir.
 
-Dış kapsam, ilk değeri olmayan `r` adında bir değişken tanımlar ve iç kapsam, ilk değeri `5` olan `x` adında bir değişken tanımlar. İç kapsamın içinde, `r`'nin değerini `x`'e bir referans olarak ayarlamaya çalışırız. Sonra iç kapsam sona erer ve `r`'deki değeri yazdırmaya çalışırız. Bu kod derlenmeyecektir, çünkü biz onu kullanmaya çalışmadan önce `r`'nin atıfta bulunduğu değer kapsam dışına çıkmıştır. İşte hata mesajı:
+Dış kapsam ilk değeri olmayan `r` adında bir değişken bildirir; iç kapsam ise ilk değeri `5` olan `x` adında bir değişken bildirir. İç kapsamın içinde `r`'nin değerini `x`'e bir referans olarak atamaya çalışırız. Ardından iç kapsam sona erer ve `r`'deki değeri yazdırmaya çalışırız. Bu kod derlenmez; çünkü biz `r`'yi kullanmaya çalışmadan önce `r`'nin başvurduğu değer kapsam dışına çıkmıştır. Aldığımız hata mesajı şöyledir:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-16/output.txt}}
 ```
 
-Hata mesajı, `x` değişkeninin "yeterince uzun yaşamadığını (does not live long enough)" söyler. Bunun nedeni, iç kapsam 7. satırda sona erdiğinde `x`'in kapsam dışına çıkacak olmasıdır. Ancak `r` dış kapsam için hala geçerlidir; kapsamı daha geniş olduğu için onun "daha uzun yaşadığını" söylüyoruz. Rust bu kodun çalışmasına izin verseydi, `r` `x` kapsam dışına çıktığında ayrılması iptal edilen belleğe atıfta bulunuyor olurdu ve `r` ile yapmaya çalıştığımız hiçbir şey doğru çalışmazdı. Peki, Rust bu kodun geçersiz olduğunu nasıl belirliyor? Bir ödünç alma denetleyicisi kullanır.
+Hata mesajı, `x` değişkeninin “yeterince uzun yaşamadığını” (`does not live long enough`) bildirir. Bunun nedeni, iç kapsam 7. satırda sona erdiğinde `x` değişkeninin kapsam dışına çıkıp düşürülecek (`dropped here while still borrowed`) olmasıdır. Oysa `r` dış kapsam boyunca hâlâ geçerlidir; kapsamı daha geniş olduğu için onun “daha uzun yaşadığını” söyleriz. Rust bu kodun çalışmasına izin verseydi, `r` değişkeni `x` kapsam dışına çıktığında serbest bırakılan belleğe başvuruyor olurdu ve `r` ile yapmaya çalıştığımız hiçbir işlem doğru çalışmazdı. Peki Rust bu kodun geçersiz olduğunu nasıl anlar? Bir ödünç alma denetleyicisi kullanır.
 
-### Ödünç Alma Denetleyicisi (Borrow Checker)
+<!-- Old headings. Do not remove or links may break. -->
 
-Rust derleyicisi, tüm ödünç almaların geçerli olup olmadığını belirlemek için kapsamları karşılaştıran bir _ödünç alma denetleyicisine_ sahiptir. Liste 10-17, Liste 10-16 ile aynı kodu gösterir, ancak değişkenlerin ömürlerini gösteren açıklamalarla birlikte.
+<a id="the-borrow-checker"></a>
+<a id="ödünç-alma-denetleyicisi-borrow-checker"></a>
+<a id="odunc-alma-denetleyicisi-borrow-checker"></a>
+<a id="ödünç-alma-denetleyicisi"></a>
 
-<Listing number="10-17" caption="`r` ve `x`'in ömürlerinin sırasıyla `'a` ve `'b` olarak adlandırılan açıklamaları">
+### Ödünç Alma Denetleyicisi
+
+Rust derleyicisi, tüm ödünç almaların geçerli olup olmadığını belirlemek amacıyla kapsamları karşılaştıran bir _ödünç alma denetleyicisine (borrow checker)_ sahiptir. Liste 10-17, Liste 10-16'daki kodun değişken ömürlerini gösteren açıklamalar eklenmiş hâlini sunar.
+
+<Listing number="10-17" caption="`r` ve `x` değişkenlerinin sırasıyla `'a` ve `'b` olarak adlandırılan ömür bildirimleri">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-17/src/main.rs}}
@@ -44,11 +61,11 @@ Rust derleyicisi, tüm ödünç almaların geçerli olup olmadığını belirlem
 
 </Listing>
 
-Burada `r`'nin ömrünü `'a` ile ve `x`'in ömrünü `'b` ile açıkladık. Gördüğünüz gibi içteki `'b` bloğu dıştaki `'a` ömür bloğundan çok daha küçüktür. Derleme zamanında Rust iki ömrün boyutunu karşılaştırır ve `r`'nin `'a` ömrüne sahip olduğunu ancak `'b` ömrüne sahip bir belleğe atıfta bulunduğunu görür. `'b`, `'a`'dan daha kısa olduğu için program reddedilir: Referansın konusu referans kadar uzun yaşamaz.
+Burada `r`'nin ömrünü `'a`, `x`'in ömrünü ise `'b` ile işaretledik. Gördüğünüz gibi içteki `'b` bloğu, dıştaki `'a` ömür bloğundan çok daha küçüktür. Derleme zamanında Rust bu iki ömrün büyüklüğünü karşılaştırır ve `r`'nin `'a` ömrüne sahip olmasına karşın `'b` ömrüne sahip bir belleğe başvurduğunu görür. `'b` ömrü `'a`'dan daha kısa olduğu için program reddedilir: Referansın işaret ettiği veri, referansın kendisi kadar uzun yaşamamaktadır.
 
-Liste 10-18 kodu düzeltir, böylece kod bir sarkan referansa (dangling reference) sahip olmaz ve hiçbir hata vermeden derlenir.
+Liste 10-18, sarkan referans oluşmayacak şekilde kodu düzeltir ve hiçbir hata vermeden derlenir.
 
-<Listing number="10-18" caption="Geçerli bir referans, çünkü veriler referanstan daha uzun bir ömre sahiptir">
+<Listing number="10-18" caption="Veri, referanstan daha uzun bir ömre sahip olduğu için geçerli bir referans">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-18/src/main.rs}}
@@ -56,15 +73,21 @@ Liste 10-18 kodu düzeltir, böylece kod bir sarkan referansa (dangling referenc
 
 </Listing>
 
-Burada `x`, bu durumda `'a`'dan daha büyük olan `'b` ömrüne sahiptir. Bu, `r`'nin `x`'e atıfta bulunabileceği anlamına gelir; çünkü Rust, `r`'deki referansın `x` geçerli olduğu sürece her zaman geçerli olacağını bilir.
+Burada `x`, bu kez `'a`'dan daha geniş olan `'b` ömrüne sahiptir. Bu durum `r`'nin `x`'e güvenle başvurabileceği anlamına gelir; çünkü Rust, `x` geçerli olduğu sürece `r`'deki referansın da her zaman geçerli olacağını bilir.
 
-Artık referansların ömürlerinin nerede olduğunu ve Rust'ın referansların her zaman geçerli olacağından emin olmak için ömürleri nasıl analiz ettiğini bildiğinize göre, fonksiyon parametrelerindeki ve dönüş değerlerindeki jenerik ömürleri inceleyelim.
+Referansların ömürlerinin ne anlama geldiğini ve Rust'ın referansların her zaman geçerli kalmasını sağlamak için kapsamları nasıl analiz ettiğini gördüğümüze göre, şimdi fonksiyon parametrelerindeki ve dönüş değerlerindeki jenerik ömürleri inceleyelim.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="generic-lifetimes-in-functions"></a>
+<a id="fonksiyonlarda-jenerik-ömürler"></a>
+<a id="fonksiyonlarda-jenerik-omurler"></a>
 
 ### Fonksiyonlarda Jenerik Ömürler
 
-İki string (dizgi) diliminden daha uzun olanını döndüren bir fonksiyon yazacağız. Bu fonksiyon iki string dilimi alacak ve tek bir string dilimi döndürecek. `en_uzun` fonksiyonunu uyguladıktan sonra, Liste 10-19'daki kod `En uzun dizgi: abcd` yazdırmalıdır.
+İki string diliminden daha uzun olanını döndüren bir fonksiyon yazacağız. Bu fonksiyon iki string dilimi alacak ve tek bir string dilimi döndürecektir. `en_uzun` fonksiyonunu uyguladıktan sonra Liste 10-19'daki kod ekrana `En uzun dizgi: abcd` yazdırmalıdır.
 
-<Listing number="10-19" file-name="src/main.rs" caption="İki string diliminden daha uzun olanını bulmak için `en_uzun` fonksiyonunu çağıran bir `main` fonksiyonu">
+<Listing number="10-19" file-name="src/main.rs" caption="İki string diliminden daha uzun olanını bulmak için `en_uzun` fonksiyonunu çağıran `main` fonksiyonu">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-19/src/main.rs}}
@@ -72,11 +95,11 @@ Artık referansların ömürlerinin nerede olduğunu ve Rust'ın referansların 
 
 </Listing>
 
-Fonksiyonun, stringler (String) yerine birer referans olan string dilimlerini almasını istediğimize dikkat edin; çünkü `en_uzun` fonksiyonunun kendi parametrelerinin sahipliğini almasını istemiyoruz. Liste 10-19'da kullandığımız parametrelerin neden istediğimiz parametreler olduğu hakkında daha fazla tartışma için Bölüm 4'teki [“Parametre Olarak String Dilimleri”][string-slices-as-parameters]<!-- ignore --> kısmına bakın.
+`en_uzun` fonksiyonunun kendi parametrelerinin sahipliğini devralmasını istemediğimiz için, fonksiyonun `String` değerleri yerine birer referans olan string dilimlerini kabul etmesini istediğimize dikkat edin. Liste 10-19'da kullandığımız parametrelerin neden tam da aradığımız türler olduğuna dair daha ayrıntılı bilgi için Bölüm 4'teki [“Parametre Olarak String Dilimleri”][string-slices-as-parameters]<!-- ignore --> kısmına göz atabilirsiniz.
 
-`en_uzun` fonksiyonunu Liste 10-20'de gösterildiği gibi uygulamaya çalışırsak derlenmeyecektir.
+`en_uzun` fonksiyonunu Liste 10-20'de gösterildiği gibi yazmaya çalışırsak kod derlenmez.
 
-<Listing number="10-20" file-name="src/main.rs" caption="İki string diliminin daha uzun olanını döndüren, ancak henüz derlenmeyen `en_uzun` fonksiyonunun bir uygulaması">
+<Listing number="10-20" file-name="src/main.rs" caption="İki string diliminden daha uzun olanını döndüren ancak henüz derlenmeyen `en_uzun` fonksiyonu uygulaması">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-20/src/main.rs:here}}
@@ -84,43 +107,53 @@ Fonksiyonun, stringler (String) yerine birer referans olan string dilimlerini al
 
 </Listing>
 
-Bunun yerine, ömürler hakkında konuşan şu hatayı alırız:
+Bunun yerine ömürlerle ilgili şu hatayı alırız:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-20/output.txt}}
 ```
 
-Yardım metni, dönüş türünün üzerinde jenerik bir ömür parametresine ihtiyacı olduğunu ortaya koymaktadır, çünkü Rust döndürülen referansın `x`'i mi yoksa `y`'yi mi ifade ettiğini söyleyemez. Aslında, biz de bilmiyoruz, çünkü bu fonksiyonun gövdesindeki `if` bloğu `x`'e bir referans döndürürken `else` bloğu `y`'ye bir referans döndürüyor!
+Derleyicinin yardım (`help`) metni, dönüş türünün jenerik bir ömür parametresine ihtiyaç duyduğunu (`missing lifetime specifier` — *ömür belirteci eksik*) açıkça belirtir; çünkü Rust döndürülen referansın `x`'ten mi yoksa `y`'den mi ödünç alındığını bilemez. Doğrusu biz de bilemeyiz; çünkü fonksiyon gövdesindeki `if` bloğu `x`'e ait bir referans döndürürken `else` bloğu `y`'ye ait bir referans döndürmektedir!
 
-Bu fonksiyonu tanımlarken, bu fonksiyona geçirilecek somut değerleri bilmediğimizden `if` durumunun (case) mu yoksa `else` durumunun mu yürütüleceğini (execute) bilemeyiz. Aynı zamanda geçirilecek referansların somut ömürlerini de bilmiyoruz, bu yüzden döndürdüğümüz referansın her zaman geçerli olup olmayacağını belirlemek için Liste 10-17 ve 10-18'de yaptığımız gibi kapsamlara bakamayız. Ödünç alma denetleyicisi de bunu belirleyemez, çünkü `x` ve `y`'nin ömürlerinin dönüş değerinin ömrüyle nasıl bir ilişkisi olduğunu bilmez. Bu hatayı düzeltmek için, referanslar arasındaki ilişkiyi tanımlayan jenerik ömür parametreleri ekleyeceğiz, böylece ödünç alma denetleyicisi analizini gerçekleştirebilir.
+Bu fonksiyonu tanımlarken fonksiyona hangi somut değerlerin geçirileceğini bilmediğimizden `if` kolunun mu yoksa `else` kolunun mu çalışacağını bilemeyiz. Aynı şekilde fonksiyona geçirilecek referansların somut ömürlerini de bilmiyoruz; dolayısıyla döndürdüğümüz referansın her zaman geçerli olup olmayacağını anlamak için Liste 10-17 ve 10-18'de yaptığımız gibi doğrudan kapsamlara bakamayız. Ödünç alma denetleyicisi de bunu belirleyemez; çünkü `x` ve `y`'nin ömürlerinin dönüş değerinin ömrüyle nasıl bir ilişki içinde olduğunu bilmez. Bu hatayı gidermek için referanslar arasındaki ilişkiyi tanımlayan jenerik ömür parametreleri ekleyeceğiz; böylece ödünç alma denetleyicisi gerekli analizi yapabilecektir.
 
-### Ömür Açıklaması Sözdizimi (Lifetime Annotation Syntax)
+<!-- Old headings. Do not remove or links may break. -->
 
-Ömür açıklamaları, referanslardan hiçbirinin ne kadar yaşayacağını değiştirmez. Aksine, ömürleri etkilemeden birden fazla referansın ömürlerinin birbirleriyle olan ilişkilerini tanımlarlar. Tıpkı imza bir jenerik tür parametresi belirttiğinde fonksiyonların herhangi bir türü kabul edebilmesi gibi, jenerik bir ömür parametresi belirterek fonksiyonlar herhangi bir ömre sahip referansları kabul edebilirler.
+<a id="lifetime-annotation-syntax"></a>
+<a id="ömür-açıklaması-sözdizimi-lifetime-annotation-syntax"></a>
+<a id="omur-aciklamasi-sozdizimi-lifetime-annotation-syntax"></a>
+<a id="ömür-bildirim-sözdizimi"></a>
 
-Ömür açıklamalarının biraz alışılmadık bir sözdizimi vardır: Ömür parametrelerinin adları bir kesme işaretiyle (`'`) başlamalıdır ve genellikle tıpkı jenerik türler gibi tamamen küçük harflidir ve çok kısadır. Çoğu insan ilk ömür açıklaması için `'a` ismini kullanır. Ömür parametresi açıklamalarını, bir referansın `&` işaretinden sonra, açıklama ile referansın türünü ayırmak için bir boşluk kullanarak yerleştiririz.
+### Ömür Bildirim Sözdizimi
 
-İşte bazı örnekler; ömür parametresi olmayan bir `i32`'ye referans, `'a` adlı bir ömür parametresi olan bir `i32`'ye referans ve ayrıca `'a` ömrüne sahip bir `i32`'ye değiştirilebilir bir referans:
+_Ömür bildirimleri (lifetime annotations)_, hiçbir referansın ne kadar yaşayacağını değiştirmez. Bunun yerine, ömürlerin kendisini etkilemeden birden fazla referansın ömürlerinin birbiriyle olan ilişkisini tarif eder. Tıpkı imzasında jenerik tür parametresi bulunan bir fonksiyonun herhangi bir türü kabul edebilmesi gibi, jenerik ömür parametresi belirten fonksiyonlar da herhangi bir ömre sahip referansları kabul edebilir.
+
+Ömür bildirimlerinin biraz alışılmadık bir sözdizimi vardır: Ömür parametrelerinin adları kesme işaretiyle (`'`) başlamalıdır ve tıpkı jenerik türlerde olduğu gibi genellikle tamamen küçük harfli ve çok kısa seçilir. Çoğu geliştirici ilk ömür bildirimi için `'a` adını kullanır. Ömür parametresi bildirimlerini referansın `&` işaretinden hemen sonraya yazar, bildirim ile referansın türünü ayırmak için araya bir boşluk bırakırız.
+
+Aşağıda birkaç örnek verilmiştir: ömür parametresi belirtilmemiş bir `i32` referansı, `'a` adında ömür parametresine sahip bir `i32` referansı ve yine `'a` ömrüne sahip değiştirilebilir bir `i32` referansı:
 
 ```rust,ignore
-&i32        // a reference (bir referans)
-&'a i32     // a reference with an explicit lifetime (açık bir ömre sahip bir referans)
-&'a mut i32 // a mutable reference with an explicit lifetime (açık bir ömre sahip değiştirilebilir bir referans)
+&i32        // bir referans
+&'a i32     // açık ömür bildirimine sahip bir referans
+&'a mut i32 // açık ömür bildirimine sahip değiştirilebilir bir referans
 ```
 
-Tek başına bir ömür açıklaması çok fazla bir anlama sahip değildir, çünkü açıklamalar Rust'a birden fazla referansın jenerik ömür parametrelerinin birbiriyle nasıl ilişkili olduğunu söylemek içindir. `en_uzun` fonksiyonu bağlamında ömür açıklamalarının birbirleriyle nasıl ilişkilendiğini inceleyelim.
+Tek başına bir ömür bildiriminin pek bir anlamı yoktur; çünkü bu bildirimlerin amacı Rust'a birden fazla referansın jenerik ömür parametrelerinin birbiriyle nasıl ilişkili olduğunu anlatmaktır. Gelin `en_uzun` fonksiyonu bağlamında ömür bildirimlerinin birbirleriyle nasıl ilişkilendirildiğini inceleyelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="lifetime-annotations-in-function-signatures"></a>
+<a id="in-function-signatures"></a>
+<a id="fonksiyon-imzalarında-function-signatures"></a>
+<a id="fonksiyon-imzalarinda-function-signatures"></a>
 
-### Fonksiyon İmzalarında (Function Signatures)
+### Fonksiyon İmzalarında
 
-Fonksiyon imzalarında ömür açıklamalarını kullanmak için, tıpkı jenerik tür parametrelerinde yaptığımız gibi, fonksiyon adı ile parametre listesi arasındaki açılı ayraçlar içinde jenerik ömür parametrelerini bildirmemiz gerekir.
+Fonksiyon imzalarında ömür bildirimlerini kullanmak için, tıpkı jenerik tür parametrelerinde yaptığımız gibi, fonksiyon adı ile parametre listesi arasındaki açılı ayraçların (`<>`) içinde jenerik ömür parametrelerini bildirmemiz gerekir.
 
-İmzanın şu kısıtlamayı ifade etmesini istiyoruz: Döndürülen referans, her iki parametre geçerli olduğu sürece geçerli olacaktır. Bu, parametrelerin ömürleri ve dönüş değeri arasındaki ilişkidir. Liste 10-21'de gösterildiği gibi ömre `'a` adını vereceğiz ve sonra onu her referansa ekleyeceğiz.
+İmzanın şu kısıtlamayı ifade etmesini istiyoruz: Döndürülen referans, parametrelerin her ikisi de geçerli olduğu sürece geçerli olacaktır. Parametrelerin ömürleri ile dönüş değerinin ömrü arasındaki ilişki budur. Liste 10-21'de gösterildiği gibi ömre `'a` adını verecek ve onu imzadaki her referansa ekleyeceğiz.
 
-<Listing number="10-21" file-name="src/main.rs" caption="İmzadaki tüm referansların aynı ömre (`'a`) sahip olması gerektiğini belirten `en_uzun` fonksiyonu tanımı">
+<Listing number="10-21" file-name="src/main.rs" caption="İmzadaki tüm referansların aynı `'a` ömrüne sahip olması gerektiğini belirten `en_uzun` fonksiyonu tanımı">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-21/src/main.rs:here}}
@@ -128,19 +161,24 @@ Fonksiyon imzalarında ömür açıklamalarını kullanmak için, tıpkı jeneri
 
 </Listing>
 
-Bu kodu Liste 10-19'daki `main` fonksiyonu ile birlikte kullandığımızda kod derlenmeli ve istediğimiz sonucu üretmelidir.
+Bu kod, Liste 10-19'daki `main` fonksiyonuyla birlikte kullanıldığında sorunsuz derlenmeli ve istediğimiz çıktıyı üretmelidir.
 
-Fonksiyon imzası şimdi Rust'a, bazı `'a` ömürleri için fonksiyonun her ikisi de en az `'a` ömrü kadar yaşayan string dilimleri olan iki parametre aldığını söyler. Fonksiyon imzası ayrıca Rust'a, fonksiyondan döndürülen string diliminin en az `'a` ömrü kadar yaşayacağını söyler. Pratikte bu, `en_uzun` fonksiyonu tarafından döndürülen referansın ömrünün, fonksiyon argümanları tarafından atıfta bulunulan değerlerin ömürlerinden küçük olanıyla aynı olduğu anlamına gelir. Bu ilişkiler, Rust'ın bu kodu analiz ederken kullanmasını istediğimiz şeylerdir.
+Fonksiyon imzası artık Rust'a şunu söyler: Belirli bir `'a` ömrü için bu fonksiyon iki parametre alır ve her iki parametre de en az `'a` ömrü kadar yaşayan birer string dilimidir. Fonksiyon imzası aynı zamanda fonksiyondan döndürülen string diliminin de en az `'a` ömrü kadar yaşayacağını belirtir. Pratikte bu, `en_uzun` fonksiyonunun döndürdüğü referansın ömrünün, fonksiyon argümanlarının başvurduğu değerlerin ömürlerinden **daha kısa olanına** eşit olduğu anlamına gelir. Rust'ın bu kodu analiz ederken temel almasını istediğimiz ilişki tam olarak budur.
 
-Unutmayın, bu fonksiyon imzasında ömür parametrelerini belirttiğimizde, aktarılan veya döndürülen hiçbir değerin ömrünü değiştirmiyoruz. Bunun yerine, ödünç alma denetleyicisinin bu kısıtlamalara uymayan değerleri reddetmesini gerektiğini belirtiyoruz. Unutmayın ki, `en_uzun` fonksiyonunun `x` ve `y`'nin tam olarak ne kadar yaşayacağını bilmesi gerekmez, sadece bu imzayı sağlayacak `'a` için bir kapsamın yerine geçebileceğini bilmesi yeterlidir.
+Unutmayın: Bu fonksiyon imzasında ömür parametrelerini belirttiğimizde, fonksiyona geçirilen ya da fonksiyondan döndürülen hiçbir değerin bellekteki gerçek ömrünü değiştirmiyoruz. Yalnızca ödünç alma denetleyicisinin bu kısıtlamalara uymayan değerleri reddetmesi gerektiğini belirtiyoruz. `en_uzun` fonksiyonunun `x` ve `y`'nin tam olarak ne kadar yaşayacağını bilmesi gerekmez; bu imzayı karşılayacak bir kapsamın `'a` yerine konabilmesi yeterlidir.
 
-Fonksiyonlardaki ömürleri açıklarken, açıklamalar fonksiyonun gövdesine değil, fonksiyon imzasının içine girer. Ömür açıklamaları, imzadaki türlere çok benzer şekilde fonksiyonun sözleşmesinin bir parçası haline gelir. Fonksiyon imzalarının ömür sözleşmesini içermesi, Rust derleyicisinin yaptığı analizin daha basit olabileceği anlamına gelir. Bir fonksiyonun açıklanma şekli veya çağrılma şekli ile ilgili bir sorun varsa derleyici hataları, kodumuzun ilgili kısmına ve kısıtlamalara daha kesin bir şekilde işaret edebilir. Eğer Rust derleyicisi bunun yerine ömürlerin ilişkilerinin nasıl olmasını amaçladığımıza dair daha fazla çıkarsama yapsaydı, derleyici yalnızca kodumuzun kullanımına sorunun nedeninden çok uzakta olan bir noktada işaret edebilirdi.
+> Not: **Ömür Bildirimlerinin Temel Kuralı** — Yeni başlayanların en sık düştüğü yanılgı, `'a` yazmanın bir veriyi bellekte daha uzun süre hayatta tutacağını sanmaktır. Oysa `'a`:
+> 1. **Yaşam süresini değiştirmez:** Değerler yine kendi kapsamlarının sonunda bellekte temizlenir (`drop` edilir).
+> 2. **İlişkiyi tarif eder:** Ödünç alma denetleyicisine girdi referansları ile çıktı referansı arasındaki sözleşmeyi açıklar (örneğin `en_uzun<'a>` imzasında: *“Dönen referansı yalnızca `x` ve `y` referanslarının ikisinin birden hâlâ hayatta olduğu ortak kesişim kapsamı içinde kullanabilirsin”*).
+> 3. **Sıfır çalışma zamanı maliyetlidir:** Tüm doğrulama derleme zamanında yapılır; derlenmiş ikili dosyaya hiçbir ek işlem eklenmez.
 
-Somut referansları `en_uzun` fonksiyonuna ilettiğimizde, `'a`'nın yerine geçecek olan somut ömür, `x`'in kapsamının `y`'nin kapsamıyla örtüşen kısmıdır. Başka bir deyişle, jenerik ömür `'a`, `x` ve `y`'nin ömürlerinin daha küçük olanına eşit somut ömrü alacaktır. Döndürülen referansı da aynı `'a` ömür parametresiyle açıkladığımız için, döndürülen referans da `x` ve `y` ömürlerinden küçük olanın uzunluğu boyunca geçerli olacaktır.
+Fonksiyonlarda ömürleri bildirirken bildirimler fonksiyon gövdesine değil, fonksiyon imzasına yazılır. Ömür bildirimleri tıpkı imzadaki türler gibi fonksiyon sözleşmesinin bir parçası hâline gelir. Fonksiyon imzalarının ömür sözleşmesini içermesi, Rust derleyicisinin yaptığı analizin çok daha yalın ve öngörülebilir olmasını sağlar. Bir fonksiyonun ömür bildirimlerinde veya çağrılma biçiminde bir sorun varsa, derleyici hataları kodumuzun tam olarak ilgili noktasına ve ihlal edilen kısıtlamaya kesin biçimde işaret edebilir. Rust derleyicisi ömür ilişkilerinde neyi kastettiğimize dair arka planda daha fazla tahminde bulunsaydı, sorunun asıl kaynağından çok uzaktaki bir kullanım noktasına işaret etmek zorunda kalabilirdi.
 
-Farklı somut ömürlere sahip referanslar ileterek ömür açıklamalarının `en_uzun` fonksiyonunu nasıl kısıtladığına bakalım. Liste 10-22 basit bir örnektir.
+`en_uzun` fonksiyonuna somut referanslar geçirdiğimizde `'a` yerine geçen somut ömür, `x` kapsamının `y` kapsamıyla örtüşen kısmıdır. Başka bir deyişle jenerik `'a` ömrü, `x` ve `y`'nin ömürlerinden daha kısa olanına eşit somut ömrü alır. Döndürülen referansı da aynı `'a` ömür parametresiyle bildirdiğimiz için, döndürülen referans da `x` ve `y` ömürlerinden kısa olanı boyunca geçerli olur.
 
-<Listing number="10-22" file-name="src/main.rs" caption="Farklı somut ömürlere sahip `String` değerlerine referanslarla `en_uzun` fonksiyonunu kullanmak">
+Şimdi farklı somut ömürlere sahip referanslar geçirerek ömür bildirimlerinin `en_uzun` fonksiyonunu nasıl kısıtladığına bakalım. Liste 10-22 doğrudan çalışan yalın bir örnektir.
+
+<Listing number="10-22" file-name="src/main.rs" caption="Farklı somut ömürlere sahip `String` değerlerinin referanslarıyla `en_uzun` fonksiyonunu kullanma">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-22/src/main.rs:here}}
@@ -148,11 +186,11 @@ Farklı somut ömürlere sahip referanslar ileterek ömür açıklamalarının `
 
 </Listing>
 
-Bu örnekte, `dizgi1` dış kapsamın sonuna kadar geçerlidir, `dizgi2` iç kapsamın sonuna kadar geçerlidir ve `sonuc` iç kapsamın sonuna kadar geçerli olan bir şeye atıfta bulunur. Bu kodu çalıştırdığınızda, ödünç alma denetleyicisinin bunu onayladığını göreceksiniz; derlenecek ve `En uzun dizgi: uzun dizgi uzundur` yazdıracaktır.
+Bu örnekte `dizgi1` dış kapsamın sonuna kadar geçerlidir, `dizgi2` iç kapsamın sonuna kadar geçerlidir ve `sonuc` da iç kapsamın sonuna kadar geçerli olan bir veriye başvurur. Bu kodu çalıştırdığınızda ödünç alma denetleyicisinin kullanımı onayladığını göreceksiniz; kod derlenecek ve ekrana `En uzun dizgi: uzun dizgi uzundur` yazdıracaktır.
 
-Sırada, `sonuc` değişkenindeki referansın ömrünün iki argümanın daha küçük olanı olması gerektiğini gösteren bir örnek deneyelim. `sonuc` değişkeninin bildirimini iç kapsamın dışına taşıyacağız ancak `sonuc` değişkenine değer atamasını `dizgi2` ile aynı kapsamın içinde bırakacağız. Ardından, `sonuc` kullanan `println!` makrosunu iç kapsam bittikten sonra iç kapsamın dışına taşıyacağız. Liste 10-23'teki kod derlenmeyecektir.
+Şimdi de `sonuc` değişkenindeki referansın ömrünün iki argümandan daha kısa ömürlü olanına uymak zorunda olduğunu gösteren bir örnek deneyelim. `sonuc` değişkeninin bildirimini iç kapsamın dışına taşıyacağız, ancak `sonuc` değişkenine değer atamasını `dizgi2` ile aynı iç kapsamda bırakacağız. Ardından `sonuc` değişkenini kullanan `println!` çağrısını iç kapsam sona erdikten sonraya, yani dış kapsama taşıyacağız. Liste 10-23'teki bu kod derlenmeyecektir.
 
-<Listing number="10-23" file-name="src/main.rs" caption="`dizgi2` kapsam dışına çıktıktan sonra `sonuc` kullanmaya çalışmak">
+<Listing number="10-23" file-name="src/main.rs" caption="`dizgi2` kapsam dışına çıktıktan sonra `sonuc` değişkenini kullanma girişimi">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-23/src/main.rs:here}}
@@ -166,19 +204,22 @@ Bu kodu derlemeye çalıştığımızda şu hatayı alırız:
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-23/output.txt}}
 ```
 
-Hata `sonuc` değişkeninin `println!` ifadesi için geçerli olması için `dizgi2`'nin dış kapsamın sonuna kadar geçerli olması gerektiğini gösteriyor. Rust bunu biliyor çünkü fonksiyon parametrelerinin ve dönüş değerlerinin ömürlerini aynı `'a` ömür parametresini kullanarak açıkladık.
+Hata mesajı, `sonuc` değişkeninin `println!` deyiminde geçerli olabilmesi için `dizgi2`'nin dış kapsamın sonuna kadar geçerli kalması gerektiğini gösterir. Rust bunu, fonksiyon parametrelerinin ve dönüş değerinin ömürlerini aynı `'a` ömür parametresiyle bildirdiğimiz için bilir.
 
-İnsanlar olarak bizler bu koda bakıp `dizgi1`'in `dizgi2`'den daha uzun olduğunu ve dolayısıyla `sonuc`'un `dizgi1`'e bir referans içereceğini görebiliriz. `dizgi1` henüz kapsam dışına çıkmadığı için, `dizgi1`'e yapılan bir referans `println!` ifadesi (statement) için hala geçerli olacaktır. Ancak derleyici bu durumda referansın geçerli olduğunu göremiyor. Biz Rust'a `en_uzun` fonksiyonu tarafından döndürülen referansın ömrünün, aktarılan referansların ömürlerinden daha küçük olanıyla aynı olduğunu söyledik. Bu nedenle, ödünç alma denetleyicisi, potansiyel olarak geçersiz bir referansa sahip olduğu gerekçesiyle Liste 10-23'teki koda izin vermez.
+İnsan gözüyle bu koda baktığımızda `dizgi1`'in `dizgi2`'den daha uzun olduğunu ve dolayısıyla `sonuc` değişkeninin her zaman `dizgi1`'e bir referans tutacağını görebiliriz. `dizgi1` henüz kapsam dışına çıkmadığı için `dizgi1`'e yapılan bir referans `println!` satırında hâlâ geçerli olacaktır. Ancak derleyici bu özel durumda referansın geçerli olduğunu göremez. Biz Rust'a `en_uzun` fonksiyonunun döndürdüğü referansın ömrünün, geçirilen referansların ömürlerinden kısa olanına eşit olduğunu bildirdik. Bu nedenle ödünç alma denetleyicisi, geçersiz bir referans barındırma ihtimali bulunduğu gerekçesiyle Liste 10-23'teki koda izin vermez.
 
-`en_uzun` fonksiyonuna iletilen referansların değerlerini ve ömürlerini ve döndürülen referansın nasıl kullanıldığını değiştiren daha fazla deney tasarlamayı deneyin. Derlemeden önce deneylerinizin ödünç alma denetleyicisini geçip geçmeyeceği hakkında hipotezler kurun; sonra haklı olup olmadığınızı görmek için kontrol edin!
+`en_uzun` fonksiyonuna geçirilen referansların değerlerini, ömürlerini ve döndürülen referansın nasıl kullanıldığını değiştiren farklı deneyler tasarlamayı deneyin. Derlemeden önce deneylerinizin ödünç alma denetleyicisinden geçip geçmeyeceğine dair tahminler yürütün, ardından derleyerek haklı çıkıp çıkmadığınızı kontrol edin!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="thinking-in-terms-of-lifetimes"></a>
+<a id="relationships"></a>
+<a id="ilişkiler-relationships"></a>
+<a id="iliskiler-relationships"></a>
 
-### İlişkiler (Relationships)
+### İlişkiler
 
-Ömür parametrelerini (lifetime parameters) belirtmeniz gereken yol, fonksiyonunuzun ne yaptığına bağlıdır. Örneğin, `en_uzun` fonksiyonunun uygulamasını her zaman en uzun string dilimi yerine ilk parametreyi döndürecek şekilde değiştirseydik, `y` parametresi üzerinde bir ömür belirtmemize gerek kalmazdı. Aşağıdaki kod derlenecektir:
+Ömür parametrelerini nasıl belirtmeniz gerektiği, fonksiyonunuzun ne yaptığına bağlıdır. Örneğin `en_uzun` fonksiyonunun gövdesini en uzun string dilimi yerine her zaman ilk parametreyi döndürecek şekilde değiştirseydik, `y` parametresi üzerinde bir ömür belirtmemize gerek kalmazdı. Aşağıdaki kod sorunsuz derlenir:
 
 <Listing file-name="src/main.rs">
 
@@ -188,9 +229,9 @@ Hata `sonuc` değişkeninin `println!` ifadesi için geçerli olması için `diz
 
 </Listing>
 
-`x` parametresi ve dönüş türü için bir `'a` ömür parametresi belirttik, ancak `y` parametresi için belirtmedik, çünkü `y`'nin ömrünün `x`'in ömrüyle veya dönüş değeriyle hiçbir ilişkisi yoktur.
+Burada `x` parametresi ve dönüş türü için `'a` ömür parametresini belirttik, ancak `y` parametresi için belirtmedik; çünkü `y`'nin ömrünün `x`'in ömrüyle ya da dönüş değeriyle hiçbir ilişkisi yoktur.
 
-Bir fonksiyondan bir referans döndürürken, dönüş türünün ömür parametresi parametrelerden birinin ömür parametresiyle eşleşmelidir. Döndürülen referans parametrelerden birine atıfta _bulunmuyorsa_, bu fonksiyon içinde oluşturulmuş bir değere atıfta bulunması gerekir. Ancak, değer fonksiyonun sonunda kapsam dışına çıkacağı için bu sarkan bir referans (dangling reference) olacaktır. `en_uzun` fonksiyonunun derlenmeyecek olan bu uygulama denemesini inceleyelim:
+Bir fonksiyondan referans döndürürken, dönüş türünün ömür parametresi parametrelerden en az birinin ömür parametresiyle eşleşmelidir. Döndürülen referans parametrelerden birine _başvurmuyorsa_, fonksiyonun kendi içinde oluşturulmuş bir değere başvuruyor demektir. Ancak bu değer fonksiyon sonunda kapsam dışına çıkacağı için böyle bir referans kaçınılmaz olarak sarkan referans olur. `en_uzun` fonksiyonunun derlenmeyecek olan şu uygulama denemesini inceleyelim:
 
 <Listing file-name="src/main.rs">
 
@@ -200,25 +241,28 @@ Bir fonksiyondan bir referans döndürürken, dönüş türünün ömür paramet
 
 </Listing>
 
-Burada, dönüş türü için bir `'a` ömür parametresi belirtmiş olsak bile bu uygulama derlenemeyecektir, çünkü dönüş değerinin ömrünün parametrelerin ömrüyle hiçbir ilgisi yoktur. İşte aldığımız hata mesajı:
+Burada dönüş türü için `'a` ömür parametresini belirtmiş olsak bile bu uygulama derlenmez; çünkü dönüş değerinin ömrü parametrelerin ömrüyle hiçbir şekilde ilişkili değildir. Aldığımız hata mesajı şöyledir:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-09-unrelated-lifetime/output.txt}}
 ```
 
-Sorun şu ki `sonuc`, `en_uzun` fonksiyonunun sonunda kapsam dışına çıkar ve temizlenir. Biz aynı zamanda fonksiyondan `sonuc`'a bir referans döndürmeye çalışıyoruz. Sarkan referansı (dangling reference) değiştirecek ömür parametrelerini belirtebilmemizin hiçbir yolu yoktur ve Rust sarkan bir referans oluşturmamıza izin vermeyecektir. Bu durumda en iyi düzeltme, çağıran fonksiyonun değeri temizlemekten sorumlu olabilmesi için bir referans yerine sahip olunan bir veri türü döndürmek olacaktır.
+Sorun şudur: `sonuc` yerel değişkeni `en_uzun` fonksiyonunun sonunda kapsam dışına çıkar ve bellekten temizlenir; biz ise fonksiyondan `sonuc` değişkenine bir referans döndürmeye (`cannot return value referencing local variable \`sonuc\``) çalışıyoruz. Sarkan referansı ortadan kaldıracak hiçbir ömür parametresi bildirimi yoktur ve Rust sarkan referans oluşturmamıza izin vermez. Böyle bir durumda en doğru çözüm, referans yerine `String` gibi sahipli bir veri türü döndürmektir; böylece değerin sahipliği çağıran fonksiyona taşınır ve değeri temizleme sorumluluğu çağıran fonksiyona geçer.
 
-Nihayetinde, ömür sözdizimi fonksiyonların çeşitli parametrelerinin ve dönüş değerlerinin ömürlerini birbirine bağlamakla ilgilidir. Bunlar bağlandıktan sonra Rust, bellek açısından güvenli operasyonlara izin vermek ve sarkan işaretçiler oluşturacak veya bellek güvenliğini ihlal edecek operasyonları reddetmek için yeterli bilgiye sahip olur.
+Özetle ömür sözdizimi, fonksiyonların çeşitli parametrelerinin ve dönüş değerlerinin ömürlerini birbirine bağlamakla ilgilidir. Bu bağlantılar kurulduktan sonra Rust, bellek açısından güvenli işlemlere izin vermek ve sarkan işaretçiler oluşturacak ya da bellek güvenliğini ihlal edecek işlemleri engellemek için yeterli bilgiye sahip olur.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="lifetime-annotations-in-struct-definitions"></a>
+<a id="in-struct-definitions"></a>
+<a id="struct-yapı-tanımlarında"></a>
+<a id="struct-yapi-tanimlarinda"></a>
 
-### Struct (Yapı) Tanımlarında
+### Struct Tanımlarında
 
-Şimdiye kadar tanımladığımız struct'ların (yapıların) tümü sahip olunan türleri barındırıyordu. Struct'ları referansları barındıracak şekilde tanımlayabiliriz ancak bu durumda, struct'ın tanımındaki her referansa bir ömür açıklaması eklememiz gerekir. Liste 10-24'te, string dilimi tutan `OnemliAlinti` adlı bir struct bulunmaktadır.
+Şimdiye kadar tanımladığımız struct'ların tümü sahipli türler barındırıyordu. Struct'ları referans tutacak şekilde de tanımlayabiliriz; ancak bu durumda struct tanımındaki her referansa bir ömür bildirimi eklememiz gerekir. Liste 10-24'te bir string dilimi tutan `OnemliAlinti` adlı bir struct yer almaktadır.
 
-<Listing number="10-24" file-name="src/main.rs" caption="Ömür açıklaması gerektiren bir referans tutan bir struct">
+<Listing number="10-24" file-name="src/main.rs" caption="Referans tutan ve bu nedenle ömür bildirimi gerektiren bir struct">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-24/src/main.rs}}
@@ -226,15 +270,24 @@ Nihayetinde, ömür sözdizimi fonksiyonların çeşitli parametrelerinin ve dö
 
 </Listing>
 
-Bu struct, referans olan bir string dilimi barındıran `bolum` adlı tek bir alana sahiptir. Jenerik veri türlerinde olduğu gibi, jenerik ömür parametresinin adını struct adından sonra açılı ayraçlar içinde bildiriyoruz, böylece struct tanımının gövdesinde ömür parametresini kullanabiliyoruz. Bu açıklama, bir `OnemliAlinti` örneğinin, `bolum` alanında tuttuğu referanstan daha uzun yaşayamayacağı anlamına gelir.
+Bu struct, bir referans olan string dilimini barındıran `bolum` adlı tek bir alana sahiptir. Tıpkı jenerik veri türlerinde olduğu gibi, jenerik ömür parametresinin adını struct adından sonra açılı ayraçlar içinde bildiririz; böylece ömür parametresini struct tanımının gövdesinde kullanabiliriz. Bu bildirim, bir `OnemliAlinti` örneğinin `bolum` alanında tuttuğu referansın işaret ettiği veriden daha uzun yaşayamayacağı anlamına gelir.
 
-Buradaki `main` fonksiyonu, `roman` değişkenine ait olan `String`'in ilk cümlesine referans tutan bir `OnemliAlinti` struct'ı örneği yaratır. `roman`'daki veri, `OnemliAlinti` örneği yaratılmadan önce de mevcuttur. Dahası, `roman` ancak `OnemliAlinti` kapsam dışına çıktıktan sonra kapsam dışına çıkar, bu nedenle `OnemliAlinti` örneğindeki referans geçerlidir.
+Buradaki `main` fonksiyonu, `roman` değişkeninin sahip olduğu `String` değerinin ilk cümlesine referans tutan bir `OnemliAlinti` örneği oluşturur. `roman` içindeki veri `OnemliAlinti` örneği oluşturulmadan önce zaten mevcuttur. Ayrıca `roman`, `OnemliAlinti` örneği kapsam dışına çıktıktan sonra kapsam dışına çıkar; dolayısıyla `OnemliAlinti` örneğindeki referans geçerlidir.
 
-### Ömür Düşürülmesi (Lifetime Elision)
+<!-- Old headings. Do not remove or links may break. -->
 
-Her referansın bir ömrü olduğunu ve referansları kullanan fonksiyonlar veya struct'lar için ömür parametrelerini belirtmeniz gerektiğini öğrendiniz. Ancak Liste 4-9'da sahip olduğumuz ve Liste 10-25'te yeniden gösterilen bir fonksiyon, parametre ve dönüş türü referans olmasına rağmen ömür açıklamaları olmadan derlendi.
+<a id="lifetime-elision"></a>
+<a id="ömür-düşürülmesi-lifetime-elision"></a>
+<a id="omur-dusurulmesi-lifetime-elision"></a>
+<a id="ömür-düşürülmesi"></a>
+<a id="ömür-çıkarımı"></a>
+<a id="omur-cikarimi"></a>
 
-<Listing number="10-25" file-name="src/lib.rs" caption="Liste 4-9'da tanımladığımız, parametresi ve dönüş türü referanslar olmasına rağmen ömür açıklamaları olmadan derlenen bir fonksiyon">
+### Ömür Çıkarımı
+
+Her referansın bir ömrü olduğunu ve referans kullanan fonksiyonlar ya da struct'lar için ömür parametreleri belirtmeniz gerektiğini öğrendiniz. Ancak Bölüm 4'teki Liste 4-9'da yazdığımız ve Liste 10-25'te yeniden gösterilen fonksiyon, hem parametresi hem de dönüş türü referans olmasına rağmen hiçbir ömür bildirimi olmadan derlenmişti.
+
+<Listing number="10-25" file-name="src/lib.rs" caption="Liste 4-9'da tanımladığımız, parametresi ve dönüş türü referans olmasına rağmen ömür bildirimleri olmadan derlenen fonksiyon">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-25/src/main.rs:here}}
@@ -242,126 +295,148 @@ Her referansın bir ömrü olduğunu ve referansları kullanan fonksiyonlar veya
 
 </Listing>
 
-Bu fonksiyonun ömür açıklamaları olmadan derlenmesinin nedeni tarihseldir: Rust'ın ilk sürümlerinde (1.0 öncesi) bu kod derlenemezdi, çünkü her referansın açık bir ömre ihtiyacı vardı. O zamanlar, fonksiyon imzası şöyle yazılırdı:
+Bu fonksiyonun ömür bildirimleri olmadan derlenebilmesinin tarihsel bir nedeni vardır: Rust'ın erken sürümlerinde (1.0 öncesinde) her referans açık bir ömür gerektirdiği için bu kod derlenmezdi. O dönemde fonksiyon imzası şöyle yazılırdı:
 
 ```rust,ignore
 fn ilk_kelime<'a>(s: &'a str) -> &'a str {
 ```
 
-Pek çok Rust kodu yazdıktan sonra Rust ekibi, Rust programcılarının belirli durumlarda aynı ömür açıklamalarını defalarca girdiğini fark etti. Bu durumlar öngörülebilirdi ve birkaç deterministik (belirlenimci) deseni (pattern) izliyordu. Geliştiriciler bu desenleri derleyicinin koduna programladılar, böylece ödünç alma denetleyicisi bu durumlardaki ömürleri çıkarabilirdi ve açık açıklamalara ihtiyaç duymazdı.
+Çok sayıda Rust kodu yazıldıktan sonra Rust ekibi, geliştiricilerin belirli durumlarda hep aynı ömür bildirimlerini tekrar tekrar yazdığını fark etti. Bu durumlar öngörülebilirdi ve birkaç belirlenimci (*deterministic*) deseni izliyordu. Ekip bu desenleri doğrudan derleyiciye kodladı; böylece ödünç alma denetleyicisi bu senaryolarda ömürleri kendiliğinden çıkarabilir hâle geldi ve açık bildirimlere gerek kalmadı.
 
-Rust tarihinin bu parçası önemlidir çünkü daha deterministik desenlerin ortaya çıkması ve derleyiciye eklenmesi mümkündür. Gelecekte, daha da az ömür açıklaması gerekebilir.
+Rust tarihinin bu parçası önemlidir; çünkü ileride yeni belirlenimci desenlerin ortaya çıkıp derleyiciye eklenmesi mümkündür. Gelecekte daha da az ömür bildirimi yazmamız gerekebilir.
 
-Rust'ın referansları analizine programlanan desenlere _ömür düşürülmesi kuralları_ denir. Bunlar programcıların izlemesi gereken kurallar değildir; derleyicinin dikkate alacağı bir dizi özel durumdur ve eğer kodunuz bu durumlara uyuyorsa ömürleri açıkça yazmanız gerekmez.
+Rust'ın referans analizine kodlanmış olan bu desenlere _ömür çıkarımı kuralları (lifetime elision rules)_ — kelime anlamıyla *ömürlerin açıkça yazılmadan atlanması/çıkarılması kuralları* — denir. Bunlar programcıların uyması gereken kurallar değildir; derleyicinin göz önünde bulundurduğu bir dizi özel durumdur ve kodunuz bu durumlara uyuyorsa ömürleri açıkça yazmanız gerekmez.
 
-Elizyon (düşürülme / elision) kuralları tam bir çıkarım sağlamaz. Rust kuralları uyguladıktan sonra referansların sahip olduğu ömürler hakkında hala bir belirsizlik varsa, derleyici kalan referansların ömrünün ne olması gerektiğini tahmin etmeyecektir. Tahmin etmek yerine derleyici size bir hata verir ve siz de ömür açıklamalarını ekleyerek bu hatayı çözebilirsiniz.
+Ömür çıkarımı kuralları tam bir çıkarım sağlamaz. Rust bu kuralları uyguladıktan sonra referansların ömürleri konusunda hâlâ bir belirsizlik kalırsa, derleyici kalan referansların ömrünün ne olması gerektiğini tahmin etmeye çalışmaz. Tahmin yürütmek yerine size bir derleme hatası verir; siz de amaçladığınız ilişkiyi ifade eden ömür bildirimlerini ekleyerek hatayı çözersiniz.
 
-Fonksiyon veya metot parametrelerindeki ömürlere _girdi ömürleri_ ve dönüş değerlerindeki ömürlere _çıktı ömürleri_ denir.
+Fonksiyon veya metot parametrelerindeki ömürlere _girdi ömürleri (input lifetimes)_, dönüş değerlerindeki ömürlere ise _çıktı ömürleri (output lifetimes)_ denir.
 
-Derleyici, açık açıklamaların olmadığı durumlarda referansların ömürlerini bulmak için üç kural kullanır. İlk kural girdi ömürleri için, ikinci ve üçüncü kurallar ise çıktı ömürleri için geçerlidir. Derleyici üç kuralın sonuna gelir ve hala ömürlerini çözemediği referanslar kalırsa, derleyici bir hata vererek durur. Bu kurallar `fn` (fonksiyon) tanımlarının yanı sıra `impl` blokları için de geçerlidir.
+Derleyici, açık bildirimlerin bulunmadığı durumlarda referansların ömürlerini belirlemek için üç kural uygular. Birinci kural girdi ömürleri için, ikinci ve üçüncü kurallar ise çıktı ömürleri için geçerlidir. Derleyici üç kuralın sonuna geldiğinde hâlâ ömrünü belirleyemediği referanslar kalmışsa bir hata vererek durur. Bu kurallar `fn` tanımlarının yanı sıra `impl` blokları için de geçerlidir.
 
-İlk kural, derleyicinin referans olan her parametreye bir ömür parametresi atamasıdır. Başka bir deyişle, bir parametreye sahip olan bir fonksiyon bir ömür parametresi alır: `fn foo<'a>(x: &'a i32)`; iki parametresi olan bir fonksiyon iki ayrı ömür parametresi alır: `fn foo<'a, 'b>(x: &'a i32, y: &'b i32)`; ve bu böyle devam eder.
+1. **Birinci kural:** Derleyici, referans olan her parametreye ayrı bir ömür parametresi atar. Başka bir deyişle tek referans parametreli bir fonksiyon tek bir ömür parametresi alır: `fn foo<'a>(x: &'a i32)`; iki referans parametreli bir fonksiyon iki ayrı ömür parametresi alır: `fn foo<'a, 'b>(x: &'a i32, y: &'b i32)` ve bu böyle devam eder.
+2. **İkinci kural:** Yalnızca tek bir girdi ömür parametresi varsa, o ömür tüm çıktı ömür parametrelerine atanır: `fn foo<'a>(x: &'a i32) -> &'a i32`.
+3. **Üçüncü kural:** Birden fazla girdi ömür parametresi varsa ancak fonksiyon bir metot olduğu için bunlardan biri `&self` veya `&mut self` ise, `self`'in ömrü tüm çıktı ömür parametrelerine atanır. Bu üçüncü kural, çok daha az sembol gerektirdiği için metotları okumayı ve yazmayı önemli ölçüde kolaylaştırır.
 
-İkinci kural, eğer sadece bir girdi ömrü parametresi varsa, o ömrün tüm çıktı ömür parametrelerine atanmasıdır: `fn foo<'a>(x: &'a i32) -> &'a i32`.
-
-Üçüncü kural ise şudur: Birden fazla girdi ömür parametresi varsa, ancak bu bir metot olduğu için içlerinden biri `&self` veya `&mut self` ise, tüm çıktı ömür parametrelerine `self`'in ömrü atanır. Bu üçüncü kural, daha az sembol gerektirdiği için metotları okumayı ve yazmayı çok daha güzel hale getirir.
-
-Hadi kendimizi derleyici yerine koyalım. Liste 10-25'teki `ilk_kelime` fonksiyonunun imzasındaki referansların ömürlerini bulmak için bu kuralları uygulayacağız. İmza, referanslarla ilişkilendirilmiş herhangi bir ömür olmadan başlar:
+Şimdi kendimizi derleyicinin yerine koyalım ve Liste 10-25'teki `ilk_kelime` fonksiyonunun imzasında yer alan referansların ömürlerini bulmak için bu kuralları adım adım uygulayalım. İmza başlangıçta referanslarla ilişkilendirilmiş hiçbir ömür olmadan şöyledir:
 
 ```rust,ignore
 fn ilk_kelime(s: &str) -> &str {
 ```
 
-Ardından, derleyici her parametrenin kendi ömrünü almasını belirten ilk kuralı uygular. Her zamanki gibi buna `'a` diyeceğiz, bu yüzden imza artık şu şekildedir:
+Ardından derleyici, her parametrenin kendi ömrünü almasını belirten birinci kuralı uygular. Alışıldığı üzere buna `'a` adını verirsek imza şu hâle gelir:
 
 ```rust,ignore
 fn ilk_kelime<'a>(s: &'a str) -> &str {
 ```
 
-İkinci kural uygulanır çünkü tam olarak bir tane girdi ömrü (input lifetime) vardır. İkinci kural, bir girdi parametresinin ömrünün çıktı ömrüne atandığını belirtir, bu yüzden imza artık şu şekildedir:
+Tam olarak bir tane girdi ömrü bulunduğu için ikinci kural devreye girer. İkinci kural, tek girdi parametresinin ömrünün çıktı ömrüne atanmasını söyler; böylece imza şu şekli alır:
 
 ```rust,ignore
 fn ilk_kelime<'a>(s: &'a str) -> &'a str {
 ```
 
-Artık bu fonksiyon imzasındaki tüm referansların ömürleri var ve derleyici, programcının bu fonksiyon imzasındaki ömürleri açıklamasına ihtiyaç duymadan analizine devam edebilir.
+Artık bu fonksiyon imzasındaki tüm referansların ömürleri bellidir ve derleyici, programcının imzaya açık ömür bildirimi eklemesine gerek kalmadan analizine devam edebilir.
 
-Başka bir örneğe bakalım, bu kez Liste 10-20'de çalışmaya başladığımızda hiçbir ömür parametresi olmayan `en_uzun` fonksiyonunu kullanalım:
+Şimdi bir başka örneğe bakalım ve Liste 10-20'de üzerinde çalışmaya başladığımızda hiçbir ömür parametresi bulunmayan `en_uzun` fonksiyonunu ele alalım:
 
 ```rust,ignore
 fn en_uzun(x: &str, y: &str) -> &str {
 ```
 
-İlk kuralı uygulayalım: Her parametre kendi ömrüne sahip olur. Bu sefer bir yerine iki parametremiz var, yani iki ömrümüz var:
+Birinci kuralı uygulayalım: Her referans parametresi kendi ömrünü alır. Bu kez bir yerine iki parametremiz olduğundan iki ayrı ömür elde ederiz:
 
 ```rust,ignore
 fn en_uzun<'a, 'b>(x: &'a str, y: &'b str) -> &str {
 ```
 
-Birden fazla girdi ömrü olduğu için ikinci kuralın geçerli olmadığını görebilirsiniz. `en_uzun` bir metot yerine bir fonksiyon olduğu için üçüncü kural da geçerli değildir, dolayısıyla parametrelerden hiçbiri `self` değildir. Üç kuralın hepsini denedikten sonra, hala dönüş türünün ömrünün ne olduğunu çözemedik. Liste 10-20'deki kodu derlemeye çalışırken hata almamızın nedeni budur: Derleyici ömür elizyonu kurallarını işletmiş ancak yine de imzadaki referansların tüm ömürlerini çözememiştir.
+Birden fazla girdi ömrü olduğu için ikinci kuralın uygulanamadığını görebilirsiniz. `en_uzun` bir metot değil serbest bir fonksiyon olduğundan ve parametrelerinden hiçbiri `self` olmadığından üçüncü kural da uygulanamaz. Üç kuralın tamamını işlettikten sonra dönüş türünün ömrünün ne olduğunu hâlâ belirleyemedik. Liste 10-20'deki kodu derlemeye çalışırken hata almamızın nedeni tam olarak budur: Derleyici ömür çıkarımı kurallarını sırasıyla uygulamış, ancak imzadaki referansların tüm ömürlerini yine de çözememiştir.
 
-Üçüncü kural gerçekten sadece metot imzalarında geçerli olduğu için, üçüncü kuralın neden metot imzalarında ömürleri çok sık açıklamak zorunda olmadığımız anlamına geldiğini görmek için sonraki adımda bu bağlamdaki ömürlere bakacağız.
+Üçüncü kural yalnızca metot imzalarında devreye girdiğinden, şimdi metot bağlamındaki ömürleri inceleyelim ve bu kural sayesinde metot imzalarında neden çoğu zaman açık ömür bildirimi yazmak zorunda kalmadığımızı görelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="lifetime-annotations-in-method-definitions"></a>
+<a id="in-method-definitions"></a>
+<a id="metot-tanımlarında-method-definitions"></a>
+<a id="metot-tanimlarinda-method-definitions"></a>
 
-### Metot Tanımlarında (Method Definitions)
+### Metot Tanımlarında
 
-Ömürlere sahip bir struct (yapı) üzerinde metotlar uyguladığımızda, Liste 10-11'de gösterildiği gibi jenerik tür parametreleriyle aynı sözdizimini kullanırız. Ömür parametrelerini nerede beyan edip kullanacağımız, bunların struct'ın (yapının) alanlarıyla (fields) mı yoksa metot parametreleri ve dönüş değerleriyle mi ilgili olduğuna bağlıdır.
+Ömür parametrelerine sahip bir struct üzerinde metot tanımlarken, Liste 10-11'de gördüğümüz jenerik tür parametreleriyle aynı sözdizimini kullanırız. Ömür parametrelerini nerede bildirip nerede kullanacağımız, bunların struct alanlarıyla mı yoksa metot parametreleri ve dönüş değerleriyle mi ilişkili olduğuna bağlıdır.
 
-Struct alanları (fields) için ömür isimlerinin her zaman `impl` anahtar kelimesinden sonra beyan edilmesi ve daha sonra struct isminden sonra kullanılması gerekir çünkü bu ömürler struct türünün bir parçasıdır.
+Struct alanlarına ait ömür adlarının her zaman `impl` anahtar kelimesinden sonra bildirilmesi ve ardından struct adından sonra kullanılması gerekir; çünkü bu ömürler struct türünün ayrılmaz bir parçasıdır.
 
-`impl` bloğunun içindeki metot imzalarında, referanslar struct'ın alanlarındaki referansların ömrüne bağlı olabilir veya bağımsız olabilirler. Ek olarak, ömür elizyonu kuralları genellikle metot imzalarında ömür açıklamalarının gerekli olmamasını sağlar. Liste 10-24'te tanımladığımız `OnemliAlinti` adlı struct'ı kullanarak bazı örneklere bakalım.
+`impl` bloğu içindeki metot imzalarında yer alan referanslar, struct alanlarındaki referansların ömrüne bağlı olabileceği gibi onlardan tamamen bağımsız da olabilir. Ayrıca ömür çıkarımı kuralları sayesinde metot imzalarında açık ömür bildirimlerine çoğu zaman gerek kalmaz. Liste 10-24'te tanımladığımız `OnemliAlinti` struct'ını kullanarak birkaç örneğe bakalım.
 
-İlk olarak, tek parametresi `self`'e olan bir referans olan ve hiçbir şeye referans olmayan bir `i32` döndüren `seviye` adında bir metot kullanacağız:
+İlk olarak tek parametresi `self` referansı olan ve dönüş değeri herhangi bir veriye referans olmayan (`i32` döndüren) `seviye` adlı bir metot tanımlayalım:
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:1st}}
 ```
 
-Ömür parametresinin `impl` sonrasında beyan edilmesi ve tür adından sonra kullanılması gereklidir, ancak birinci elizyon kuralı nedeniyle, `self`'e olan referansın ömrünü açıklamak zorunda değiliz.
+`impl` sonrasındaki ömür parametresi bildirimi (`impl<'a>`) ve tür adından sonraki kullanımı (`OnemliAlinti<'a>`) zorunludur; ancak birinci çıkarım kuralı sayesinde `self` referansının ömrünü açıkça bildirmek zorunda değiliz.
 
-İşte üçüncü ömür elizyon kuralının geçerli olduğu bir örnek:
+Şimdi de üçüncü ömür çıkarımı kuralının devreye girdiği bir örneğe bakalım:
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:3rd}}
 ```
 
-İki girdi ömrü vardır, bu yüzden Rust birinci ömür elizyon kuralını uygular ve hem `&self` hem de `duyuru`'ya kendi ömürlerini verir. Ardından, parametrelerden biri `&self` olduğundan, dönüş türü `&self`'in ömrünü alır ve tüm ömürler hesaba katılmış olur.
+Burada iki girdi ömrü vardır; dolayısıyla Rust birinci ömür çıkarımı kuralını uygulayarak hem `&self` hem de `duyuru` parametrelerine kendi ömürlerini verir. Ardından parametrelerden biri `&self` olduğu için üçüncü kural uyarınca dönüş türü `&self`'in ömrünü alır ve böylece tüm ömürler belirlenmiş olur.
 
-### Statik Ömür (The Static Lifetime)
+<!-- Old headings. Do not remove or links may break. -->
 
-Tartışmamız gereken özel ömürlerden biri de, etkilenen referansın programın tüm süresi boyunca _yaşayabileceğini_ ifade eden `'static`'tir. Tüm string (dizgi) sabitleri `'static` ömre sahiptir ve bunu aşağıdaki gibi açıklayabiliriz:
+<a id="the-static-lifetime"></a>
+<a id="statik-ömür-the-static-lifetime"></a>
+<a id="statik-omur-the-static-lifetime"></a>
+<a id="statik-ömür"></a>
+<a id="statik-omur"></a>
+
+### Statik Ömür
+
+Değinmemiz gereken özel ömürlerden biri de `'static` ömrüdür; bu ömür, ilgili referansın programın tüm çalışma süresi boyunca _yaşayabileceğini_ ifade eder. Tüm string sabitleri `'static` ömre sahiptir ve bunu açıkça şu şekilde yazabiliriz:
 
 ```rust
 let s: &'static str = "Statik bir ömrüm var.";
 ```
 
-Bu string'in metni doğrudan her zaman erişilebilir olan programın ikili dosyasına depolanır. Bu nedenle, tüm string sabitlerinin ömrü `'static`'tir.
+Bu metnin baytları doğrudan programın derlenmiş ikili dosyasının (*binary*) içine gömülür ve program çalıştığı sürece her zaman erişilebilirdir. Bu nedenle tüm string sabitlerinin ömrü `'static`'tir.
 
-Hata mesajlarında `'static` ömrünü kullanmanız yönünde öneriler görebilirsiniz. Ancak bir referans için ömür olarak `'static` belirtmeden önce, sahip olduğunuz referansın gerçekten programınızın tüm ömrü boyunca yaşayıp yaşamadığını ve yaşamasını isteyip istemediğinizi düşünün. Çoğu zaman, `'static` ömrünü öneren bir hata mesajı, sarkan bir referans (dangling reference) oluşturmaya teşebbüs etmekten veya mevcut ömürlerin uyumsuzluğundan kaynaklanır. Bu gibi durumlarda çözüm, `'static` ömrünü belirtmek değil, o sorunları çözmektir.
+Derleyici hata mesajlarının yardım kısımlarında `'static` ömrünü kullanmanız yönünde öneriler görebilirsiniz. Ancak bir referans için `'static` ömrünü yazmadan önce, elinizdeki referansın işaret ettiği verinin gerçekten programınızın sonuna dek yaşayıp yaşamadığını — ve yaşamasını gerçekten isteyip istemediğinizi — dikkatlice düşünün. Çoğu zaman `'static` ömrünü öneren bir hata mesajı, sarkan bir referans oluşturma girişiminden ya da mevcut ömürlerin birbiriyle uyuşmamasından kaynaklanır. Bu tür durumlarda doğru çözüm `'static` yazmak değil, altta yatan sahiplik veya ömür uyumsuzluğunu gidermektir.
+
+> Not: **`&'static T` ve `T: 'static` Uyarısına Yaklaşım** — Derleyici çıktılarında `'static` ifadesiyle iki farklı biçimde karşılaşabilirsiniz ve bunları birbirine karıştırmamak çok önemlidir:
+> - **`&'static T` (statik referans):** Yalnızca program kapanana dek bellekte kalacağı garanti edilen verilere (string sabitleri veya `static` değişkenler gibi) işaret edebilir. Fonksiyon içindeki yerel bir değişkenden ödünç alınan referansa `&'static` yazmak hatayı çözmez; çünkü yerel değişken fonksiyon bittiğinde bellekten silinir.
+> - **`T: 'static` (statik ömür sınırı):** Özellikle Bölüm 16'da göreceğimiz `thread::spawn` gibi veriyi başka bir iş parçacığına aktaran API'lerde derleyici `T: 'static` kısıtlamasından söz edebilir. Bu kısıtlama verinin mutlaka `&'static` bir referans olmasını **gerektirmez**; türün içinde kısa ömürlü ödünç alınmış referans bulunmamasını ister. Dolayısıyla `String`, `Vec<T>` veya `i32` gibi **sahipli türler de `T: 'static` sınırını doğal olarak karşılar**. Derleyici `'static` önerdiğinde kendinize önce *“Burada ödünç alınmış kısa ömürlü bir referans yerine `String` gibi sahipli bir değeri taşıyarak mı ilerlemeliyim?”* sorusunu sormanız neredeyse her zaman doğru çözüme götürür.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="generic-type-parameters-trait-bounds-and-lifetimes-together"></a>
+<a id="generic-type-parameters-trait-bounds-and-lifetimes"></a>
+<a id="jenerik-tür-parametreleri-trait-sınırları-ve-ömürler-bir-arada"></a>
+<a id="jenerik-tur-parametreleri-trait-sinirlari-ve-omurler-bir-arada"></a>
 
-## Jenerik Tür Parametreleri, Trait Sınırları ve Ömürler Bir Arada
+## Jenerik Tür Parametreleri, Trait Sınırları ve Ömürler
 
-Jenerik tür parametrelerini, trait sınırlarını ve ömürleri tek bir fonksiyonda belirleme sözdizimine kısaca göz atalım!
+Şimdi jenerik tür parametrelerini, trait sınırlarını ve ömürleri tek bir fonksiyonda bir arada belirtmenin sözdizimine kısaca göz atalım!
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-11-generics-traits-and-lifetimes/src/main.rs:here}}
 ```
 
-Bu, Liste 10-21'deki iki string (dizgi) diliminden daha uzun olanını döndüren `en_uzun` fonksiyonudur. Ancak şimdi, `where` cümleciğinde belirtildiği gibi `Display` trait'ini uygulayan herhangi bir türle doldurulabilen `T` jenerik türünde `dyr` adında fazladan bir parametreye sahip. Bu ekstra parametre `{}` kullanılarak yazdırılacaktır, bu nedenle `Display` trait sınırı (trait bound) gereklidir. Ömürler bir jenerik türü olduğundan, `'a` ömür parametresi ve `T` jenerik tür parametresinin bildirimleri fonksiyon adından sonraki açılı ayraçlar içinde aynı listede yer alır.
+Bu `duyuruyla_en_uzun` fonksiyonu, Liste 10-21'de yazdığımız ve iki string diliminden daha uzun olanını döndüren `en_uzun` fonksiyonunun genişletilmiş hâlidir. Şimdi ek olarak, `where` yan tümcesinde belirtildiği üzere `Display` trait'ini uygulayan herhangi bir somut türle doldurulabilen `T` jenerik türünde `dyr` adında fazladan bir parametre alır. Bu ek parametre `{}` biçimlendiricisiyle ekrana yazdırıldığı için `Display` trait sınırı zorunludur. Ömürler de bir çeşit jenerik olduğundan, `'a` ömür parametresi ile `T` jenerik tür parametresinin bildirimleri fonksiyon adından sonraki açılı ayraçların içinde aynı listede yer alır (ömür parametreleri tür parametrelerinden önce yazılır).
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="summary"></a>
+<a id="özet"></a>
+<a id="ozet"></a>
 
 ## Özet
 
-Bu bölümde birçok konuyu ele aldık! Artık jenerik tür parametreleri (generic type parameters), traitler ve trait sınırları ve jenerik ömür parametreleri hakkında bilgi sahibi olduğunuza göre, pek çok farklı durumda çalışan kodları tekrar etmeden yazmaya hazırsınız. Jenerik tür parametreleri kodu farklı türlere uygulamanızı sağlar. Traitler ve trait sınırları, türler jenerik olsa bile, kodun ihtiyaç duyduğu davranışa sahip olacaklarını garanti eder. Bu esnek kodun sarkan (dangling) herhangi bir referansa sahip olmamasını sağlamak için ömür açıklamalarını nasıl kullanacağınızı öğrendiniz. Ve tüm bu analizler derleme zamanında gerçekleşir, yani çalışma zamanı performansını etkilemez!
+Bu bölümde pek çok önemli konuyu ele aldık! Artık jenerik tür parametrelerini, trait'leri ve trait sınırlarını ve jenerik ömür parametrelerini tanıdığınıza göre, kod tekrarına düşmeden pek çok farklı senaryoda çalışabilen esnek kodlar yazmaya hazırsınız. Jenerik tür parametreleri kodunuzu farklı türlere uygulamanıza olanak tanır. Trait'ler ve trait sınırları, türler jenerik olsa bile kodun ihtiyaç duyduğu davranışlara sahip olmalarını garanti eder. Ömür bildirimleri ise bu esnek kodda hiçbir sarkan referans oluşmamasını sağlar. Üstelik tüm bu analizler derleme zamanında gerçekleştirildiğinden çalışma zamanı performansına hiçbir ek yük getirmez!
 
-İnanın ya da inanmayın, bu bölümde tartıştığımız konularda öğrenilecek daha çok şey var: Bölüm 18, traitleri kullanmanın başka bir yolu olan trait nesnelerini (trait objects) tartışıyor. Ayrıca, yalnızca çok gelişmiş senaryolarda ihtiyaç duyacağınız ömür açıklamalarını içeren daha karmaşık senaryolar da vardır; bunlar için [Rust Referansını (Rust Reference)][reference] okumalısınız. Ancak sırada, kodunuzun olması gerektiği gibi çalıştığından emin olabilmek için Rust'ta nasıl test yazacağınızı öğreneceksiniz.
+İster inanın ister inanmayın, bu bölümde incelediğimiz konularda öğrenilecek daha pek çok ayrıntı var: Bölüm 18'de trait'leri kullanmanın bir başka yolu olan trait nesnelerini (*trait objects*) ele alacağız. Ayrıca yalnızca çok ileri düzey senaryolarda ihtiyaç duyacağınız daha karmaşık ömür bildirimi durumları da mevcuttur; bunlar için [Rust Referansı'nı][reference] inceleyebilirsiniz. Sırada ise yazdığınız kodun tam olarak beklediğiniz gibi çalıştığından emin olabilmeniz için Rust'ta nasıl otomatik test yazacağınızı öğreneceğiniz bölüm var.
 
-[references-and-borrowing]: ch04-02-referanslar-ve-odunc-alma.html#referanslar-ve-ödünç-alma-references-and-borrowing
+[references-and-borrowing]: ch04-02-referanslar-ve-odunc-alma.html#referanslar-ve-ödünç-alma
 [string-slices-as-parameters]: ch04-03-dilim-turu.html#parametre-olarak-string-dilimleri
 [reference]: ../reference/trait-bounds.html

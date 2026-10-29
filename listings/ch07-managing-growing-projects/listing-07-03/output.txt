@@ -1,5 +1,5 @@
 $ cargo build
-Compiling restaurant v0.1.0 ($PROJE/listings/ch07-managing-growing-projects/listing-07-03)
+   Compiling restoran v0.1.0 (file:///projects/restoran)
 error[E0603]: module `karsilama` is private
  --> src/lib.rs:9:31
   |
@@ -29,4 +29,4 @@ note: the module `karsilama` is defined here
    |     ^^^^^^^^^^^^^
 
 For more information about this error, try `rustc --explain E0603`.
-error: could not compile `restaurant` (lib) due to 2 previous errors
+error: could not compile `restoran` (lib) due to 2 previous errors

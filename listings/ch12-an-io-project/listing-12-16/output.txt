@@ -10,11 +10,11 @@ failures:
 
 ---- tests::tek_sonuc stdout ----
 
-thread 'tests::tek_sonuc' panicked at src/lib.rs:17:9:
+thread 'tests::tek_sonuc' (6024336) panicked at src/lib.rs:17:9:
 assertion `left == right` failed
   left: ["güvenli, hızlı, üretken."]
  right: []
-note: calistir with `RUST_BACKTRACE=1` environment variable to display a backtrace
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 
 failures:

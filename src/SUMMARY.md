@@ -82,7 +82,7 @@
   - [Özel Komutlarla Cargo'yu Genişletme](ch14-05-cargoyu-genisletme.md)
 
 - [Akıllı İşaretçiler (Smart Pointers)](ch15-00-akilli-isaretciler.md)
-  - [Heap Üzerindeki Veriyi İşaret Etmek İçin `Box<T>` Kullanımı](ch15-01-box.md)
+  - [Öbekteki Veriyi İşaret Etmek İçin `Box<T>` Kullanımı](ch15-01-box.md)
   - [Akıllı İşaretçilere Normal Referanslar Gibi Davranma](ch15-02-deref.md)
   - [`Drop` Trait'i ile Temizlik Sırasında Kod Çalıştırma](ch15-03-drop.md)
   - [`Rc<T>`, Referans Sayılı Akıllı İşaretçi](ch15-04-rc.md)

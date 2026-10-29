@@ -2,7 +2,7 @@
 mod tests {
     // ANCHOR: here
     #[test]
-    fn yineleyici_toplami() {
+    fn iterator_toplami() {
         let v1 = vec![1, 2, 3];
 
         let v1_iter = v1.iter();

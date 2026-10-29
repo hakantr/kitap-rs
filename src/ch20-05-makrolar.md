@@ -1,44 +1,48 @@
+<a id="macros"></a>
 ## Makrolar
 
-Bu kitap boyunca `println!` gibi makroları kullandık; ama makronun ne olduğunu ve nasıl çalıştığını ayrıntılı ele almadık. _Makro_ terimi, Rust'taki şu özellik ailesini ifade eder: `macro_rules!` ile tanımlanan bildirime dayalı makrolar ve üç tür yordam tabanlı makro:
+Bu kitap boyunca `println!` gibi makroları kullandık, ancak bir makronun tam olarak ne olduğunu ve nasıl çalıştığını henüz derinlemesine incelemedik. _Makro_ terimi, Rust'ta bir özellik ailesini ifade eder: `macro_rules!` ile tanımlanan *bildirimsel makrolar (declarative macros)* ve üç tür *prosedürel makro (procedural macros)*:
 
 - Struct ve enum'larda kullanılan `derive` özniteliğiyle eklenecek kodu belirleyen özel `#[derive]` makroları
-- Her türlü öğe üzerinde kullanılabilen özel öznitelikler tanımlayan öznitelik benzeri makrolar
-- Fonksiyon çağrısına benzeyen ama argüman olarak verilen belirteçler üzerinde çalışan fonksiyon benzeri makrolar
+- Herhangi bir öğe üzerinde kullanılabilen özel öznitelikler tanımlayan öznitelik benzeri makrolar
+- Fonksiyon çağrılarına benzeyen ancak argüman olarak belirtilen belirteçler (*tokens*) üzerinde çalışan fonksiyon benzeri makrolar
 
-Bunların her birini sırayla ele alacağız. Ama önce, elimizde zaten fonksiyonlar varken makrolara neden ihtiyaç duyduğumuza bakalım.
+Bunların her birini sırayla ele alacağız; ancak öncelikle elimizde zaten fonksiyonlar varken makrolara neden ihtiyaç duyduğumuza bakalım.
 
+<a id="the-difference-between-macros-and-functions"></a>
 ### Makrolar ile Fonksiyonlar Arasındaki Fark
 
-Temelde makrolar, başka kod yazan kod yazmanın bir yoludur; buna _metaprogramlama_ denir. Ek C'de, çeşitli trait uygulamalarını sizin yerinize üreten `derive` özniteliğinden söz etmiştik. Ayrıca kitap boyunca `println!` ve `vec!` makrolarını da kullandık. Bu makroların hepsi, sizin elle yazdığınızdan daha fazla kod üretmek için _genişler_.
+Temelde makrolar, başka kodlar yazan kod yazmanın bir yoludur ve bu yaklaşıma _metaprogramlama_ denir. Ek C'de, çeşitli trait uygulamalarını sizin yerinize üreten `derive` özniteliğini ele alıyoruz. Kitap boyunca `println!` ve `vec!` makrolarını da kullandık. Tüm bu makrolar, elle yazdığınız koddan daha fazla kod üretmek üzere _genişler_ (*expand*).
 
-Metaprogramlama, yazmanız ve bakımını yapmanız gereken kod miktarını azaltır; bu, fonksiyonların da görevlerinden biridir. Ama makroların, fonksiyonlarda olmayan bazı ek güçleri vardır.
+Metaprogramlama, yazmanız ve bakımını yapmanız gereken kod miktarını azaltmak için kullanışlıdır; bu aynı zamanda fonksiyonların da görevlerinden biridir. Bununla birlikte makrolar, fonksiyonların sahip olmadığı bazı ek güçlere sahiptir.
 
-Fonksiyon imzası, aldığı parametrelerin sayısını ve türünü belirtmek zorundadır. Makrolar ise değişken sayıda parametre alabilir. Örneğin `println!("hello")` tek argümanla da çağrılabilir, `println!("hello {}", name)` iki argümanla da. Ayrıca makrolar, derleyici kodun anlamını yorumlamadan önce genişletilir. Bu yüzden bir makro, örneğin verilen tür üzerinde bir trait uygulaması üretebilir. Fonksiyon bunu yapamaz; çünkü çalışma zamanında çağrılır, oysa trait uygulaması derleme zamanında var olmalıdır.
+Bir fonksiyon imzası, fonksiyonun aldığı parametrelerin sayısını ve türünü bildirmek zorundadır. Makrolar ise değişken sayıda parametre alabilir: `println!("hello")` çağrısını tek bir argümanla ya da `println!("hello {}", name)` çağrısını iki argümanla yapabiliriz. Ayrıca makrolar, derleyici kodun anlamını yorumlamadan önce genişletilir; dolayısıyla bir makro örneğin belirli bir tür üzerinde bir trait'i uygulayabilir. Bir fonksiyon bunu yapamaz, çünkü fonksiyon çalışma zamanında çağrılırken trait'in derleme zamanında uygulanması gerekir.
 
-Fonksiyon yerine makro yazmanın dezavantajı da buradadır: makro tanımları daha karmaşıktır; çünkü Rust kodu üreten Rust kodu yazarsınız. Bu dolaylılık nedeniyle makro tanımları, fonksiyon tanımlarına göre genelde daha zor okunur, anlaşılır ve korunur.
+Bir fonksiyon yerine makro uygulamanın dezavantajı, Rust kodu yazan Rust kodu yazdığınız için makro tanımlarının fonksiyon tanımlarından daha karmaşık olmasıdır. Bu dolaylılık nedeniyle makro tanımlarını okumak, anlamak ve bakımını yapmak genellikle fonksiyon tanımlarına kıyasla daha zordur.
 
-Makrolarla fonksiyonlar arasındaki önemli farklardan biri daha vardır: Makroları kullanmadan önce tanımlamalı ya da kapsam içine almalısınız. Fonksiyonları ise dosyanın herhangi bir yerinde tanımlayıp herhangi bir yerinde çağırabilirsiniz.
+Makrolar ile fonksiyonlar arasındaki bir diğer önemli fark, bir dosyada makroları çağırmadan _önce_ onları tanımlamanız veya kapsama dahil etmeniz gerekmesidir; oysa fonksiyonları dosyanın herhangi bir yerinde tanımlayıp herhangi bir yerinde çağırabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="declarative-macros-with-macro_rules-for-general-metaprogramming"></a>
+<a id="declarative-macros-for-general-metaprogramming"></a>
+<a id="genel-metaprogramlama-için-bildirime-dayalı-makrolar"></a>
 
-### Genel Metaprogramlama İçin Bildirime Dayalı Makrolar
+### Genel Metaprogramlama İçin Bildirimsel Makrolar
 
-Rust'ta en yaygın makro biçimi _bildirime dayalı makro_ dur. Bunlara bazen "örnekle makrolar", "`macro_rules!` makroları" ya da kısaca "makrolar" da denir. Özünde, bildirime dayalı makrolar Rust'taki `match` ifadesine benzeyen bir yapı sunar. 6. bölümde gördüğümüz gibi `match`, bir ifadeyi alır, onun sonucunu desenlerle karşılaştırır ve eşleşen desene bağlı kodu çalıştırır. Makrolar da bir değeri, belirli koda bağlı desenlerle karşılaştırır. Buradaki "değer", makroya geçirilen Rust kaynak kodunun kendisidir. Desenler bu kaynak kodun yapısıyla karşılaştırılır; eşleşen desene bağlı kod ise makroya verilen kodun yerine geçer. Bütün bunlar derleme sırasında olur.
+Rust'ta en yaygın kullanılan makro biçimi _bildirimsel makrodur_. Bunlar bazen “örnekle makrolar” (*macros by example*), “`macro_rules!` makroları” veya kısaca “makrolar” olarak da adlandırılır. Bildirimsel makrolar özünde Rust'taki `match` ifadesine benzer bir yapı yazmanıza olanak tanır. Bölüm 6'da ele aldığımız gibi `match` ifadeleri; bir ifadeyi alan, ifadenin sonuç değerini desenlerle karşılaştıran ve eşleşen desenle ilişkili kodu çalıştıran kontrol yapılarıdır. Makrolar da bir değeri belirli bir kodla ilişkilendirilmiş desenlerle karşılaştırır: Bu durumda değer, makroya aktarılan Rust kaynak kodunun bizzat kendisidir; desenler bu kaynak kodun yapısıyla karşılaştırılır ve eşleşme sağlandığında her desenle ilişkili kod, makroya aktarılan kodun yerini alır. Tüm bunlar derleme sırasında gerçekleşir.
 
-Makro tanımlamak için `macro_rules!` yapısını kullanırız. Nasıl çalıştığını görmek için `vec!` makrosunun tanımına bakalım. 8. bölümde `vec!` makrosunu belirli değerlerle yeni vektör oluşturmak için kullanmıştık. Örneğin şu çağrı, üç tamsayı içeren yeni bir vektör üretir:
+Bir makro tanımlamak için `macro_rules!` yapısını kullanırsınız. `vec!` makrosunun nasıl tanımlandığına bakarak `macro_rules!` kullanımını inceleyelim. Bölüm 8'de, belirli değerlere sahip yeni bir vektör oluşturmak için `vec!` makrosunu nasıl kullanabileceğimizi ele almıştık. Örneğin aşağıdaki makro çağrısı, üç tam sayı içeren yeni bir vektör oluşturur:
 
 ```rust
 let v: Vec<u32> = vec![1, 2, 3];
 ```
 
-Aynı makro ile iki tamsayılık vektör de, beş string dilimli vektör de üretebiliriz. Bunu fonksiyonla yapamazdık; çünkü baştan kaç değer geleceğini ya da bunların türünü bilmezdik.
+`vec!` makrosunu iki tam sayılı bir vektör veya beş string diliminden oluşan bir vektör oluşturmak için de kullanabilirdik. Değerlerin sayısını veya türünü önceden bilemeyeceğimiz için aynı işi bir fonksiyonla yapamazdık.
 
-Liste 20-35, `vec!` makrosunun biraz sadeleştirilmiş tanımını gösteriyor.
+Liste 20-35, `vec!` makrosunun biraz basitleştirilmiş bir tanımını göstermektedir.
 
-<Listing number="20-35" file-name="src/lib.rs" caption="`vec!` makrosu tanımının sadeleştirilmiş bir sürümü">
+<Listing number="20-35" file-name="src/lib.rs" caption="`vec!` makrosu tanımının basitleştirilmiş bir sürümü">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-35/src/lib.rs}}
@@ -46,23 +50,23 @@ Liste 20-35, `vec!` makrosunun biraz sadeleştirilmiş tanımını gösteriyor.
 
 </Listing>
 
-> Not: Standart kütüphanedeki gerçek `vec!` tanımı, baştan doğru miktarda bellek ayıran ek kod içerir. Burada örneği daha sade tutmak için o optimizasyonu göstermiyoruz.
+> Not: Standart kütüphanedeki gerçek `vec!` makrosu tanımı, doğru miktarda belleği baştan ayıracak kodu da içerir. Örneği daha sade tutmak amacıyla bu optimizasyonu buraya dahil etmiyoruz.
 
-`#[macro_export]` açıklaması, bu makronun tanımlandığı crate kapsam içine alındığında makronun da erişilebilir olmasını sağlar. Bu açıklama olmadan makroyu kapsam içine alamazsınız.
+`#[macro_export]` özniteliği, bu makronun tanımlandığı crate kapsama dahil edildiğinde makronun erişilebilir kılınması gerektiğini belirtir. Bu öznitelik olmadan makro kapsama dahil edilemez.
 
-Ardından `macro_rules!` ve makronun adını, ünlem işareti olmadan, yazarız. Burada ad `vec`'tir. Sonrasındaki süslü ayraçlar makro tanımının gövdesini tutar.
+Ardından makro tanımına `macro_rules!` ve tanımladığımız makronun ünlem işareti _olmayan_ adıyla başlarız. Bu örnekte `vec` olan adın ardından, makro tanımının gövdesini belirten süslü parantezler gelir.
 
-`vec!` gövdesindeki yapı, `match` ifadesine benzer. Burada `( $( $x:expr ),* )` desenine sahip tek bir kol var; ardından `=>` ve bu desene bağlı kod bloğu geliyor. Desen eşleşirse bu koda genişlenir. Bu makroda tek desen olduğu için yalnızca tek geçerli eşleşme vardır; başka her desen hata üretir. Daha karmaşık makrolarda birden fazla kol bulunur.
+`vec!` gövdesindeki yapı, bir `match` ifadesinin yapısına benzer. Burada `( $( $x:expr ),* )` desenine sahip tek bir kol ve onun ardından `=>` ile bu desenle ilişkili kod bloğu yer alır. Desen eşleşirse ilişkili kod bloğu üretilir. Bu makrodaki tek desen bu olduğundan eşleşmenin yalnızca tek bir geçerli yolu vardır; diğer tüm desenler derleme hatasıyla sonuçlanır. Daha karmaşık makrolarda birden fazla kol bulunur.
 
-Makro tanımlarındaki geçerli desen sözdizimi, 19. bölümde gördüğümüz desen sözdiziminden farklıdır. Çünkü makro desenleri değerlerle değil, Rust kodunun yapısıyla eşleşir. Şimdi Liste 20-35'teki desenin parçalarına bakalım; tam sözdizimi için [Rust Reference][ref] belgesine bakabilirsiniz.
+Makro tanımlarındaki geçerli desen sözdizimi, Bölüm 19'da ele alınan desen sözdiziminden farklıdır; çünkü makro desenleri değerlerle değil, Rust kodunun yapısıyla eşleştirilir. Gelin Liste 20-35'teki desen parçalarının ne anlama geldiğini adım adım inceleyelim; makro desen sözdiziminin tamamı için [Rust Başvuru Kılavuzu'na (Rust Reference)][ref] göz atabilirsiniz.
 
-Önce tüm deseni saran parantezleri kullanıyoruz. Ardından desene uyan Rust kodunu tutacak bir değişken tanımlamak için dolar işareti (`$`) kullanıyoruz. Bu işaret, bunun normal Rust değişkeni değil makro sistemi değişkeni olduğunu açıkça gösterir. Sonra, parantez içindeki desene uyan değerleri yakalayıp yerine geçecek kısımda kullanmamızı sağlayan başka bir parantez grubu geliyor. `$()` içindeki `$x:expr`, herhangi bir Rust ifadesiyle eşleşir ve bu ifadeye `$x` adını verir.
+İlk olarak tüm deseni çevrelemek için bir çift parantez kullanırız. Desenle eşleşen Rust kodunu tutacak bir değişkeni makro sisteminde bildirmek için dolar işareti (`$`) kullanırız. Dolar işareti, bunun sıradan bir Rust değişkeni değil, bir makro değişkeni olduğunu açıkça gösterir. Ardından, yerine konacak kodda kullanılmak üzere parantez içindeki desenle eşleşen değerleri yakalayan bir çift parantez gelir. `$()` içinde herhangi bir Rust ifadesiyle eşleşen ve bu ifadeye `$x` adını veren `$x:expr` yer alır.
 
-`$()` sonrasındaki virgül, `$()` ile eşleşen her kod parçası arasında gerçek bir virgül bulunması gerektiğini belirtir. Sonraki `*` ise, yıldızdan önce gelen şeyin sıfır ya da daha çok kez eşleşebileceğini söyler.
+`$()` sonrasındaki virgül, `$()` içindeki yapıyla eşleşen her kod örneği arasında ayırıcı olarak gerçek bir virgül karakterinin bulunması gerektiğini belirtir. `*` sembolü ise kendisinden önce gelen yapının sıfır veya daha fazla kez eşleşebileceğini ifade eder.
 
-Bu makroyu `vec![1, 2, 3];` diye çağırdığımızda, `$x` deseni üç kez eşleşir: `1`, `2` ve `3` ifadeleriyle.
+Bu makroyu `vec![1, 2, 3];` şeklinde çağırdığımızda `$x` deseni `1`, `2` ve `3` ifadeleriyle üç kez eşleşir.
 
-Şimdi de bu kola bağlı kod bloğundaki desene bakalım: `$()*` içindeki `temp_vec.push()` ifadesi, desende `$()` ile eşleşen her parça için sıfır ya da daha çok kez üretilir. `$x`, eşleşen her ifadeyle yer değiştirir. `vec![1, 2, 3];` çağrısında üretilen kod şu olur:
+Şimdi bu kolla ilişkili kod gövdesindeki desene bakalım: `$()*` içindeki `temp_vec.push()` ifadesi, desenin kaç kez eşleştiğine bağlı olarak desendeki `$()` ile eşleşen her parça için sıfır veya daha fazla kez üretilir. `$x`, eşleşen her ifadeyle değiştirilir. Bu makroyu `vec![1, 2, 3];` ile çağırdığımızda, bu makro çağrısının yerini alacak üretilmiş kod şöyle olur:
 
 ```rust,ignore
 {
@@ -74,17 +78,22 @@ Bu makroyu `vec![1, 2, 3];` diye çağırdığımızda, `$x` deseni üç kez eş
 }
 ```
 
-Böylece, istediğiniz türden ve istediğiniz sayıda argüman alıp, verilen öğeleri içeren vektör oluşturacak kod üreten bir makro tanımlamış olduk.
+Böylece herhangi bir türden istenilen sayıda argüman alabilen ve belirtilen elemanları içeren bir vektör oluşturacak kodu üretebilen bir makro tanımlamış olduk.
 
-Makro yazımı hakkında daha fazla bilgi için çevrimiçi belgelere ya da Daniel Keep tarafından başlatılıp Lukas Wirth tarafından sürdürülen [“The Little Book of Rust Macros”][tlborm] gibi kaynaklara bakabilirsiniz.
+Makro yazımı hakkında daha fazla bilgi edinmek için çevrimiçi belgelere veya Daniel Keep tarafından başlatılıp Lukas Wirth tarafından sürdürülen [“The Little Book of Rust Macros”][tlborm] gibi diğer kaynaklara başvurabilirsiniz.
 
-### Özniteliklerden Kod Üreten Yordam Tabanlı Makrolar
+<!-- Old headings. Do not remove or links may break. -->
 
-Makroların ikinci biçimi yordam tabanlı makrolardır. Bunlar, bildirime dayalı makrolardan ziyade fonksiyonlara daha çok benzer. _Yordam tabanlı makrolar_ girdi olarak kod alır, o kod üzerinde işlem yapar ve çıktı olarak yeni kod üretir. Yani desen eşleştirip kodu başka kodla değiştirmek yerine, giriş kodunu işlerler. Üç tür yordam tabanlı makro vardır: özel `derive`, öznitelik benzeri ve fonksiyon benzeri. Üçü de benzer mantıkla çalışır.
+<a id="procedural-macros-for-generating-code-from-attributes"></a>
+<a id="özniteliklerden-kod-üreten-yordam-tabanlı-makrolar"></a>
 
-Yordam tabanlı makro oluştururken tanımlar özel bir crate türüne sahip ayrı bir crate içinde olmalıdır. Bunun karmaşık teknik nedenleri vardır; ileride kalkmasını umuyoruz. Liste 20-36'da yordam tabanlı makro tanımının genel biçimi var; buradaki `some_attribute`, belirli makro türü için yer tutucudur.
+### Özniteliklerden Kod Üreten Prosedürel Makrolar
 
-<Listing number="20-36" file-name="src/lib.rs" caption="Yordam tabanlı makro tanımlamanın genel bir örneği">
+Makroların ikinci biçimi, daha çok bir fonksiyon gibi davranan (ve bir prosedür türü olan) prosedürel makrodur. _Prosedürel makrolar_, bildirimsel makroların yaptığı gibi desenlerle eşleştirip kodu başka bir kodla değiştirmek yerine; girdi olarak bir miktar kod kabul eder, bu kod üzerinde işlem yapar ve çıktı olarak bir miktar kod üretir. Üç tür prosedürel makro vardır: özel `derive`, öznitelik benzeri ve fonksiyon benzeri makrolar; üçü de benzer bir biçimde çalışır.
+
+Prosedürel makrolar oluştururken, tanımların özel bir crate türüne sahip kendi ayrı crate'lerinde yer alması gerekir. Bunun ileride ortadan kaldırmayı umduğumuz karmaşık teknik nedenleri vardır. Liste 20-36'da, belirli bir makro çeşidini kullanmak üzere `some_attribute` yer tutucusuyla bir prosedürel makronun nasıl tanımlanacağını gösteriyoruz.
+
+<Listing number="20-36" file-name="src/lib.rs" caption="Prosedürel bir makro tanımlama örneği">
 
 ```rust,ignore
 use proc_macro::TokenStream;
@@ -96,19 +105,20 @@ pub fn some_name(input: TokenStream) -> TokenStream {
 
 </Listing>
 
-Yordam tabanlı makroyu tanımlayan fonksiyon, girdi olarak `TokenStream` alır ve çıktı olarak yine `TokenStream` üretir. `TokenStream`, Rust ile birlikte gelen `proc_macro` crate'inde tanımlıdır ve belirteç dizisini temsil eder. Makronun özü budur: makronun üzerinde çalıştığı kaynak kod girdi `TokenStream`'ini, ürettiği kod da çıktı `TokenStream`'ini oluşturur. Fonksiyondaki öznitelik ise hangi tür yordam tabanlı makro yazdığımızı söyler. Aynı crate içinde birden çok yordam tabanlı makro türü bulunabilir.
+Prosedürel bir makroyu tanımlayan fonksiyon, girdi olarak bir `TokenStream` alır ve çıktı olarak bir `TokenStream` üretir. `TokenStream` türü, Rust ile birlikte gelen `proc_macro` crate'i tarafından tanımlanır ve bir belirteç (*token*) dizisini temsil eder. Makronun çekirdeği budur: Makronun üzerinde işlem yaptığı kaynak kod girdi `TokenStream`'ini oluşturur ve makronun ürettiği kod da çıktı `TokenStream`'idir. Fonksiyonun üzerinde ayrıca hangi tür prosedürel makro oluşturduğumuzu belirten bir öznitelik yer alır. Aynı crate içinde birden fazla türde prosedürel makro bulundurabiliriz.
 
-Şimdi farklı yordam tabanlı makro türlerine bakalım. Özel `derive` makrosuyla başlayacağız; sonra diğer biçimlerin küçük farklarını göreceğiz.
+Şimdi farklı prosedürel makro türlerine bakalım. Özel bir `derive` makrosuyla başlayacağız ve ardından diğer biçimleri farklı kılan küçük ayrımları açıklayacağız.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="how-to-write-a-custom-derive-macro"></a>
+<a id="custom-derive-macros"></a>
 
 ### Özel `derive` Makroları
 
-`MerhabaMakro` adlı bir trait tanımlayan `merhaba_makro` isimli bir crate oluşturalım. Bu trait'in tek bir ilişkili fonksiyonu olsun: `merhaba_makro`. Kullanıcıların `MerhabaMakro` trait'ini her tür için tek tek uygulamasını istemiyoruz; bunun yerine, türlerini `#[derive(MerhabaMakro)]` ile işaretleyebilecekleri bir yordam tabanlı makro sağlayacağız. Varsayılan uygulama `Merhaba, Makro! Benim adım TurAdi!` yazdıracak; burada `TurAdi`, trait'in uygulandığı türün adı olacak. Yani crate'imizi kullanan bir programcının, Liste 20-37'deki gibi kod yazabilmesini sağlayacağız.
+`merhaba_makro` adında tek bir ilişkili fonksiyona sahip `MerhabaMakro` adlı bir trait tanımlayan `merhaba_makro` isimli bir crate oluşturalım. Kullanıcılarımızı kendi türlerinin her biri için `MerhabaMakro` trait'ini elle uygulamak zorunda bırakmak yerine, türlerini `#[derive(MerhabaMakro)]` ile işaretleyerek `merhaba_makro` fonksiyonunun varsayılan bir uygulamasını elde edebilmeleri için prosedürel bir makro sağlayacağız. Varsayılan uygulama `Merhaba, Makro! Benim adım TurAdi!` metnini yazdıracak; buradaki `TurAdi`, bu trait'in üzerinde tanımlandığı türün adıdır. Başka bir deyişle, başka bir programcının crate'imizi kullanarak Liste 20-37'deki gibi bir kod yazmasına olanak tanıyan bir crate yazacağız.
 
-<Listing number="20-37" file-name="src/main.rs" caption="Yordam tabanlı makromuzu kullanan bir crate kullanıcısının yazabileceği kod">
+<Listing number="20-37" file-name="src/main.rs" caption="Prosedürel makromuzu kullanırken crate kullanıcımızın yazabileceği kod">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-37/src/main.rs}}
@@ -116,13 +126,13 @@ Yordam tabanlı makroyu tanımlayan fonksiyon, girdi olarak `TokenStream` alır 
 
 </Listing>
 
-İşimiz bittiğinde bu kod `Merhaba, Makro! Benim adım Krepler!` yazdıracak. İlk adım, şöyle yeni bir kütüphane crate'i oluşturmaktır:
+İşimiz bittiğinde bu kod `Merhaba, Makro! Benim adım Krepler!` yazdıracaktır. İlk adım, aşağıdaki gibi yeni bir kütüphane crate'i oluşturmaktır:
 
 ```console
 $ cargo new merhaba_makro --lib
 ```
 
-Sonra, Liste 20-38'de `MerhabaMakro` trait'ini ve ilişkili fonksiyonunu tanımlayacağız.
+Ardından Liste 20-38'de `MerhabaMakro` trait'ini ve ilişkili fonksiyonunu tanımlayacağız.
 
 <Listing file-name="src/lib.rs" number="20-38" caption="`derive` makrosuyla birlikte kullanacağımız basit bir trait">
 
@@ -132,7 +142,7 @@ Sonra, Liste 20-38'de `MerhabaMakro` trait'ini ve ilişkili fonksiyonunu tanıml
 
 </Listing>
 
-Artık elimizde trait ve fonksiyonu var. Bu noktada crate kullanıcısı, istediği işlevi elde etmek için trait'i kendisi uygulayabilir; Liste 20-39 bunu gösteriyor.
+Elimizde bir trait ve onun fonksiyonu var. Bu noktada crate kullanıcımız, istenen işlevselliği elde etmek için Liste 20-39'da olduğu gibi trait'i kendisi uygulayabilir.
 
 <Listing number="20-39" file-name="src/main.rs" caption="Kullanıcılar `MerhabaMakro` trait'ini elle uygulasaydı kodun nasıl görüneceği">
 
@@ -142,19 +152,19 @@ Artık elimizde trait ve fonksiyonu var. Bu noktada crate kullanıcısı, istedi
 
 </Listing>
 
-Ama bu durumda, `merhaba_makro` ile kullanmak istedikleri her tür için ayrı bir uygulama bloğu yazmaları gerekir. Biz onları bu zahmetten kurtarmak istiyoruz.
+Ancak `merhaba_makro` ile kullanmak istedikleri her tür için bu uygulama bloğunu tek tek yazmaları gerekirdi; biz onları bu zahmetten kurtarmak istiyoruz.
 
-Ayrıca şu anda, trait'in uygulandığı türün adını yazdıran bir varsayılan `merhaba_makro` uygulaması da veremiyoruz; çünkü Rust'ta çalışma zamanında tür adını geriye dönük öğrenmeye yarayan reflection desteği yoktur. İhtiyacımız olan şey, derleme zamanında kod üreten bir makrodur.
+Üstelik `merhaba_makro` fonksiyonuna, trait'in uygulandığı türün adını yazdıracak varsayılan bir uygulama da henüz sağlayamayız: Rust'ın yansıma (*reflection*) yetenekleri yoktur, dolayısıyla çalışma zamanında türün adını sorgulayamaz. Derleme zamanında kod üretecek bir makroya ihtiyacımız vardır.
 
-Sonraki adım yordam tabanlı makroyu tanımlamak. Bu yazının yazıldığı sırada yordam tabanlı makrolar ayrı crate içinde olmak zorunda. İleride bu kısıt kalkabilir. Crate ve makro crate'lerini adlandırma kuralı şöyledir: `foo` adlı crate için özel `derive` crate'i `foo_derive` adını alır. Bu yüzden `merhaba_makro` projesinin içinde `merhaba_makro_turet` adlı yeni crate oluşturalım:
+Bir sonraki adım prosedürel makroyu tanımlamaktır. Bu satırların yazıldığı sırada prosedürel makroların kendi ayrı crate'lerinde bulunması gerekmektedir. İleride bu kısıtlama kaldırılabilir. Crate'leri ve makro crate'lerini yapılandırma geleneği şöyledir: `foo` adındaki bir crate için özel `derive` prosedürel makro crate'ine `foo_derive` adı verilir (biz de Türkçe adlandırmayla `_turet` sonekini kullanacağız). `merhaba_makro` projemizin içinde `merhaba_makro_turet` adlı yeni bir crate başlatalım:
 
 ```console
 $ cargo new merhaba_makro_turet --lib
 ```
 
-Bu iki crate birbirine sıkı sıkıya bağlıdır; bu yüzden yordam tabanlı makro crate'ini `merhaba_makro` crate'inin dizini içinde oluşturuyoruz. `merhaba_makro` içindeki trait tanımını değiştirirsek, `merhaba_makro_turet` içindeki yordam tabanlı makroyu da değiştirmemiz gerekir. Bu iki crate ayrı ayrı yayımlanacaktır; bunları kullanan programcılar da ikisini bağımlılık olarak ekleyip ikisini de kapsam içine alacaktır. İstersek `merhaba_makro` crate'ini, `merhaba_makro_turet` crate'ine bağımlı yapıp yordam tabanlı makroyu yeniden dışa aktarabilirdik. Ama burada seçtiğimiz yapı, `derive` işlevini istemeyen kullanıcıların yalnızca `merhaba_makro` crate'ini kullanabilmesine de izin verir.
+İki crate'imiz birbiriyle sıkı sıkıya ilişkili olduğundan, prosedürel makro crate'ini `merhaba_makro` crate'imizin dizini içinde oluşturuyoruz. `merhaba_makro` içindeki trait tanımını değiştirirsek, `merhaba_makro_turet` içindeki prosedürel makronun uygulamasını da değiştirmemiz gerekecektir. Bu iki crate'in ayrı ayrı yayınlanması gerekecek ve bu crate'leri kullanan programcıların her ikisini de bağımlılık olarak ekleyip ikisini de kapsama dahil etmesi gerekecektir. Bunun yerine `merhaba_makro` crate'inin `merhaba_makro_turet` crate'ini bir bağımlılık olarak kullanmasını ve prosedürel makro kodunu yeniden dışa aktarmasını (*re-export*) da sağlayabilirdik. Ancak projeyi yapılandırma biçimimiz, programcıların `derive` işlevselliğini istemeseler bile `merhaba_makro` crate'ini tek başına kullanabilmelerini mümkün kılar.
 
-`merhaba_makro_turet` crate'inin yordam tabanlı makro crate'i olduğunu belirtmeliyiz. Ayrıca birazdan göreceğiniz gibi `syn` ve `quote` crate'lerine de ihtiyaç var; bu yüzden onları bağımlılık olarak eklemeliyiz. `merhaba_makro_turet` içindeki _Cargo.toml_ dosyasına şu satırları ekleyin:
+`merhaba_makro_turet` crate'ini bir prosedürel makro crate'i olarak bildirmemiz gerekiyor. Birazdan göreceğiniz gibi `syn` ve `quote` crate'lerindeki işlevlere de ihtiyacımız olacak, bu yüzden onları bağımlılık olarak eklemeliyiz. `merhaba_makro_turet` için _Cargo.toml_ dosyasına aşağıdakileri ekleyin:
 
 <Listing file-name="merhaba_makro_turet/Cargo.toml">
 
@@ -164,9 +174,9 @@ Bu iki crate birbirine sıkı sıkıya bağlıdır; bu yüzden yordam tabanlı m
 
 </Listing>
 
-Yordam tabanlı makroyu tanımlamaya başlamak için, Liste 20-40'taki kodu `merhaba_makro_turet` crate'inin _src/lib.rs_ dosyasına koyun. `impl_merhaba_makro` fonksiyonunu ekleyene kadar bu kod derlenmeyecektir.
+Prosedürel makroyu tanımlamaya başlamak için Liste 20-40'taki kodu `merhaba_makro_turet` crate'inizin _src/lib.rs_ dosyasına yerleştirin. `impl_merhaba_makro` fonksiyonunun tanımını ekleyene kadar bu kodun derlenmeyeceğini unutmayın.
 
-<Listing number="20-40" file-name="merhaba_makro_turet/src/lib.rs" caption="Rust kodunu işleyebilmek için yordam tabanlı makro crate'lerinin çoğunda gereken temel yapı">
+<Listing number="20-40" file-name="merhaba_makro_turet/src/lib.rs" caption="Rust kodunu işleyebilmek için çoğu prosedürel makro crate'inin ihtiyaç duyacağı temel yapı">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-40/hello_macro/hello_macro_derive/src/lib.rs}}
@@ -174,17 +184,17 @@ Yordam tabanlı makroyu tanımlamaya başlamak için, Liste 20-40'taki kodu `mer
 
 </Listing>
 
-Kodu iki parçaya ayırdığımıza dikkat edin: `merhaba_makro_derive` fonksiyonu `TokenStream`'i ayrıştırmaktan, `impl_merhaba_makro` ise söz dizim ağacını dönüştürmekten sorumlu. Bu ayrım yordam tabanlı makro yazmayı daha rahat hâle getirir. Dış fonksiyondaki kod (`merhaba_makro_derive`) gördüğünüz ya da yazacağınız neredeyse bütün yordam tabanlı makro crate'lerinde benzer olacaktır. İç fonksiyondaki kod (`impl_merhaba_makro`) ise makronun amacına göre değişir.
+Kodu, `TokenStream`'i ayrıştırmaktan sorumlu `merhaba_makro_derive` fonksiyonu ve sözdizimi ağacını dönüştürmekten sorumlu `impl_merhaba_makro` fonksiyonu olarak ikiye ayırdığımıza dikkat edin: Bu ayrım prosedürel makro yazmayı daha kullanışlı hale getirir. Dış fonksiyondaki kod (bu örnekte `merhaba_makro_derive`), göreceğiniz veya oluşturacağınız neredeyse her prosedürel makro crate'inde aynı olacaktır. İç fonksiyonun gövdesinde belirttiğiniz kod (bu örnekte `impl_merhaba_makro`) ise prosedürel makronuzun amacına bağlı olarak değişecektir.
 
-Burada üç yeni crate kullandık: `proc_macro`, [`syn`][syn]<!-- ignore --> ve [`quote`][quote]<!-- ignore -->. `proc_macro` Rust ile birlikte geldiği için onu _Cargo.toml_'a ayrıca eklemedik. `proc_macro`, derleyicinin Rust kodunu okumamıza ve dönüştürmemize imkân veren API'sidir.
+Üç yeni crate tanıttık: `proc_macro`, [`syn`][syn]<!-- ignore --> ve [`quote`][quote]<!-- ignore -->. `proc_macro` crate'i Rust ile birlikte gelir, bu nedenle onu _Cargo.toml_ dosyasındaki bağımlılıklara eklememize gerek kalmadı. `proc_macro` crate'i, derleyicinin kendi kodumuz içinden Rust kodunu okumamıza ve işlememize olanak tanıyan API'sidir.
 
-`syn` crate'i Rust kodunu string'den, üzerinde işlem yapabileceğimiz veri yapısına dönüştürür. `quote` crate'i ise `syn` veri yapılarını tekrar Rust koduna çevirir. Bu crate'ler işi büyük ölçüde kolaylaştırır; çünkü Rust kodu için tam bir ayrıştırıcı yazmak hiç kolay değildir.
+`syn` crate'i, Rust kodunu bir metinden üzerinde işlem yapabileceğimiz bir veri yapısına ayrıştırır. `quote` crate'i ise `syn` veri yapılarını tekrar Rust koduna dönüştürür. Bu crate'ler, ele almak isteyebileceğimiz her türlü Rust kodunu ayrıştırmayı çok daha kolay hale getirir: Rust kodu için eksiksiz bir ayrıştırıcı (*parser*) yazmak hiç de basit bir iş değildir.
 
-Kullanıcı `#[derive(MerhabaMakro)]` yazdığında `merhaba_makro_derive` fonksiyonu çağrılır. Bu mümkün olur; çünkü fonksiyonu `proc_macro_derive` ile işaretleyip trait adımızla aynı olan `MerhabaMakro` adını verdik. Çoğu yordam tabanlı makro bu geleneği izler.
+Kütüphanemizin bir kullanıcısı bir tür üzerinde `#[derive(MerhabaMakro)]` belirttiğinde `merhaba_makro_derive` fonksiyonu çağrılacaktır. Bunun mümkün olmasının nedeni, buradaki `merhaba_makro_derive` fonksiyonuna `proc_macro_derive` özniteliğini eklemiş ve trait adımızla eşleşen `MerhabaMakro` adını belirtmiş olmamızdır; çoğu prosedürel makro bu geleneği izler.
 
-`merhaba_makro_derive` önce `input` içindeki `TokenStream`'i, yorumlayıp üzerinde işlem yapabileceğimiz bir veri yapısına dönüştürür. Burada `syn` devreye girer. `syn::parse`, `TokenStream` alıp ayrıştırılmış Rust kodunu temsil eden `DeriveInput` yapısını döndürür. Liste 20-41, `struct Krepler;` kodunu ayrıştırdığımızda elde ettiğimiz `DeriveInput` içindeki ilgili kısımları gösteriyor.
+`merhaba_makro_derive` fonksiyonu ilk olarak `input` değerini bir `TokenStream`'den daha sonra yorumlayıp üzerinde işlemler yapabileceğimiz bir veri yapısına dönüştürür. İşte `syn` tam bu noktada devreye girer. `syn` içindeki `parse` fonksiyonu bir `TokenStream` alır ve ayrıştırılmış Rust kodunu temsil eden bir `DeriveInput` struct'ı döndürür. Liste 20-41, `struct Krepler;` metnini ayrıştırdığımızda elde ettiğimiz `DeriveInput` struct'ının ilgili kısımlarını göstermektedir.
 
-<Listing number="20-41" caption="Liste 20-37'de makro özniteliği eklenmiş kod ayrıştırıldığında elde edilen `DeriveInput` örneği">
+<Listing number="20-41" caption="Liste 20-37'de makro özniteliğine sahip kod ayrıştırıldığında elde ettiğimiz `DeriveInput` örneği">
 
 ```rust,ignore
 DeriveInput {
@@ -208,13 +218,13 @@ DeriveInput {
 
 </Listing>
 
-Bu yapının alanları, ayrıştırdığımız Rust kodunun `ident` değeri `Krepler` olan birim struct olduğunu gösterir. Elbette bu yapıda her türlü Rust kodunu anlatmaya yarayan çok daha fazla alan vardır; ayrıntı için [`syn` içindeki `DeriveInput` belgelerine][syn-docs] bakabilirsiniz.
+Bu struct'ın alanları, ayrıştırdığımız Rust kodunun `ident` (_identifier_, yani tanımlayıcı / ad) değeri `Krepler` olan bir birim struct olduğunu gösterir. Bu struct üzerinde her türlü Rust kodunu tanımlamaya yönelik daha pek çok alan bulunur; daha fazla bilgi için [`DeriveInput` hakkındaki `syn` belgelerine][syn-docs] göz atabilirsiniz.
 
-Birazdan `impl_merhaba_makro` fonksiyonunu tanımlayacağız; işte yeni Rust kodunu burada üreteceğiz. Ama önce önemli bir noktayı görelim: `derive` makromuzun çıktısı da bir `TokenStream` olacak. Dönen `TokenStream`, kullanıcı crate'inin yazdığı koda eklenir. Yani kullanıcı crate'i derlendiğinde, bizim değiştirilmiş `TokenStream` ile sağladığımız ek işlevselliği kazanır.
+Birazdan dahil etmek istediğimiz yeni Rust kodunu oluşturacağımız `impl_merhaba_makro` fonksiyonunu tanımlayacağız. Ancak buna geçmeden önce, `derive` makromuzun çıktısının da bir `TokenStream` olduğuna dikkat edin. Döndürülen `TokenStream`, crate kullanıcılarımızın yazdığı koda eklenir; böylece kendi crate'lerini derlediklerinde, değiştirilmiş `TokenStream` içinde sağladığımız ek işlevselliği elde ederler.
 
-Burada `syn::parse` başarısız olursa `merhaba_makro_derive` fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz. Bunun nedeni yordam tabanlı makroların hata durumunda `Result` değil `TokenStream` döndürmek zorunda olmasıdır. Bu örneği basitleştirmek için `unwrap` kullandık; üretim kodunda neyin yanlış gittiğini daha açık anlatan `panic!` ya da `expect` mesajları vermelisiniz.
+Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive` fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz. Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının `Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, prosedürel makromuzun hata durumunda paniklemesi gereklidir. Bu örneği `unwrap` kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
 
-Artık açıklamalı Rust kodunu `TokenStream`'den `DeriveInput` örneğine çevirebiliyoruz. Şimdi, açıklama eklenmiş tür üzerinde `MerhabaMakro` trait'ini uygulayan kodu üretelim; Liste 20-42 bunu gösteriyor.
+Artık öznitelik eklenmiş Rust kodunu bir `TokenStream`'den `DeriveInput` örneğine dönüştüren koda sahip olduğumuza göre, Liste 20-42'de gösterildiği gibi öznitelik eklenmiş tür üzerinde `MerhabaMakro` trait'ini uygulayan kodu üretelim.
 
 <Listing number="20-42" file-name="merhaba_makro_turet/src/lib.rs" caption="Ayrıştırılmış Rust kodunu kullanarak `MerhabaMakro` trait'ini uygulamak">
 
@@ -224,70 +234,82 @@ Artık açıklamalı Rust kodunu `TokenStream`'den `DeriveInput` örneğine çev
 
 </Listing>
 
-`ast.ident` ile açıklama eklenen türün adını taşıyan `Ident` örneğini alıyoruz. Liste 20-41'deki yapıdan da gördüğünüz gibi, bu fonksiyon Liste 20-37'deki kod üzerinde çalıştığında `ident` alanının değeri `"Krepler"` olur. Yani Liste 20-42'deki `name` değişkeni, ekrana yazdırıldığında `"Krepler"` olacak `Ident` örneğini tutar.
+`ast.ident` kullanarak öznitelik eklenmiş türün adını (tanımlayıcısını) içeren bir `Ident` struct örneği elde ederiz. Liste 20-41'deki struct, `impl_merhaba_makro` fonksiyonunu Liste 20-37'deki kod üzerinde çalıştırdığımızda elde edeceğimiz `ident` değerinin `"Krepler"` değerine sahip bir `ident` alanı barındıracağını gösterir. Dolayısıyla Liste 20-42'deki `name` değişkeni, yazdırıldığında Liste 20-37'deki struct'ın adı olan `"Krepler"` metnini verecek bir `Ident` struct örneği içerir.
 
-`quote!` makrosu, döndürmek istediğimiz Rust kodunu yazmamızı sağlar. Derleyici, `quote!` sonucunun doğrudan hâlinden farklı bir şey beklediği için bunu `into` ile `TokenStream`'e çeviririz.
+`quote!` makrosu, döndürmek istediğimiz Rust kodunu tanımlamamıza olanak tanır. Derleyici, `quote!` makrosunun çalışmasının doğrudan sonucundan farklı bir tür beklediği için bunu bir `TokenStream`'e dönüştürmemiz gerekir. Bunu, bu ara temsili tüketen ve gerekli `TokenStream` türünde bir değer döndüren `into` metodunu çağırarak yaparız.
 
-`quote!` çok kullanışlı bir şablon mekanizması da sunar: `#name` yazdığınızda, bunu `name` değişkenindeki değerle değiştirir. Hatta normal makrolardaki gibi tekrarlar da yapabilirsiniz. Ayrıntılı anlatım için [ `quote` crate'i belgelerine][quote-docs] bakın.
+`quote!` makrosu ayrıca oldukça etkileyici şablonlama mekanikleri sunar: `#name` yazabiliriz ve `quote!` bunu `name` değişkenindeki değerle değiştirir. Hatta normal makroların çalışma biçimine benzer tekrarlamalar bile yapabilirsiniz. Kapsamlı bir giriş için [`quote` crate'inin belgelerine][quote-docs] göz atabilirsiniz.
 
-Yordam tabanlı makromuzun, kullanıcının açıkladığı tür için `MerhabaMakro` trait'ini uygulayan kod üretmesini istiyoruz. Bunu `#name` ile elde ediyoruz. Trait uygulamasında tek fonksiyon `merhaba_makro`; gövdesi de istediğimiz davranışı içeriyor: `Merhaba, Makro! Benim adım` yazdırıp ardından açıklanan türün adını ekrana vermek.
+Prosedürel makromuzun, kullanıcının öznitelik eklediği tür için —bunu `#name` kullanarak elde edebiliyoruz— `MerhabaMakro` trait'imizin bir uygulamasını üretmesini istiyoruz. Bu trait uygulaması, gövdesi sağlamak istediğimiz işlevselliği içeren tek bir `merhaba_makro` fonksiyonuna sahiptir: `Merhaba, Makro! Benim adım` metnini ve ardından öznitelik eklenmiş türün adını yazdırmak.
 
-Burada kullanılan `stringify!` makrosu Rust'ın içine gömülüdür. `1 + 2` gibi bir Rust ifadesi alır ve derleme zamanında bunu `"1 + 2"` gibi string sabitine çevirir. Bu, ifadeyi değerlendirip sonra `String`'e çeviren `format!` ya da `println!`'den farklıdır. `#name` girdisi düz yazı olarak yazdırılacak bir ifade olabileceğinden `stringify!` kullanıyoruz. Ayrıca bu, `#name`'i derleme zamanında string sabitine dönüştürdüğü için ek bellek ayırma da gerektirmez.
+Burada kullanılan `stringify!` makrosu Rust'ta yerleşiktir. `1 + 2` gibi bir Rust ifadesi alır ve derleme zamanında bu ifadeyi `"1 + 2"` gibi bir string sabitine (*string literal*) dönüştürür. Bu davranış, ifadeyi değerlendirip ardından sonucu bir `String` değerine çeviren `format!` veya `println!` makrolarından farklıdır. `#name` girdisinin olduğu gibi yazdırılması gereken bir ifade olma ihtimali bulunduğundan `stringify!` kullanırız. `stringify!` kullanmak, `#name` girdisini derleme zamanında bir string sabitine dönüştürerek çalışma zamanında fazladan bir bellek tahsisinden de tasarruf sağlar.
 
-Bu noktada, hem `merhaba_makro` hem `merhaba_makro_turet` içinde `cargo build` başarılı olmalıdır. Şimdi bu crate'leri Liste 20-37'deki koda bağlayıp yordam tabanlı makroyu çalışırken görelim. _projects_ dizininizde `cargo new krepler` ile yeni bir ikili proje oluşturun. `krepler` crate'inin _Cargo.toml_ dosyasına `merhaba_makro` ve `merhaba_makro_turet` bağımlılıklarını eklememiz gerekir. Eğer kendi sürümlerinizi [crates.io](https://crates.io/)<!-- ignore --> üstüne yayımlıyorsanız bunlar normal bağımlılık olur; değilse, aşağıdaki gibi `path` bağımlılığı kullanabilirsiniz:
+Bu noktada hem `merhaba_makro` hem de `merhaba_makro_turet` içinde `cargo build` komutu başarıyla tamamlanmalıdır. Prosedürel makroyu çalışırken görmek için bu crate'leri Liste 20-37'deki koda bağlayalım! _projects_ dizininizde `cargo new krepler` komutuyla yeni bir ikili (*binary*) proje oluşturun. `krepler` crate'inin _Cargo.toml_ dosyasına `merhaba_makro` ve `merhaba_makro_turet` crate'lerini bağımlılık olarak eklememiz gerekiyor. `merhaba_makro` ve `merhaba_makro_turet` sürümlerinizi [crates.io](https://crates.io/)<!-- ignore --> üzerinde yayınlıyorsanız bunlar normal bağımlılıklar olurdu; yayınlamıyorsanız bunları aşağıdaki gibi `path` bağımlılıkları olarak belirtebilirsiniz:
 
 ```toml
-{{#include ../listings/ch20-advanced-features/no-listing-21-pancakes/pancakes/Cargo.toml:6:8}}
+[dependencies]
+merhaba_makro = { path = "../merhaba_makro" }
+merhaba_makro_turet = { path = "../merhaba_makro/merhaba_makro_turet" }
 ```
 
-Liste 20-37'deki kodu _src/main.rs_ içine koyup `cargo run` çalıştırın: `Merhaba, Makro! Benim adım Krepler!` yazdırmalıdır. `MerhabaMakro` trait uygulaması, `krepler` crate'inin bunu elle yazmasına gerek kalmadan yordam tabanlı makro tarafından eklendi; `#[derive(MerhabaMakro)]` bunu sağladı.
+Liste 20-37'deki kodu _src/main.rs_ dosyasına koyun ve `cargo run` komutunu çalıştırın: Ekrana `Merhaba, Makro! Benim adım Krepler!` yazdırmalıdır. Prosedürel makrodan gelen `MerhabaMakro` trait'i uygulaması, `krepler` crate'inin bunu elle uygulamasına gerek kalmadan dahil edildi; trait uygulamasını `#[derive(MerhabaMakro)]` ekledi.
 
-Şimdi diğer yordam tabanlı makro türlerinin, özel `derive` makrolardan nasıl farklılaştığına bakalım.
+Şimdi diğer prosedürel makro türlerinin özel `derive` makrolarından nasıl farklılaştığını inceleyelim.
 
+<a id="attribute-like-macros"></a>
 ### Öznitelik Benzeri Makrolar
 
-Öznitelik benzeri makrolar, özel `derive` makrolara benzer. Ama `derive` özniteliği için kod üretmek yerine yeni öznitelikler tanımlamanıza izin verir. Ayrıca daha esnektir: `derive` yalnızca struct ve enum üzerinde çalışır; öznitelikler ise fonksiyon gibi başka öğelere de uygulanabilir. Örneğin bir web çerçevesi kullanırken fonksiyonları işaretleyen `route` adlı özniteliğiniz olduğunu düşünün:
+Öznitelik benzeri makrolar özel `derive` makrolarına benzer, ancak `derive` özniteliği için kod üretmek yerine yeni öznitelikler oluşturmanıza olanak tanır. Ayrıca daha esnektirler: `derive` yalnızca struct ve enum'lar için çalışırken, öznitelikler fonksiyonlar gibi diğer öğelere de uygulanabilir. Öznitelik benzeri bir makronun kullanımına dair bir örneğe bakalım. Bir web uygulaması çatısı (*framework*) kullanırken fonksiyonları işaretlemek için `route` adında bir özniteliğiniz olduğunu varsayalım:
 
 ```rust,ignore
 #[route(GET, "/")]
 fn index() {
 ```
 
-Bu `#[route]` özniteliği çerçevenin sağladığı yordam tabanlı makro olurdu. Tanım fonksiyonunun imzası şöyle görünürdü:
+Bu `#[route]` özniteliği, çatı tarafından prosedürel bir makro olarak tanımlanırdı. Makro tanım fonksiyonunun imzası şöyle görünürdü:
 
 ```rust,ignore
 #[proc_macro_attribute]
 pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream {
 ```
 
-Burada iki `TokenStream` parametresi var. İlki özniteliğin içeriği için: `GET, "/"` kısmı. İkincisi ise özniteliğin eklendiği öğenin gövdesi için: burada `fn index() {}` ve fonksiyonun kalanı.
+Burada `TokenStream` türünde iki parametremiz vardır. İlki özniteliğin içeriği içindir: `GET, "/"` kısmı. İkincisi ise özniteliğin iliştirildiği öğenin gövdesidir: bu örnekte `fn index() {}` ve fonksiyon gövdesinin geri kalanı.
 
-Bunun dışında, öznitelik benzeri makrolar özel `derive` makrolarla aynı mantıkta çalışır: `proc-macro` türünde crate oluşturur ve istediğiniz kodu üreten fonksiyonu yazarsınız.
+Bunun dışında öznitelik benzeri makrolar, özel `derive` makrolarıyla aynı şekilde çalışır: `proc-macro` crate türüne sahip bir crate oluşturur ve istediğiniz kodu üreten bir fonksiyon uygularsınız!
 
+<a id="function-like-macros"></a>
 ### Fonksiyon Benzeri Makrolar
 
-Fonksiyon benzeri makrolar, görünüşte fonksiyon çağrısı gibi duran makrolardır. `macro_rules!` makroları gibi fonksiyonlardan daha esnektirler; örneğin bilinmeyen sayıda argüman alabilirler. Ancak `macro_rules!` makroları yalnızca biraz önce gördüğümüz `match` benzeri sözdizimiyle tanımlanabilir. Fonksiyon benzeri makrolar ise `TokenStream` alır ve diğer iki yordam tabanlı makro türü gibi bu `TokenStream` üzerinde Rust koduyla işlem yapar. Örnek olarak, şöyle çağrılabilecek `sql!` makrosunu düşünebiliriz:
+Fonksiyon benzeri makrolar, fonksiyon çağrılarına benzeyen makrolar tanımlar. `macro_rules!` makrolarına benzer şekilde fonksiyonlardan daha esnektirler; örneğin önceden bilinmeyen sayıda argüman alabilirler. Ancak `macro_rules!` makroları yalnızca daha önce [“Genel Metaprogramlama İçin Bildirimsel Makrolar”][decl]<!-- ignore --> bölümünde ele aldığımız `match` benzeri sözdizimi kullanılarak tanımlanabilir. Fonksiyon benzeri makrolar bir `TokenStream` parametresi alır ve tanımları, diğer iki prosedürel makro türünün yaptığı gibi Rust kodunu kullanarak bu `TokenStream` üzerinde işlem yapar. Fonksiyon benzeri bir makroya örnek olarak şöyle çağrılabilecek bir `sql!` makrosu verilebilir:
 
 ```rust,ignore
 let sql = sql!(SELECT * FROM posts WHERE id=1);
 ```
 
-Bu makro, içindeki SQL ifadesini ayrıştırıp sözdizimsel olarak geçerli olup olmadığını denetleyebilir. Bu, `macro_rules!` makrosunun yapabileceğinden çok daha karmaşık bir işlemdir. `sql!` makrosu şöyle tanımlanırdı:
+Bu makro, içindeki SQL deyimini ayrıştırıp sözdizimsel olarak doğru olup olmadığını denetlerdi; bu da bir `macro_rules!` makrosunun yapabileceğinden çok daha karmaşık bir işlemedir. `sql!` makrosu şöyle tanımlanırdı:
 
 ```rust,ignore
 #[proc_macro]
 pub fn sql(input: TokenStream) -> TokenStream {
 ```
 
-Bu tanım, özel `derive` makrosunun imzasına benzer: parantez içindeki belirteçleri alır, üretmek istediğimiz kodu döndürür.
+Bu tanım, özel `derive` makrosunun imzasına benzer: Parantez içindeki belirteçleri alırız ve üretmek istediğimiz kodu döndürürüz.
 
+> Not: Rust makrolarını C/C++ dillerindeki `#define` ön işlemci makrolarından ayıran en kritik güvencelerden biri *makro hijyenidir (macro hygiene)*. C'deki `#define` ham metin kopyala-yapıştır işlemi yaptığı için beklenmedik operatör önceliği hatalarına veya yerel değişken adı çakışmalarına yol açabilir. Rust'ta ise `macro_rules!` makroları ham metin yerine sözdizimi ağacı (*AST*) düzeyinde çalışır ve kendi içlerinde tanımladıkları değişkenleri ayrı bir sözdizimsel kapsamda yalıtır: Örneğin Liste 20-35'teki `vec!` tanımının içindeki `temp_vec` değişkeni, çağıran kodda `let temp_vec = 42; let v = vec![temp_vec];` yazsanız bile sizin `temp_vec` değişkeninizle asla çakışmaz veya onu gölgelemez.
+>
+> Hem `macro_rules!` makrolarını hem de `#[derive(...)]` ve öznitelik makroları gibi prosedürel makroları geliştirirken veya hata ayıklarken, derleyicinin perde arkasında tam olarak hangi Rust kodunu ürettiğini görmek büyük kolaylık sağlar. Bunun için `cargo install cargo-expand` komutuyla kurabileceğiniz `cargo-expand` alt komutunu kullanabilirsiniz: Örneğin `krepler` proje dizininde `cargo expand` çalıştırdığınızda, `#[derive(MerhabaMakro)]` ve `println!` makrolarının derleme zamanında genişletilmiş tam Rust çıktısını doğrudan inceleyebilirsiniz.
+
+<a id="summary"></a>
 ## Özet
 
-Derin bir nefes. Ara sıra kullanacağınız, ama gerektiğinde işinize çok yarayacak bazı Rust özelliklerini artık tanıyorsunuz. Burada birkaç karmaşık konuyu özellikle tanıttık; çünkü hata mesajlarında ya da başkasının kodunda karşınıza çıktıklarında bunları tanıyabilmeniz önemli. Gerektiğinde çözüme ulaşmak için bu bölümü başvuru kaynağı gibi kullanın.
+Oh be! Artık alet çantanızda muhtemelen sık kullanmayacağınız, ancak çok özel durumlarda elinizin altında olduğunu bileceğiniz bazı Rust özellikleri var. Hata mesajı önerilerinde veya başkalarının kodlarında karşılaştığınızda bu kavramları ve sözdizimini tanıyabilmeniz için birkaç karmaşık konuyu tanıttık. Sizi çözümlere yönlendirecek bir başvuru kaynağı olarak bu bölümü kullanabilirsiniz.
 
-[quote]: https://crates.io/crates/quote
-[quote-docs]: https://docs.rs/quote
+Sırada, kitap boyunca ele aldığımız her şeyi pratiğe dökeceğimiz son bir proje daha var!
+
 [ref]: ../reference/macros-by-example.html
-[syn]: https://crates.io/crates/syn
-[syn-docs]: https://docs.rs/syn/2.0/syn/struct.DeriveInput.html
 [tlborm]: https://veykril.github.io/tlborm/
+[syn]: https://crates.io/crates/syn
+[quote]: https://crates.io/crates/quote
+[syn-docs]: https://docs.rs/syn/2.0/syn/struct.DeriveInput.html
+[quote-docs]: https://docs.rs/quote
+[decl]: #declarative-macros-with-macro_rules-for-general-metaprogramming

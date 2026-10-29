@@ -14,8 +14,8 @@ fn main() {
     });
 
     trpl::block_on(async {
-        while let Some(message) = alici.recv().await {
-            println!("{message}");
+        while let Some(mesaj) = alici.recv().await {
+            println!("{mesaj}");
         }
     });
 }

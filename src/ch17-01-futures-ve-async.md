@@ -1,53 +1,82 @@
-## Future'lar ve Async Sözdizimi
+<!-- Old headings. Do not remove or links may break. -->
 
-Rust'ta eşzamansız programlamanın temel taşları _future_ yapısı ile `async` ve
-`await` anahtar sözcükleridir.
+<a id="futures-and-the-async-syntax"></a>
+<a id="futurelar-ve-async-sözdizimi"></a>
+<a id="futurelar-ve-async-sozdizimi"></a>
 
-Bir _future_, şu anda hazır olmayabilen ama ileride bir noktada hazır olacak
-değerdir. Aynı kavram başka dillerde bazen _task_ ya da _promise_ gibi
-isimlerle de karşınıza çıkar. Rust, farklı eşzamansız işlemlerin farklı veri
-yapılarıyla gerçekleştirilebilmesini ama yine de ortak bir arayüzle
-çalışabilmesini sağlamak için `Future` trait'ini sunar. Rust'ta future'lar,
-`Future` trait'ini uygulayan türlerdir. Her future, ne kadar ilerlediğine ve
-"hazır" olmanın ne anlama geldiğine dair kendi durum bilgisini taşır.
+## Futures ve Async Sözdizimi
 
-`async` anahtar sözcüğünü bloklara ve fonksiyonlara uygulayarak bunların
-duraklatılıp yeniden sürdürülebileceğini belirtirsiniz. Bir async blok ya da
-async fonksiyon içinde ise `await` kullanarak bir future'ı _bekleyebilirsiniz_.
-Bir async blok ya da fonksiyon içinde future beklediğiniz her nokta, o bloğun
-veya fonksiyonun duraklayıp yeniden devam edebileceği potansiyel yerdir.
-Bir future'ın değerinin hazır olup olmadığını yoklama sürecine _polling_ denir.
+Rust'ta asenkron programlamanın temel unsurları _future_'lar ile Rust'ın `async`
+ve `await` anahtar kelimeleridir.
 
-C# ve JavaScript gibi başka diller de `async` ile `await` anahtar sözcüklerini
-kullanır. Bu dillere aşinaysanız Rust'ın sözdizimi ve davranışında dikkate değer
-farklar olduğunu görebilirsiniz. Birazdan bunun nedenini de anlayacağız.
+Bir _future_, şu anda hazır olmayabilen ancak gelecekte bir noktada hazır hale
+gelecek bir değerdir. (Aynı kavram pek çok dilde bazen _task_ veya _promise_
+gibi farklı adlarla da karşımıza çıkar.) Rust, farklı asenkron işlemlerin farklı
+veri yapılarıyla ancak ortak bir arayüz üzerinden uygulanabilmesi için yapı taşı
+olarak bir `Future` trait'i sunar. Rust'ta future'lar, `Future` trait'ini
+uygulayan türlerdir. Her future, kaydedilen ilerleme ve “hazır” olmanın ne
+anlama geldiği hakkında kendi bilgisini barındırır.
 
-Pratikte async Rust yazarken çoğu zaman `async` ile `await` kullanırız. Rust
-bunları, tıpkı `for` döngülerini `Iterator` trait'i üzerinden eşdeğer koda
-çevirdiği gibi, `Future` trait'ini kullanan eşdeğer koda derler. Ama Rust bize
-`Future` trait'ini sunduğu için, gerektiğinde bu trait'i kendi veri türleriniz
-için de uygulayabilirsiniz.
+Kesintiye uğratılıp kaldıkları yerden devam ettirilebileceklerini belirtmek için
+bloklara ve fonksiyonlara `async` anahtar kelimesini uygulayabilirsiniz. Bir
+async blok veya async fonksiyon içinde ise bir _future'ı beklemek_ (yani hazır
+hale gelmesini beklemek) için `await` anahtar kelimesini kullanabilirsiniz. Bir
+async blok veya fonksiyon içinde bir future'ı beklediğiniz her nokta, o bloğun
+veya fonksiyonun duraklayıp yeniden devam edebileceği potansiyel bir noktadır.
+Bir future'ın değerinin henüz hazır olup olmadığını kontrol etme sürecine
+_yoklama (polling)_ denir.
 
-Bu anlatım biraz soyut kalmış olabilir. O yüzden ilk async programımızı
-yazalım: küçük bir web kazıyıcı. Komut satırından iki URL alacak, ikisini de
-eşzamanlı olarak isteyecek ve hangisi önce biterse onun sonucunu döndürecek.
+C# ve JavaScript gibi başka bazı diller de asenkron programlama için `async` ve
+`await` anahtar kelimelerini kullanır. Bu dillere aşinaysanız, Rust'ın
+sözdizimini ele alış biçiminde bazı önemli farklılıklar olduğunu fark
+edebilirsiniz. Birazdan göreceğimiz üzere bunun çok geçerli nedenleri var!
+
+Asenkron Rust kodu yazarken çoğu zaman `async` ve `await` anahtar kelimelerini
+kullanırız. Rust bunları, tıpkı `for` döngülerini `Iterator` trait'ini kullanan
+eşdeğer koda derlediği gibi, `Future` trait'ini kullanan eşdeğer koda derler.
+Ancak Rust `Future` trait'ini doğrudan sunduğu için, ihtiyaç duyduğunuzda bu
+trait'i kendi veri türleriniz üzerinde de uygulayabilirsiniz. Bu bölüm boyunca
+göreceğimiz pek çok fonksiyon, kendi `Future` uygulamalarına sahip türler
+döndürür. Bölümün sonunda trait tanımına geri dönecek ve nasıl çalıştığını daha
+derinlemesine inceleyeceğiz, ancak şimdilik ilerlememiz için bu kadar ayrıntı
+yeterlidir.
+
+Tüm bunlar biraz soyut gelmiş olabilir; gelin ilk asenkron programımızı yazalım:
+küçük bir web kazıyıcı (*web scraper*). Komut satırından iki URL geçirecek, her
+ikisini de eşzamanlı olarak getirecek ve hangisi önce tamamlanırsa onun sonucunu
+döndüreceğiz. Bu örnekte epeyce yeni sözdizimi yer alacak ama endişelenmeyin;
+ilerledikçe bilmeniz gereken her şeyi açıklayacağız.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="our-first-async-program"></a>
+<a id="ilk-async-programımız"></a>
+<a id="ilk-async-programimiz"></a>
 
 ## İlk Async Programımız
 
-Bu bölümde odağı ekosistemin ayrıntılarına değil, async öğrenmeye vermek için
-`trpl` crate'ini kullandık. `trpl`, başta [`futures`][futures-crate]<!-- ignore
---> ve [`tokio`][tokio]<!-- ignore --> olmak üzere ihtiyaç duyacağınız türleri,
-trait'leri ve fonksiyonları yeniden dışa aktarır. `futures` crate'i Rust'ın
-async denemeleri için resmî yuvalardan biridir ve `Future` trait'i de ilk kez
-orada tasarlandı. Tokio ise bugün Rust dünyasında özellikle web uygulamaları
-için en yaygın async çalışma zamanıdır.
+Bu bölümün odağını ekosistemin parçalarını bir arada tutmaya çalışmak yerine
+asenkron programlamayı öğrenmekte tutmak için `trpl` crate'ini oluşturduk
+(`trpl`, “The Rust Programming Language” ifadesinin kısaltmasıdır). Bu crate,
+başta [`futures`][futures-crate]<!-- ignore --> ve [`tokio`][tokio]<!-- ignore -->
+crate'leri olmak üzere ihtiyaç duyacağınız tüm türleri, trait'leri ve
+fonksiyonları yeniden dışa aktarır (*re-export*). `futures` crate'i, Rust'ta
+asenkron kod deneyleri için resmî bir yuvadır ve `Future` trait'inin ilk kez
+tasarlandığı yerdir. Tokio ise günümüzde Rust ekosisteminde, özellikle web
+uygulamaları için en yaygın kullanılan asenkron çalışma zamanıdır (*async
+runtime*). Piyasada başka harika çalışma zamanları da vardır ve kendi
+amaçlarınıza daha uygun olabilirler. İyi test edilmiş ve yaygın olarak
+kullanılıyor olması nedeniyle `trpl` altında perde arkasında `tokio` crate'ini
+kullanıyoruz.
 
-Bazen `trpl`, bölümde önemli olmayan ayrıntılarla dikkatimizin dağılmaması için
-orijinal API'leri yeniden adlandırır ya da sarmalar. Nasıl çalıştığını görmek
-isterseniz [kaynak koduna][crate-source] bakabilirsiniz.
+Bazı durumlarda `trpl`, yalnızca bu bölümle ilgili ayrıntılara odaklanmanızı
+sağlamak için orijinal API'leri yeniden adlandırır veya sarmalar. Crate'in ne
+yaptığını anlamak isterseniz [kaynak koduna][crate-source] göz atmanızı tavsiye
+ederiz. Her bir dışa aktarımın hangi crate'ten geldiğini görebilir ve crate'in
+ne yaptığını açıklayan kapsamlı yorumları inceleyebilirsiniz.
 
-`hello-async` adında yeni bir ikili proje oluşturup `trpl` bağımlılığını
-ekleyin:
+`hello-async` adında yeni bir ikili (*binary*) proje oluşturun ve `trpl`
+crate'ini bağımlılık olarak ekleyin:
 
 ```console
 $ cargo new hello-async
@@ -55,73 +84,120 @@ $ cd hello-async
 $ cargo add trpl
 ```
 
-Şimdi `trpl`'nin sunduğu parçalarla ilk async programımızı yazabiliriz.
-İki web sayfasını alacak, her birinin `<title>` etiketini çıkaracak ve hangisi
-önce biterse onun başlığını yazdıran küçük bir komut satırı aracı kuracağız.
+Artık `trpl` tarafından sağlanan çeşitli parçaları kullanarak ilk asenkron
+programımızı yazabiliriz. İki web sayfasını getiren, her birinden `<title>`
+öğesini çeken ve tüm bu süreci hangisi önce tamamlarsa o sayfanın başlığını
+ekrana yazdıran küçük bir komut satırı aracı geliştireceğiz.
 
-### `sayfa_basligi` Fonksiyonunu Tanımlamak
+<!-- Old headings. Do not remove or links may break. -->
 
-İlk olarak, bir sayfanın URL'sini parametre olarak alan, sayfaya istek yapan ve
-`<title>` etiketindeki metni döndüren bir fonksiyon yazalım.
+<a id="defining-the-page_title-function"></a>
+<a id="sayfa_basligi-fonksiyonunu-tanımlamak"></a>
+<a id="sayfa_basligi-fonksiyonunu-tanimlamak"></a>
 
-<Listing number="17-1" file-name="src/main.rs" caption="HTML sayfasından başlık etiketini almak için async fonksiyon tanımlamak">
+### `sayfa_basligi` Fonksiyonunu Tanımlama
 
-```rust,ignore
+Parametre olarak tek bir sayfa URL'si alan, bu adrese istek yapan ve `<title>`
+öğesinin metnini döndüren bir fonksiyon yazarak başlayalım (bkz. Liste 17-1).
+
+<Listing number="17-1" file-name="src/main.rs" caption="Bir HTML sayfasından başlık öğesini almak için asenkron bir fonksiyon tanımlama">
+
+```rust
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-01/src/main.rs:all}}
 ```
 
 </Listing>
 
-Önce `sayfa_basligi` adında bir fonksiyon tanımlıyor ve onu `async` ile
-işaretliyoruz. Sonra kendisine verilen URL'yi almak için `trpl::get`
-fonksiyonunu çağırıyor, yanıtı beklemek için `await` kullanıyoruz. Ardından
-yanıtın gövdesini metne çevirmek için `text` metodunu çağırıyor ve onu da
-bekliyoruz. Bu iki adımın ikisi de eşzamansızdır.
+İlk olarak `sayfa_basligi` adında bir fonksiyon tanımlıyor ve onu `async`
+anahtar kelimesiyle işaretliyoruz. Ardından geçirilen URL ne ise onu getirmek
+için `trpl::get` fonksiyonunu kullanıyor ve yanıtı beklemek üzere `await`
+anahtar kelimesini ekliyoruz. `yanit` değerinin metnini almak için üzerinde
+`text` metodunu çağırıyor ve onu da bir kez daha `await` anahtar kelimesiyle
+bekliyoruz. Bu adımların her ikisi de asenkrondur. `get` fonksiyonu için
+sunucunun yanıtının ilk bölümünü —HTTP üstbilgilerini (*headers*), çerezleri vb.
+içeren ve yanıt gövdesinden ayrı olarak iletilebilen kısmı— geri göndermesini
+beklememiz gerekir. Özellikle gövde çok büyükse tamamının ulaşması biraz zaman
+alabilir. Yanıtın _tamamının_ gelmesini beklememiz gerektiği için `text` metodu
+da asenkrondur.
 
-Bu future'ların ikisini de açıkça beklemek zorundayız; çünkü Rust'ta future'lar
-_tembeldir_. Yani siz `await` etmeden hiçbir şey yapmazlar. Bu size 13.
-bölümdeki yineleyicileri hatırlatabilir: yineleyiciler de `next` çağrısı
-olmadan ilerlemez.
+Bu iki future'ı da açıkça beklemek zorundayız; çünkü Rust'ta future'lar
+_tembeldir (lazy)_: `await` anahtar kelimesiyle onlardan istemediğiniz sürece
+hiçbir şey yapmazlar. (Hatta bir future'ı kullanmazsanız Rust bir derleyici
+uyarısı gösterir.) Bu durum size Bölüm 13'teki [“İteratörlerle Bir Dizi Öğeyi
+İşleme”][iterators-lazy]<!-- ignore --> bölümünde yer alan iteratör
+tartışmasını hatırlatabilir. İteratörler, ister doğrudan ister `for` döngüleri
+ya da perde arkasında `next` kullanan `map` gibi metotlar aracılığıyla olsun,
+`next` metotlarını çağırmadığınız sürece hiçbir şey yapmaz. Benzer şekilde,
+future'lar da siz açıkça istemedikçe hiçbir şey yapmaz. Bu tembellik, Rust'ın
+asenkron kodu gerçekten ihtiyaç duyulana kadar çalıştırmaktan kaçınmasına olanak
+tanır.
 
-> Not: Bu davranış, 16. bölümde `thread::spawn` ile gördüğümüzden farklıdır.
-> Orada yeni iş parçacığına verdiğimiz kapanış hemen çalışmaya başlamıştı.
-> Rust'ın performans güvencelerini koruyabilmesi için future'ların tembel
-> olması önemlidir.
+> Not: Bu davranış, Bölüm 16'daki [“`spawn` ile Yeni Bir Thread
+> Oluşturma”][thread-spawn]<!-- ignore --> bölümünde `thread::spawn`
+> kullanırken gördüğümüz davranıştan farklıdır; orada başka bir thread'e
+> aktardığımız kapanış hemen çalışmaya başlamıştı. Aynı zamanda pek çok başka
+> dilin asenkron programlamaya yaklaşımından da farklıdır. Ancak tıpkı
+> iteratörlerde olduğu gibi, Rust'ın kendi performans güvencelerini
+> sunabilmesi açısından bu özellik kritik öneme sahiptir.
 
-`yanit_metni` elimizde olduğunda, onu `Html::parse` ile `Html` türüne çevirip
-ham dizgi yerine daha zengin bir veri yapısı üzerinde çalışıyoruz. Özellikle
-`select_first("title")` ile ilk `<title>` öğesini buluyoruz. Böyle bir öğe
-olmayabileceği için sonuç `Option<ElementRef>` olur. Son olarak `map`
-kullanarak varsa başlık içeriğini `String` olarak çıkarıyoruz. Sonuçta elimizde
+`yanit_metni` değerini elde ettikten sonra, `Html::parse` kullanarak onu `Html`
+türünün bir örneğine ayrıştırabiliriz. Artık ham bir string yerine, HTML ile
+daha zengin bir veri yapısı olarak çalışmak üzere kullanabileceğimiz bir veri
+türümüz vardır. Özellikle, verilen bir CSS seçicisinin ilk örneğini bulmak için
+`select_first` metodunu kullanabiliriz. `"title"` string'ini geçirerek belgede
+varsa ilk `<title>` öğesini alırız. Eşleşen hiçbir öğe bulunmayabileceği için
+`select_first` bir `Option<ElementRef>` döndürür. Son olarak, `Option` içinde
+öğe mevcutsa onunla çalışmamızı, yoksa hiçbir şey yapmamamızı sağlayan
+`Option::map` metodunu kullanırız. (Burada bir `match` ifadesi de
+kullanabilirdik ancak `map` daha deyimseldir.) `map` metoduna verdiğimiz
+fonksiyonun gövdesinde, `title` üzerinde `inner_html` çağırarak `String`
+türündeki içeriğini alırız. Her şey tamamlandığında elimizde bir
 `Option<String>` olur.
 
-Rust'ta `await` anahtar sözcüğünün, beklenen ifadenin _önüne_ değil _sonuna_
-geldiğine dikkat edin. Yani sonek biçimindedir. Bu, metot zincirlerini daha
-rahat yazabilmemizi sağlar. Nitekim 17-2 numaralı listedeki gibi `trpl::get`
-ve `text` çağrılarını tek zincirde de kullanabiliriz.
+Rust'ın `await` anahtar kelimesinin beklediğiniz ifadenin öncesine değil,
+_sonrasına_ geldiğine dikkat edin. Başka bir deyişle, bu bir _sonek (postfix)_
+anahtar kelimedir. Başka dillerde `async` kullandıysanız bu durum alışkın
+olduğunuzdan farklı gelebilir; ancak Rust'ta metot zincirleriyle çalışmayı çok
+daha keyifli hale getirir. Sonuç olarak, Liste 17-2'de gösterildiği gibi
+`sayfa_basligi` fonksiyonunun gövdesini `trpl::get` ve `text` fonksiyon
+çağrılarını aralarında `await` ile birbirine zincirleyecek şekilde
+değiştirebiliriz.
 
-<Listing number="17-2" file-name="src/main.rs" caption="`await` anahtar sözcüğüyle zincirleme çağrı yapmak">
+<Listing number="17-2" file-name="src/main.rs" caption="`await` anahtar kelimesiyle zincirleme çağrı yapma">
 
-```rust,ignore
+```rust
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-02/src/main.rs:chaining}}
 ```
 
 </Listing>
 
-Böylece ilk async fonksiyonumuzu yazmış olduk. Şimdi `main` içinde bunu
-çağırmadan önce, derleyicinin bu kodu nasıl gördüğüne kısaca bakalım.
+> Not: Rust'ta `await` anahtar kelimesinin `await foo()` yerine sonek olarak
+> `foo().await` biçiminde tasarlanmasının en önemli nedenlerinden biri, Bölüm
+> 9'da gördüğümüz hata yayma operatörü `?` ile kusursuz biçimde
+> birleşebilmesidir. Gerçek dünya kodlarında ağ ve dosya işlemleri çoğunlukla
+> `Result` döndüren future'lar üretir. Önek sözdizimi kullanılsaydı, iç içe
+> parantezler gerektiren `(await (await istek())?.metin())?` gibi okunması güç
+> ifadeler yazmak zorunda kalırdık; sonek `.await` sayesinde aynı akış soldan
+> sağa doğal okuma sırasıyla `istek().await?.metin().await?` şeklinde
+> parantezsiz zincirlenebilir.
 
-Rust, `async` ile işaretlenmiş bir _blok_ gördüğünde, onu `Future` trait'ini
-uygulayan benzersiz ve adsız bir veri türüne dönüştürür. `async` ile işaretli
-bir _fonksiyon_ gördüğünde ise, gövdesi bir async blok olan normal bir
-fonksiyona çevirir. Async fonksiyonun dönüş türü de derleyicinin o async blok
-için oluşturduğu adsız veri türüdür.
+Böylece ilk asenkron fonksiyonumuzu başarıyla yazmış olduk! Bu fonksiyonu
+çağırmak üzere `main` içine biraz kod eklemeden önce, ne yazdığımız ve bunun ne
+anlama geldiği hakkında biraz daha konuşalım.
 
-Bu yüzden `async fn` yazmak, aslında "dönüş türü future olan bir fonksiyon"
-yazmakla eşdeğerdir. Derleyici açısından 17-1'deki `async fn sayfa_basligi`
-aşağı yukarı şuna denk gelir:
+Rust, `async` anahtar kelimesiyle işaretlenmiş bir _blok_ gördüğünde onu
+`Future` trait'ini uygulayan benzersiz ve isimsiz bir veri türüne derler.
+`async` ile işaretlenmiş bir _fonksiyon_ gördüğünde ise onu, gövdesi asenkron
+bir blok olan asenkron olmayan bir fonksiyona derler. Bir asenkron fonksiyonun
+dönüş türü, derleyicinin bu asenkron blok için oluşturduğu isimsiz veri türünün
+türüdür.
 
-```rust,ignore
+Dolayısıyla `async fn` yazmak, dönüş türünün bir _future_'ını döndüren bir
+fonksiyon yazmakla eşdeğerdir. Derleyici açısından, Liste 17-1'deki `async fn
+sayfa_basligi` gibi bir fonksiyon tanımı kabaca şöyle tanımlanmış asenkron
+olmayan bir fonksiyona karşılık gelir:
+
+```rust
 # extern crate trpl; // required for mdbook test
 use std::future::Future;
 use trpl::Html;
@@ -136,20 +212,39 @@ fn sayfa_basligi(url: &str) -> impl Future<Output = Option<String>> {
 }
 ```
 
-Burada birkaç kritik nokta var:
+Dönüştürülmüş bu sürümün her bir parçasını adım adım inceleyelim:
 
-- Dönüşte, 10. bölümde gördüğümüz `impl Trait` sözdizimi kullanılıyor.
-- Dönen değer `Future` uygular ve `Output` türü `Option<String>` olur.
-- Orijinal fonksiyon gövdesindeki bütün kod, bir `async move` blok içine
-  sarılmıştır.
-- Blok ifadesi fonksiyonun gerçek dönüş değeridir.
+- Bölüm 10'daki [“Trait'leri Parametre Olarak Kullanma”][impl-trait]<!-- ignore -->
+  bölümünde ele aldığımız `impl Trait` sözdizimini kullanır.
+- Döndürülen değer, `Output` adlı ilişkili türe sahip `Future` trait'ini
+  uygular. `Output` türünün `Option<String>` olduğuna, yani `sayfa_basligi`
+  fonksiyonunun `async fn` sürümündeki orijinal dönüş türüyle birebir aynı
+  olduğuna dikkat edin.
+- Orijinal fonksiyonun gövdesinde çağrılan tüm kod bir `async move` bloğu içine
+  sarılmıştır. Blokların birer ifade (*expression*) olduğunu hatırlayın. Bu
+  bloğun tamamı fonksiyondan döndürülen ifadedir.
+- Bu asenkron blok, az önce açıklandığı gibi `Option<String>` türünde bir değer
+  üretir. Bu değer, dönüş türündeki `Output` türüyle eşleşir. Bu durum daha önce
+  gördüğünüz diğer bloklarla tamamen aynıdır.
+- Yeni fonksiyon gövdesi, `url` parametresini kullanma biçimi nedeniyle bir
+  `async move` bloğudur. (`async` ile `async move` arasındaki farkları bölümün
+  ilerleyen kısımlarında çok daha ayrıntılı ele alacağız.)
 
-### Bir Async Fonksiyonu Çalışma Zamanıyla Yürütmek
+Artık `sayfa_basligi` fonksiyonunu `main` içinde çağırabiliriz.
 
-İlk adım olarak tek bir sayfanın başlığını alalım. 17-3 numaralı liste bunu
-gösteriyor; ama bu hali henüz derlenmez.
+<!-- Old headings. Do not remove or links may break. -->
 
-<Listing number="17-3" file-name="src/main.rs" caption="Kullanıcının verdiği argümanla `sayfa_basligi` fonksiyonunu `main` içinden çağırmak">
+<a id="determining-a-single-pages-title"></a>
+<a id="executing-an-async-function-with-a-runtime"></a>
+<a id="bir-async-fonksiyonu-çalışma-zamanıyla-yürütmek"></a>
+<a id="bir-async-fonksiyonu-calisma-zamaniyla-yurutmek"></a>
+
+### Bir Async Fonksiyonu Çalışma Zamanıyla Yürütme
+
+Başlangıç olarak Liste 17-3'te gösterildiği gibi tek bir sayfanın başlığını
+alacağız. Ne yazık ki bu kod henüz derlenmez.
+
+<Listing number="17-3" file-name="src/main.rs" caption="Kullanıcının sağladığı bir argümanla `main` içinden `sayfa_basligi` fonksiyonunu çağırma">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-03/src/main.rs:main}}
@@ -157,14 +252,22 @@ gösteriyor; ama bu hali henüz derlenmez.
 
 </Listing>
 
-12. bölümde komut satırı argümanlarını alırken kullandığımız aynı deseni
-izliyoruz. Sonra URL'yi `sayfa_basligi` fonksiyonuna verip sonucu bekliyoruz.
-Sonuç `Option<String>` olduğu için, sayfanın başlığı olup olmamasına göre farklı
-mesajlar yazdırmak adına `match` kullanıyoruz.
+Bölüm 12'deki [“Komut Satırı Argümanlarını Kabul Etme”][cli-args]<!-- ignore -->
+bölümünde komut satırı argümanlarını almak için kullandığımız kalıbın aynısını
+izliyoruz. Ardından URL argümanını `sayfa_basligi` fonksiyonuna geçiriyor ve
+sonucu bekliyoruz. Future tarafından üretilen değer bir `Option<String>` olduğu
+için, sayfanın bir `<title>` öğesine sahip olup olmamasına göre farklı mesajlar
+yazdırmak üzere bir `match` ifadesi kullanıyoruz.
 
-Sorun şu: `await` anahtar sözcüğünü yalnızca async fonksiyonlarda ya da async
-bloklarda kullanabilirsiniz. Rust, özel `main` fonksiyonunu doğrudan `async`
-yapmanıza izin vermez.
+`await` anahtar kelimesini kullanabileceğimiz tek yer asenkron fonksiyonlar veya
+bloklardır ve Rust özel `main` fonksiyonunu `async` olarak işaretlememize izin
+vermez.
+
+<!-- manual-regeneration
+cd listings/ch17-async-await/listing-17-03
+cargo build
+copy just the compiler error
+-->
 
 ```text
 error[E0752]: `main` function is not allowed to be `async`
@@ -174,111 +277,198 @@ error[E0752]: `main` function is not allowed to be `async`
   | ^^^^^^^^^^^^^^^ `main` function is not allowed to be `async`
 ```
 
-`main`in `async` olamamasının sebebi, async kodun bir _çalışma zamanına
-(runtime)_ ihtiyaç duymasıdır. Çalışma zamanı, eşzamansız kodun yürütülme
-ayrıntılarını yöneten crate'tir. Bir programın `main` fonksiyonu çalışma
-zamanını _başlatabilir_; ama onun kendisi çalışma zamanı değildir. Async kod
-çalıştıran her Rust programı, future'ları yürütecek bir çalışma zamanı kurulan
-en az bir noktaya sahiptir.
+`main` fonksiyonunun `async` olarak işaretlenememesinin nedeni, asenkron kodun
+bir _çalışma zamanına (runtime)_ —yani asenkron kodun yürütülme ayrıntılarını
+yöneten bir Rust crate'ine— ihtiyaç duymasıdır. Bir programın `main` fonksiyonu
+bir çalışma zamanını _başlatabilir_, ancak _kendisi_ bir çalışma zamanı
+değildir. (Bunun neden böyle olduğunu birazdan daha ayrıntılı göreceğiz.)
+Asenkron kod yürüten her Rust programında, future'ları çalıştıran bir çalışma
+zamanının kurulduğu en az bir yer bulunur.
 
-Async destekleyen birçok dil çalışma zamanını dilin içine gömer; Rust bunu
-yapmaz. Bunun yerine, hedef kullanım durumuna göre farklı ödünleşimler yapan
-çeşitli async çalışma zamanları vardır. Yüksek trafikli, çok çekirdekli bir
-sunucunun ihtiyaçlarıyla tek çekirdekli küçük bir mikrokontrolcünün ihtiyaçları
-aynı değildir.
+Asenkron programlamayı destekleyen çoğu dil bir çalışma zamanını dilin içinde
+yerleşik olarak sunar, ancak Rust bunu yapmaz. Bunun yerine, her biri
+hedeflediği kullanım senaryosuna uygun farklı ödünleşimler yapan pek çok farklı
+asenkron çalışma zamanı mevcuttur. Örneğin çok sayıda CPU çekirdeğine ve büyük
+miktarda RAM'e sahip yüksek verimli bir web sunucusunun ihtiyaçları; tek
+çekirdekli, az miktarda RAM'e sahip ve öbek (*heap*) ayırma yeteneği bulunmayan
+bir mikrodenetleyicinin ihtiyaçlarından çok farklıdır. Bu çalışma zamanlarını
+sağlayan crate'ler çoğunlukla dosya veya ağ G/Ç (*I/O*) işlemleri gibi yaygın
+işlevlerin asenkron sürümlerini de beraberinde sunar.
 
-Bu bölümde `trpl` crate'inden `block_on` fonksiyonunu kullanacağız. Bu
-fonksiyon, bir future alır ve o future tamamlanana kadar mevcut iş parçacığını
-bekletir. Arka planda `tokio` kullanarak bir çalışma zamanı kurar ve verdiğiniz
-future'ı çalıştırır. Future bitince de onun ürettiği değeri geri döndürür.
+Burada ve bölümün geri kalanı boyunca, `trpl` crate'indeki `block_on`
+fonksiyonunu kullanacağız; bu fonksiyon argüman olarak bir future alır ve bu
+future tamamlanana kadar mevcut thread'i bloklar. Perde arkasında `block_on`
+çağrısı, kendisine geçirilen future'ı çalıştırmak için kullanılan `tokio`
+crate'ini temel alarak bir çalışma zamanı kurar (`trpl` crate'inin `block_on`
+davranışı, diğer çalışma zamanı crate'lerinin `block_on` fonksiyonlarına
+benzer). Future tamamlandığında `block_on`, future hangi değeri ürettiyse onu
+döndürür.
 
-İsterseniz `sayfa_basligi`'ndan dönen future'ı doğrudan `block_on`a verip sonuç
-üzerinde `match` yapabilirsiniz. Ama çoğu gerçek async kodda tek bir async
-çağrıdan fazlası olduğu için, biz 17-4 numaralı listedeki gibi bir `async` blok
-geçip `sayfa_basligi` çağrısını onun içinde `await` edeceğiz.
+`sayfa_basligi` tarafından döndürülen future'ı doğrudan `block_on` fonksiyonuna
+geçirebilir ve tamamlandığında Liste 17-3'te yapmaya çalıştığımız gibi ortaya
+çıkan `Option<String>` değeri üzerinde `match` kullanabilirdik. Ancak bölümdeki
+örneklerin çoğunda (ve gerçek dünyadaki çoğu asenkron kodda) tek bir asenkron
+fonksiyon çağrısından daha fazlasını yapacağız; bu yüzden bunun yerine Liste
+17-4'teki gibi bir `async` blok geçirecek ve `sayfa_basligi` çağrısının sonucunu
+açıkça bekleyeceğiz.
 
-<Listing number="17-4" caption="`trpl::block_on` ile bir async bloğu beklemek" file-name="src/main.rs">
+<Listing number="17-4" caption="`trpl::block_on` ile bir asenkron bloğu bekleme" file-name="src/main.rs">
 
-```rust,ignore
+<!-- should_panic,noplayground because mdbook test does not pass args -->
+
+```rust,should_panic,noplayground
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-04/src/main.rs:run}}
 ```
 
 </Listing>
 
-Bu kodu çalıştırdığımızda başta beklediğimiz davranışı alırız:
+Bu kodu çalıştırdığımızda başlangıçta beklediğimiz davranışı elde ederiz:
+
+<!-- manual-regeneration
+cd listings/ch17-async-await/listing-17-04
+cargo build # skip all the build noise
+cargo run -- "https://www.rust-lang.org"
+# copy the output here
+-->
 
 ```console
 $ cargo run -- "https://www.rust-lang.org"
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
      Running `target/debug/asenkron_bekleme 'https://www.rust-lang.org'`
-https://www.rust-lang.org için başlık Rust Programming Language idi
+https://www.rust-lang.org için başlık
+            Rust Programming Language idi
 ```
 
-Her `await` noktası, denetimin çalışma zamanına geri verildiği yerdir.
-Çalışma zamanının daha sonra dönüp devam edebilmesi için, derleyici async blok
-içindeki durumu görünmez bir durum makinesi olarak saklar. Sanki aşağıdaki gibi
-bir enum yazmışsınız gibi düşünebilirsiniz:
+Oh be — sonunda çalışan bir asenkron kodumuz oldu! Ancak iki siteyi birbiriyle
+yarıştıracak kodu eklemeden önce, dikkatimizi kısaca future'ların nasıl
+çalıştığına çevirelim.
 
-```rust,ignore
+Her _bekleme noktası (await point)_ —yani kodun `await` anahtar kelimesini
+kullandığı her yer— denetimin çalışma zamanına geri devredildiği bir noktayı
+temsil eder. Bunun çalışabilmesi için Rust'ın asenkron blokta yer alan durumu
+takip etmesi gerekir; böylece çalışma zamanı başka bir işi başlatabilir ve ilk
+işi tekrar ilerletmeyi denemeye hazır olduğunda geri dönebilir. Bu yapı, her
+bekleme noktasında mevcut durumu kaydetmek için sanki aşağıdaki gibi bir enum
+yazmışsınız gibi çalışan görünmez bir durum makinesidir (*state machine*):
+
+```rust
 {{#rustdoc_include ../listings/ch17-async-await/no-listing-state-machine/src/lib.rs:enum}}
 ```
 
-Bu durum makinesini elle yazmak yorucu ve hataya açık olurdu. Neyse ki Rust
-derleyicisi async kod için gereken veri yapılarını otomatik olarak üretip
-yönetir. Ödünç alma ve sahiplik kuralları da aynı şekilde geçerli olmaya devam
-eder.
+Ne var ki her bir durum arasındaki geçiş kodunu elle yazmak, özellikle de daha
+sonra koda yeni işlevler ve daha fazla durum eklemeniz gerektiğinde hem yorucu
+hem de hataya açık olurdu. Neyse ki Rust derleyicisi asenkron kod için durum
+makinesi veri yapılarını otomatik olarak oluşturur ve yönetir. Veri yapıları
+etrafındaki normal ödünç alma ve sahiplik kurallarının tamamı burada da
+geçerliliğini korur ve sevindirici biçimde derleyici bunları bizim için kontrol
+edip yararlı hata mesajları sunar. Bölümün ilerleyen kısımlarında bunlardan
+birkaçının üzerinden geçeceğiz.
 
-Nihayetinde bu durum makinesini bir şeyin yürütmesi gerekir; işte o şey çalışma
-zamanıdır. Bu nedenle async dünyasında sık sık _executor_ terimini de
-görürsünüz: executor, çalışma zamanının async kodu fiilen yürüten parçasıdır.
+Nihayetinde bir şeyin bu durum makinesini yürütmesi gerekir ve o şey bir çalışma
+zamanıdır. (Çalışma zamanlarını araştırırken _yürütücülerden (executors)_ söz
+edildiğini görmenizin nedeni budur: yürütücü, bir çalışma zamanının asenkron
+kodu yürütmekten sorumlu parçasıdır.)
 
-Artık 17-3'te neden doğrudan `async fn main` yazamadığımızı daha net görebiliriz.
-`main` async olsaydı, ondan dönen future'ın durum makinesini de başka bir şeyin
-yönetmesi gerekirdi. Oysa programın başlangıç noktası zaten `main`dir. Bu
-yüzden `main` içinde `trpl::block_on` çağırıp çalışma zamanını elle kurduk.
+Artık Liste 17-3'te derleyicinin `main` fonksiyonunun kendisini asenkron bir
+fonksiyon yapmamızı neden engellediğini görebilirsiniz. Eğer `main` asenkron bir
+fonksiyon olsaydı, `main`'in döndürdüğü future her ne ise onun durum makinesini
+başka bir şeyin yönetmesi gerekirdi; oysa `main` programın başlangıç noktasıdır!
+Bunun yerine, bir çalışma zamanı kurmak ve `async` blok tarafından döndürülen
+future'ı tamamlanana kadar çalıştırmak için `main` içinde `trpl::block_on`
+fonksiyonunu çağırdık.
 
-> Not: Bazı çalışma zamanları, doğrudan async `main` yazmanızı sağlayan
-> makrolar sunar. Bu makrolar perde arkasında bizim 17-4'te elle yaptığımızı
-> yapar: normal bir `main` oluşturur, içinde çalışma zamanını başlatır ve
-> future'ı tamamlanana kadar yürütür.
+> Not: Bazı çalışma zamanları, bir async `main` fonksiyonu _yazabilmeniz_ için
+> makrolar sunar. Bu makrolar `async fn main() { ... }` tanımını normal bir `fn
+> main` fonksiyonuna yeniden yazar ve Liste 17-4'te elle yaptığımız şeyin
+> aynısını gerçekleştirir: bir future'ı tıpkı `trpl::block_on` gibi tamamlanana
+> kadar çalıştıran bir fonksiyon çağırır. Örneğin gerçek dünya projelerinde
+> sıkça karşılaşacağınız `#[tokio::main]` öznitelik makrosu, yazdığınız `async
+> fn main()` fonksiyonunu derleme zamanında kabaca `fn main() {
+> tokio::runtime::Runtime::new().unwrap().block_on(async { ... }) }` yapısına
+> dönüştürür.
 
-### İki URL'yi Eşzamanlı Olarak Yarıştırmak
+Şimdi bu parçaları bir araya getirelim ve eşzamanlı kodu nasıl yazabileceğimizi
+görelim.
 
-Şimdi `sayfa_basligi` fonksiyonunu komut satırından aldığımız iki farklı URL ile
-çağırıp hangisinin önce döndüğünü görelim. 17-5 numaralı liste bunu yapar.
+<!-- Old headings. Do not remove or links may break. -->
 
-<Listing number="17-5" caption="İki URL için `sayfa_basligi` çağırıp hangisinin önce döndüğünü görmek" file-name="src/main.rs">
+<a id="racing-our-two-urls-against-each-other"></a>
+<a id="racing-two-urls-against-each-other-concurrently"></a>
+<a id="iki-urlyi-eşzamanlı-olarak-yarıştırmak"></a>
+<a id="iki-urlyi-eszamanli-olarak-yaristirmak"></a>
 
-```rust,ignore
+### İki URL'yi Eşzamanlı Olarak Birbiriyle Yarıştırma
+
+Liste 17-5'te komut satırından geçirilen iki farklı URL ile `sayfa_basligi`
+fonksiyonunu çağırıyor ve hangi future önce biterse onu seçerek ikisini
+yarıştırıyoruz.
+
+<Listing number="17-5" caption="Hangisinin önce döneceğini görmek için iki URL adına `sayfa_basligi` çağırma" file-name="src/main.rs">
+
+<!-- should_panic,noplayground because mdbook does not pass args -->
+
+```rust,should_panic,noplayground
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-05/src/main.rs:all}}
 ```
 
 </Listing>
 
-Önce iki URL için ayrı ayrı `sayfa_basligi` çağırıyor ve dönen future'ları
-`baslik_gelecegi_1` ile `baslik_gelecegi_2` içinde saklıyoruz. Bunlar henüz
-hiçbir şey yapmaz; çünkü future'lar tembeldir ve onları daha beklemedik.
-Sonra bunları `trpl::select` fonksiyonuna veriyoruz. `select`, kendisine verilen
-future'lardan hangisi önce tamamlansa ona göre bir değer döndürür.
+Kullanıcının verdiği URL'lerin her biri için `sayfa_basligi` fonksiyonunu
+çağırarak başlıyoruz. Ortaya çıkan future'ları `baslik_gelecegi_1` ve
+`baslik_gelecegi_2` olarak kaydediyoruz. Unutmayın, bunlar henüz hiçbir şey
+yapmaz; çünkü future'lar tembeldir ve onları henüz `await` ile beklemedik.
+Ardından bu future'ları, kendisine geçirilen future'lardan hangisinin önce
+tamamlandığını belirten bir değer döndüren `trpl::select` fonksiyonuna
+aktarıyoruz.
 
-`trpl::select` sonucunda `Either::Left` ya da `Either::Right` gelir. Hangi taraf
-döndüyse, ona karşılık gelen URL ve başlık bilgisini alırız. Böylece "ilk önce
-hangi URL döndü?" sorusuna cevap verip, eğer başlık varsa onu da yazdırabiliriz.
+> Not: Perde arkasında `trpl::select`, `futures` crate'inde tanımlanan daha
+> genel bir `select` fonksiyonu üzerine inşa edilmiştir. `futures` crate'inin
+> `select` fonksiyonu `trpl::select` fonksiyonunun yapamadığı pek çok şeyi
+> yapabilir, ancak şimdilik atlayabileceğimiz bazı ek karmaşıklıklara da
+> sahiptir.
 
-Bu örnek bize iki önemli şeyi gösterir:
+Her iki future da geçerli bir biçimde “kazanabileceği” için burada bir `Result`
+döndürmek mantıklı olmaz. Bunun yerine `trpl::select`, daha önce görmediğimiz
+bir tür olan `trpl::Either` türünü döndürür. `Either` türü, iki durumu olması
+bakımından `Result` türüne biraz benzer. Ancak `Result`'tan farklı olarak
+`Either` içinde yerleşik bir başarı veya başarısızlık kavramı yoktur. Bunun
+yerine “biri ya da diğeri” anlamını ifade etmek üzere `Left` (*sol*) ve `Right`
+(*sağ*) varyantlarını kullanır:
 
-- Future'lar ancak beklendiklerinde gerçekten yürür.
-- Birden fazla future'ı aynı anda başlatmak için onları teker teker `await`
-  etmek yerine, `select` veya `join` gibi yardımcılarla birlikte yürütmek
-  gerekir.
+```rust
+enum Either<A, B> {
+    Left(A),
+    Right(B),
+}
+```
 
-Böylece ilk gerçek async programımızı da tamamlamış olduk. Sonraki bölümde,
-aynı yaklaşımı daha genel eşzamanlılık problemlerine uygulayacağız.
+`select` fonksiyonu, ilk argüman kazanırsa o future'ın çıktısıyla birlikte
+`Left` varyantını, ikinci future argümanı kazanırsa da _onun_ çıktısıyla
+birlikte `Right` varyantını döndürür. Bu sıralama, fonksiyonu çağırırken
+argümanların görünme sırasıyla eşleşir: ilk argüman ikinci argümanın
+solundadır.
 
-[futures-crate]: https://docs.rs/futures/latest/futures/
-[tokio]: https://tokio.rs
-[crate-source]: https://github.com/rust-lang/book/tree/main/packages/trpl
-[iterators-lazy]: ch13-02-iteratorler.html#yineleyiciler-iterators-ile-bir-dizi-ögeyi-item-işlemek
-[thread-spawn]: ch16-01-threadler.html#spawn-ile-yeni-bir-iş-parçacığı-oluşturmak
-[impl-trait]: ch10-02-traitler.html#traitleri-parametre-olarak-kullanmak
+Ayrıca `sayfa_basligi` fonksiyonunu, kendisine geçirilen aynı URL'yi de
+döndürecek şekilde güncelliyoruz. Bu sayede, ilk dönen sayfanın çözebileceğimiz
+bir `<title>` öğesi olmasa bile anlamlı bir mesaj yazdırabiliriz. Bu bilgi de
+elimizde olduğuna göre, hem hangi URL'nin önce tamamlandığını hem de varsa o
+URL'deki web sayfasının `<title>` metninin ne olduğunu gösterecek şekilde
+`println!` çıktımızı güncelleyerek programı tamamlıyoruz.
+
+Artık çalışan küçük bir web kazıyıcı geliştirdiniz! Birkaç URL seçin ve komut
+satırı aracını çalıştırın. Bazı sitelerin diğerlerinden tutarlı biçimde daha
+hızlı olduğunu, bazı durumlarda ise daha hızlı olan sitenin çalıştırmadan
+çalıştırmaya değiştiğini keşfedebilirsiniz. Daha da önemlisi, future'larla
+çalışmanın temellerini öğrendiniz; artık `async` ile neler yapabileceğimizin
+daha derinlerine inebiliriz.
+
+[impl-trait]: ch10-02-traitler.html#traitleri-parametre-olarak-kullanma
+[iterators-lazy]: ch13-02-iteratorler.html
+[thread-spawn]: ch16-01-threadler.html#spawn-ile-yeni-bir-thread-oluşturma
 [cli-args]: ch12-01-komut-satiri-argumanlari.html
+
+<!-- TODO: map source link version to version of Rust? -->
+
+[crate-source]: https://github.com/rust-lang/book/tree/main/packages/trpl
+[futures-crate]: https://crates.io/crates/futures
+[tokio]: https://tokio.rs

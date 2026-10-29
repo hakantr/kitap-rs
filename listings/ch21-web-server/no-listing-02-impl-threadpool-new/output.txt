@@ -1,0 +1,10 @@
+$ cargo check
+    Checking merhaba v0.1.0 (file:///projects/merhaba)
+error[E0599]: no method named `calistir` found for struct `IsParcacigiHavuzu` in the current scope
+  --> src/main.rs:17:15
+   |
+17 |         havuz.calistir(|| {
+   |         ------^^^^^^^^ method not found in `IsParcacigiHavuzu`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `merhaba` (bin "merhaba") due to 1 previous error

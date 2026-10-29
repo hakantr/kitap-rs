@@ -1,9 +1,9 @@
 $ cargo run
    Compiling guvensiz-ornek v0.1.0 (file:///projects/guvensiz-ornek)
 error[E0133]: call to unsafe function `dangerous` is unsafe and requires unsafe block
- --> src/main.rs:5:5
+ --> src/main.rs:4:5
   |
-5 |     dangerous();
+4 |     dangerous();
   |     ^^^^^^^^^^^ call to unsafe function
   |
   = note: consult the function's documentation for information on how to avoid undefined behavior

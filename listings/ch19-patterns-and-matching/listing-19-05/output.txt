@@ -1,3 +1,7 @@
+$ cargo run
+   Compiling desenler v0.1.0 (file:///projects/desenler)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.52s
+     Running `target/debug/desenler`
 a, 0. indekste
 b, 1. indekste
 c, 2. indekste

@@ -1,8 +1,12 @@
+<!-- Old headings. Do not remove or links may break. -->
+<a id="functions"></a>
+<a id="how-functions-work"></a>
+
 ## Fonksiyonlar
 
-Fonksiyonlar Rust kodunda çok yaygındır. Dildeki en önemli fonksiyonlardan birini zaten gördünüz: birçok programın giriş noktası olan `main` fonksiyonu. Ayrıca, yeni fonksiyonlar bildirmenizi sağlayan `fn` anahtar kelimesini de gördünüz.
+Fonksiyonlar Rust kodunda son derece yaygındır. Dildeki en önemli fonksiyonlardan birini zaten gördünüz: pek çok programın giriş noktası olan `main` fonksiyonu. Ayrıca yeni fonksiyonlar bildirmenizi sağlayan `fn` anahtar kelimesiyle de karşılaştınız.
 
-Rust kodu, fonksiyon ve değişken isimleri için geleneksel stil olarak _snake_case_ (yılan stili) kullanır; bu stilde tüm harfler küçüktür ve kelimeler alt çizgiyle ayrılır. İşte örnek bir fonksiyon tanımı içeren bir program:
+Rust kodunda fonksiyon ve değişken adları için geleneksel yazım biçimi olarak tüm harflerin küçük yazıldığı ve kelimelerin alt çizgiyle (`_`) ayrıldığı _snake case_ (`yilan_bicimi`) stili kullanılır. İşte örnek bir fonksiyon tanımı içeren bir program:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -10,23 +14,26 @@ Rust kodu, fonksiyon ve değişken isimleri için geleneksel stil olarak _snake_
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-16-functions/src/main.rs}}
 ```
 
-Rust'ta bir fonksiyonu, `fn` ifadesini, ardından fonksiyon adını ve bir çift parantezi yazarak tanımlarız. Süslü parantezler, derleyiciye fonksiyon gövdesinin nerede başlayıp nerede bittiğini söyler.
+Rust'ta bir fonksiyonu `fn` anahtar kelimesini, ardından fonksiyon adını ve bir çift parantezi yazarak tanımlarız. Süslü parantezler (`{}`), derleyiciye fonksiyon gövdesinin nerede başlayıp nerede bittiğini bildirir.
 
-Tanımladığımız herhangi bir fonksiyonu, adını ve ardından bir çift parantez yazarak çağırabiliriz. `baska_bir_fonksiyon` programda tanımlandığı için `main` fonksiyonunun içinden çağrılabilir. `baska_bir_fonksiyon`'u kaynak kodunda `main` fonksiyonundan _sonra_ tanımladığımıza dikkat edin; ondan önce de tanımlayabilirdik. Rust, fonksiyonlarınızı nerede tanımladığınızla ilgilenmez, yalnızca çağırıcı tarafından görülebilen bir kapsamda bir yerlerde tanımlanmış olmalarına bakar.
+Tanımladığımız herhangi bir fonksiyonu, adını ve ardından bir çift parantez yazarak çağırabiliriz. `baska_bir_fonksiyon` programda tanımlı olduğu için `main` fonksiyonunun içinden çağrılabilir. Kaynak kodda `baska_bir_fonksiyon` fonksiyonunu `main` fonksiyonundan _sonra_ tanımladığımıza dikkat edin; ondan önce de tanımlayabilirdik. Rust, fonksiyonlarınızı dosyanın neresinde tanımladığınızla ilgilenmez; yalnızca çağıran kodun görebileceği bir kapsam (*scope*) içinde tanımlanmış olmaları yeterlidir.
 
-Fonksiyonları daha fazla keşfetmek için _fonksiyonlar_ adında yeni bir ikili proje başlatalım. `baska_bir_fonksiyon` örneğini _src/main.rs_ dosyasına yerleştirin ve çalıştırın. Aşağıdaki çıktıyı görmelisiniz:
+Fonksiyonları daha yakından incelemek için _fonksiyonlar_ adında yeni bir ikili (*binary*) proje başlatalım. `baska_bir_fonksiyon` örneğini _src/main.rs_ dosyasına yerleştirip çalıştırdığınızda aşağıdaki çıktıyı görmelisiniz:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-16-functions/output.txt}}
 ```
 
-Satırlar, `main` fonksiyonunda göründükleri sıraya göre çalıştırılır. Önce "Merhaba, dünya!" mesajı yazdırılır ve ardından `baska_bir_fonksiyon` çağrılır ve onun mesajı yazdırılır.
+Satırlar, `main` fonksiyonunda yer aldıkları sırayla çalıştırılır. Önce `"Merhaba, dünya!"` mesajı yazdırılır, ardından `baska_bir_fonksiyon` çağrılır ve kendi mesajı ekrana yazdırılır.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="parameters"></a>
 
 ### Parametreler
 
-Fonksiyonları, bir fonksiyonun imzasının bir parçası olan özel değişkenler olan _parametreleri_ olacak şekilde tanımlayabiliriz. Bir fonksiyonun parametreleri olduğunda, o parametreler için fonksiyona somut (concrete) değerler sağlayabilirsiniz. Teknik olarak, somut değerlere _argümanlar_ denir, ancak günlük konuşmada insanlar _parametre_ ve _argüman_ kelimelerini bir fonksiyonun tanımındaki değişkenler veya bir fonksiyonu çağırdığınızda iletilen somut değerler için birbirinin yerine kullanma eğilimindedir.
+Fonksiyonları, fonksiyon imzasının (*signature*) bir parçası olan özel değişkenlere, yani _parametrelere (parameters)_ sahip olacak şekilde tanımlayabiliriz. Bir fonksiyonun parametreleri olduğunda, bu parametreler için fonksiyona somut değerler iletebilirsiniz. Teknik olarak bu somut değerlere _argüman (argument)_ denir; ancak günlük kullanımda geliştiriciler hem fonksiyon tanımındaki değişkenler hem de fonksiyon çağrılırken iletilen somut değerler için _parametre_ ve _argüman_ kelimelerini sıklıkla birbirinin yerine kullanır.
 
-`baska_bir_fonksiyon`'un bu versiyonunda bir parametre ekliyoruz:
+`baska_bir_fonksiyon` fonksiyonunun bu sürümünde bir parametre ekliyoruz:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -40,11 +47,13 @@ Bu programı çalıştırmayı deneyin; aşağıdaki çıktıyı almalısınız:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/output.txt}}
 ```
 
-`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır. `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon`'a `5` değerini verdiğimizde, `println!` makrosu `5`'i, biçim dizisinde (format string) `x` içeren süslü parantez çiftinin bulunduğu yere koyar.
+`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır ve `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon` fonksiyonuna `5` değerini ilettiğimizde, `println!` makrosu biçim dizgesinde (*format string*) içinde `x` bulunan süslü parantez çiftinin yerine `5` değerini koyar.
 
-Fonksiyon imzalarında, her parametrenin türünü _mutlaka_ bildirmelisiniz. Bu, Rust'ın tasarımında alınmış bilinçli bir karardır: Fonksiyon tanımlarında tür bildirimi gerektirmek, derleyicinin kodun başka bir yerinde ne tür bir veri demek istediğinizi anlamak için bu bildirimleri kullanmanıza neredeyse hiç ihtiyaç duymayacağı anlamına gelir. Derleyici ayrıca, fonksiyonun hangi türleri beklediğini bilirse daha yararlı hata mesajları da verebilir.
+Fonksiyon imzalarında her parametrenin türünü _mutlaka_ bildirmelisiniz. Bu, Rust'ın tasarımında bilinçli olarak alınmış bir karardır: Fonksiyon tanımlarında tür bildirimini zorunlu kılmak, derleyicinin kodun diğer kısımlarında hangi türü kastettiğinizi anlamak için sizden neredeyse hiçbir zaman tür bildirimi istememesi anlamına gelir. Ayrıca derleyici, fonksiyonun hangi türleri beklediğini bildiğinde çok daha açıklayıcı hata mesajları üretebilir.
 
-Birden fazla parametre tanımlarken, parametre bildirimlerini şu şekilde virgüllerle ayırın:
+> Not: Bir fonksiyonun `fn` anahtar kelimesi, adı, parametre listesi (adları ve türleri) ile varsa dönüş türünden (`-> Tür`) oluşan başlık kısmına **fonksiyon imzası** denir. Rust derleyicisi fonksiyon gövdelerinin içinde güçlü bir tür çıkarımı (*type inference*) yaparken fonksiyon sınırlarında açık tür bildirimi ister. Böylece her fonksiyon imzası kendi başına okunabilen net bir sözleşme görevi görür; bir fonksiyonun gövdesinde yapılan değişiklikler imzayı sessizce değiştirip çağıran kodları beklenmedik biçimde bozamaz.
+
+Birden fazla parametre tanımlarken parametre bildirimlerini aşağıdaki gibi virgülle ayırın:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -52,28 +61,32 @@ Birden fazla parametre tanımlarken, parametre bildirimlerini şu şekilde virg�
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/src/main.rs}}
 ```
 
-Bu örnek, iki parametreye sahip `etiketli_olcum_yazdir` adında bir fonksiyon oluşturur. İlk parametre `deger` olarak adlandırılır ve bir `i32`'dir. İkincisi `birim_etiketi` (unit_label) olarak adlandırılır ve `char` türündedir. Fonksiyon daha sonra hem `deger` hem de `birim_etiketi`'ni içeren bir metin yazdırır.
+Bu örnek, iki parametre alan `etiketli_olcum_yazdir` adında bir fonksiyon oluşturur. İlk parametre `deger` adındadır ve `i32` türündedir. İkinci parametre ise `birim_etiketi` adındadır ve `char` türündedir. Fonksiyon daha sonra hem `deger` hem de `birim_etiketi` değerlerini içeren bir metin yazdırır.
 
-Hadi bu kodu çalıştırmayı deneyelim. _fonksiyonlar_ projenizin _src/main.rs_ dosyasında bulunan mevcut programı yukarıdaki örnekle değiştirin ve `cargo run` komutunu kullanarak çalıştırın:
+Gelin bu kodu çalıştırmayı deneyelim. _fonksiyonlar_ projenizin _src/main.rs_ dosyasındaki mevcut programı yukarıdaki örnekle değiştirin ve `cargo run` komutuyla çalıştırın:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/output.txt}}
 ```
 
-Fonksiyonu `deger` için `5` ve `birim_etiketi` için `'h'` ile çağırdığımız için, program çıktısı bu değerleri içerir.
+Fonksiyonu `deger` için `5` ve `birim_etiketi` için `'h'` değerleriyle çağırdığımızdan program çıktısı bu değerleri içerir.
 
-### İfadeler (Statements) ve İbareler (Expressions)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="statements-and-expressions"></a>
+<a id="ifadeler-statements-ve-ibareler-expressions"></a>
 
-Fonksiyon gövdeleri, isteğe bağlı olarak bir ibare ile biten bir dizi ifadeden (statements) oluşur. Şimdiye kadar ele aldığımız fonksiyonlar bitirici bir ibare (ending expression) içermiyordu, ancak bir ifadenin bir parçası olarak bir ibare gördünüz. Rust ibare tabanlı bir dil olduğu için, bu anlaşılması gereken önemli bir ayrımdır. Diğer dillerin aynı ayrımları yoktur, bu yüzden ifadelerin ve ibarelerin ne olduğuna ve farklılıklarının fonksiyonların gövdelerini nasıl etkilediğine bir bakalım.
+### Deyimler ve İfadeler
 
-- _İfadeler_ (Statements), bir eylem gerçekleştiren ancak bir değer döndürmeyen talimatlardır.
-- _İbareler_ (Expressions) ise bir değer üretecek şekilde hesaplanan kod parçalarıdır.
+Fonksiyon gövdeleri, isteğe bağlı olarak sonunda bir _ifade (expression)_ bulunan bir dizi _deyimden (statement)_ oluşur. Şimdiye kadar ele aldığımız fonksiyonların sonunda bir ifade yer almıyordu; ancak bir deyimin parçası olarak ifadelerle karşılaştınız. Rust ifade tabanlı (*expression-based*) bir dil olduğundan bu ayrımı anlamak son derece önemlidir. Diğer pek çok dilde aynı ayrım bulunmaz; bu nedenle deyimlerin ve ifadelerin ne olduğuna ve aralarındaki farkların fonksiyon gövdelerini nasıl etkilediğine yakından bakalım.
 
-Bazı örneklere bakalım.
+- _Deyimler_, belirli bir eylemi gerçekleştiren ve değer döndürmeyen komutlardır.
+- _İfadeler_, değerlendirilerek bir sonuç değeri üreten kod parçalarıdır.
 
-Aslında daha önce de ifadeler (statements) ve ibareler (expressions) kullandık. Bir değişken oluşturmak ve `let` anahtar kelimesiyle ona bir değer atamak bir ifadedir. Liste 3-1'de, `let y = 6;` bir ifadedir.
+Gelin bazı örneklere bakalım.
 
-<Listing number="3-1" file-name="src/main.rs" caption="Tek bir ifade (statement) içeren bir `main` fonksiyonu bildirimi">
+Aslında deyimleri ve ifadeleri daha önce de kullandık. `let` anahtar kelimesiyle bir değişken oluşturup ona değer atamak bir deyimdir. Liste 3-1'de `let y = 6;` bir deyimdir.
+
+<Listing number="3-1" file-name="src/main.rs" caption="Tek bir deyim içeren `main` fonksiyonu bildirimi">
 
 ```rust
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/listing-03-01/src/main.rs}}
@@ -81,9 +94,9 @@ Aslında daha önce de ifadeler (statements) ve ibareler (expressions) kullandı
 
 </Listing>
 
-Fonksiyon tanımları da ifadelerdir; önceki örneğin tamamı başlı başına bir ifadedir. (Kısaca göreceğimiz gibi, bir fonksiyon çağırmak bir ifade (statement) değildir.)
+Fonksiyon tanımları da birer deyimdir; yukarıdaki örneğin tamamı başlı başına bir deyimdir. (Ancak birazdan göreceğimiz gibi bir fonksiyonu _çağırmak_ deyim değildir.)
 
-İfadeler (statements) değer döndürmezler. Bu nedenle, aşağıdaki kodun yapmaya çalıştığı gibi bir `let` ifadesini başka bir değişkene atayamazsınız; bir hata alırsınız:
+Deyimler değer döndürmez. Bu nedenle aşağıdaki kodun yapmaya çalıştığı gibi bir `let` deyimini başka bir değişkene atayamazsınız; derleme hatası alırsınız:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -91,15 +104,15 @@ Fonksiyon tanımları da ifadelerdir; önceki örneğin tamamı başlı başına
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/src/main.rs}}
 ```
 
-Bu programı çalıştırdığınızda alacağınız hata şu şekilde görünecektir:
+Bu programı çalıştırdığınızda alacağınız hata şu şekilde görünür:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/output.txt}}
 ```
 
-`let y = 6` ifadesi bir değer döndürmez, bu yüzden `x`'in bağlanacağı bir şey yoktur. Bu durum, atamanın (assignment) atamanın kendi değerini döndürdüğü C ve Ruby gibi diğer dillerde olanlardan farklıdır. Bu dillerde, `x = y = 6` yazarak hem `x` hem de `y`'nin `6` değerine sahip olmasını sağlayabilirsiniz; Rust'ta ise durum böyle değildir.
+`let y = 6` deyimi bir değer döndürmediğinden `x` değişkeninin bağlanabileceği herhangi bir değer yoktur (derleyici de `expected expression, found 'let' statement` yani *"ifade bekleniyordu, `let` deyimi bulundu"* diyerek tam olarak bu noktaya işaret eder). Bu davranış, atama işleminin atanan değeri döndürdüğü C ve Ruby gibi dillerden farklıdır. O dillerde `x = y = 6` yazarak hem `x` hem de `y` değişkenlerinin `6` değerini almasını sağlayabilirsiniz; Rust'ta ise bu geçerli değildir.
 
-İbareler (Expressions) ise bir değere dönüşür ve Rust'ta yazacağınız kodun büyük bir bölümünü oluştururlar. Örneğin `5 + 6` gibi, `11` değerini üreten matematiksel bir işlemi (ibareyi) ele alalım. İbareler, ifadelerin parçası olabilir: Liste 3-1'de, `let y = 6;` ifadesindeki `6`, `6` değerini üreten bir ibaredir. Bir fonksiyonu çağırmak bir ibaredir. Bir makroyu çağırmak bir ibaredir. Süslü parantezlerle oluşturulan yeni bir kapsam bloğu da bir ibaredir, örneğin:
+İfadeler değerlendirilerek bir değer üretir ve Rust'ta yazacağınız kodun geri kalanının büyük çoğunluğunu oluşturur. Örneğin `5 + 6` gibi matematiksel bir işlemi düşünün; bu işlem değerlendirildiğinde `11` değerini üreten bir ifadedir. İfadeler, deyimlerin bir parçası olabilir: Liste 3-1'deki `let y = 6;` deyiminde yer alan `6`, değerlendirildiğinde `6` değerini üreten bir ifadedir. Bir fonksiyonu çağırmak bir ifadedir. Bir makroyu çağırmak bir ifadedir. Süslü parantezlerle oluşturulan yeni bir kapsam bloğu da bir ifadedir; örneğin:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -107,7 +120,7 @@ Bu programı çalıştırdığınızda alacağınız hata şu şekilde görünec
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-20-blocks-are-expressions/src/main.rs}}
 ```
 
-Şu ibare:
+Buradaki ifade:
 
 ```rust,ignore
 {
@@ -116,11 +129,17 @@ Bu programı çalıştırdığınızda alacağınız hata şu şekilde görünec
 }
 ```
 
-Bu örnekte `4` değerini üreten (evaluates) bir bloktur. Bu değer, `let` ifadesinin bir parçası olarak `y`'ye bağlanır. `x + 1` satırının sonunda, şimdiye kadar gördüğünüz çoğu satırın aksine noktalı virgül (`;`) olmadığına dikkat edin. İbarelerin (expressions) sonunda noktalı virgül bulunmaz. Bir ibarenin sonuna noktalı virgül eklerseniz, onu bir ifadeye (statement) dönüştürürsünüz ve bu durumda bir değer döndürmez. Sırada, fonksiyonların dönüş değerlerini (return values) ve ibareleri incelerken bunu aklınızda bulundurun.
+bu örnekte değerlendirilerek `4` değerini üreten bir bloktur. Bu değer, `let` deyiminin bir parçası olarak `y` değişkenine bağlanır. Şimdiye kadar gördüğünüz çoğu satırın aksine, `x + 1` satırının sonunda noktalı virgül (`;`) bulunmadığına dikkat edin. İfadelerin sonunda noktalı virgül yer almaz. Bir ifadenin sonuna noktalı virgül eklerseniz onu bir deyime dönüştürürsünüz ve artık bir değer döndürmez. Şimdi fonksiyonların dönüş değerlerini ve ifadeleri incelerken bu kuralı aklınızda bulundurun.
 
-### Dönüş Değerleri Olan Fonksiyonlar (Functions with Return Values)
+> Not: Yukarıdaki `let y = { ... };` örneğinde noktalı virgüllerin konumuna dikkat edin: Bloğun içindeki `x + 1` satırının sonunda noktalı virgül **yoktur**; çünkü bu satır bloğun üreteceği değeri belirleyen sonuç ifadesidir. Kapanan süslü parantezin (`};`) hemen sonundaki noktalı virgül ise dıştaki `let y = ...;` atama **deyimini** sonlandırır. Kısacası Rust'ta `;` yalnızca görsel bir satır sonu işareti değil, bir ifadeyi değer döndürmeyen (birim tür `()` üreten) bir deyime dönüştüren sözdizimsel bir araçtır.
 
-Fonksiyonlar, kendilerini çağıran koda değerler döndürebilirler. Dönüş değerlerini adlandırmayız, ancak türlerini bir ok işaretinden (`->`) sonra bildirmemiz (declare) gerekir. Rust'ta, bir fonksiyonun dönüş değeri, fonksiyonun gövdesinin bloğundaki son ibarenin değeriyle eş anlamlıdır. `return` anahtar kelimesini kullanarak ve bir değer belirterek bir fonksiyondan erkenden dönebilirsiniz (return early), ancak çoğu fonksiyon son ibareyi örtük olarak (implicitly) döndürür. İşte bir değer döndüren bir fonksiyon örneği:
+<!-- Old headings. Do not remove or links may break. -->
+<a id="functions-with-return-values"></a>
+<a id="dönüş-değerleri-olan-fonksiyonlar-functions-with-return-values"></a>
+
+### Dönüş Değerleri Olan Fonksiyonlar
+
+Fonksiyonlar, kendilerini çağıran koda değer döndürebilir. Dönüş değerlerine isim vermeyiz ancak türlerini bir ok işaretinden (`->`) sonra mutlaka bildirmemiz gerekir. Rust'ta bir fonksiyonun dönüş değeri, fonksiyon gövdesi bloğundaki son ifadenin değeriyle eş anlamlıdır. `return` anahtar kelimesini kullanıp bir değer belirterek bir fonksiyondan erken dönebilirsiniz; ancak çoğu fonksiyon son ifadeyi örtük olarak (*implicitly*) döndürür. İşte değer döndüren bir fonksiyon örneği:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -128,19 +147,19 @@ Fonksiyonlar, kendilerini çağıran koda değerler döndürebilirler. Dönüş 
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/src/main.rs}}
 ```
 
-`bes` (five) fonksiyonunun içinde hiçbir fonksiyon çağrısı, makro ve hatta `let` ifadesi (statement) yoktur—sadece `5` sayısı vardır. Bu, Rust'ta tamamen geçerli bir fonksiyondur. Fonksiyonun dönüş türünün de `-> i32` olarak belirtildiğine dikkat edin. Bu kodu çalıştırmayı deneyin; çıktı şu şekilde görünmelidir:
+`bes` fonksiyonunun içinde hiçbir fonksiyon çağrısı, makro, hatta `let` deyimi bile yoktur; yalnızca tek başına `5` sayısı yer alır. Bu, Rust'ta tamamen geçerli bir fonksiyondur. Fonksiyonun dönüş türünün de `-> i32` olarak belirtildiğine dikkat edin. Bu kodu çalıştırmayı deneyin; çıktı şöyle görünmelidir:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/output.txt}}
 ```
 
-`bes` fonksiyonundaki `5`, fonksiyonun dönüş değeridir ve bu yüzden dönüş türü `i32`'dir. Bunu biraz daha detaylı inceleyelim. İki önemli kısım vardır: İlk olarak, `let x = bes();` satırı bir değişkeni başlatmak (initialize) için bir fonksiyonun dönüş değerini kullandığımızı gösterir. `bes` fonksiyonu `5` döndürdüğü için, bu satır şununla aynıdır:
+`bes` fonksiyonundaki `5`, fonksiyonun dönüş değeridir; bu yüzden dönüş türü `i32` olarak tanımlanmıştır. Bunu biraz daha ayrıntılı inceleyelim. Burada iki önemli nokta vardır: İlk olarak, `let x = bes();` satırı bir değişkene ilk değerini vermek için bir fonksiyonun dönüş değerini kullandığımızı gösterir. `bes` fonksiyonu `5` döndürdüğü için bu satır aşağıdakiyle birebir aynıdır:
 
 ```rust
 let x = 5;
 ```
 
-İkincisi, `bes` fonksiyonunun hiçbir parametresi yoktur ve dönüş değerinin türünü tanımlar, ancak fonksiyonun gövdesi, döndürmek istediğimiz değere sahip bir ibare olduğu için, noktalı virgülü olmayan yalnız bir `5`'tir.
+İkinci olarak, `bes` fonksiyonu hiçbir parametre almaz ve dönüş değerinin türünü tanımlar; ancak fonksiyonun gövdesi, değerini döndürmek istediğimiz bir ifade olduğu için sonunda noktalı virgül bulunmayan tek bir `5` sayısından oluşur.
 
 Başka bir örneğe bakalım:
 
@@ -150,7 +169,7 @@ Başka bir örneğe bakalım:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-22-function-parameter-and-return/src/main.rs}}
 ```
 
-Bu kod çalıştırıldığında `x'in değeri: 6` (`The value of x is: 6`) yazdıracaktır. Peki `x + 1` içeren satırın sonuna bir noktalı virgül koyarsak ve onu bir ibareden bir ifadeye (statement) çevirirsek ne olur?
+Bu kodu çalıştırmak ekrana `x'in değeri: 6` yazdıracaktır. Peki `x + 1` satırının sonuna bir noktalı virgül koyarak onu bir ifadeden bir deyime dönüştürürsek ne olur?
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -164,4 +183,6 @@ Bu kodu derlemek aşağıdaki gibi bir hata üretecektir:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/output.txt}}
 ```
 
-Ana hata mesajı olan `mismatched types` (uyumsuz türler), bu kodun temel sorununu ortaya koyar. `arti_bir` (`plus_one`) fonksiyonunun tanımı bir `i32` döndüreceğini söyler, ancak ifadeler (statements) bir değer üretmez; bu durum birim türü olan `()` ile ifade edilir. Bu nedenle, hiçbir şey döndürülmez, bu da fonksiyon tanımıyla çelişir ve bir hataya neden olur. Bu çıktıda Rust, muhtemelen bu sorunu düzeltmeye yardımcı olacak bir mesaj sağlar: Noktalı virgülün kaldırılmasını önerir, ki bu da hatayı düzeltecektir.
+Ana hata mesajı olan `error[E0308]: mismatched types` (*uyumsuz türler*), bu koddaki temel sorunu açıkça ortaya koyar. `arti_bir` fonksiyonunun tanımı bir `i32` döndüreceğini bildirir; ancak deyimler bir değer üretmez ve bu durum boş demet olan birim tür `()` ile temsil edilir (`expected 'i32', found '()'`). Derleyicinin belirttiği gibi, fonksiyon gövdesinde noktalı virgülsüz bir sonuç ifadesi (*tail expression*) veya `return` bulunmadığından fonksiyon örtük olarak `()` döndürür; bu da fonksiyon imzasındaki `-> i32` tanımıyla çelişerek derleme hatasına yol açar. Çıktının sonundaki `help: remove this semicolon to return this value` (*bu değeri döndürmek için bu noktalı virgülü kaldırın*) satırı ise hatayı nasıl düzelteceğimizi doğrudan gösterir.
+
+> Not: İdiyomatik Rust kodunda `return` anahtar kelimesi genellikle yalnızca bir koşul sağlandığında fonksiyonun sonuna gelmeden **erken çıkış** yapmak için kullanılır. Fonksiyonun son satırında `return x + 1;` yazmak derlense de Rust topluluğunda gereksiz kabul edilir (hatta `cargo clippy` aracı bu kullanımda uyarı verir); bunun yerine son satırı `x + 1` biçiminde noktalı virgülsüz bir sonuç ifadesi olarak bırakmak standart yaklaşımdır.

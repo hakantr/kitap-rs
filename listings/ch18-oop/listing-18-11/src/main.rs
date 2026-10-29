@@ -3,17 +3,17 @@ use gunce::Gonderi;
 
 // ANCHOR: here
 fn main() {
-    let mut post = Gonderi::yeni();
+    let mut gonderi = Gonderi::yeni();
 
-    post.metin_ekle("Bugun ogle yemeginde salata yedim");
-    assert_eq!("", post.icerik());
+    gonderi.metin_ekle("Bugün öğle yemeğinde salata yedim");
+    assert_eq!("", gonderi.icerik());
     // ANCHOR_END: here
 
-    post.inceleme_iste();
-    assert_eq!("", post.icerik());
+    gonderi.inceleme_iste();
+    assert_eq!("", gonderi.icerik());
 
-    post.onayla();
-    assert_eq!("Bugun ogle yemeginde salata yedim", post.icerik());
+    gonderi.onayla();
+    assert_eq!("Bugün öğle yemeğinde salata yedim", gonderi.icerik());
     // ANCHOR: here
 }
 // ANCHOR_END: here

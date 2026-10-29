@@ -1,16 +1,18 @@
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="the-match-control-flow-operator"></a>
+<a id="the-match-control-flow-construct"></a>
+<a id="match-kontrol-akisi-yapisi"></a>
 
 ## `match` Kontrol Akışı Yapısı
 
-Rust, bir değeri bir dizi desenle (pattern) karşılaştırmanıza ve ardından hangi desenin eşleştiğine bağlı olarak kod yürütmenize olanak tanıyan, `match` adı verilen son derece güçlü bir kontrol akışı (control flow) yapısına sahiptir. Desenler; sabit değerlerden (literal values), değişken adlarından, joker karakterlerden (wildcards) ve daha birçok şeyden oluşabilir; [Bölüm 19][ch19-00-patterns]<!-- ignore --> farklı desen türlerinin hepsini ve ne işe yaradıklarını ele almaktadır. `match`'in gücü, desenlerin ifade gücünden ve derleyicinin olası tüm durumların ele alındığını (handle edildiğini) doğrulamasından gelir.
+Rust, bir değeri bir dizi *desenle (pattern)* karşılaştırmanıza ve hangi desenin eşleştiğine bağlı olarak ilgili kodu çalıştırmanıza olanak tanıyan `match` adında son derece güçlü bir kontrol akışı yapısına sahiptir. Desenler; sabit değerlerden, değişken adlarından, joker desenlerden (*wildcards*) ve daha pek çok bileşenden oluşabilir; [Bölüm 19][ch19-00-patterns]<!-- ignore --> tüm farklı desen türlerini ve ne işe yaradıklarını ayrıntılı olarak ele alır. `match` yapısının gücü, desenlerin yüksek ifade yeteneğinden ve derleyicinin olası tüm durumların eksiksiz biçimde ele alındığını doğrulamasından gelir.
 
-Bir `match` ifadesini bozuk para ayırma makinesi gibi düşünün: Madeni paralar, üzerinde çeşitli boyutlarda delikler bulunan bir raydan aşağı kayar ve her bir para, sığdığı karşılaştığı ilk delikten aşağı düşer. Aynı şekilde, değerler de bir `match` içindeki her bir desenden geçer ve değerin "sığdığı" ilk desende, yürütme sırasında kullanılmak üzere ilişkili kod bloğuna düşer.
+Bir `match` ifadesini bozuk para ayırma makinesi gibi düşünebilirsiniz: Madeni paralar, boyunca farklı boyutlarda delikler bulunan bir raydan aşağı kayar ve her para, karşısına çıkan ve içine sığabildiği ilk delikten aşağı düşer. Aynı şekilde değerler de bir `match` ifadesindeki her bir desenden sırayla geçer ve değerin "uyduğu" ilk desende, çalıştırılmak üzere o desenle ilişkili kod bloğuna düşer.
 
-Madeni paralardan bahsetmişken, `match` kullanarak onları bir örnek olarak kullanalım! Liste 6-3'te gösterildiği gibi, bilinmeyen bir ABD madeni parasını alan ve sayma makinesine benzer bir şekilde hangi para olduğunu belirleyip değerini kuruş (cent) cinsinden döndüren bir fonksiyon yazabiliriz.
+Madeni paralardan söz etmişken gelin `match` kullanımı için onları örnek alalım! Liste 6-3'te gösterildiği gibi, belirsiz bir ABD madeni parasını alan ve tıpkı para sayma makinesi gibi hangi madeni para olduğunu belirleyip değerini kuruş (sent) cinsinden döndüren bir fonksiyon yazabiliriz.
 
-<Listing number="6-3" caption="Bir enum ve enum varyantlarını desenleri olarak barındıran bir `match` ifadesi">
+<Listing number="6-3" caption="Bir enum ve bu enum'ın varyantlarını desen olarak kullanan bir `match` ifadesi">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-03/src/main.rs:here}}
@@ -18,27 +20,34 @@ Madeni paralardan bahsetmişken, `match` kullanarak onları bir örnek olarak ku
 
 </Listing>
 
-`kurus_degeri` fonksiyonundaki `match`'i parçalara ayıralım. İlk olarak, `match` anahtar kelimesini ve ardından bir ifadeyi listeliyoruz; bu durumda ifade `para` (coin) değeridir. Bu, `if` ile kullanılan bir koşul ifadesine çok benzer, ancak aralarında büyük bir fark vardır: `if` kullanıldığında koşulun bir Boolean değer üretmesi gerekirken, burada herhangi bir tür olabilir. Bu örnekteki `para`'nın türü, ilk satırda tanımladığımız `MadeniPara` (Coin) enum'ıdır.
+Gelin `kurus_degeri` fonksiyonundaki `match` ifadesini adım adım inceleyelim. İlk olarak `match` anahtar kelimesini ve ardından bir ifadeyi yazarız; bu örnekte söz konusu ifade `para` değeridir. Bu yapı `if` ile kullanılan koşul ifadesine çok benzer, ancak aralarında büyük bir fark vardır: `if` yapısında koşulun bir Boole (`bool`) değeri üretmesi gerekirken, burada ifade herhangi bir türde olabilir. Bu örnekteki `para` değerinin türü, ilk satırda tanımladığımız `MadeniPara` enum'ıdır.
 
-Sırada `match` kolları (arms) var. Bir kol iki bölümden oluşur: bir desen ve bir kod. Buradaki ilk kolun deseni `MadeniPara::Kurus` (Coin::Penny) değeridir ve ardından desen ile çalıştırılacak kodu ayıran `=>` operatörü gelir. Bu durumdaki kod sadece `1` değeridir. Her kol bir sonrakinden virgülle ayrılır.
+Ardından *`match` kolları (match arms)* gelir. Bir kol iki bölümden oluşur: bir desen ve çalıştırılacak kod. Buradaki ilk kolun deseni `MadeniPara::Kurus` değeridir; hemen ardından deseni ve çalıştırılacak kodu birbirinden ayıran `=>` operatörü gelir. Bu koldaki kod yalnızca `1` değeridir. Her kol bir sonrakinden virgülle ayrılır.
 
-`match` ifadesi yürütüldüğünde, ortaya çıkan değeri sırasıyla her bir kolun deseniyle karşılaştırır. Bir desen değerle eşleşirse, o desenle ilişkili kod yürütülür. Eğer desen değerle eşleşmezse, tıpkı bozuk para ayırma makinesinde olduğu gibi yürütme bir sonraki kola geçer. İhtiyacımız olduğu kadar kola sahip olabiliriz: Liste 6-3'te, `match` ifademizin dört kolu vardır.
+`match` ifadesi çalıştırıldığında, elde edilen değeri her bir kolun deseniyle sırasıyla karşılaştırır. Bir desen değerle eşleşirse o desenle ilişkili kod çalıştırılır. Desen değerle eşleşmezse, tıpkı bozuk para ayırma makinesinde olduğu gibi akış bir sonraki kola geçer. İhtiyaç duyduğumuz kadar kol tanımlayabiliriz: Liste 6-3'te `match` ifademizin dört kolu vardır.
 
-Her kolla ilişkili kod bir ifadedir ve eşleşen koldaki ifadenin ortaya çıkan değeri, tüm `match` ifadesi için döndürülen (return) değerdir.
+Her kolla ilişkili kod bir *ifadedir (expression)* ve eşleşen koldaki ifadenin ürettiği değer, `match` ifadesinin tamamı için döndürülen değer olur.
 
-Liste 6-3'te olduğu gibi her bir kolun sadece bir değer döndürdüğü durumlarda, `match` kolu kodu kısaysa genellikle süslü parantezler kullanmayız. Bir `match` kolunda birden fazla satır kod çalıştırmak istiyorsanız süslü parantez kullanmanız gerekir ve bu durumda kolu takip eden virgül isteğe bağlıdır (opsiyoneldir). Örneğin, aşağıdaki kod metot bir `MadeniPara::Kurus` ile çağrıldığında her defasında "Şanslı kuruş!" ("Lucky penny!") yazdırır, ancak yine de bloğun son değeri olan `1`'i döndürür:
+Liste 6-3'te olduğu gibi her kolun yalnızca tek bir değer ürettiği kısa durumlarda `match` kollarında genellikle süslü parantez kullanmayız. Bir `match` kolunda birden fazla satır kod çalıştırmak istiyorsanız süslü parantez kullanmanız gerekir; bu durumda kolu takip eden virgül isteğe bağlıdır. Örneğin aşağıdaki kod, fonksiyon her `MadeniPara::Kurus` değeriyle çağrıldığında ekrana `"Şanslı kuruş!"` yazdırır, ancak yine de bloğun son ifadesi olan `1` değerini döndürür:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-08-match-arm-multiple-lines/src/main.rs:here}}
 ```
 
+> Not: Tıpkı Bölüm 3'te gördüğümüz `if` gibi `match` de bir *ifadedir*. Dolayısıyla ürettiği sonucu doğrudan bir değişkene atayabilir (`let tutar = match para { ... };`) veya burada olduğu gibi fonksiyonun dönüş değeri olarak kullanabilirsiniz. Derleyicinin derleme zamanında tek ve kesin bir tür belirleyebilmesi için **tüm `match` kollarının aynı türü üretmesi** zorunludur; aksi halde `E0308` (`match arms have incompatible types` — *`match` kolları uyumsuz türlere sahip*) hatası alırsınız. Özellikle süslü parantezli kollarda son satırdaki `1` ifadesinin sonuna yanlışlıkla noktalı virgül (`;`) koymamaya dikkat edin: `1;` yazarsanız o kol birim türü (`()`) üretirken diğer kollar `u8` üreteceği için kod derlenmeyecektir.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="patterns-that-bind-to-values"></a>
+<a id="degerlere-baglanan-desenler"></a>
+
 ### Değerlere Bağlanan Desenler
 
-`match` kollarının bir diğer kullanışlı özelliği de, desenle eşleşen değerlerin parçalarına bağlanabilmeleridir. Enum varyantlarından değerleri bu şekilde çıkarabiliriz.
+`match` kollarının bir diğer kullanışlı özelliği, desenle eşleşen değerlerin içindeki parçalara bağlanabilmeleridir. Enum varyantlarının barındırdığı değerleri bu sayede dışarı çıkarabiliriz.
 
-Örnek olarak, enum varyantlarımızdan birini içinde veri tutacak şekilde değiştirelim. 1999'dan 2008'e kadar Amerika Birleşik Devletleri, 50 eyaletin her biri için bir yüzünde farklı tasarımlara sahip çeyreklikler (quarter) bastı. Diğer hiçbir madeni para eyalet tasarımına sahip değildi, dolayısıyla bu ekstra değere sadece çeyreklikler sahiptir. Liste 6-4'te yaptığımız gibi, `YirmiBesKurus` (Quarter) varyantını içine depolanmış bir `Eyalet` (UsState) değeri içerecek şekilde değiştirerek bu bilgiyi `enum`'ımıza ekleyebiliriz.
+Örnek olarak enum varyantlarımızdan birini içinde veri tutacak şekilde değiştirelim. Amerika Birleşik Devletleri, 1999'dan 2008'e kadar 50 eyaletin her biri için bir yüzünde farklı tasarımlar bulunan çeyreklikler (25 kuruşluk/sentlik madeni paralar) bastı. Başka hiçbir madeni parada eyalet tasarımı yer almadığından bu ek bilgi yalnızca çeyrekliklerde bulunur. Bu bilgiyi Liste 6-4'te yaptığımız gibi `YirmiBesKurus` varyantını içinde bir `Eyalet` değeri barındıracak şekilde değiştirerek `enum` tanımımıza ekleyebiliriz.
 
-<Listing number="6-4" caption="`YirmiBesKurus` varyantının aynı zamanda bir `Eyalet` değeri tuttuğu bir `MadeniPara` enum'ı">
+<Listing number="6-4" caption="`YirmiBesKurus` varyantının ayrıca bir `Eyalet` değeri tuttuğu `MadeniPara` enum'ı">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-04/src/main.rs:here}}
@@ -46,27 +55,30 @@ Liste 6-3'te olduğu gibi her bir kolun sadece bir değer döndürdüğü duruml
 
 </Listing>
 
-Bir arkadaşımızın tüm 50 eyaletin çeyrekliklerini toplamaya çalıştığını hayal edelim. Bozuk paralarımızı para türüne göre ayırırken, her çeyreklikle ilişkili eyaletin adını da söyleyeceğiz ki arkadaşımızın sahip olmadığı bir eyaletse onu koleksiyonuna ekleyebilsin.
+Bir arkadaşımızın 50 eyalet çeyrekliğinin tamamını biriktirmeye çalıştığını düşünelim. Bozuk paralarımızı türlerine göre ayırırken her çeyreklikle ilişkili eyaletin adını da yüksek sesle söyleyeceğiz; böylece arkadaşımızın koleksiyonunda henüz olmayan bir eyalet çıkarsa onu koleksiyonuna ekleyebilecek.
 
-Bu kodun `match` ifadesinde, `MadeniPara::YirmiBesKurus` varyantının değerleriyle eşleşen desene `eyalet` (state) adında bir değişken ekliyoruz. Bir `MadeniPara::YirmiBesKurus` eşleştiğinde, `eyalet` değişkeni o çeyrekliğin eyaletinin değerine bağlanacaktır. Daha sonra, bu koldaki kodda `eyalet` değişkenini şu şekilde kullanabiliriz:
+Bu kodun `match` ifadesinde, `MadeniPara::YirmiBesKurus` varyantının değerleriyle eşleşen desene `eyalet` adında bir değişken ekliyoruz. Bir `MadeniPara::YirmiBesKurus` değeri eşleştiğinde `eyalet` değişkeni o çeyrekliğin eyalet değerine bağlanır. Ardından bu koldaki kod içinde `eyalet` değişkenini aşağıdaki gibi kullanabiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-09-variable-in-pattern/src/main.rs:here}}
 ```
 
-Eğer `kurus_degeri(MadeniPara::YirmiBesKurus(Eyalet::Alaska))` şeklinde bir çağrı yapsaydık, `para`'nın değeri `MadeniPara::YirmiBesKurus(Eyalet::Alaska)` olurdu. Bu değeri her bir `match` koluyla karşılaştırdığımızda, `MadeniPara::YirmiBesKurus(eyalet)`'e ulaşana kadar hiçbiri eşleşmez. O noktada, `eyalet` için bağlama (binding) `Eyalet::Alaska` değeri olacaktır. Daha sonra bu bağlamayı `println!` ifadesinde kullanabilir ve böylece `YirmiBesKurus` için `MadeniPara` enum varyantının içindeki eyalet değerini elde edebiliriz.
+`kurus_degeri(MadeniPara::YirmiBesKurus(Eyalet::Alaska))` çağrısı yaptığımızda `para` parametresi `MadeniPara::YirmiBesKurus(Eyalet::Alaska)` değerini alır. Bu değeri her bir `match` koluyla sırayla karşılaştırdığımızda `MadeniPara::YirmiBesKurus(eyalet)` koluna ulaşana kadar hiçbir desen eşleşmez. Bu noktada `eyalet` değişkeni `Eyalet::Alaska` değerine bağlanır. Böylece bu değişkeni `println!` ifadesinde kullanabilir ve `MadeniPara` enum'ının `YirmiBesKurus` varyantı içindeki eyalet verisini elde edebiliriz.
+
+> Not: Sahipliği sizde olan bir enum üzerinde doğrudan `match para` yaptığınızda, `Eyalet` veya `String` gibi `Copy` trait'ini uygulamayan iç veriler desendeki değişkene (`eyalet`) **taşınır (*move*)**. Bu nedenle `match` bloğundan sonra `para` değişkenini tekrar kullanamazsınız. Eğer enum'ın sahipliğini tüketmeden yalnızca içindeki veriyi okumak istiyorsanız referans üzerinden eşleştirme (`match &para`) yapabilirsiniz. Rust'ın *eşleştirme ergonomisi (match ergonomics)* özelliği sayesinde `match &para` yazdığınızda deseni değiştirmeden yine `MadeniPara::YirmiBesKurus(eyalet)` şeklinde yazabilirsiniz; derleyici `eyalet` değişkenini veriyi taşımak yerine otomatik olarak `&Eyalet` referansı biçiminde bağlar.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="matching-with-optiont"></a>
+<a id="the-optiont-match-pattern"></a>
 
 ### `Option<T>` `match` Deseni
 
-Önceki bölümde, `Option<T>` kullanırken `Some` durumundan içteki `T` değerini çıkarmak istemiştik; tıpkı `MadeniPara` enum'ında yaptığımız gibi, `Option<T>`'yi de `match` kullanarak ele alabiliriz! Madeni paraları karşılaştırmak yerine, `Option<T>` varyantlarını karşılaştıracağız, ancak `match` ifadesinin çalışma şekli aynı kalır.
+Önceki bölümde `Option<T>` kullanırken `Some` varyantının içindeki `T` değerini elde etmek istemiştik; tıpkı `MadeniPara` enum'ında yaptığımız gibi `Option<T>` türünü de `match` kullanarak işleyebiliriz! Bu kez madeni paraları karşılaştırmak yerine `Option<T>` varyantlarını karşılaştıracağız, ancak `match` ifadesinin çalışma mantığı birebir aynı kalır.
 
-Diyelim ki bir `Option<i32>` alan ve eğer içinde bir değer varsa o değere 1 ekleyen bir fonksiyon yazmak istiyoruz. Eğer içinde bir değer yoksa, fonksiyon `None` değerini döndürmeli ve herhangi bir işlem gerçekleştirmeye çalışmamalıdır.
+Diyelim ki parametre olarak bir `Option<i32>` alan ve içinde bir değer varsa bu değere `1` ekleyen bir fonksiyon yazmak istiyoruz. Eğer içinde bir değer yoksa fonksiyon `None` döndürmeli ve başka hiçbir işlem yapmaya çalışmamalıdır.
 
-`match` sayesinde bu fonksiyonu yazmak çok kolaydır ve Liste 6-5'teki gibi görünecektir.
+`match` sayesinde bu fonksiyonu yazmak son derece kolaydır ve Liste 6-5'teki gibi görünür.
 
 <Listing number="6-5" caption="Bir `Option<i32>` üzerinde `match` ifadesi kullanan bir fonksiyon">
 
@@ -76,77 +88,91 @@ Diyelim ki bir `Option<i32>` alan ve eğer içinde bir değer varsa o değere 1 
 
 </Listing>
 
-`bir_ekle` fonksiyonunun ilk çalıştırılmasını daha ayrıntılı inceleyelim. `bir_ekle(bes)` çağrısı yaptığımızda, `bir_ekle` gövdesindeki `x` değişkeni `Some(5)` değerine sahip olacaktır. Daha sonra bunu her bir `match` koluyla karşılaştırırız:
+`bir_ekle` fonksiyonunun ilk çağrılışını daha yakından inceleyelim. `bir_ekle(bes)` çağrısı yaptığımızda `bir_ekle` gövdesindeki `x` değişkeni `Some(5)` değerini alır. Ardından bu değeri her bir `match` koluyla sırayla karşılaştırırız:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-`Some(5)` değeri `None` deseniyle eşleşmez, bu yüzden bir sonraki kola devam ederiz:
+`Some(5)` değeri `None` deseniyle eşleşmez; bu yüzden bir sonraki kola geçeriz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:second_arm}}
 ```
 
-`Some(5)`, `Some(i)` ile eşleşir mi? Evet, eşleşir! Aynı varyanta sahibiz. `i`, `Some` içinde bulunan değere bağlanır, böylece `i` `5` değerini alır. Daha sonra `match` kolundaki kod çalıştırılır, böylece `i`'nin değerine 1 ekleriz ve içinde `6` toplamı olan yeni bir `Some` değeri oluştururuz.
+`Some(5)` değeri `Some(i)` deseniyle eşleşir mi? Evet, eşleşir! İkisi de aynı varyanttır. `i` değişkeni `Some` içindeki değere bağlanır ve `5` değerini alır. Ardından bu `match` kolundaki kod çalıştırılır: `i` değerine `1` eklenir ve içinde toplam `6` değerini taşıyan yeni bir `Some` varyantı oluşturulup döndürülür.
 
-Şimdi Liste 6-5'teki `bir_ekle` fonksiyonunun ikinci çağrısını inceleyelim; burada `x` `None`'dır. `match` içine giriyoruz ve ilk kolla karşılaştırıyoruz:
+Şimdi Liste 6-5'te `x` parametresinin `None` olduğu ikinci `bir_ekle` çağrısına bakalım. `match` ifadesine girer ve ilk kolla karşılaştırırız:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-Eşleşiyor! Eklenecek hiçbir değer yok, bu yüzden program durur ve `=>` işaretinin sağ tarafındaki `None` değerini döndürür. İlk kol eşleştiği için diğer kollar karşılaştırılmaz.
+Eşleşti! Eklenecek bir değer olmadığından akış burada tamamlanır ve `=>` operatörünün sağ tarafındaki `None` değeri döndürülür. İlk kol eşleştiği için diğer kollar hiç kontrol edilmez.
 
-`match` ve enum'ları birleştirmek birçok durumda yararlıdır. Bu kalıbı (pattern) Rust kodlarında çokça göreceksiniz: bir enum ile `match` (eşleştirme) yapma, içindeki veriye bir değişken bağlama ve ardından buna dayalı olarak kod çalıştırma. Başlangıçta biraz zorlayıcı gelebilir, ancak alıştıktan sonra bunu tüm dillerde arayacaksınız. Tutarlı bir şekilde kullanıcıların favorisidir.
+`match` ile enum'ları bir arada kullanmak pek çok senaryoda son derece işlevseldir. Rust kodlarında şu yapıyı çok sık göreceksiniz: Bir enum üzerinde `match` uygula, içindeki veriyi bir değişkene bağla ve bu veriye dayanarak ilgili kodu çalıştır. İlk başta biraz yabancı gelebilir, ancak bir kez alıştığınızda bu yapının kullandığınız tüm programlama dillerinde olmasını isteyeceksiniz. Rust kullanıcılarının her zaman en sevdiği özelliklerin başında gelir.
 
-### Eşleşmeler Kapsamlıdır (Exhaustive)
+<!-- Old headings. Do not remove or links may break. -->
 
-`match` ile ilgili tartışmamız gereken bir diğer yön daha var: Kolların desenleri tüm olasılıkları kapsamalıdır. `bir_ekle` fonksiyonumuzun bir hata (bug) içeren ve derlenmeyecek olan şu versiyonunu düşünün:
+<a id="matches-are-exhaustive"></a>
+<a id="eşleşmeler-kapsamlıdır-exhaustive"></a>
+<a id="eslesmeler-kapsamlidir"></a>
+
+### Eşleşmeler Kapsamlıdır
+
+`match` ifadelerinin ele almamız gereken önemli bir yönü daha vardır: Kolların desenleri olası tüm durumları kapsamak zorundadır. `bir_ekle` fonksiyonumuzun hata barındıran ve derlenmeyecek olan aşağıdaki sürümüne bakalım:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/src/main.rs:here}}
 ```
 
-`None` durumunu ele almadık, bu yüzden bu kod bir hataya neden olacaktır. Neyse ki, bu Rust'ın nasıl yakalayacağını bildiği bir hatadır. Bu kodu derlemeye çalışırsak şu hatayı alırız:
+Burada `None` durumunu ele almadık; dolayısıyla bu kod hataya yol açacaktır. Neyse ki bu, Rust derleyicisinin anında yakalayabildiği türden bir hatadır. Bu kodu derlemeye çalıştığımızda aşağıdaki hatayı alırız:
 
 ```console
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/output.txt}}
 ```
 
-Rust, olası her durumu kapsamadığımızı biliyor ve hatta hangi deseni unuttuğumuzu bile biliyor! Rust'ta eşleşmeler _kapsamlıdır_: Kodun geçerli olabilmesi için her bir olasılığı sonuna kadar tüketmeliyiz (exhaust). Özellikle `Option<T>` durumunda, Rust `None` durumunu açıkça ele almayı unutmamızı engellediğinde, aslında null olabilecekken bir değere sahip olduğumuzu varsaymamızdan bizi korur, böylece daha önce tartışılan milyar dolarlık hatayı imkansız hale getirir.
+> Not: Derleyicinin ürettiği `error[E0004]: non-exhaustive patterns: None not covered` mesajı, *"kapsamlı olmayan desenler: `None` durumu kapsanmadı"* anlamına gelir. Dikkat ederseniz `help:` satırında derleyici, eksik kalan kolu `None => todo!(),` şeklinde kodunuza nasıl ekleyebileceğinizi bile doğrudan gösterir.
 
-### Hepsini Yakalayan (Catch-All) Desenler ve `_` Yer Tutucusu
+Rust, olası her durumu kapsamadığımızı bilir; üstelik hangi deseni unuttuğumuzu bile tam olarak söyler! Rust'ta eşleşmeler _kapsamlıdır (exhaustive)_: Kodun geçerli olabilmesi için olası her durumu sonuna kadar, eksiksiz biçimde ele almalıyız. Özellikle `Option<T>` söz konusu olduğunda, Rust `None` durumunu açıkça işlemeyi unutmamızı engelleyerek ortada bir değer yokken (`null` benzeri bir durumdayken) sanki geçerli bir değer varmış gibi varsayımda bulunmamızın önüne geçer; böylece önceki bölümde bahsettiğimiz milyar dolarlık hatayı derleme zamanında imkânsız hale getirir.
 
-Enum'ları kullanarak, belirli birkaç değer için özel eylemler yapabilir, diğer tüm değerler için ise varsayılan (default) bir eylem alabiliriz. Şöyle bir oyun uyguladığımızı hayal edelim: Eğer zar attığınızda 3 gelirse, oyuncunuz hareket etmez ama bunun yerine süslü yeni bir şapka kazanır. Eğer 7 atarsanız, oyuncunuz süslü şapkasını kaybeder. Diğer tüm değerler için, oyuncunuz oyun tahtasında o sayı kadar kare ilerler. İşte bu mantığı uygulayan bir `match`; zar atışının sonucu rastgele bir değer olmak yerine koda gömülmüş (hardcoded) ve diğer tüm mantıklar gövdesi olmayan fonksiyonlarla temsil edilmiştir, çünkü bu fonksiyonları gerçekten uygulamak bu örneğin kapsamı dışındadır:
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="catch-all-patterns-and-the-_-placeholder"></a>
+<a id="hepsini-yakalayan-catch-all-desenler-ve-_-yer-tutucusu"></a>
+<a id="tumunu-yakalama-desenleri-ve-_-yer-tutucusu"></a>
+
+### Tümünü Yakalama Desenleri ve `_` Yer Tutucusu
+
+Enum'ları ve `match` yapısını kullanarak belirli birkaç değer için özel işlemler yapabilir, kalan diğer tüm değerler için ise tek bir varsayılan işlem uygulayabiliriz. Şöyle bir oyun geliştirdiğimizi düşünelim: Zar attığınızda `3` gelirse oyuncunuz hareket etmez, bunun yerine süslü yeni bir şapka kazanır. Eğer `7` gelirse oyuncunuz süslü şapkasını kaybeder. Diğer tüm zar değerlerinde ise oyuncunuz oyun tahtasında gelen sayı kadar kare ilerler. Aşağıda bu mantığı uygulayan bir `match` ifadesi yer alıyor; bu örnekte zar atışının sonucu rastgele üretilmek yerine doğrudan koda sabit olarak yazılmış ve diğer işlemlerin ayrıntıları konumuzun dışında olduğundan gövdesi boş fonksiyonlarla temsil edilmiştir:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-15-binding-catchall/src/main.rs:here}}
 ```
 
-İlk iki kol için desenler `3` ve `7` sabit değerleridir. Diğer olası tüm değerleri kapsayan son kol için desen ise, `diger` olarak adlandırdığımız değişkendir. `diger` kolu için çalışan kod, bu değişkeni `oyuncuyu_tasi` (move_player) fonksiyonuna aktararak kullanır.
+İlk iki kolun desenleri `3` ve `7` sabit değerleridir. Kalan olası tüm değerleri kapsayan son kolun deseni ise `diger` adını verdiğimiz değişkendir. `diger` kolunda çalışan kod, yakalanan bu değişkeni `oyuncuyu_tasi` fonksiyonuna argüman olarak aktararak kullanır.
 
-Bu kod derlenir, her ne kadar bir `u8`'in alabileceği olası tüm değerleri listelememiş olsak da, çünkü son desen özel olarak listelenmeyen tüm değerlerle eşleşecektir. Hepsini yakalayan bu desen, `match`'in kapsamlı olması gerektiği koşulunu karşılar. Desenler sırayla değerlendirildiği için hepsini yakalayan kolu en sona koymamız gerektiğine dikkat edin. Hepsini yakalayan kolu daha önce koysaydık, diğer kollar asla çalışmazdı, bu yüzden eğer hepsini yakalayan bir koldan sonra kollar eklersek Rust bizi uyaracaktır!
+Bir `u8` türünün alabileceği olası tüm değerleri tek tek listelememiş olsak da bu kod sorunsuzca derlenir; çünkü son desen özel olarak listelenmeyen tüm değerlerle eşleşir. Bu *tümünü yakalama deseni (catch-all pattern)*, `match` ifadesinin kapsamlı olma zorunluluğunu karşılar. Desenler sırayla değerlendirildiği için tümünü yakalayan kolu en sona koymamız gerektiğine dikkat edin. Eğer bu kolu daha üst bir sıraya koysaydık ondan sonraki kollar asla çalışmazdı; nitekim tümünü yakalayan bir koldan sonra başka kollar eklerseniz Rust ulaşılamaz desen konusunda sizi uyarır!
 
-Rust ayrıca, hepsini yakalayan bir kol istediğimizde ancak bu yakalanan değeri _kullanmak_ istemediğimizde kullanabileceğimiz bir desene de sahiptir: `_`, her değerle eşleşen ve o değere bağlanmayan özel bir desendir. Bu, Rust'a değeri kullanmayacağımızı söyler, böylece Rust kullanılmayan bir değişken hakkında bizi uyarmaz.
+Rust ayrıca tümünü yakalayan bir kol istediğimizde ancak yakalanan değeri _kullanmak_ istemediğimizde başvurabileceğimiz özel bir desene sahiptir: `_`, herhangi bir değerle eşleşen fakat o değere bağlanmayan özel bir yer tutucu desendir. Bu desen Rust'a söz konusu değeri kullanmayacağımızı bildirir; böylece Rust ne değeri taşır ne de kullanılmayan bir değişken hakkında uyarı verir.
 
-Oyunun kurallarını değiştirelim: Artık 3 veya 7 dışında bir şey atarsanız, tekrar zar atmalısınız. Artık yakalanan değeri kullanmamıza gerek yok, bu yüzden kodumuzu `diger` adlı değişken yerine `_` kullanacak şekilde değiştirebiliriz:
+Gelin oyunun kurallarını değiştirelim: Artık `3` veya `7` dışında bir sayı atarsanız tekrar zar atmanız gerekiyor. Yakalanan değere artık ihtiyacımız olmadığından kodumuzu `diger` adlı değişken yerine `_` kullanacak şekilde güncelleyebiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-16-underscore-catchall/src/main.rs:here}}
 ```
 
-Bu örnek de kapsamlılık şartını karşılıyor çünkü son kolda diğer tüm değerleri açıkça görmezden geliyoruz; hiçbir şeyi unutmuş değiliz.
+Son kolda diğer tüm değerleri açıkça yoksaydığımız için bu örnek de kapsamlılık şartını eksiksiz karşılar; unuttuğumuz hiçbir durum yoktur.
 
-Son olarak, oyunun kurallarını bir kez daha değiştirelim: Eğer 3 veya 7 dışında bir şey atarsanız sıranızda başka hiçbir şey olmaz. Bunu, `_` koluyla çalışan kod olarak birim değeri (unit value - ["Demet (Tuple) Türü"][tuples]<!-- ignore --> bölümünde bahsettiğimiz boş demet türü) kullanarak ifade edebiliriz:
+Son olarak oyunun kurallarını bir kez daha değiştirelim: `3` veya `7` dışında bir sayı attığınızda sıranızda başka hiçbir şey olmasın. Bunu, `_` kolunda çalıştırılacak kod olarak birim değerini (["Demet Türü"][tuples]<!-- ignore --> bölümünde bahsettiğimiz boş demet türü `()`) yazarak ifade edebiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-17-underscore-unit/src/main.rs:here}}
 ```
 
-Burada Rust'a açıkça, önceki kolların desenleriyle eşleşmeyen başka hiçbir değeri kullanmayacağımızı ve bu durumda hiçbir kod çalıştırmak istemediğimizi söylüyoruz.
+Burada Rust'a önceki kolların desenleriyle eşleşmeyen hiçbir değeri kullanmayacağımızı ve bu durumda herhangi bir kod çalıştırmak istemediğimizi açıkça belirtmiş oluyoruz.
 
-Desenler ve eşleştirme hakkında [Bölüm 19][ch19-00-patterns]<!-- ignore -->'da ele alacağımız daha çok şey var. Şimdilik, `match` ifadesinin biraz uzun kaçabildiği durumlarda yararlı olabilecek `if let` sözdizimine geçeceğiz.
+Desenler ve eşleştirme hakkında [Bölüm 19][ch19-00-patterns]<!-- ignore -->'da ele alacağımız daha pek çok ayrıntı var. Şimdilik, `match` ifadesinin biraz ayrıntılı ve uzun kalabildiği durumlarda oldukça pratik bir alternatif sunan `if let` sözdizimine geçeceğiz.
 
-[tuples]: ch03-02-veri-turleri.html#tuple-türü
+[tuples]: ch03-02-veri-turleri.html#demet-türü
 [ch19-00-patterns]: ch19-00-desenler.html

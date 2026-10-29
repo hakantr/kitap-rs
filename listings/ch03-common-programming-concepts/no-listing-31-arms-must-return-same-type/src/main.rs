@@ -3,5 +3,5 @@ fn main() {
 
     let sayi = if durum { 5 } else { "altı" };
 
-    println!("sayi'nin değeri: {sayi}");
+    println!("sayi'nın değeri: {sayi}");
 }

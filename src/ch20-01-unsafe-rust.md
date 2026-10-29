@@ -1,51 +1,63 @@
-## Güvensiz Rust
+<!-- Old headings. Do not remove or links may break. -->
 
-Şimdiye kadar ele aldığımız bütün kodlarda Rust'ın bellek güvenliği garantileri derleme zamanında uygulanıyordu. Ancak Rust'ın içinde bu garantileri zorunlu kılmayan ikinci bir katman daha vardır: buna _güvensiz Rust_ denir. Güvensiz Rust, normal Rust gibi çalışır; sadece bize bazı ek "süper güçler" verir.
+<a id="unsafe-rust"></a>
+<a id="güvensiz-rust"></a>
 
-Güvensiz Rust vardır; çünkü doğası gereği statik çözümleme temkinlidir. Derleyici bir kodun garantileri koruyup korumadığını anlamaya çalışırken, bazı geçerli programları reddetmesi bazı geçersiz programları kabul etmesinden daha iyidir. Kod _belki_ doğru olabilir; ama Rust derleyicisinin emin olması için yeterli bilgi yoksa kodu reddeder. İşte böyle durumlarda, güvensiz kodla derleyiciye "Bana güven, ne yaptığımı biliyorum" diyebilirsiniz. Ama bunun riski size aittir: güvensiz kodu yanlış kullanırsanız boş işaretçi çözümleme gibi bellek güvensizliği sorunları oluşabilir.
+## Güvenli Olmayan (Unsafe) Rust
 
-Rust'ın güvensiz bir alter egosunun olmasının başka bir nedeni de, alttaki bilgisayar donanımının doğası gereği güvenli olmamasıdır. Rust size güvensiz işlemler yapma imkânı vermeseydi bazı işleri yapamazdınız. İşletim sistemiyle doğrudan etkileşmek ya da kendi işletim sisteminizi yazmak gibi düşük seviyeli sistem programlama işleri buna dahildir. Düşük seviyeli sistem programlamayla çalışmak, dilin hedeflerinden biridir. Şimdi güvensiz Rust ile neler yapabildiğimize ve bunları nasıl yaptığımıza bakalım.
+Şimdiye kadar ele aldığımız tüm kodlarda Rust'ın bellek güvenliği garantileri derleme zamanında zorunlu kılınıyordu. Ancak Rust'ın içinde gizli, bu bellek güvenliği garantilerini zorunlu kılmayan ikinci bir dil daha vardır: Buna _güvenli olmayan Rust (unsafe Rust)_ denir; tıpkı normal Rust gibi çalışır ama bize ek süper güçler verir.
+
+Güvenli olmayan Rust'ın var olma nedeni, statik analizin doğası gereği temkinli olmasıdır. Derleyici bir kodun güvenlik garantilerini koruyup korumadığını belirlemeye çalışırken, bazı geçersiz programları kabul etmektense bazı geçerli programları reddetmesi daha iyidir. Kod gerçekte sorunsuz _olabilse_ bile, Rust derleyicisi bundan emin olacak yeterli bilgiye sahip değilse kodu reddeder. Bu gibi durumlarda derleyiciye "Bana güven, ne yaptığımı biliyorum" demek için güvenli olmayan kod kullanabilirsiniz. Ancak güvenli olmayan Rust'ı tüm riski size ait olmak üzere kullandığınızı unutmayın: Güvenli olmayan kodu hatalı kullanırsanız, boş (`null`) işaretçinin başvurusunu çözmek gibi bellek güvenliği ihlallerinden kaynaklanan sorunlar meydana gelebilir.
+
+Rust'ın güvenli olmayan bir ikinci yüzünün (*alter ego*) bulunmasının bir diğer nedeni de alttaki bilgisayar donanımının doğası gereği güvenli olmamasıdır. Rust güvenli olmayan işlemler yapmanıza izin vermeseydi bazı görevleri yerine getiremezdiniz. İşletim sistemiyle doğrudan etkileşim kurmak veya hatta kendi işletim sisteminizi yazmak gibi düşük seviyeli sistem programlama işlerini yapabilmenize Rust'ın olanak tanıması gerekir. Düşük seviyeli sistem programlamayla çalışabilmek, dilin temel hedeflerinden biridir. Gelin güvenli olmayan Rust ile neler yapabileceğimizi ve bunları nasıl gerçekleştireceğimizi inceleyelim.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="unsafe-superpowers"></a>
+<a id="performing-unsafe-superpowers"></a>
+<a id="güvensiz-süper-güçleri-kullanmak"></a>
 
-### Güvensiz Süper Güçleri Kullanmak
+### Güvenli Olmayan Süper Güçleri Kullanmak
 
-Güvensiz Rust'a geçmek için `unsafe` anahtar kelimesini kullanır ve ardından güvensiz kodu tutacak yeni bir blok başlatırsınız. Güvensiz Rust içinde, güvenli Rust'ta yapamadığınız beş işlem yapabilirsiniz; bunlara _güvensiz süper güçler_ diyoruz:
+Güvenli olmayan Rust'a geçmek için `unsafe` anahtar kelimesini kullanır ve ardından güvenli olmayan kodu barındıran yeni bir blok başlatırsınız. Güvenli olmayan Rust içinde, güvenli Rust'ta yapamadığınız beş işlemi gerçekleştirebilirsiniz; bunlara _güvenli olmayan süper güçler_ adını veriyoruz. Bu süper güçler şunları yapabilmeyi kapsar:
 
-1. Ham işaretçi çözümlemek
-1. Güvensiz bir fonksiyon ya da metod çağırmak
-1. Değiştirilebilir statik bir değişkene erişmek veya onu değiştirmek
-1. Güvensiz bir trait uygulamak
-1. `union` alanlarına erişmek
+1. Bir ham işaretçinin başvurusunu çözmek.
+1. Güvenli olmayan bir fonksiyon veya metot çağırmak.
+1. Değiştirilebilir bir statik değişkene erişmek veya onu değiştirmek.
+1. Güvenli olmayan bir trait uygulamak.
+1. `union` türlerinin alanlarına erişmek.
 
-Şunu net anlamak gerekir: `unsafe`, ödünç alma denetleyicisini kapatmaz ve Rust'ın diğer güvenlik kontrollerini de devre dışı bırakmaz. Güvensiz kodda bir referans kullanırsanız yine denetlenir. `unsafe` anahtar kelimesi yalnızca, derleyicinin bellek güvenliği açısından denetlemediği bu beş özelliğe erişim verir. Yani `unsafe` blok içinde de belli bir güvenlik düzeyine sahip olmaya devam edersiniz.
+`unsafe` anahtar kelimesinin ödünç alma denetleyicisini kapatmadığını veya Rust'ın diğer güvenlik denetimlerini devre dışı bırakmadığını anlamak çok önemlidir: Güvenli olmayan kod içinde bir referans kullanırsanız bu referans yine denetlenir. `unsafe` anahtar kelimesi yalnızca, derleyici tarafından bellek güvenliği açısından denetlenmeyen bu beş özelliğe erişmenizi sağlar. Yani güvenli olmayan bir bloğun içinde bile belirli ölçüde güvenlik elde etmeye devam edersiniz.
 
-Ayrıca `unsafe`, blok içindeki kodun mutlaka tehlikeli olduğu veya kesinlikle bellek güvenliği sorunları çıkaracağı anlamına gelmez. Buradaki fikir şudur: programcı olarak siz, `unsafe` blok içindeki kodun belleğe geçerli biçimde erişmesini sağlarsınız.
+Buna ek olarak `unsafe`, blok içindeki kodun mutlaka tehlikeli olduğu ya da kesinlikle bellek güvenliği sorunları barındıracağı anlamına gelmez: Buradaki amaç, programcı olarak sizin `unsafe` bloğu içindeki kodun belleğe geçerli bir biçimde erişmesini güvence altına almanızdır.
 
-İnsan hata yapar; bu kaçınılmazdır. Ama bu beş güvensiz işlemin yalnızca `unsafe` ile işaretlenmiş blokların içinde yapılmasını zorunlu kıldığınızda, bellek güvenliğiyle ilgili hataların `unsafe` bloklarda aranması gerektiğini bilirsiniz. `unsafe` blokları küçük tutun; ileride bellek hatalarını araştırırken buna memnun kalırsınız.
+İnsanlar hata yapabilir ve hatalar kaçınılmaz olarak yaşanacaktır; ancak bu beş güvenli olmayan işlemin `unsafe` ile işaretlenmiş blokların içinde bulunmasını zorunlu kılarak, bellek güvenliğiyle ilgili her türlü hatanın mutlaka bir `unsafe` bloğu içinde yer aldığını bilirsiniz. `unsafe` bloklarını küçük tutun; ileride bellek hatalarını araştırırken bunun çok faydasını göreceksiniz.
 
-Güvensiz kodu mümkün olduğunca yalıtmak için, bu kodu güvenli bir soyutlamanın içine kapatıp dışarıya güvenli bir API sunmak en iyi yoldur. Bunu birazdan, güvensiz fonksiyonlar ve metodları incelerken göreceğiz. Standart kütüphanenin bazı kısımları da denetlenmiş güvensiz kodların üzerine kurulmuş güvenli soyutlamalar olarak uygulanmıştır. Güvensiz kodu güvenli bir soyutlamanın içine sarmalamak, `unsafe` kullanımının siz ya da kullanıcılarınız o işlevselliği kullanmak istediğinde her yere yayılmasını engeller; çünkü güvenli soyutlamayı kullanmak güvenlidir.
+Güvenli olmayan kodu mümkün olduğunca yalıtmak için en iyi yaklaşım, bu kodu güvenli bir soyutlamanın içine alıp dışarıya güvenli bir API sunmaktır; bunu bölümün ilerleyen kısımlarında güvenli olmayan fonksiyon ve metotları incelerken ele alacağız. Standart kütüphanenin bazı bölümleri, denetlenmiş güvenli olmayan kodların üzerine inşa edilen güvenli soyutlamalar olarak uygulanmıştır. Güvenli olmayan kodu güvenli bir soyutlamayla sarmalamak, siz veya kullanıcılarınız `unsafe` kodla uygulanmış işlevselliği kullanmak istediğiniz her yere `unsafe` kullanımının sızmasını önler; çünkü güvenli bir soyutlamayı kullanmak güvenlidir.
 
-Şimdi bu beş güvensiz süper gücün her birine sırayla bakalım. Ayrıca güvensiz koda güvenli arayüz sağlayan bazı soyutlamaları da inceleyeceğiz.
+Şimdi bu beş güvenli olmayan süper gücün her birini sırayla inceleyelim. Aynı zamanda güvenli olmayan koda güvenli bir arayüz sunan bazı soyutlamalara da göz atacağız.
 
-### Ham İşaretçi Çözümlemek
+<!-- Old headings. Do not remove or links may break. -->
 
-4. bölümdeki ["Sarkan Referanslar"][dangling-references]<!-- ignore --> kısmında, derleyicinin referansların her zaman geçerli olmasını sağladığından söz etmiştik. Güvensiz Rust, referanslara benzeyen ama _ham işaretçi_ denilen iki yeni tür sunar. Referanslarda olduğu gibi ham işaretçiler de değiştirilemez ya da değiştirilebilir olabilir; sırasıyla `*const T` ve `*mut T` biçiminde yazılırlar. Buradaki yıldız işareti çözümleme işleci değildir; tür adının bir parçasıdır. Ham işaretçiler bağlamında _değiştirilemez_ demek, işaretçinin çözümlemesinden sonra ona doğrudan atama yapılamaması demektir.
+<a id="dereferencing-a-raw-pointer"></a>
+<a id="ham-işaretçi-çözümlemek"></a>
 
-Referans ve akıllı işaretçilerden farklı olarak ham işaretçiler:
+### Ham İşaretçinin Başvurusunu Çözmek
 
-- Aynı konuma hem değiştirilemez hem değiştirilebilir işaretçi ya da birden fazla değiştirilebilir işaretçi oluşturarak ödünç alma kurallarını görmezden gelebilir
-- Geçerli belleği işaret ettikleri garanti edilmez
-- Boş (`null`) olabilir
-- Otomatik temizlik sağlamaz
+Bölüm 4'teki [“Sarkan Referanslar”][dangling-references]<!-- ignore --> bölümünde, derleyicinin referansların her zaman geçerli olmasını sağladığından bahsetmiştik. Güvenli olmayan Rust, referanslara benzeyen _ham işaretçiler (raw pointers)_ adında iki yeni türe sahiptir. Tıpkı referanslarda olduğu gibi ham işaretçiler de değiştirilemez veya değiştirilebilir olabilir ve sırasıyla `*const T` ile `*mut T` şeklinde yazılır. Buradaki yıldız işareti (`*`) _başvuru çözme (dereferencing)_ operatörü değildir; tür adının bir parçasıdır. Ham işaretçiler bağlamında _değiştirilemez_ olmak, işaretçinin başvurusu çözüldükten sonra ona doğrudan atama yapılamaması anlamına gelir.
 
-Rust'ın bu garantileri zorunlu kılmasından çıkıp, bunun karşılığında daha yüksek performans ya da Rust garantilerinin geçerli olmadığı başka bir dil veya donanımla etkileşim kurma imkânı elde edersiniz.
+Referanslardan ve akıllı işaretçilerden farklı olarak ham işaretçiler:
 
-Liste 20-1, değiştirilemez ve değiştirilebilir bir ham işaretçinin nasıl oluşturulduğunu gösteriyor.
+- Aynı konuma hem değiştirilemez hem değiştirilebilir işaretçilere ya da birden fazla değiştirilebilir işaretçiye sahip olarak ödünç alma kurallarını göz ardı edebilir
+- Geçerli bir bellek alanına işaret ettikleri garanti edilmez
+- Boş (`null`) olma iznine sahiptir
+- Herhangi bir otomatik temizlik uygulamaz
 
-<Listing number="20-1" caption="Ham ödünç alma işleçleriyle ham işaretçi oluşturmak">
+Rust'ın bu garantileri zorunlu kılmasından vazgeçerek, garanti edilmiş güvenliği daha yüksek performans veya Rust garantilerinin geçerli olmadığı başka bir dil ya da donanımla etkileşim kurabilme yeteneği karşılığında takas edebilirsiniz.
+
+Liste 20-1, değiştirilemez ve değiştirilebilir birer ham işaretçinin nasıl oluşturulacağını göstermektedir.
+
+<Listing number="20-1" caption="Ham ödünç alma operatörleriyle ham işaretçiler oluşturmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-01/src/main.rs:here}}
@@ -53,11 +65,11 @@ Liste 20-1, değiştirilemez ve değiştirilebilir bir ham işaretçinin nasıl 
 
 </Listing>
 
-Bu kodda `unsafe` anahtar kelimesi yok; çünkü ham işaretçileri güvenli kodda oluşturabiliriz. Sadece onları `unsafe` blok dışında çözümleyemeyiz; birazdan bunu göreceksiniz.
+Bu kodda `unsafe` anahtar kelimesini kullanmadığımıza dikkat edin. Güvenli kod içinde ham işaretçiler oluşturabiliriz; yalnızca birazdan göreceğiniz gibi güvenli olmayan bir bloğun dışında ham işaretçilerin başvurusunu çözemeyiz.
 
-Burada ham ödünç alma işleçlerini kullandık: `&raw const num`, `*const i32` türünde değiştirilemez ham işaretçi; `&raw mut num` ise `*mut i32` türünde değiştirilebilir ham işaretçi oluşturur. Bunları doğrudan yerel bir değişkenden ürettiğimiz için bu belirli ham işaretçilerin geçerli olduğunu biliyoruz; ama bunu her ham işaretçi için varsayamayız.
+Ham işaretçileri _ham ödünç alma operatörlerini (raw borrow operators)_ kullanarak oluşturduk: `&raw const num` ifadesi `*const i32` türünde değiştirilemez bir ham işaretçi, `&raw mut num` ifadesi ise `*mut i32` türünde değiştirilebilir bir ham işaretçi oluşturur. Bunları doğrudan yerel bir değişkenden ürettiğimiz için bu ham işaretçilerin geçerli olduğunu biliyoruz; ancak herhangi bir ham işaretçi hakkında aynı varsayımda bulunamayız.
 
-Bunu göstermek için, geçerliliğinden o kadar da emin olamayacağımız bir ham işaretçi oluşturacağız. Ham ödünç alma işleci yerine, bir değeri dönüştürmek için `as` anahtar kelimesini kullanacağız. Liste 20-2, bellekte keyfi bir konuma ham işaretçi oluşturmayı gösterir. Keyfi belleği kullanmaya çalışmak tanımsız davranıştır: o adreste veri olabilir de olmayabilir de, derleyici kodu öyle optimize edebilir ki hiç bellek erişimi olmaz, ya da program bölümleme hatasıyla sonlanabilir. Genellikle böyle kod yazmak için iyi bir neden yoktur; özellikle de bunun yerine ham ödünç alma işleci kullanabildiğiniz durumlarda. Yine de mümkündür.
+Bunu göstermek için şimdi, ham ödünç alma operatörünü kullanmak yerine bir değeri `as` anahtar kelimesiyle dönüştürerek geçerliliğinden o kadar da emin olamayacağımız bir ham işaretçi oluşturacağız. Liste 20-2, bellekteki keyfi bir konuma işaret eden bir ham işaretçinin nasıl oluşturulacağını gösterir. Keyfi bir bellek alanını kullanmaya çalışmak tanımsızdır: O adreste veri bulunabilir de bulunmayabilir de; derleyici kodu hiçbir bellek erişimi yapılmayacak şekilde optimize edebilir ya da program bir _parçalanma hatasıyla (segmentation fault)_ sonlanabilir. Özellikle bunun yerine ham ödünç alma operatörü kullanabildiğiniz durumlarda böyle bir kod yazmak için genellikle hiçbir geçerli neden yoktur; ancak bunu yapmak mümkündür.
 
 <Listing number="20-2" caption="Keyfi bir bellek adresine ham işaretçi oluşturmak">
 
@@ -67,9 +79,9 @@ Bunu göstermek için, geçerliliğinden o kadar da emin olamayacağımız bir h
 
 </Listing>
 
-Ham işaretçileri güvenli kodda oluşturabildiğimizi hatırlayın; ama onları çözümleyip işaret ettikleri veriyi okuyamayız. Liste 20-3'te, bir ham işaretçi üzerinde çözümleme işleci `*` kullanıyoruz; bu da `unsafe` blok gerektiriyor.
+Güvenli kod içinde ham işaretçiler oluşturabildiğimizi, ancak ham işaretçilerin başvurusunu çözüp işaret edilen veriyi okuyamadığımızı hatırlayın. Liste 20-3'te, bir `unsafe` bloğu gerektiren ham işaretçiler üzerinde başvuru çözme operatörü `*`'ı kullanıyoruz.
 
-<Listing number="20-3" caption="Bir `unsafe` blok içinde ham işaretçileri çözümlemek">
+<Listing number="20-3" caption="Bir `unsafe` bloğu içinde ham işaretçilerin başvurusunu çözmek">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-03/src/main.rs:here}}
@@ -77,35 +89,45 @@ Ham işaretçileri güvenli kodda oluşturabildiğimizi hatırlayın; ama onlar�
 
 </Listing>
 
-Bir işaretçi oluşturmak tek başına zararlı değildir; risk, onun işaret ettiği değere erişmeye çalıştığımız anda başlar.
+Bir işaretçi oluşturmanın tek başına hiçbir zararı yoktur; geçersiz bir değerle karşı karşıya kalma ihtimalimiz yalnızca işaretçinin gösterdiği değere erişmeye çalıştığımızda ortaya çıkar.
 
-Ayrıca Liste 20-1 ve 20-3'te, aynı bellek konumunu işaret eden hem `*const i32` hem de `*mut i32` ham işaretçileri oluşturduğumuza dikkat edin; bu konum `num` değerinin saklandığı yerdi. Bunun yerine `num` için bir değiştirilemez ve bir değiştirilebilir referans oluşturmaya çalışsaydık kod derlenmezdi; çünkü Rust'ın sahiplik kuralları, değiştirilebilir bir referans varken herhangi bir değiştirilemez referansa izin vermez. Ham işaretçilerle ise aynı konuma hem değiştirilebilir hem değiştirilemez işaretçi oluşturabilir ve değiştirilebilir işaretçi üzerinden veriyi değiştirerek veri yarışı yaratabiliriz. Dikkatli olun.
+Ayrıca Liste 20-1 ve 20-3'te, her ikisi de `num` değerinin saklandığı aynı bellek konumuna işaret eden `*const i32` ve `*mut i32` ham işaretçileri oluşturduğumuza dikkat edin. Bunun yerine `num` değişkenine hem değiştirilemez hem de değiştirilebilir bir referans oluşturmaya çalışsaydık kod derlenmezdi; çünkü Rust'ın sahiplik kuralları herhangi bir değiştirilemez referansla aynı anda değiştirilebilir bir referans bulunmasına izin vermez. Ham işaretçilerle ise aynı konuma hem değiştirilebilir bir işaretçi hem de değiştirilemez bir işaretçi oluşturabilir ve değiştirilebilir işaretçi üzerinden veriyi değiştirerek potansiyel bir veri yarışı yaratabiliriz. Dikkatli olun!
 
-Bütün bu risklere rağmen neden ham işaretçi kullanalım? En önemli kullanım alanlarından biri C koduyla etkileşimdir; bunu bir sonraki kısımda göreceksiniz. Bir diğer kullanım alanı ise ödünç alma denetleyicisinin anlayamadığı güvenli soyutlamalar kurmaktır. Şimdi güvensiz fonksiyonlara geçelim; ardından güvensiz kod kullanan güvenli bir soyutlama örneği göreceğiz.
+Tüm bu tehlikelere rağmen neden ham işaretçi kullanasınız ki? Başlıca kullanım alanlarından biri, bir sonraki bölümde göreceğiniz gibi C koduyla etkileşim kurmaktır. Bir diğer durum ise ödünç alma denetleyicisinin anlayamadığı güvenli soyutlamalar inşa etmektir. Şimdi güvenli olmayan fonksiyonları tanıtacak, ardından güvenli olmayan kod kullanan güvenli bir soyutlama örneğine bakacağız.
 
-### Güvensiz Fonksiyon ya da Metod Çağırmak
+<!-- Old headings. Do not remove or links may break. -->
 
-`unsafe` blok içinde yapabileceğiniz ikinci işlem, güvensiz fonksiyon çağırmaktır. Güvensiz fonksiyon ve metodlar görünüş olarak normal fonksiyon ve metodlarla aynıdır; tek fark, tanımın başında fazladan `unsafe` bulunmasıdır. Bu bağlamda `unsafe`, bu fonksiyonu çağırırken bizim korumamız gereken bazı koşullar olduğunu söyler; çünkü Rust bunları yerine getirdiğimizi garanti edemez. Bir güvensiz fonksiyonu `unsafe` blok içinde çağırdığımızda, "Bu fonksiyonun belgelerini okudum, nasıl kullanılacağını anladım ve sözleşmesini yerine getirme sorumluluğunu üstleniyorum" demiş oluruz.
+<a id="calling-an-unsafe-function-or-method"></a>
+<a id="güvensiz-fonksiyon-ya-da-metod-çağırmak"></a>
 
-Gövdesinde hiçbir şey yapmayan `dangerous` adlı güvensiz bir fonksiyon:
+### Güvenli Olmayan Bir Fonksiyon veya Metot Çağırmak
+
+Güvenli olmayan bir blok içinde gerçekleştirebileceğiniz ikinci işlem türü, güvenli olmayan fonksiyonları çağırmaktır. Güvenli olmayan fonksiyonlar ve metotlar görünüm olarak sıradan fonksiyon ve metotlarla birebir aynıdır; ancak tanımın geri kalanından önce fazladan bir `unsafe` anahtar kelimesi taşırlar. Bu bağlamda `unsafe` anahtar kelimesi, Rust bu gereksinimleri karşıladığımızı garanti edemediği için fonksiyonu çağırırken bizim korumamız gereken bazı gereksinimler bulunduğunu belirtir. Güvenli olmayan bir fonksiyonu bir `unsafe` bloğu içinde çağırarak, bu fonksiyonun dokümantasyonunu okuduğumuzu ve fonksiyonun sözleşmelerini yerine getirme sorumluluğunu üstlendiğimizi beyan etmiş oluruz.
+
+İşte gövdesinde hiçbir iş yapmayan `dangerous` adlı güvenli olmayan bir fonksiyon:
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-01-unsafe-fn/src/main.rs:here}}
 ```
 
-`dangerous` fonksiyonunu ayrı bir `unsafe` blok içinde çağırmalıyız. `unsafe` blok olmadan çağırmaya çalışırsak hata alırız:
+`dangerous` fonksiyonunu ayrı bir `unsafe` bloğu içinde çağırmamız gerekir. `dangerous` fonksiyonunu `unsafe` bloğu olmadan çağırmayı denersek bir hata alırız:
 
 ```console
 {{#include ../listings/ch20-advanced-features/output-only-01-missing-unsafe/output.txt}}
 ```
 
-`unsafe` blok ile Rust'a, fonksiyon belgelerini okuyup doğru kullanımını anladığımızı ve sözleşmesini yerine getirdiğimizi beyan etmiş oluruz.
+`unsafe` bloğuyla Rust'a fonksiyonun dokümantasyonunu okuduğumuzu, onu nasıl doğru kullanacağımızı anladığımızı ve fonksiyonun sözleşmesini yerine getirdiğimizi doğruladığımızı beyan ederiz.
 
-Bir `unsafe` fonksiyonun gövdesi içinde güvensiz işlem yaparken de ayrıca `unsafe` blok kullanmanız gerekir; tıpkı normal fonksiyonda olduğu gibi. Bunu unutursanız derleyici uyarır. Bu da `unsafe` blokları olabildiğince küçük tutmamıza yardımcı olur.
+Bir `unsafe` fonksiyonun gövdesinde güvenli olmayan işlemler gerçekleştirmek için, tıpkı sıradan bir fonksiyonun içinde olduğu gibi yine bir `unsafe` bloğu kullanmanız gerekir ve bunu unutursanız derleyici sizi uyarır. Güvenli olmayan işlemlere fonksiyon gövdesinin tamamında ihtiyaç duyulmayabileceğinden, bu kural `unsafe` bloklarını olabildiğince küçük tutmamıza yardımcı olur.
 
-#### Güvensiz Kod Üzerine Güvenli Soyutlama Kurmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Bir fonksiyon içinde güvensiz kod olması, bütün fonksiyonun `unsafe` olmasını gerektirmez. Hatta güvensiz kodu güvenli bir fonksiyon içine sarmalamak oldukça yaygın bir soyutlamadır. Örnek olarak, standart kütüphanedeki `split_at_mut` fonksiyonunu inceleyelim; bu fonksiyon biraz güvensiz kod gerektirir. Nasıl uygulanabileceğini görelim. Bu güvenli metod, değiştirilebilir dilimler üzerinde tanımlıdır: bir dilim alır ve verilen indiste onu ikiye böler. Liste 20-4, `split_at_mut` kullanımını gösteriyor.
+<a id="creating-a-safe-abstraction-over-unsafe-code"></a>
+<a id="güvensiz-kod-üzerine-güvenli-soyutlama-kurmak"></a>
+
+#### Güvenli Olmayan Kod Üzerine Güvenli Bir Soyutlama Oluşturmak
+
+Bir fonksiyonun güvenli olmayan kod içermesi, fonksiyonun tamamını güvenli olmayan (`unsafe`) olarak işaretlememiz gerektiği anlamına gelmez. Hatta güvenli olmayan kodu güvenli bir fonksiyonun içine sarmalamak oldukça yaygın bir soyutlamadır. Örnek olarak standart kütüphanedeki, biraz güvenli olmayan kod gerektiren `split_at_mut` fonksiyonunu inceleyelim ve onu nasıl uygulayabileceğimizi keşfedelim. Bu güvenli metot, değiştirilebilir dilimler üzerinde tanımlanmıştır: Bir dilim alır ve argüman olarak verilen indeksten bölerek onu iki dilime ayırır. Liste 20-4, `split_at_mut` kullanımını göstermektedir.
 
 <Listing number="20-4" caption="Güvenli `split_at_mut` fonksiyonunu kullanmak">
 
@@ -115,7 +137,7 @@ Bir fonksiyon içinde güvensiz kod olması, bütün fonksiyonun `unsafe` olmas�
 
 </Listing>
 
-Bu fonksiyonu yalnızca güvenli Rust ile uygulayamıyoruz. Deneysel bir sürüm Liste 20-5'teki gibi olabilir; ama derlenmez. Basitlik için `split_at_mut` metod değil, fonksiyon olarak; ayrıca jenerik bir `T` türü yerine yalnızca `i32` dilimleri için uygulanmıştır.
+Bu fonksiyonu yalnızca güvenli Rust kullanarak uygulayamayız. Böyle bir deneme Liste 20-5'teki gibi görünebilir, ancak bu kod derlenmeyecektir. Basitlik adına `split_at_mut`'u bir metot yerine fonksiyon olarak ve jenerik bir `T` türü yerine yalnızca `i32` değerlerinden oluşan dilimler için uygulayacağız.
 
 <Listing number="20-5" caption="Yalnızca güvenli Rust kullanarak `split_at_mut` uygulama denemesi">
 
@@ -125,21 +147,21 @@ Bu fonksiyonu yalnızca güvenli Rust ile uygulayamıyoruz. Deneysel bir sürüm
 
 </Listing>
 
-Bu fonksiyon önce dilimin toplam uzunluğunu alır. Sonra parametre olarak verilen indis değerinin, uzunluğa küçük ya da eşit olup olmadığını denetleyerek dilimin içinde kaldığını doğrular. Bu doğrulama şu anlama gelir: eğer uzunluktan büyük bir indis verirsek, fonksiyon o indisi kullanmaya çalışmadan önce panikler.
+Bu fonksiyon önce dilimin toplam uzunluğunu alır. Ardından parametre olarak verilen indeksin uzunluğa küçük veya eşit olup olmadığını kontrol ederek dilim sınırları içinde kaldığını doğrular. Bu doğrulama, dilimi bölmek için uzunluktan daha büyük bir indeks geçirirsek fonksiyonun o indeksi kullanmaya çalışmadan önce panikleyeceği anlamına gelir.
 
-Ardından bir demet içinde iki değiştirilebilir dilim döndürürüz: biri orijinal dilimin başından `mid` indisine kadar, diğeri de `mid` indisten sona kadar.
+Daha sonra bir demet içinde iki değiştirilebilir dilim döndürürüz: biri orijinal dilimin başlangıcından `mid` indeksine kadar, diğeri ise `mid` indeksinden dilimin sonuna kadar.
 
-Liste 20-5'teki kodu derlemeye çalışırsak hata alırız:
+Liste 20-5'teki kodu derlemeyi denediğimizde şu hatayı alırız:
 
 ```console
 {{#include ../listings/ch20-advanced-features/listing-20-05/output.txt}}
 ```
 
-Rust'ın ödünç alma denetleyicisi, dilimin farklı parçalarını ödünç aldığımızı anlayamaz; yalnızca aynı dilimden iki kez ödünç aldığımızı görür. Oysa bir dilimin farklı parçalarını ödünç almak temelde güvenlidir; çünkü iki dilim çakışmaz. Rust bunu anlayacak kadar akıllı değildir. Kodun doğru olduğunu bildiğimiz, ama Rust'ın bilemediği durumlarda `unsafe` devreye girer.
+Rust'ın ödünç alma denetleyicisi dilimin farklı bölümlerini ödünç aldığımızı anlayamaz; yalnızca aynı dilimden iki kez ödünç aldığımızı bilir. İki dilim birbiriyle örtüşmediği için bir dilimin farklı bölümlerini ödünç almak temelde hiçbir sorun oluşturmaz, ancak Rust bunu bilecek kadar akıllı değildir. Kodun sorunsuz olduğunu bildiğimiz fakat Rust'ın bunu anlayamadığı durumlarda güvenli olmayan koda başvurma zamanı gelmiştir.
 
-Liste 20-6, `split_at_mut` uygulamasını çalıştırmak için `unsafe` blok, ham işaretçi ve bazı güvensiz fonksiyon çağrılarını nasıl kullanacağımızı gösteriyor.
+Liste 20-6, `split_at_mut` uygulamasının çalışmasını sağlamak için bir `unsafe` bloğunun, bir ham işaretçinin ve güvenli olmayan fonksiyonlara yapılan bazı çağrıların nasıl kullanılacağını göstermektedir.
 
-<Listing number="20-6" caption="`split_at_mut` fonksiyonunun uygulanışında güvensiz kod kullanmak">
+<Listing number="20-6" caption="`split_at_mut` fonksiyonunun uygulanışında güvenli olmayan kod kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-06/src/main.rs:here}}
@@ -147,15 +169,15 @@ Liste 20-6, `split_at_mut` uygulamasını çalıştırmak için `unsafe` blok, h
 
 </Listing>
 
-4. bölümdeki ["Dilim Türü"][the-slice-type]<!-- ignore --> kısmından hatırlayın: dilim, bir veriye işaretçi ve dilimin uzunluğundan oluşur. Dilimin uzunluğunu `len` ile, ham işaretçisini de `as_mut_ptr` ile alıyoruz. Burada `i32` değerlerinden oluşan değiştirilebilir bir dilimimiz olduğundan `as_mut_ptr`, `*mut i32` türünde ham işaretçi döndürür; bunu `ptr` değişkeninde tutuyoruz.
+Bölüm 4'teki [“Dilim (Slice) Türü”][the-slice-type]<!-- ignore --> bölümünden, bir dilimin bazı verilere yönelen bir işaretçi ve dilimin uzunluğundan oluştuğunu hatırlayın. Bir dilimin uzunluğunu almak için `len` metodunu, dilimin ham işaretçisine erişmek içinse `as_mut_ptr` metodunu kullanırız. Bu örnekte `i32` değerlerine ait değiştirilebilir bir dilimimiz olduğundan `as_mut_ptr`, `*mut i32` türünde bir ham işaretçi döndürür ve biz de bunu `ptr` değişkeninde saklarız.
 
-`mid` indeksinin dilim içinde olduğunu doğrulayan `assert!` çağrısını koruyoruz. Sonra güvensiz koda geçiyoruz: `slice::from_raw_parts_mut`, bir ham işaretçi ve uzunluk alıp dilim üretir. Bunu, `ptr` ile başlayan ve `mid` eleman uzunluğunda bir dilim oluşturmak için kullanıyoruz. Sonra `ptr.add(mid)` ile `mid` konumundan başlayan yeni ham işaretçiyi alıp, kalan eleman sayısıyla ikinci dilimi oluşturuyoruz.
+`mid` indeksinin dilim içinde kaldığını doğrulayan kontrolü koruruz. Ardından güvenli olmayan koda geçeriz: `slice::from_raw_parts_mut` fonksiyonu bir ham işaretçi ve bir uzunluk alır, bunlardan bir dilim oluşturur. Bu fonksiyonu `ptr` adresinden başlayan ve `mid` öğe uzunluğunda olan bir dilim oluşturmak için kullanırız. Sonra `ptr` üzerinde argüman olarak `mid` değerini vererek `add` metodunu çağırıp `mid` konumundan başlayan bir ham işaretçi elde eder ve bu işaretçiyi `mid`'den sonra kalan öğe sayısıyla birlikte uzunluk olarak kullanarak ikinci dilimi oluştururuz.
 
-`slice::from_raw_parts_mut` güvensizdir; çünkü kendisine verilen ham işaretçinin geçerli olduğuna güvenmek zorundadır. Ham işaretçilerdeki `add` metodu da güvensizdir; çünkü ofsetlenmiş konumun da geçerli işaretçi olduğuna güvenir. Bu yüzden bu çağrıları `unsafe` blok içine koyduk. Koda bakarak ve `mid <= len` doğrulamasını ekleyerek, `unsafe` blokta kullanılan tüm ham işaretçilerin dilim içindeki verilere ait geçerli işaretçiler olduğunu görebiliriz. Bu, `unsafe` için uygun ve kabul edilebilir bir kullanım örneğidir.
+`slice::from_raw_parts_mut` fonksiyonu güvenli değildir; çünkü bir ham işaretçi alır ve bu işaretçinin geçerli olduğuna güvenmek zorundadır. Ham işaretçiler üzerindeki `add` metodu da kaydırılan konumun geçerli bir işaretçi olduğuna güvenmek zorunda olduğu için güvenli değildir. Bu nedenle `slice::from_raw_parts_mut` ve `add` çağrılarımızı gerçekleştirebilmek için etraflarına bir `unsafe` bloğu koymamız gerekti. Koda bakarak ve `mid` değerinin `len` değerinden küçük veya ona eşit olmasını şart koşan doğrulamayı ekleyerek, `unsafe` bloğu içinde kullanılan tüm ham işaretçilerin dilim içindeki verilere işaret eden geçerli işaretçiler olacağını söyleyebiliriz. Bu, `unsafe` için kabul edilebilir ve yerinde bir kullanımdır.
 
-Sonuçta oluşan `split_at_mut` fonksiyonunu `unsafe` olarak işaretlememiz gerekmez; ayrıca bu fonksiyonu güvenli Rust kodundan çağırabiliriz. Yani güvensiz kodun üzerine güvenli bir soyutlama kurmuş olduk.
+Ortaya çıkan `split_at_mut` fonksiyonunu `unsafe` olarak işaretlememiz gerekmediğine ve bu fonksiyonu güvenli Rust kodundan çağırabildiğimize dikkat edin. Yalnızca bu fonksiyonun erişebildiği verilerden geçerli işaretçiler ürettiği için `unsafe` kodu güvenli bir biçimde kullanan bir fonksiyon uygulamasıyla, güvenli olmayan kod üzerine güvenli bir soyutlama oluşturmuş olduk.
 
-Buna karşılık, Liste 20-7'deki `slice::from_raw_parts_mut` kullanımı büyük olasılıkla dilim kullanıldığında programı çökertir. Bu kod, keyfi bir bellek konumu alıp 10.000 eleman uzunluğunda bir dilim oluşturur.
+Buna karşılık, Liste 20-7'deki `slice::from_raw_parts_mut` kullanımı dilim kullanıldığında büyük olasılıkla çökecektir. Bu kod keyfi bir bellek konumu alır ve 10.000 öğe uzunluğunda bir dilim oluşturur.
 
 <Listing number="20-7" caption="Keyfi bir bellek konumundan dilim oluşturmak">
 
@@ -165,15 +187,20 @@ Buna karşılık, Liste 20-7'deki `slice::from_raw_parts_mut` kullanımı büyü
 
 </Listing>
 
-Bu keyfi konumdaki belleğe sahip değiliz; ayrıca bu kodun oluşturduğu dilimin geçerli `i32` değerleri içerdiğine dair hiçbir garanti yoktur. `values` değişkenini geçerli dilimmiş gibi kullanmaya çalışmak tanımsız davranış üretir.
+Bu keyfi konumdaki belleğin sahibi değiliz ve bu kodun oluşturduğu dilimin geçerli `i32` değerleri içerdiğine dair hiçbir garanti yoktur. `values` değişkenini geçerli bir dilimmiş gibi kullanmaya çalışmak tanımsız davranışla sonuçlanır.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="using-extern-functions-to-call-external-code"></a>
+<a id="dış-kodu-çağırmak-için-extern-fonksiyonlarını-kullanmak"></a>
 
 #### Dış Kodu Çağırmak İçin `extern` Fonksiyonlarını Kullanmak
 
-Bazen Rust kodunuzun başka bir dilde yazılmış kodla etkileşmesi gerekir. Bunun için Rust'ta _Yabancı Fonksiyon Arayüzü_ (Foreign Function Interface, FFI) oluşturmaya ve kullanmaya yarayan `extern` anahtar kelimesi vardır.
+Bazen Rust kodunuzun başka bir dilde yazılmış kodlarla etkileşim kurması gerekebilir. Bunun için Rust, bir programlama dilinin fonksiyonlar tanımlamasına ve farklı (yabancı) bir programlama dilinin bu fonksiyonları çağırmasına olanak tanıyan _Yabancı Fonksiyon Arayüzü (Foreign Function Interface — FFI)_ oluşturmayı ve kullanmayı kolaylaştıran `extern` anahtar kelimesine sahiptir.
 
-Liste 20-8, C standart kütüphanesindeki `abs` fonksiyonuyla bütünleşmenin nasıl kurulacağını gösteriyor. `extern` blokları içinde bildirilen fonksiyonlar genellikle Rust'tan çağrılırken güvensiz sayılır; bu yüzden `extern` blokları da `unsafe` olmalıdır. Nedeni basittir: diğer diller Rust'ın kurallarını ve garantilerini uygulamaz, Rust da bunları denetleyemez; dolayısıyla sorumluluk programcıya düşer.
+Liste 20-8, C standart kütüphanesindeki `abs` fonksiyonuyla nasıl entegrasyon kurulacağını göstermektedir. `extern` blokları içinde bildirilen fonksiyonları Rust kodundan çağırmak genellikle güvenli değildir; bu nedenle `extern` blokları da `unsafe` olarak işaretlenmelidir. Bunun nedeni, diğer dillerin Rust'ın kurallarını ve garantilerini zorunlu kılmaması ve Rust'ın bunları denetleyememesidir; dolayısıyla güvenliği sağlama sorumluluğu programcıya düşer.
 
-<Listing number="20-8" file-name="src/main.rs" caption="Başka bir dilde tanımlanmış `extern` fonksiyonunu bildirmek ve çağırmak">
+<Listing number="20-8" file-name="src/main.rs" caption="Başka bir dilde tanımlanmış bir `extern` fonksiyonunu bildirmek ve çağırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-08/src/main.rs}}
@@ -181,11 +208,11 @@ Liste 20-8, C standart kütüphanesindeki `abs` fonksiyonuyla bütünleşmenin n
 
 </Listing>
 
-`unsafe extern "C"` blok içinde, başka bir dilden çağırmak istediğimiz dış fonksiyonların adlarını ve imzalarını yazarız. Buradaki `"C"` kısmı, dış fonksiyonun kullandığı _uygulama ikili arayüzünü_ (application binary interface, ABI) belirtir. ABI, fonksiyonun assembly düzeyinde nasıl çağrılacağını tanımlar. `"C"` ABI'si en yaygın olanıdır ve C dilinin ABI'sini izler. Rust'ın desteklediği bütün ABI'ler hakkında bilgi [Rust Reference][ABI] içinde bulunabilir.
+`unsafe extern "C"` bloğu içinde, başka bir dilden çağırmak istediğimiz dış fonksiyonların adlarını ve imzalarını listeleriz. `"C"` kısmı, dış fonksiyonun hangi _uygulama ikili arayüzünü (application binary interface — ABI)_ kullandığını tanımlar: ABI, fonksiyonun assembly düzeyinde nasıl çağrılacağını belirler. `"C"` ABI'si en yaygın olanıdır ve C programlama dilinin ABI'sini takip eder. Rust'ın desteklediği tüm ABI'ler hakkındaki bilgilere [Rust Referansı'ndan][ABI] ulaşabilirsiniz.
 
-`unsafe extern` blok içinde bildirilen her öğe örtük olarak güvensizdir. Ancak bazı FFI fonksiyonlarını çağırmak gerçekten güvenli olabilir. Örneğin C standart kütüphanesindeki `abs` fonksiyonunun bellek güvenliğiyle ilgili ek bir şartı yoktur; herhangi bir `i32` ile çağrılabilir. Böyle durumlarda, bu özel fonksiyonun güvenle çağrılabildiğini belirtmek için `safe` anahtar kelimesini kullanabiliriz. Bu değişikliği yaptıktan sonra artık çağrı için `unsafe` blok gerekmez; bunu Liste 20-9'da görebilirsiniz.
+Bir `unsafe extern` bloğu içinde bildirilen her öğe örtük olarak güvenli değildir. Bununla birlikte, bazı FFI fonksiyonlarını çağırmak *gerçekten* güvenlidir. Örneğin C standart kütüphanesindeki `abs` fonksiyonunun bellek güvenliğiyle ilgili herhangi bir çekincesi yoktur ve herhangi bir `i32` değeriyle çağrılabileceğini biliriz. Bu gibi durumlarda, bir `unsafe extern` bloğu içinde yer alsa bile bu belirli fonksiyonu çağırmanın güvenli olduğunu ifade etmek için `safe` anahtar kelimesini kullanabiliriz. Bu değişikliği yaptığımızda, Liste 20-9'da gösterildiği gibi onu çağırmak artık bir `unsafe` bloğu gerektirmez.
 
-<Listing number="20-9" file-name="src/main.rs" caption="Bir `unsafe extern` blok içindeki fonksiyonu açıkça `safe` diye işaretlemek ve güvenle çağırmak">
+<Listing number="20-9" file-name="src/main.rs" caption="Bir `unsafe extern` bloğu içindeki fonksiyonu açıkça `safe` olarak işaretlemek ve güvenle çağırmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-09/src/main.rs}}
@@ -193,13 +220,17 @@ Liste 20-8, C standart kütüphanesindeki `abs` fonksiyonuyla bütünleşmenin n
 
 </Listing>
 
-Bir fonksiyonu `safe` diye işaretlemek onu sihirli biçimde güvenli yapmaz. Bu, Rust'a verdiğiniz bir söz gibidir. O sözün tutulduğundan emin olmak yine sizin görevinizdir.
+Bir fonksiyonu `safe` olarak işaretlemek onu kendiliğinden güvenli hâle getirmez! Bunun yerine, Rust'a o fonksiyonun güvenli olduğuna dair verdiğiniz bir söz gibidir. Bu sözün tutulduğundan emin olmak yine sizin sorumluluğunuzdadır!
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="calling-rust-functions-from-other-languages"></a>
 
 #### Rust Fonksiyonlarını Başka Dillerden Çağırmak
 
-`extern` ile başka dillerin Rust fonksiyonlarını çağırabileceği bir arayüz de oluşturabiliriz. Bunun için ayrı bir `extern` blok yazmak yerine, ilgili `fn` öncesine `extern` anahtar kelimesi ile kullanılacak ABI'yi ekleriz. Ayrıca Rust derleyicisinin bu fonksiyonun adını değiştirmemesini söylemek için `#[unsafe(no_mangle)]` açıklamasını eklemeliyiz. _Mangling_, derleyicinin fonksiyon adını derleme sürecinin diğer kısımları için daha fazla bilgi taşıyan ama insan açısından daha az okunur bir biçime dönüştürmesidir. Her dil derleyicisi bunu biraz farklı yapar. Bir Rust fonksiyonunun diğer dillerce adıyla bulunabilmesi için bu ad değişimini kapatmamız gerekir. Bu da güvensizdir; çünkü yerleşik ad dönüştürmesi olmayınca kütüphaneler arasında ad çakışmaları olabilir. Güvenli bir ad seçmek bizim sorumluluğumuzdur.
+Diğer dillerin Rust fonksiyonlarını çağırmasına olanak tanıyan bir arayüz oluşturmak için de `extern` kullanabiliriz. Bütün bir `extern` bloğu oluşturmak yerine, ilgili fonksiyonun `fn` anahtar kelimesinden hemen önce `extern` anahtar kelimesini ekler ve kullanılacak ABI'yi belirtiriz. Ayrıca Rust derleyicisine bu fonksiyonun adını değiştirmemesini (*mangle* etmemesini) söylemek için `#[unsafe(no_mangle)]` özniteliğini eklememiz gerekir. _Ad değiştirme (mangling)_, derleyicinin bir fonksiyona verdiğimiz adı, derleme sürecinin diğer aşamalarının kullanabileceği daha fazla bilgi içeren ancak insanlar tarafından okunması daha zor olan farklı bir ada dönüştürmesidir. Her programlama dilinin derleyicisi adları biraz farklı biçimde dönüştürür; bu nedenle bir Rust fonksiyonunun diğer diller tarafından adıyla çağrılabilmesi için Rust derleyicisinin ad dönüştürme işlemini devre dışı bırakmamız gerekir. Yerleşik ad dönüştürmesi olmadığında kütüphaneler arasında ad çakışmaları yaşanabileceğinden bu işlem güvenli değildir; dolayısıyla seçtiğimiz adın dönüştürülmeden dışa aktarılmasının güvenli olduğundan emin olmak bizim sorumluluğumuzdadır.
 
-Aşağıdaki örnekte `call_from_c` fonksiyonunu, paylaşılan kütüphane olarak derlenip C tarafından bağlandıktan sonra C koduna açıyoruz:
+Aşağıdaki örnekte, paylaşılan bir kütüphane olarak derlenip C tarafından bağlandıktan sonra `call_from_c` fonksiyonunu C kodundan erişilebilir hâle getiriyoruz:
 
 ```rust
 #[unsafe(no_mangle)]
@@ -208,13 +239,18 @@ pub extern "C" fn call_from_c() {
 }
 ```
 
-Bu `extern` kullanımında `unsafe`, `extern` blok üzerinde değil yalnızca öznitelikte gerekir.
+`extern` anahtar kelimesinin bu kullanımı, `extern` bloğu üzerinde değil yalnızca öznitelik içinde `unsafe` gerektirir.
 
-### Değiştirilebilir Statik Değişkene Erişmek ya da Onu Değiştirmek
+<!-- Old headings. Do not remove or links may break. -->
 
-Bu kitapta henüz küresel değişkenlerden söz etmedik. Rust bunları destekler; ama sahiplik kurallarıyla birlikte sorunlu olabilirler. Örneğin iki iş parçacığı aynı değiştirilebilir küresel değişkene erişirse veri yarışı oluşabilir.
+<a id="accessing-or-modifying-a-mutable-static-variable"></a>
+<a id="değiştirilebilir-statik-değişkene-erişmek-ya-da-onu-değiştirmek"></a>
 
-Rust'ta küresel değişkenlere _statik_ değişken denir. Liste 20-10, değeri string dilimi olan bir statik değişken bildirimi ve kullanımını gösteriyor.
+### Değiştirilebilir Bir Statik Değişkene Erişmek veya Onu Değiştirmek
+
+Bu kitapta şimdiye dek küresel değişkenlerden bahsetmedik; Rust bunları destekler ancak Rust'ın sahiplik kurallarıyla birlikte sorun yaratabilirler. İki thread aynı değiştirilebilir küresel değişkene erişiyorsa bu durum bir veri yarışına yol açabilir.
+
+Rust'ta küresel değişkenlere _statik (static)_ değişkenler denir. Liste 20-10, değeri bir string dilimi olan statik bir değişkenin bildirim ve kullanım örneğini göstermektedir.
 
 <Listing number="20-10" file-name="src/main.rs" caption="Değiştirilemez bir statik değişkeni tanımlamak ve kullanmak">
 
@@ -224,11 +260,11 @@ Rust'ta küresel değişkenlere _statik_ değişken denir. Liste 20-10, değeri 
 
 </Listing>
 
-Statik değişkenler, 3. bölümde sözünü ettiğimiz [sabitlere][constants]<!-- ignore --> benzer. Ancak adlandırma kuralı gereği statik değişken adları genellikle `SCREAMING_SNAKE_CASE` ile yazılır. Statik değişkenler yalnızca `'static` ömürlü referanslar tutabilir; yani Rust derleyicisi bu ömrü kendi çıkarabilir, bizim ayrıca yazmamız gerekmez. Değiştirilemez statik değişkene erişmek güvenlidir.
+Statik değişkenler, Bölüm 3'teki [“Sabitleri Bildirmek”][constants]<!-- ignore --> bölümünde ele aldığımız sabitlere benzer. Gelenek gereği statik değişkenlerin adları `SCREAMING_SNAKE_CASE` biçiminde yazılır. Statik değişkenler yalnızca `'static` ömrüne sahip referansları saklayabilir; bu da Rust derleyicisinin ömrü kendisinin çıkarabileceği ve bizim bunu açıkça belirtmemize gerek olmadığı anlamına gelir. Değiştirilemez bir statik değişkene erişmek güvenlidir.
 
-Sabitlerle değiştirilemez statik değişkenler arasındaki ince farklardan biri şudur: statik değişkenlerdeki değerlerin bellekte sabit bir adresi vardır. Bu değeri kullanmak her zaman aynı veriye erişir. Sabitler ise kullanıldıkları yerde kopyalanabilir. Bir diğer fark da statik değişkenlerin değiştirilebilir olabilmesidir. Değiştirilebilir statik değişkenlere erişmek ve onları değiştirmek _güvensizdir_. Liste 20-11, `COUNTER` adlı değiştirilebilir statik değişkenin nasıl bildirildiğini, erişildiğini ve değiştirildiğini gösteriyor.
+Sabitler ile değiştirilemez statik değişkenler arasındaki ince bir fark, statik değişkendeki değerlerin bellekte sabit bir adrese sahip olmasıdır. Bu değeri kullanmak her zaman aynı veriye erişecektir. Öte yandan sabitlerin, her kullanıldıklarında verilerini çoğaltmasına izin verilir. Bir diğer fark ise statik değişkenlerin değiştirilebilir olabilmesidir. Değiştirilebilir statik değişkenlere erişmek ve onları değiştirmek _güvenli değildir_. Liste 20-11, `COUNTER` adlı değiştirilebilir bir statik değişkenin nasıl bildirileceğini, ona nasıl erişileceğini ve nasıl değiştirileceğini göstermektedir.
 
-<Listing number="20-11" file-name="src/main.rs" caption="Değiştirilebilir statik değişkenden okumak ya da ona yazmak güvensizdir">
+<Listing number="20-11" file-name="src/main.rs" caption="Değiştirilebilir bir statik değişkenden okumak veya ona yazmak güvenli değildir.">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-11/src/main.rs}}
@@ -236,19 +272,34 @@ Sabitlerle değiştirilemez statik değişkenler arasındaki ince farklardan bir
 
 </Listing>
 
-Normal değişkenlerde olduğu gibi, değiştirilebilirliği `mut` ile belirtiriz. `COUNTER` üzerinde okuma veya yazma yapan her kod `unsafe` blok içinde olmalıdır. Liste 20-11'deki kod tek iş parçacıklı olduğundan derlenir ve beklediğimiz gibi `COUNTER: 3` yazdırır. Birden çok iş parçacığının `COUNTER`'a erişmesi ise veri yarışı üretmeye çok açıktır; bu da tanımsız davranıştır. Bu nedenle fonksiyonun tamamını `unsafe` işaretleyip güvenlik sınırlamasını belgelememiz gerekir.
+Sıradan değişkenlerde olduğu gibi değiştirilebilirliği `mut` anahtar kelimesiyle belirtiriz. `COUNTER` değişkeninden okuma veya ona yazma yapan her kod bir `unsafe` bloğu içinde yer almalıdır. Liste 20-11'deki kod tek thread'li olduğu için derlenir ve beklediğimiz gibi `COUNTER: 3` çıktısını verir. Birden fazla thread'in `COUNTER`'a erişmesi büyük olasılıkla veri yarışlarına yol açacağından tanımsız davranıştır. Bu nedenle, fonksiyonu çağıran herkesin güvenli bir şekilde neleri yapıp neleri yapamayacağını bilmesi için fonksiyonun tamamını `unsafe` olarak işaretlememiz ve güvenlik kısıtlamasını belgelememiz gerekir.
 
-Güvensiz bir fonksiyon yazdığımızda, çağıranın güvenle kullanabilmesi için ne yapması gerektiğini açıklayan `SAFETY` ile başlayan yorumlar yazmak yaygın bir Rust geleneğidir. Aynı şekilde güvensiz bir işlem yaptığımızda da güvenlik kurallarını nasıl koruduğumuzu anlatan `SAFETY` yorumları yazmak yerleşik bir pratiktir.
+Güvenli olmayan bir fonksiyon yazdığımız her durumda, `SAFETY` ile başlayan ve çağıran tarafın fonksiyonu güvenle çağırabilmek için ne yapması gerektiğini açıklayan bir yorum yazmak idiyomatiktir. Benzer şekilde, güvenli olmayan bir işlem gerçekleştirdiğimiz her yerde de güvenlik kurallarının nasıl korunduğunu açıklamak üzere `SAFETY` ile başlayan bir yorum yazmak idiyomatik bir alışkanlıktır.
 
-Ayrıca derleyici, değiştirilebilir statik değişkene referans oluşturma girişimlerini varsayılan olarak engeller. Bunun için ya `#[allow(static_mut_refs)]` ile bu lint korumasını açıkça devre dışı bırakmanız ya da ham ödünç alma işleçlerinden biriyle oluşturulmuş ham işaretçi üzerinden erişmeniz gerekir. Buna, burada `println!` içinde olduğu gibi referansın görünmeden oluşturulduğu durumlar da dahildir. Statik değiştirilebilir değişkenlere referansların ham işaretçi üzerinden oluşturulmasını zorunlu kılmak, güvenlik şartlarını daha görünür hâle getirir.
+Ayrıca derleyici, değiştirilebilir bir statik değişkene referans oluşturma girişimlerini bir derleyici denetimi (*lint*) aracılığıyla varsayılan olarak reddeder. Ya `#[allow(static_mut_refs)]` özniteliğini ekleyerek bu lint korumasından açıkça vazgeçmeniz ya da değiştirilebilir statik değişkene ham ödünç alma operatörlerinden biriyle oluşturulmuş bir ham işaretçi üzerinden erişmeniz gerekir. Bu kural, bu kod listesindeki `println!` kullanımında olduğu gibi referansın görünmez biçimde oluşturulduğu durumları da kapsar. Değiştirilebilir statik değişkenlere referansların ham işaretçiler aracılığıyla oluşturulmasını zorunlu kılmak, bunları kullanmaya yönelik güvenlik gereksinimlerini daha belirgin hâle getirmeye yardımcı olur.
 
-Genel erişime açık değiştirilebilir veriyle çalışırken veri yarışı olmadığını garanti etmek zordur; bu yüzden Rust değiştirilebilir statik değişkenleri güvensiz kabul eder. Mümkün olduğunda, 16. bölümde ele aldığımız eşzamanlılık tekniklerini ve iş parçacığı güvenli akıllı işaretçileri kullanmak daha iyidir.
+Küresel olarak erişilebilen değiştirilebilir verilerde veri yarışı olmadığından emin olmak zordur; Rust'ın değiştirilebilir statik değişkenleri güvenli olmayan kabul etmesinin nedeni budur. Mümkün olan her durumda, farklı thread'lerden yapılan veri erişiminin güvenli bir şekilde gerçekleştirildiğini derleyicinin denetleyebilmesi için Bölüm 16'da ele aldığımız eşzamanlılık tekniklerini ve thread güvenli akıllı işaretçileri kullanmak tercih edilmelidir.
 
-### Güvensiz Trait Uygulamak
+> Not: **Rust 2024 Sürümü ve Güvenli Olmayan Kod Sıkılaştırmaları:** Eski ders kaynaklarında veya Rust 2021 ve öncesi sürümlerle yazılmış crate'lerde farklı `unsafe` sözdizimleriyle karşılaşabilirsiniz. Rust 2024 Sürümü ([Ek E: Sürümler][editions]), güvenlik sorumluluklarını kod üzerinde çok daha açık ve görünür kılmak amacıyla önemli iyileştirmeler getirmiştir:
+>
+> - **Ham ödünç alma operatörleri (`&raw const` ve `&raw mut`):** Eski kodlarda ham işaretçi oluşturmak için kullanılan `&num as *const i32` veya `std::ptr::addr_of!(num)` yerine artık doğrudan `&raw const num` ve `&raw mut num` operatörleri kullanılır. Bu operatörler ara aşamada geçici bir referans oluşturmadığı için hizalanmamış (*unaligned*) alanlara veya `static mut` değişkenlere tanımsız davranış riski olmadan işaretçi üretebilir.
+> - **`unsafe fn` gövdesinde açık `unsafe` bloğu:** Eskiden bir fonksiyon `unsafe fn` olarak işaretlendiğinde tüm gövdesi örtük bir `unsafe` bloğu sayılıyordu. Rust 2024 ile birlikte, Liste 20-11'deki `add_to_count` fonksiyonunda gördüğünüz gibi `unsafe fn` içinde dahi güvenli olmayan işlemleri dar kapsamlı `unsafe { ... }` blokları içine almanız beklenir.
+> - **`unsafe extern` ve `safe fn`:** Önceki sürümlerde yalnızca `extern "C" { ... }` şeklinde yazılan bloklar, Rust 2024'te dış imzaların doğruluğunu garanti etme sorumluluğunu vurgulamak için `unsafe extern "C" { ... }` olarak yazılır; buna karşılık her geçerli girdiyle çağrılması güvenli olan dış fonksiyonlar blok içinde `safe fn` ile işaretlenebilir.
+> - **Güvenli olmayan öznitelikler (`#[unsafe(...)]`):** Sembol çakışmalarına yol açabilecek `#[no_mangle]` gibi öznitelikler artık güvenlik sözleşmesini açıkça göstermek üzere `#[unsafe(no_mangle)]` biçiminde yazılır.
+> - **`static_mut_refs` lint engeli:** Değiştirilebilir statik değişkenlere doğrudan veya `println!("{COUNTER}")` gibi makrolar aracılığıyla örtük referans oluşturulması derleyici tarafından varsayılan olarak reddedilir; Liste 20-11'deki `*(&raw const COUNTER)` ifadesinde olduğu gibi ham işaretçi kullanılması gerekir.
+>
+> Sürümler arasındaki bu geçişlerin ayrıntılarını [_Rust Sürüm Rehberi_](https://hakantr.github.io/rust-surum/) üzerinden inceleyebilirsiniz.
 
-`unsafe` ile güvensiz bir trait de uygulayabiliriz. Bir trait, derleyicinin doğrulayamadığı en az bir değişmezi varsa güvensizdir. Bir trait'i `unsafe` ilan etmek için `trait` öncesine `unsafe` koyarız ve uygulamasını da `unsafe` ile işaretleriz. Bunu Liste 20-12'de görebilirsiniz.
+<!-- Old headings. Do not remove or links may break. -->
 
-<Listing number="20-12" caption="Güvensiz bir trait tanımlamak ve uygulamak">
+<a id="implementing-an-unsafe-trait"></a>
+<a id="güvensiz-trait-uygulamak"></a>
+
+### Güvenli Olmayan Bir Trait Uygulamak
+
+Güvenli olmayan bir trait uygulamak için `unsafe` kullanabiliriz. Metotlarından en az biri derleyicinin doğrulayamadığı bir _değişmeze (invariant)_ sahip olduğunda o trait güvenli değildir. Bir trait'in `unsafe` olduğunu, Liste 20-12'de gösterildiği gibi `trait` öncesine `unsafe` anahtar kelimesini ekleyerek ve trait uygulamasını da `unsafe` olarak işaretleyerek bildiririz.
+
+<Listing number="20-12" caption="Güvenli olmayan bir trait tanımlamak ve uygulamak">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-12/src/main.rs:here}}
@@ -256,57 +307,62 @@ Genel erişime açık değiştirilebilir veriyle çalışırken veri yarışı o
 
 </Listing>
 
-`unsafe impl` ile, derleyicinin denetleyemediği değişmezleri bizim koruyacağımıza söz vermiş oluruz.
+`unsafe impl` kullanarak, derleyicinin doğrulayamadığı değişmezleri koruyacağımıza söz vermiş oluruz.
 
-Örnek olarak, 16. bölümdeki ["`Send` ve `Sync` ile Genişletilebilir Eşzamanlılık"][send-and-sync]<!-- ignore --> kısmında ele aldığımız `Send` ve `Sync` işaretleyici trait'lerini hatırlayın. Türlerimiz yalnızca `Send` ve `Sync` uygulayan türlerden oluşuyorsa, derleyici bu trait'leri otomatik uygular. Eğer ham işaretçiler gibi `Send` ya da `Sync` uygulamayan bir tür içeren bir yapı tanımlayıp bunu `Send` veya `Sync` olarak işaretlemek istersek `unsafe` kullanmamız gerekir. Rust, türümüzün iş parçacıkları arasında güvenli biçimde gönderilebildiğini ya da birden çok iş parçacığından güvenle erişilebildiğini doğrulayamaz; bu yüzden bu denetimi elle yapıp bunu `unsafe` ile belirtmemiz gerekir.
+Örnek olarak, Bölüm 16'daki [“`Send` ve `Sync` ile Genişletilebilir Eşzamanlılık”][send-and-sync]<!-- ignore --> bölümünde ele aldığımız `Send` ve `Sync` işaretleyici trait'lerini hatırlayın: Türlerimiz tamamen `Send` ve `Sync` uygulayan diğer türlerden oluşuyorsa derleyici bu trait'leri otomatik olarak uygular. Ham işaretçiler gibi `Send` veya `Sync` uygulamayan bir tür barındıran bir tür uygularsak ve bu türü `Send` ya da `Sync` olarak işaretlemek istersek `unsafe` kullanmamız gerekir. Rust, türümüzün thread'ler arasında güvenle gönderilebilme veya birden fazla thread'den güvenle erişilebilme garantilerini koruduğunu doğrulayamaz; bu nedenle bu denetimleri elle yapmamız ve bunu `unsafe` ile belirtmemiz gerekir.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="accessing-fields-of-a-union"></a>
 
 ### `union` Alanlarına Erişmek
 
-Yalnızca `unsafe` ile yapılabilen son işlem, bir `union` alanına erişmektir. `union`, `struct`'a benzer; ancak belirli bir anda yalnızca bir bildirilen alanın kullanıldığı varsayılır. `union`'lar en çok C kodundaki `union`'larla etkileşim için kullanılır. Rust, `union` örneğinde o anda hangi tür verinin tutulduğunu garanti edemediği için alan erişimi güvensizdir. `union`'lar hakkında daha fazla bilgiyi [Rust Reference][unions] içinde bulabilirsiniz.
+Yalnızca `unsafe` ile çalışan son işlem, bir *birliğin (`union`)* alanlarına erişmektir. Bir `union`, `struct`'a benzer; ancak belirli bir örnekte herhangi bir anda bildirilen alanlardan yalnızca biri kullanılır. `union`'lar öncelikle C kodundaki `union`'larla etkileşim kurmak amacıyla kullanılır. Rust, `union` örneğinde o anda saklanan verinin türünü garanti edemediği için `union` alanlarına erişmek güvenli değildir. `union`'lar hakkında daha fazla bilgiyi [Rust Referansı'nda][unions] bulabilirsiniz.
 
-### Güvensiz Kodu Denetlemek İçin Miri Kullanmak
+<!-- Old headings. Do not remove or links may break. -->
 
-Güvensiz kod yazarken, yazdığınız şeyin gerçekten güvenli ve doğru olup olmadığını denetlemek isteyebilirsiniz. Bunun en iyi yollarından biri Miri kullanmaktır. Miri, tanımsız davranışı saptamak için geliştirilmiş resmî bir Rust aracıdır. Ödünç alma denetleyicisi derleme zamanında çalışan _statik_ bir araçken, Miri çalışma zamanında çalışan _dinamik_ bir araçtır. Programınızı ya da test paketinizi çalıştırıp, Rust'ın çalışma kurallarını ihlal ettiğiniz yerleri yakalar.
+<a id="using-miri-to-check-unsafe-code"></a>
+<a id="güvensiz-kodu-denetlemek-için-miri-kullanmak"></a>
 
-Miri kullanmak için Rust'ın nightly sürümü gerekir. Bunu [Ek G: Rust Nasıl Yapılır ve "Nightly Rust"][nightly]<!-- ignore --> kısmında ayrıntılı ele alacağız. Gece sürümü ve Miri aracını `rustup +nightly component add miri` ile kurabilirsiniz. Bu, projenizin kullandığı Rust sürümünü değiştirmez; yalnızca aracı sisteminize ekler. Bir projede Miri'yi `cargo +nightly miri run` ya da `cargo +nightly miri test` ile çalıştırabilirsiniz.
+### Güvenli Olmayan Kodu Denetlemek İçin Miri Kullanmak
 
-Bunun ne kadar yararlı olabileceğini görmek için, Liste 20-7 üzerinde çalıştırdığımızda ne olduğuna bakalım.
+Güvenli olmayan kod yazarken, yazdığınız kodun gerçekten güvenli ve doğru olup olmadığını denetlemek isteyebilirsiniz. Bunu yapmanın en iyi yollarından biri, tanımsız davranışları tespit etmeye yönelik resmî bir Rust aracı olan Miri'yi kullanmaktır. Ödünç alma denetleyicisi derleme zamanında çalışan _statik_ bir araçken, Miri çalışma zamanında çalışan _dinamik_ bir araçtır. Programınızı veya test paketini çalıştırarak ve Rust'ın nasıl çalışması gerektiğine dair bildiği kuralları ihlal ettiğiniz anları yakalayarak kodunuzu denetler.
 
-Miri bu örnekte tamsayıdan işaretçiye dönüşüm yaptığımızı ve bunun sorun
-olabileceğini bildirir; ardından Liste 20-7'de tanımsız davranış riski olduğunu,
-çünkü geçerli olduğunu kanıtlayamadığımız bir işaretçiden dilim oluşturduğumuzu
-gösterir. Böylece yalnızca derleyicinin kabul ettiği bir programda bile güvenlik
-varsayımımızı tekrar sorgulamamız gerektiğini görürüz.
+Miri'yi kullanmak Rust'ın *nightly* (gecelik) sürümünü gerektirir (bunu [Ek G: Rust Nasıl Geliştirilir ve "Nightly Rust"][nightly]<!-- ignore --> bölümünde daha ayrıntılı ele alıyoruz). `rustup +nightly component add miri` komutunu yazarak hem Rust'ın nightly sürümünü hem de Miri aracını kurabilirsiniz. Bu işlem projenizin kullandığı Rust sürümünü değiştirmez; yalnızca istediğiniz zaman kullanabilmeniz için aracı sisteminize ekler. Bir proje üzerinde Miri'yi `cargo +nightly miri run` veya `cargo +nightly miri test` yazarak çalıştırabilirsiniz.
 
-Bazı durumlarda Miri hataları düzeltmek için öneri de sunabilir. Yine de Miri
-her şeyi yakalayamaz: dinamik bir analiz aracıdır, yani yalnızca gerçekten
-çalıştırılan kod yollarındaki sorunları görür. Bu nedenle Miri'yi iyi testlerle
-birlikte kullanmanız gerekir. Ayrıca güvensiz kodun hatalı olabileceği her yolu
-modellemez. Başka bir deyişle, Miri bir sorun yakalarsa ortada bir bug vardır;
-ama Miri sorun yakalamadı diye kodun kesinlikle doğru olduğunu varsayamazsınız.
-Yine de çok yararlıdır. Bu bölümdeki diğer güvensiz kod örneklerinde de
-çalıştırıp ne söylediğine bakmayı deneyin. Miri hakkında daha fazla bilgi için
-[GitHub deposuna][miri] bakabilirsiniz.
+Bunun ne kadar faydalı olabileceğine bir örnek olarak, Miri'yi Liste 20-7 üzerinde çalıştırdığımızda neler olduğuna bakalım.
 
-### Güvensiz Kodu Doğru Kullanmak
+```console
+{{#include ../listings/ch20-advanced-features/listing-20-07/output.txt}}
+```
 
-Bu bölümde anlattığımız beş süper güçten birini kullanmak için `unsafe`
-yazmak yanlış ya da kaçınılması gereken bir şey değildir; sadece daha zordur,
-çünkü derleyici bellek güvenliğini her noktada sizin yerinize kanıtlayamaz.
-`unsafe` kullanmak için iyi bir nedeniniz olduğunda kullanabilirsiniz. Açık
-`unsafe` işareti, bir sorun çıktığında bakılacak yerleri daraltır.
+Miri haklı olarak bizi bir tamsayıyı işaretçiye dönüştürdüğümüz konusunda uyarır (`integer-to-pointer cast`); bu bir sorun olabilir, ancak Miri işaretçinin nasıl ortaya çıktığını (köken / *provenance* bilgisini) bilmediği için ortada bir sorun olup olmadığını belirleyemez. Ardından Miri, elimizde sarkan bir işaretçi bulunduğu (`encountered a dangling reference` — `0x1234` adresine ait bir bellek tahsisi ve köken bilgisi olmadığı) için Liste 20-7'nin tanımsız davranış içerdiği noktada bir hata döndürür. Miri sayesinde artık tanımsız davranış riski bulunduğunu biliyoruz ve kodu nasıl güvenli hâle getireceğimiz üzerine düşünebiliriz. Hatta bazı durumlarda Miri, hataların nasıl düzeltilebileceğine dair önerilerde bile bulunabilir.
 
-Güvensiz kod yazarken Miri, kodunuzun Rust'ın kurallarını koruduğuna dair
-güveninizi artırabilir. Güvensiz Rust ile etkili çalışmak konusunda daha derin
-bir kaynak için Rust'ın resmi güvensiz kod rehberi olan
-[Rustonomicon][nomicon] kitabına bakabilirsiniz.
+Miri, güvenli olmayan kod yazarken yapabileceğiniz her hatayı yakalayamaz. Miri dinamik bir analiz aracı olduğundan yalnızca gerçekte çalıştırılan kodlardaki sorunları yakalar. Bu da yazdığınız güvenli olmayan koda duyduğunuz güveni artırmak için onu iyi test teknikleriyle birlikte kullanmanız gerektiği anlamına gelir. Ayrıca Miri, kodunuzun _sağlam olmayan (unsound)_ —yani güvenli koddan çağrıldığında bile tanımsız davranışa yol açabilen— her olası yolunu kapsamaz.
+
+Başka bir deyişle: Miri bir sorun _yakalarsa_ ortada bir hata (*bug*) olduğunu kesin olarak bilirsiniz; ancak sırf Miri bir hata _yakalamadı_ diye ortada hiçbir sorun olmadığı anlamına gelmez. Yine de pek çok hatayı yakalayabilir. Onu bu bölümdeki diğer güvenli olmayan kod örnekleri üzerinde çalıştırmayı deneyin ve neler söylediğine bakın!
+
+Miri hakkında daha fazla bilgiyi [GitHub deposunda][miri] bulabilirsiniz.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="when-to-use-unsafe-code"></a>
+<a id="using-unsafe-code-correctly"></a>
+<a id="güvensiz-kodu-doğru-kullanmak"></a>
+
+### Güvenli Olmayan Kodu Doğru Kullanmak
+
+Az önce ele aldığımız beş süper güçten birini kullanmak amacıyla `unsafe` yazmak yanlış değildir, hatta hoş karşılanmayan bir durum bile sayılmaz; ancak derleyici bellek güvenliğini korumaya yardımcı olamadığı için `unsafe` kodu doğru yazmak daha inceliklidir. `unsafe` kod kullanmak için geçerli bir nedeniniz olduğunda bunu yapabilirsiniz; üstelik açık `unsafe` işaretlemesinin bulunması, bir sorun ortaya çıktığında kaynağının izini sürmeyi kolaylaştırır. Güvenli olmayan kod yazdığınız her seferde, yazdığınız kodun Rust'ın kurallarını koruduğundan daha emin olmanıza yardımcı olması için Miri'yi kullanabilirsiniz.
+
+Güvenli olmayan Rust ile etkili bir şekilde nasıl çalışılacağını çok daha derinlemesine keşfetmek için Rust'ın resmî `unsafe` rehberi olan [The Rustonomicon][nomicon] kitabını okuyabilirsiniz.
 
 [dangling-references]: ch04-02-referanslar-ve-odunc-alma.html#sarkan-referanslar-dangling-references
 [ABI]: ../reference/items/external-blocks.html#abi
 [constants]: ch03-01-degiskenler-ve-degistirilebilirlik.html#sabitler-constants
-[miri]: https://github.com/rust-lang/miri
-[nightly]: ekler-07-nightly-rust.html
-[nomicon]: https://doc.rust-lang.org/nomicon/
 [send-and-sync]: ch16-04-genisletilebilir-eszamanlilik.html
 [the-slice-type]: ch04-03-dilim-turu.html#dilim-slice-türü
 [unions]: ../reference/items/unions.html
+[miri]: https://github.com/rust-lang/miri
+[editions]: ekler-05-surumler.html
+[nightly]: ekler-07-nightly-rust.html
+[nomicon]: https://doc.rust-lang.org/nomicon/

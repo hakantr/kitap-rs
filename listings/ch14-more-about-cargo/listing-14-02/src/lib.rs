@@ -1,14 +1,14 @@
 // ANCHOR: here
 //! # Benim Crate'im
 //!
-//! `benim_crate`, belirli hesaplamalari yapmayi daha kullanisli hale getiren
-//! yardimci araclarin bir koleksiyonudur.
+//! `benim_crate`, belirli hesaplamaları yapmayı daha kullanışlı hale getiren
+//! yardımcı araçların bir koleksiyonudur.
 
-/// Verilen sayiya bir ekler.
+/// Verilen sayıya bir ekler.
 // --snip--
 // ANCHOR_END: here
 ///
-/// # Ornekler
+/// # Örnekler
 ///
 /// ```
 /// let girdi = 5;

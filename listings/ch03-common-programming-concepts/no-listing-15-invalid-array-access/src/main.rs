@@ -14,7 +14,7 @@ fn main() {
     let indeks: usize = indeks
         .trim()
         .parse()
-        .expect("Girilen indeks bir sayi değildi!");
+        .expect("Girilen indeks bir sayı değildi!");
 
     let element = a[indeks];
 

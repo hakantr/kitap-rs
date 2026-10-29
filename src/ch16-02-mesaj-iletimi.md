@@ -1,43 +1,48 @@
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-message-passing-to-transfer-data-between-threads"></a>
+<a id="transfer-data-between-threads-with-message-passing"></a>
+<a id="mesaj-iletimiyle-iş-parçacıkları-arasında-veri-taşımak"></a>
 
-## Mesaj İletimiyle İş Parçacıkları Arasında Veri Taşımak
+## Mesaj İletimiyle Thread'ler Arası Veri Transferi
 
-Güvenli eşzamanlılık sağlamak için giderek daha popüler hale gelen
-yaklaşımlardan biri _mesaj iletimi (message passing)_ modelidir. Bu modelde iş
-parçacıkları ya da aktörler, veri içeren mesajları birbirlerine göndererek
-iletişim kurar. Go dilinin belgelerinde geçen şu ünlü söz bunu güzel özetler:
-"Belleği paylaşarak iletişim kurmayın; iletişim kurarak belleği paylaşın."
+Güvenli eşzamanlılığı sağlamanın giderek popülerleşen yaklaşımlarından biri,
+thread'lerin veya aktörlerin birbirlerine veri içeren mesajlar göndererek
+iletişim kurduğu _mesaj iletimi (message passing)_ yöntemidir. [Go dili
+belgelerindeki](https://golang.org/doc/effective_go.html#concurrency) bir slogan
+bu fikri şöyle özetler: “Belleği paylaşarak iletişim kurmayın; bunun yerine
+iletişim kurarak belleği paylaşın.”
 
-Mesaj göndermeye dayalı eşzamanlılık için Rust standart kütüphanesi kanal
-uygulaması sunar. _Kanal (channel)_, verinin bir iş parçacığından diğerine
-gönderilmesini sağlayan genel bir programlama kavramıdır.
+Mesaj göndermeye dayalı eşzamanlılığı gerçekleştirmek için Rust'ın standart
+kütüphanesi bir kanal uygulaması sunar. _Kanal (channel)_, verinin bir
+thread'den diğerine gönderilmesini sağlayan genel bir programlama kavramıdır.
 
-Programlamadaki bir kanalı, yönü belli bir su yolu gibi düşünebilirsiniz.
-Örneğin bir dereye lastik ördek bırakırsanız, ördek akış yönünde ilerleyip su
-yolunun sonuna kadar gider.
+Programlamadaki bir kanalı, bir dere veya nehir gibi tek yönlü bir su kanalı
+olarak hayal edebilirsiniz. Bir nehre lastik ördek gibi bir şey bırakırsanız,
+akıntı yönünde ilerleyerek su yolunun sonuna kadar ulaşacaktır.
 
-Bir kanalın iki yarısı vardır: gönderici ve alıcı. Gönderici, ördeği suya
-bıraktığınız yukarı kısımdır; alıcı ise ördeğin aşağı akışta ulaştığı yerdir.
-Kodunuzun bir bölümü göndermek istediği veriyle gönderici tarafın metodlarını
-çağırır; başka bir bölümü de alıcı ucunda yeni mesaj gelip gelmediğini kontrol
-eder. Gönderici ya da alıcı taraflardan biri düşürüldüğünde kanalın _kapandığı_
-söylenir.
+Bir kanalın iki yarısı vardır: bir _gönderici (transmitter)_ ve bir _alıcı
+(receiver)_. Gönderici yarısı, lastik ördeği nehre bıraktığınız akıntının üst
+kısmındaki konumdur; alıcı yarısı ise lastik ördeğin akıntı aşağısında ulaştığı
+noktadır. Kodunuzun bir bölümü göndermek istediğiniz verilerle gönderici
+üzerindeki metotları çağırır; diğer bölümü ise gelen mesajlar için alıcı ucu
+kontrol eder. Gönderici veya alıcı yarılarından herhangi biri bellekten
+düşürüldüğünde kanalın _kapandığı (closed)_ söylenir.
 
-Burada, değer üreten ve bunları kanal üzerinden gönderen bir iş parçacığı ile
-bu değerleri alıp ekrana yazdıran başka bir iş parçacığı olan küçük bir program
-kuracağız. Özelliği göstermek için kanaldan basit değerler göndereceğiz. Bu
-yönteme alıştıktan sonra, örneğin bir sohbet sistemi ya da hesabın farklı
-parçalarını yapan birçok iş parçacığının sonuçları tek bir iş parçacığında
-topladığı sistemler gibi, iletişim kurması gereken her durumda kanalları
-kullanabilirsiniz.
+Burada, değerler üretip bunları bir kanal üzerinden gönderen bir thread'e ve bu
+değerleri alıp ekrana yazdıran başka bir thread'e sahip bir programı adım adım
+oluşturacağız. Bu özelliği göstermek amacıyla bir kanal kullanarak thread'ler
+arasında basit değerler göndereceğiz. Bu tekniğe aşina olduktan sonra; bir
+sohbet sistemi veya pek çok thread'in bir hesaplamanın parçalarını
+gerçekleştirip bu parçaları sonuçları birleştiren tek bir thread'e gönderdiği
+bir sistem gibi, birbirleriyle iletişim kurması gereken her türlü thread
+yapısında kanalları kullanabilirsiniz.
 
-Önce 16-6 numaralı listede bir kanal oluşturacağız; ama henüz onunla hiçbir
-şey yapmayacağız. Bunun şimdilik derlenmediğine dikkat edin; çünkü Rust, kanal
-üzerinden hangi tür değerler göndermek istediğimizi henüz bilemez.
+İlk olarak Liste 16-6'da bir kanal oluşturacağız ancak onunla henüz hiçbir şey
+yapmayacağız. Rust, kanal üzerinden ne tür değerler göndermek istediğimizi henüz
+anlayamadığı için bu kodun şimdilik derlenmeyeceğine dikkat edin.
 
-<Listing number="16-6" file-name="src/main.rs" caption="Bir kanal oluşturup iki yarısını `gonderici` ve `alici` değişkenlerine atamak">
+<Listing number="16-6" file-name="src/main.rs" caption="Bir kanal oluşturma ve iki yarısını `gonderici` ile `alici` değişkenlerine atama">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-06/src/main.rs}}
@@ -45,30 +50,34 @@ kullanabilirsiniz.
 
 </Listing>
 
-Yeni bir kanal oluşturmak için `mpsc::channel` fonksiyonunu çağırırız. Buradaki
-`mpsc`, _multiple producer, single consumer_ ifadesinin kısaltmasıdır. Kısaca
-Rust standart kütüphanesindeki kanal uygulaması, bir kanalın değer üreten
-birden fazla _gönderici_ ucu olmasına izin verir; ama o değerleri tüketen tek
-bir _alıcı_ ucu vardır. Bunu birçok küçük akarsuyun birleşip tek bir nehre
-dönüşmesine benzetebilirsiniz: Farklı akışlardan gelen her şey sonunda aynı
-nehirde toplanır. Şimdilik tek bir göndericiyle başlayacağız; örnek çalışır
-hale gelince birden fazla gönderici ekleyeceğiz.
+`mpsc::channel` fonksiyonunu kullanarak yeni bir kanal oluşturuyoruz; `mpsc`
+kısaltması _çoklu üretici, tek tüketici (multiple producer, single consumer)_
+anlamına gelir. Kısacası Rust'ın standart kütüphanesinin kanalları uygulama
+biçimi, bir kanalın değer üreten birden fazla _gönderme_ ucuna sahip
+olabileceği, ancak bu değerleri tüketen yalnızca tek bir _alma_ ucuna sahip
+olabileceği anlamına gelir. Birden çok derenin birleşerek tek bir büyük nehre
+aktığını hayal edin: derelerin herhangi birinden aşağı gönderilen her şey,
+sonunda tek bir nehirde toplanacaktır. Şimdilik tek bir üreticiyle başlayacağız,
+ancak bu örneği çalışır hale getirdiğimizde birden fazla üretici ekleyeceğiz.
 
-`mpsc::channel` fonksiyonu bir demet döndürür. İlk eleman gönderme ucu, yani
-göndericidir; ikinci eleman ise alma ucu, yani alıcıdır. Birçok alanda
-_transmitter_ ve _receiver_ için geleneksel olarak `tx` ve `rx` kısaltmaları
-kullanılır; biz burada değişkenleri doğrudan `gonderici` ve `alici` olarak
-adlandırdık. Bu demeti parçalayan bir desenle birlikte `let` ifadesi
-kullanıyoruz. `let` ifadelerindeki desenler ile parçalayıcı atamayı 19. bölümde
-inceleyeceğiz. Şimdilik bilinmesi gereken şu: `mpsc::channel` dönüşündeki
-demetin parçalarını çıkarmak için bu kullanım çok elverişlidir.
+`mpsc::channel` fonksiyonu bir _demet (tuple)_ döndürür; bu demetin ilk elemanı
+gönderme ucu —yani gönderici—, ikinci elemanı ise alma ucu —yani alıcı— olur.
+Pek çok alanda _transmitter_ (gönderici) ve _receiver_ (alıcı) terimleri için
+geleneksel olarak sırasıyla `tx` ve `rx` kısaltmaları kullanılır; biz de
+kodumuzda her bir ucu açıkça belirtmek üzere değişkenlerimizi `gonderici` ve
+`alici` olarak adlandırıyoruz. Burada demetleri parçalara ayıran
+(_destructuring_) bir desenle birlikte bir `let` deyimi kullanıyoruz; `let`
+deyimlerinde desen kullanımını ve yapı sökümünü Bölüm 19'da ele alacağız.
+Şimdilik bir `let` deyimini bu şekilde kullanmanın, `mpsc::channel` tarafından
+döndürülen demetin parçalarını ayıklamak için elverişli bir yaklaşım olduğunu
+bilmeniz yeterlidir.
 
-Şimdi gönderici tarafı oluşturulan bir iş parçacığına taşıyalım ve oradan tek
-bir dizgi gönderelim. Böylece oluşturulan iş parçacığı ana iş parçacığıyla
-iletişim kurmuş olacak. Bu, nehrin yukarı kısmına lastik ördek bırakmaya ya da
-bir iş parçacığından diğerine sohbet mesajı göndermeye benzer.
+Liste 16-7'de gösterildiği gibi, gönderme ucunu oluşturulan bir thread'e
+taşıyalım ve oluşturulan thread'in ana thread ile iletişim kurması için bir
+string göndermesini sağlayalım. Bu, nehrin üst kısmından suya bir lastik ördek
+bırakmaya veya bir thread'den diğerine bir sohbet mesajı göndermeye benzer.
 
-<Listing number="16-7" file-name="src/main.rs" caption='`gonderici` değerini oluşturulan iş parçacığına taşıyıp `"merhaba"` göndermek'>
+<Listing number="16-7" file-name="src/main.rs" caption='`gonderici` ucunu oluşturulan bir thread içine taşıma ve `"merhaba"` gönderme'>
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-07/src/main.rs}}
@@ -76,23 +85,24 @@ bir iş parçacığından diğerine sohbet mesajı göndermeye benzer.
 
 </Listing>
 
-Yine `thread::spawn` ile yeni bir iş parçacığı oluşturuyor, ardından `move`
-yardımıyla `gonderici` değerini kapanışa taşıyoruz. Böylece göndericinin
-sahipliği oluşturulan iş parçacığında oluyor. Kanal üzerinden mesaj
-gönderebilmek için o iş parçacığının göndericiye sahip olması gerekir.
+Yine yeni bir thread oluşturmak için `thread::spawn` kullanıyor ve ardından
+oluşturulan thread'in `gonderici` değerine sahip olması için `move` kullanarak
+`gonderici`'yi kapanışın içine taşıyoruz. Oluşturulan thread'in kanal üzerinden
+mesaj gönderebilmesi için göndericiye sahip olması gerekir (ayrıca `send`
+çağrısıyla bir `String` gönderdiğimiz için Rust artık kanalın türünü
+`(Sender<String>, Receiver<String>)` olarak otomatik çıkarsayabilir).
 
-Gönderici tarafında, göndermek istediğimiz değeri alan bir `send` metodu vardır.
-`send` metodu `Result<T, E>` döndürür. Yani alıcı daha önce düşürülmüşse ve
-değeri gönderecek yer kalmamışsa, gönderme işlemi hata döndürür. Bu örnekte
-hata olursa paniklemek için `unwrap` çağırıyoruz. Gerçek bir uygulamada ise
-bunu uygun şekilde ele almak isteriz; doğru hata yönetimi stratejileri için 9.
-bölüme dönebilirsiniz.
+Göndericinin, göndermek istediğimiz değeri alan bir `send` metodu vardır. `send`
+metodu bir `Result<T, E>` türü döndürür; dolayısıyla alıcı daha önce bellekten
+düşürülmüşse ve değeri gönderecek bir yer kalmamışsa, gönderme işlemi bir hata
+döndürür. Bu örnekte, bir hata durumunda paniklemek için `unwrap` çağırıyoruz.
+Ancak gerçek bir uygulamada bu hatayı uygun şekilde ele alırız: uygun hata
+yönetimi stratejilerini gözden geçirmek için Bölüm 9'a dönebilirsiniz.
 
-16-8 numaralı listede, ana iş parçacığında alıcıdan gelen değeri alacağız.
-Bu da nehrin sonundan lastik ördeği almak ya da gelen bir sohbet mesajını
-okumak gibidir.
+Liste 16-8'de, ana thread'de alıcıdan değeri alacağız. Bu, nehrin sonunda lastik
+ördeği sudan çıkarmaya veya bir sohbet mesajını almaya benzer.
 
-<Listing number="16-8" file-name="src/main.rs" caption='Ana iş parçacığında `"merhaba"` değerini alıp ekrana yazdırmak'>
+<Listing number="16-8" file-name="src/main.rs" caption='Ana thread içinde `"merhaba"` değerini alma ve ekrana yazdırma'>
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-08/src/main.rs}}
@@ -100,23 +110,25 @@ okumak gibidir.
 
 </Listing>
 
-Alıcı tarafın kullanışlı iki metodu vardır: `recv` ve `try_recv`. Burada
-`receive` kelimesinin kısaltması olan `recv` metodunu kullanıyoruz. Bu metod,
-ana iş parçacığını bloklayarak kanal üzerinden bir değer gönderilmesini
-bekler. Bir değer geldiğinde onu `Result<T, E>` içinde döndürür. Gönderici uç
-kapandığında ise artık yeni değer gelmeyeceğini belirtmek için hata döndürür.
+Alıcının iki kullanışlı metodu vardır: `recv` ve `try_recv`. Burada _receive_
+(almak) kelimesinin kısaltması olan ve ana thread'in yürütmesini bloklayıp
+kanaldan aşağı bir değer gönderilene kadar bekleyecek olan `recv` metodunu
+kullanıyoruz. Bir değer gönderildiğinde `recv`, onu bir `Result<T, E>` içinde
+döndürür. Gönderici kapandığında ise `recv`, artık başka değer gelmeyeceğini
+bildirmek üzere bir hata döndürür.
 
-`try_recv` metodu ise bloklamaz; hemen `Result<T, E>` döndürür. O anda mesaj
-varsa `Ok`, yoksa `Err` gelir. Bu, mesaj beklerken aynı iş parçacığının başka
-işleri de varsa kullanışlıdır: Arada bir `try_recv` çağırabilir, mesaj geldiyse
-onu işleyebilir, gelmediyse kısa süre başka işler yapıp sonra yeniden
-kontrol edebilirsiniz.
+`try_recv` metodu ise bloklamaz; bunun yerine hemen bir `Result<T, E>` döndürür:
+mevcut bir mesaj varsa onu tutan bir `Ok` değeri, o sırada hiç mesaj yoksa bir
+`Err` değeri döner. Bu thread'in mesajları beklerken yapacağı başka işler varsa
+`try_recv` kullanmak faydalıdır: belirli aralıklarla `try_recv` çağıran, mevcut
+bir mesaj varsa onu işleyen, aksi takdirde tekrar kontrol edene kadar bir süre
+başka işler yapan bir döngü yazabiliriz.
 
-Bu örnekte sadelik için `recv` kullandık; çünkü ana iş parçacığının yapacak
-başka bir işi yok, yalnızca mesaj gelmesini bekliyor.
+Bu örnekte sadelik adına `recv` kullandık; ana thread'in mesajları beklemek
+dışında yapacağı başka bir iş olmadığından ana thread'i bloklamak uygundur.
 
-16-8 numaralı listedeki kodu çalıştırdığımızda, ana iş parçacığından şu değerin
-yazdırıldığını görürüz:
+Liste 16-8'deki kodu çalıştırdığımızda, ana thread'den yazdırılan değeri
+görürüz:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -126,23 +138,25 @@ changes in the compiler -->
 Alındı: merhaba
 ```
 
-Tam istediğimiz gibi!
+Mükemmel!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="channels-and-ownership-transference"></a>
+<a id="transferring-ownership-through-channels"></a>
+<a id="kanallar-üzerinden-sahiplik-aktarmak"></a>
 
-### Kanallar Üzerinden Sahiplik Aktarmak
+### Kanallar Üzerinden Sahiplik Aktarma
 
-Mesaj gönderirken sahiplik kuralları çok kritik bir rol oynar; çünkü güvenli
-eşzamanlı kod yazmanızı sağlar. Rust programlarınız boyunca sahipliği düşünmek,
-eşzamanlı programlamadaki hataları önlemenin büyük bir parçasıdır. Kanallar ile
-sahipliğin birlikte nasıl çalıştığını görmek için küçük bir deney yapalım:
-Oluşturulan iş parçacığında `deger` adlı bir değeri kanaldan gönderdikten
-_sonra_ yeniden kullanmaya çalışacağız. 16-9 numaralı listedeki kodu
-derlemeyi deneyin; neden buna izin verilmediğini göreceksiniz.
+Sahiplik kuralları mesaj gönderiminde hayati bir rol oynar; çünkü güvenli ve
+eşzamanlı kod yazmanıza yardımcı olur. Eşzamanlı programlamada hataları önlemek,
+Rust programlarınız boyunca sahipliği hesaba katmanın sağladığı avantajdır.
+Kanalların ve sahipliğin sorunları önlemek üzere birlikte nasıl çalıştığını
+göstermek için bir deney yapalım: oluşturulan thread'de bir `deger` değerini
+kanaldan gönderdikten _sonra_ kullanmaya çalışacağız. Bu koda neden izin
+verilmediğini görmek için Liste 16-9'daki kodu derlemeyi deneyin.
 
-<Listing number="16-9" file-name="src/main.rs" caption="`deger` kanal üzerinden gönderildikten sonra onu yeniden kullanmaya çalışmak">
+<Listing number="16-9" file-name="src/main.rs" caption="`deger` değişkenini kanaldan gönderdikten sonra kullanmaya çalışma">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-09/src/main.rs}}
@@ -150,37 +164,50 @@ derlemeyi deneyin; neden buna izin verilmediğini göreceksiniz.
 
 </Listing>
 
-Burada `deger` değişkenini `gonderici.send` ile kanala yolladıktan sonra
-ekrana yazdırmaya çalışıyoruz. Buna izin verilmesi kötü olurdu; çünkü değer
-başka bir iş parçacığına gönderildiği anda, o iş parçacığı bizim yeniden
-kullanmaya çalışmamızdan önce değeri değiştirebilir ya da düşürebilirdi.
-Böyle bir durumda tutarsız ya da hiç var olmayan veri yüzünden beklenmedik
-sonuçlar ve hatalar ortaya çıkabilirdi. Neyse ki Rust, 16-9 numaralı listedeki
-kodu derlemeye çalıştığımızda bize hata verir:
+Burada, `gonderici.send` aracılığıyla kanaldan gönderdikten sonra `deger`
+değişkenini yazdırmaya çalışıyoruz. Buna izin vermek kötü bir fikir olurdu:
+değer başka bir thread'e gönderildikten sonra, biz değeri tekrar kullanmaya
+çalışmadan önce o thread onu değiştirebilir veya bellekten düşürebilirdi. Diğer
+thread'in yaptığı değişiklikler, tutarsız veya var olmayan veriler yüzünden
+potansiyel olarak hatalara ya da beklenmedik sonuçlara yol açabilirdi. Ancak
+Liste 16-9'daki kodu derlemeye çalıştığımızda Rust bize bir hata verir:
 
 ```console
 {{#include ../listings/ch16-fearless-concurrency/listing-16-09/output.txt}}
 ```
 
-Eşzamanlılıkla ilgili hatamız bu sayede derleme zamanında yakalandı. `send`
-fonksiyonu parametresinin sahipliğini alır ve değer taşındığında alıcı onun
-yeni sahibi olur. Böylece gönderdikten sonra aynı değeri yanlışlıkla yeniden
-kullanmamız engellenir; sahiplik sistemi her şeyin doğru olduğundan emin olur.
+Eşzamanlılık hatamız derleme zamanı hatasına neden oldu. `send` fonksiyonu
+parametresinin sahipliğini alır ve değer taşındığında alıcı onun sahipliğini
+devralır. Bu durum, değeri gönderdikten sonra yanlışlıkla tekrar kullanmamızı
+engeller; sahiplik sistemi her şeyin yolunda olduğunu denetler.
+
+> Not: Derleyicinin ürettiği `error[E0382]: borrow of moved value: 'deger'`
+> (*taşınmış değerin ödünç alınması*) hatasına dikkat edin: `String` türü öbekte
+> (*heap*) veri tuttuğu ve `Copy` trait'ini uygulamadığı için
+> `gonderici.send(deger)` çağrısında sahiplik doğrudan kanala taşınır; bir alt
+> satırdaki `println!` makrosunun `{deger}`'i ödünç almaya çalışması bu yüzden
+> reddedilir. Kanala `i32` veya `bool` gibi `Copy` trait'ini uygulayan bir değer
+> gönderseydiniz, değer taşınmak yerine bit düzeyinde kopyalanacağı için
+> gönderici thread kendi kopyasını kullanmaya devam edebilirdi; ancak iki thread
+> birbirinden tamamen bağımsız kopyalar üzerinde çalışacağından yine veri yarışı
+> oluşmazdı.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="sending-multiple-values-and-seeing-the-receiver-waiting"></a>
+<a id="sending-multiple-values"></a>
+<a id="birden-fazla-değer-göndermek"></a>
 
-### Birden Fazla Değer Göndermek
+### Birden Fazla Değer Gönderme
 
-16-8 numaralı listedeki kod derlenip çalıştı; ama aslında iki ayrı iş
-parçacığının kanal üzerinden konuştuğunu çok net göstermiyordu.
+Liste 16-8'deki kod derlenip çalıştı, ancak iki ayrı thread'in kanal üzerinden
+birbiriyle konuştuğunu bize açıkça göstermedi.
 
-16-10 numaralı listede, 16-8'deki örneği daha görünür hale getirmek için bazı
-değişiklikler yaptık: Oluşturulan iş parçacığı artık birden fazla mesaj
-gönderecek ve her mesaj arasında bir saniye bekleyecek.
+Liste 16-10'da, Liste 16-8'deki kodun eşzamanlı olarak çalıştığını kanıtlayacak
+bazı değişiklikler yaptık: oluşturulan thread artık birden fazla mesaj
+gönderecek ve her bir mesaj arasında bir saniye duraklayacak.
 
-<Listing number="16-10" file-name="src/main.rs" caption="Birden fazla mesaj gönderip her birinin arasında beklemek">
+<Listing number="16-10" file-name="src/main.rs" caption="Birden fazla mesaj gönderme ve her birinin arasında duraklama">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-10/src/main.rs}}
@@ -188,16 +215,17 @@ gönderecek ve her mesaj arasında bir saniye bekleyecek.
 
 </Listing>
 
-Bu kez oluşturulan iş parçacığında, ana iş parçacığına göndermek istediğimiz
-dizgilerden oluşan bir vektör var. Vektör üzerinde dönüyor, her değeri tek tek
-gönderiyor ve her gönderim arasında `thread::sleep` ile bir saniye bekliyoruz.
+Bu kez oluşturulan thread'de, ana thread'e göndermek istediğimiz string'lerden
+oluşan bir vektör bulunuyor. Bunların üzerinde ilerliyor, her birini tek tek
+gönderiyor ve bir saniyelik `Duration` değeriyle `thread::sleep` fonksiyonunu
+çağırarak her gönderim arasında duraklıyoruz.
 
-Ana iş parçacığında artık `recv` fonksiyonunu açıkça çağırmıyoruz. Bunun
-yerine `alici` değerini bir yineleyici (iterator) gibi kullanıyoruz. Gelen her
-değeri ekrana yazdırıyoruz. Kanal kapandığında yineleme de sona eriyor.
+Ana thread'de ise artık `recv` fonksiyonunu açıkça çağırmıyoruz: bunun yerine
+`alici` değerini bir _iteratör_ olarak ele alıyoruz. Alınan her değeri ekrana
+yazdırıyoruz. Kanal kapandığında iterasyon da sona erecektir.
 
-16-10 numaralı listedeki kodu çalıştırdığınızda, her satır arasında yaklaşık
-bir saniye olacak şekilde aşağıdakine benzer bir çıktı görmeniz gerekir:
+Liste 16-10'daki kodu çalıştırdığınızda, her satır arasında bir saniyelik
+duraklamayla aşağıdaki çıktıyı görmelisiniz:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -205,28 +233,30 @@ changes in the compiler -->
 
 ```text
 Alındı: merhaba
-Alındı: olusturulan
-Alındı: is
-Alındı: parcacigindan
+Alındı: oluşturulan
+Alındı: iş
+Alındı: parçacığından
 ```
 
-Ana iş parçacığındaki `for` döngüsünde ayrıca bir bekleme ya da gecikme kodu
-olmadığı için, ana iş parçacığının oluşturulan iş parçacığından değer gelmesini
-beklediğini buradan anlayabiliyoruz.
+Ana thread'deki `for` döngüsünde duraklayan veya gecikme yaratan herhangi bir
+kod bulunmadığından, ana thread'in oluşturulan thread'den değerleri almak için
+beklediğini anlayabiliriz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="creating-multiple-producers-by-cloning-the-transmitter"></a>
+<a id="creating-multiple-producers"></a>
+<a id="birden-fazla-gönderici-oluşturmak"></a>
 
-### Birden Fazla Gönderici Oluşturmak
+### Birden Fazla Üretici Oluşturma
 
-Daha önce `mpsc` kısaltmasının _multiple producer, single consumer_ anlamına
-geldiğini söylemiştik. Şimdi bunu gerçekten kullanalım ve 16-10 numaralı
-listedeki kodu genişleterek, aynı alıcıya değer gönderen birden çok iş
-parçacığı oluşturalım. Bunu yapmak için göndericiyi klonlayacağız; 16-11
-numaralı liste tam olarak bunu gösteriyor.
+Daha önce `mpsc` kısaltmasının _çoklu üretici, tek tüketici_ anlamına geldiğini
+belirtmiştik. Şimdi `mpsc`'yi amacına uygun biçimde kullanalım ve Liste
+16-10'daki kodu, tamamı aynı alıcıya değerler gönderen birden fazla thread
+oluşturacak şekilde genişletelim. Bunu Liste 16-11'de gösterildiği gibi
+göndericiyi klonlayarak yapabiliriz.
 
-<Listing number="16-11" file-name="src/main.rs" caption="Birden fazla göndericiden çoklu mesaj göndermek">
+<Listing number="16-11" file-name="src/main.rs" caption="Birden fazla üreticiden çok sayıda mesaj gönderme">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-11/src/main.rs:here}}
@@ -234,13 +264,13 @@ numaralı liste tam olarak bunu gösteriyor.
 
 </Listing>
 
-Bu kez ilk iş parçacığını oluşturmadan önce göndericinin `clone` metodunu
-çağırıyoruz. Böylece ilk oluşturulan iş parçacığına verebileceğimiz yeni bir
-gönderici elde ediyoruz. Orijinal göndericiyi ise ikinci oluşturulan iş
-parçacığına veriyoruz. Böylece elimizde, tek bir alıcıya farklı mesajlar
-yollayan iki ayrı iş parçacığı oluyor.
+Bu kez, ilk thread'i oluşturmadan önce gönderici üzerinde `clone` metodunu
+çağırıyoruz. Bu bize oluşturulan ilk thread'e aktarabileceğimiz yeni bir
+gönderici verir. Orijinal göndericiyi ise oluşturulan ikinci bir thread'e
+aktarıyoruz. Böylece elimizde, her biri tek bir alıcıya farklı mesajlar gönderen
+iki thread olur.
 
-Bu kodu çalıştırdığınızda çıktı aşağıdakine benzer görünür:
+Kodu çalıştırdığınızda çıktınız aşağıdakine benzer görünmelidir:
 
 <!-- Not extracting output because changes to this output aren't significant;
 the changes are likely to be due to the threads running differently rather than
@@ -249,18 +279,52 @@ changes in the compiler -->
 ```text
 Alındı: merhaba
 Alındı: daha
-Alındı: olusturulan
+Alındı: oluşturulan
 Alındı: fazla
 Alındı: mesaj
-Alındı: is
+Alındı: iş
 Alındı: sana
-Alındı: parcacigindan
+Alındı: parçacığından
 ```
 
-Sisteminizin zamanlamasına göre değerleri farklı bir sırada da görebilirsiniz.
-İşte eşzamanlılığı hem ilginç hem de zor yapan şeylerden biri bu. `thread::sleep`
-çağrılarındaki sürelerle oynarsanız her çalıştırmada biraz daha farklı ve
-öngörülmesi daha zor çıktılar elde edersiniz.
+Sisteminize bağlı olarak değerleri farklı bir sırada görebilirsiniz.
+Eşzamanlılığı hem ilginç hem de zor kılan şey tam olarak budur. Farklı
+thread'lerde `thread::sleep` fonksiyonuna çeşitli değerler vererek denemeler
+yaparsanız, her çalıştırma daha _belirlenimsiz (nondeterministic)_ olacak ve her
+seferinde farklı bir çıktı üretecektir.
 
-Kanalların nasıl çalıştığını gördüğümüze göre, şimdi eşzamanlılığın başka bir
-yoluna bakalım.
+> Not: Gerçek dünya uygulamalarında kanallarla çalışırken şu üç önemli ayrıntıyı
+> göz önünde bulundurmak faydalıdır:
+>
+> - **Kanalın Kapanması ve Askıda Kalma Tuzağı:** Liste 16-11'de ana thread'deki
+>   `for alinan in alici` döngüsünün sonsuza dek beklemeyip zarifçe sonlanması,
+>   **tüm** `Sender<T>` kopyalarının (`gonderici1` ve orijinal `gonderici`)
+>   taşındıkları thread'ler bittiğinde bellekten düşürülmesi (`drop`)
+>   sayesindedir. Eğer `gonderici.clone()` ile kopyalar üretip orijinal
+>   `gonderici` değişkenini hiçbir thread'e taşımadan `main` kapsamında canlı
+>   bırakırsanız, kanalın gönderme ucu hiç kapanmaz ve `for` döngüsü yeni mesaj
+>   bekleyerek sonsuza dek bloklanır; böyle durumlarda kullanılmayan göndericiyi
+>   döngüden önce `drop(gonderici);` ile açıkça düşürmeniz gerekir.
+> - **Sınırsız (`channel`) ve Sınırlı (`sync_channel`) Kanallar:**
+>   `mpsc::channel()` bellekte **sınırsız (*unbounded*)** bir kuyruk oluşturur;
+>   üreticiler alıcının işleyebileceğinden çok daha hızlı mesaj üretirse `send`
+>   hiç bloklanmaz ancak bellek kullanımı kontrolsüzce büyüyebilir. Üreticileri
+>   yavaşlatarak **geri basınç (*backpressure*)** uygulamak istediğinizde
+>   **`mpsc::sync_channel(kapasite)`** kullanabilirsiniz: bu fonksiyon en fazla
+>   `kapasite` kadar mesaj tutabilen **sınırlı (*bounded*)** bir kanal oluşturur
+>   ve tampon dolduğunda `send` çağrısı, alıcı yer açana kadar gönderici thread'i
+>   bloklar (`kapasite` olarak `0` verildiğinde ise gönderici ve alıcının aynı
+>   anda buluşmasını zorunlu kılan _buluşmalı / rendezvous_ bir kanal elde
+>   edilir).
+> - **Çoklu Tüketici (*MPMC*) Senaryoları:** Standart `mpsc` kanalında
+>   `Sender<T>` klonlanabilirken `Receiver<T>` klonlanamaz. Birden fazla işçi
+>   (*worker*) thread'in aynı kuyruktan görev çekmesi gerektiğinde; bir sonraki
+>   bölümde göreceğimiz araçlarla alıcıyı `Arc<Mutex<mpsc::Receiver<T>>>` içine
+>   sarabilir (Bölüm 21'deki çok kanallı web sunucusunda tam olarak bu deseni
+>   kuracağız), ekosistemdeki **`crossbeam-channel`** veya **`flume`** gibi
+>   çoklu üretici–çoklu tüketici (*MPMC*) crate'lerini kullanabilir ya da
+>   standart kütüphanede geliştirilmekte olan deneysel `std::sync::mpmc` modülünü
+>   (Nightly Rust'ta) değerlendirebilirsiniz.
+
+Kanalların nasıl çalıştığını incelediğimize göre, şimdi farklı bir eşzamanlılık
+yöntemine bakalım.

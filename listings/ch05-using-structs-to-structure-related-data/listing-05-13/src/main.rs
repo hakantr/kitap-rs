@@ -16,5 +16,5 @@ fn main() {
         yukseklik: 50,
     };
 
-    println!("Dikdörtgenin alanı {} metrekaredir.", dikdortgen1.alan());
+    println!("Dikdörtgenin alanı {} kare pikseldir.", dikdortgen1.alan());
 }

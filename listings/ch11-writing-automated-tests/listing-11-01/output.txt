@@ -1,10 +1,10 @@
 $ cargo test
-   Compiling toplayici v0.1.0 ($PROJE/listings/ch11-writing-automated-tests/listing-11-07)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
-     Running unittests src/lib.rs (target/debug/deps/toplayici-ac13090f6eeacc92)
+   Compiling toplayici v0.1.0 (file:///projects/toplayici)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s
+     Running unittests src/lib.rs (target/debug/deps/toplayici-01ad14159ff659ab)
 
 running 1 test
-test tests::iki_ekliyor ... ok
+test tests::calisiyor ... ok
 
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 

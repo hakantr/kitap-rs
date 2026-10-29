@@ -1,38 +1,51 @@
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="writing-error-messages-to-standard-error-instead-of-standard-output"></a>
+<a id="redirecting-errors-to-standard-error"></a>
+<a id="hataları-standart-hataya-standard-error-yönlendirmek"></a>
+<a id="hatalari-standart-hataya-standard-error-yonlendirmek"></a>
 
-## Hataları Standart Hataya (Standard Error) Yönlendirmek
+## Hataları Standart Hata Çıktısına Yönlendirme
 
-Şu anda `println!` makrosunu kullanarak tüm çıktılarımızı terminale yazıyoruz. Çoğu terminalde iki tür çıktı vardır: Genel bilgiler için _standart çıktı_ (`stdout`) ve hata mesajları için _standart hata_ (`stderr`). Bu ayrım, kullanıcıların bir programın başarılı çıktısını bir dosyaya yönlendirmeyi, ancak hata mesajlarını yine de ekrana yazdırmayı seçmesini sağlar.
+Şu anda `println!` makrosunu kullanarak tüm çıktılarımızı terminale yazıyoruz. Çoğu terminalde iki tür çıktı akışı bulunur: Genel bilgiler için _standart çıktı_ (*standard output*, `stdout`) ve hata mesajları için _standart hata_ (*standard error*, `stderr`). Bu ayrım sayesinde kullanıcılar, bir programın başarılı çıktısını bir dosyaya yönlendirirken hata mesajlarının yine de ekrana yazdırılmasını sağlayabilir.
 
-`println!` makrosu yalnızca standart çıktıya yazdırma yeteneğine sahiptir, bu yüzden standart hataya yazdırmak için başka bir şey kullanmalıyız.
+`println!` makrosu yalnızca standart çıktıya yazdırabilir; dolayısıyla standart hataya yazdırmak için başka bir araç kullanmamız gerekir.
 
-### Hataların Nereye Yazıldığını Kontrol Etmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="checking-where-errors-are-written"></a>
+<a id="hataların-nereye-yazıldığını-kontrol-etmek"></a>
+<a id="hatalarin-nereye-yazildigini-kontrol-etmek"></a>
 
-İlk olarak, standart hataya yazdırmak istediğimiz hata mesajları da dahil olmak üzere, `minigrep` tarafından yazdırılan içeriğin şu anda standart çıktıya nasıl yazıldığını gözlemleyelim. Bunu standart çıktı akışını bilerek bir hataya neden olurken bir dosyaya yönlendirerek yapacağız. Standart hata akışını yönlendirmeyeceğiz, bu nedenle standart hataya gönderilen herhangi bir içerik ekranda görüntülenmeye devam edecektir.
+### Hataların Nereye Yazıldığını Kontrol Etme
 
-Komut satırı programlarının hata mesajlarını standart hata akışına göndermesi beklenir, böylece standart çıktı akışını bir dosyaya yönlendirsek bile hata mesajlarını ekranda görebiliriz. Programımız şu anda iyi davranmıyor: Bunun yerine hata mesajı çıktısını bir dosyaya kaydettiğini görmek üzereyiz!
+İlk olarak, standart hataya yazdırmak istediğimiz hata mesajları da dahil olmak üzere `minigrep` tarafından üretilen tüm çıktının şu anda standart çıktıya nasıl yazıldığını gözlemleyelim. Bunu görmek için bilerek bir hataya yol açarken standart çıktı akışını bir dosyaya yönlendireceğiz. Standart hata akışını yönlendirmeyeceğimiz için standart hataya gönderilen her türlü içerik ekranda görünmeye devam edecektir.
 
-Bu davranışı göstermek için, programı `>` ve standart çıktı akışını yönlendirmek istediğimiz _ciktilar.txt_ (output.txt) dosya yolu ile çalıştıracağız. Bir hataya neden olması gereken herhangi bir argümanı iletmeyeceğiz:
+Komut satırı programlarının hata mesajlarını standart hata akışına göndermesi beklenir; böylece standart çıktı akışını bir dosyaya yönlendirsek bile hata mesajlarını ekranda görmeye devam edebiliriz. Programımız şu anda bu kurala uygun davranmıyor: Birazdan hata mesajı çıktısını ekrana basmak yerine dosyaya kaydettiğini göreceğiz!
+
+Bu davranışı göstermek için programı `>` operatörü ve standart çıktı akışını yönlendirmek istediğimiz _cikti.txt_ dosya yoluyla çalıştıracağız. Hataya yol açması için hiçbir argüman iletmeyeceğiz:
 
 ```console
-$ cargo run > ciktilar.txt
+$ cargo run > cikti.txt
 ```
 
-`>` sözdizimi, kabuğa standart çıktının içeriğini ekran yerine _ciktilar.txt_ dosyasına yazmasını söyler. Ekrana yazdırılmasını beklediğimiz hata mesajını görmedik, bu da mesajın dosyaya gittiği anlamına gelir. _ciktilar.txt_ dosyasının içerdiği şey budur:
+`>` sözdizimi, kabuğa standart çıktının içeriğini ekran yerine _cikti.txt_ dosyasına yazmasını söyler. Ekranda görmeyi beklediğimiz hata mesajıyla karşılaşmadık; demek ki mesaj dosyaya yazılmış olmalı. _cikti.txt_ dosyasının içeriği şöyledir:
 
 ```text
 Argümanları ayrıştırırken problem oluştu: yeterli argüman yok
 ```
 
-Evet, hata mesajımız standart çıktıya yazdırılıyor. Bu gibi hata mesajlarının standart hataya yazdırılması çok daha yararlıdır, böylece dosyaya yalnızca başarılı bir çalıştırmadan elde edilen veriler gider. Bunu değiştireceğiz.
+Gerçekten de hata mesajımız standart çıktıya yazdırılıyor. Bu tür hata mesajlarının standart hataya yazdırılması çok daha kullanışlıdır; böylece dosyaya yalnızca başarılı bir çalıştırmadan elde edilen veriler kaydedilir. Şimdi bunu değiştireceğiz.
 
-### Hataları Standart Hataya (Standard Error) Yazdırmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="printing-errors-to-standard-error"></a>
+<a id="hataları-standart-hataya-standard-error-yazdırmak"></a>
+<a id="hatalari-standart-hataya-standard-error-yazdirmak"></a>
+<a id="hataları-standart-hataya-yazdırma"></a>
 
-Hata mesajlarının yazdırılma şeklini değiştirmek için Liste 12-24'teki kodu kullanacağız. Bu bölümün başlarında yaptığımız yeniden düzenleme nedeniyle, hata mesajlarını yazdıran tüm kodlar tek bir fonksiyonda, yani `main` içindedir. Standart kütüphane, standart hata akışına yazdıran `eprintln!` makrosunu sağlar, bu nedenle `println!` çağırdığımız iki yeri, hata yazdırmak için bunun yerine `eprintln!` kullanacak şekilde değiştirelim.
+### Hataları Standart Hata Çıktısına Yazdırma
 
-<Listing number="12-24" file-name="src/main.rs" caption="`eprintln!` kullanarak hata mesajlarını standart çıktı yerine standart hataya yazmak">
+Hata mesajlarının yazdırılma biçimini değiştirmek için Liste 12-24'teki kodu kullanacağız. Bu bölümün başlarında yaptığımız yeniden düzenleme sayesinde, hata mesajlarını yazdıran tüm kodlar tek bir fonksiyonda, yani `main` içinde toplanmış durumda. Standart kütüphane, standart hata akışına yazdıran `eprintln!` makrosunu sunar; dolayısıyla hata yazdırmak için `println!` çağırdığımız iki yeri `eprintln!` kullanacak şekilde değiştirelim.
+
+<Listing number="12-24" file-name="src/main.rs" caption="`eprintln!` kullanarak hata mesajlarını standart çıktı yerine standart hataya yazdırma">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-24/src/main.rs:here}}
@@ -40,33 +53,46 @@ Hata mesajlarının yazdırılma şeklini değiştirmek için Liste 12-24'teki k
 
 </Listing>
 
-Şimdi programı hiçbir argüman olmadan ve standart çıktıyı `>` ile yönlendirerek aynı şekilde tekrar çalıştıralım:
+Şimdi programı hiçbir argüman vermeden ve standart çıktıyı `>` ile yönlendirerek aynı şekilde tekrar çalıştıralım:
 
 ```console
-$ cargo run > ciktilar.txt
+$ cargo run > cikti.txt
 Argümanları ayrıştırırken problem oluştu: yeterli argüman yok
 ```
 
-Artık hatayı ekranda görüyoruz ve _ciktilar.txt_ hiçbir şey içermiyor ki bu da komut satırı programlarından beklediğimiz davranıştır.
+Artık hatayı ekranda görüyoruz ve _cikti.txt_ dosyası hiçbir şey içermiyor; komut satırı programlarından beklenen davranış da tam olarak budur.
 
-Hata vermeyen ancak standart çıktıyı yine de aşağıdaki gibi bir dosyaya yönlendiren argümanlarla programı tekrar çalıştıralım:
+Şimdi programı hataya yol açmayan argümanlarla tekrar çalıştıralım, ancak standart çıktıyı yine aşağıdaki gibi bir dosyaya yönlendirelim:
 
 ```console
-$ cargo run -- ne siir.txt > ciktilar.txt
+$ cargo run -- ne siir.txt > cikti.txt
 ```
 
-Terminalde herhangi bir çıktı görmeyeceğiz ve _ciktilar.txt_ sonuçlarımızı barındıracak:
+Terminalde herhangi bir çıktı görmeyeceğiz ve _cikti.txt_ dosyası arama sonuçlarımızı barındıracak:
 
-<span class="filename">Dosya adı: ciktilar.txt</span>
+<span class="filename">Dosya adı: cikti.txt</span>
 
 ```text
 Gelme, artık neye yarar?
 ```
 
-Bu, uygun olduğu şekilde başarılı çıktılar için standart çıktıyı ve hata çıktıları için standart hatayı kullandığımızı gösterir.
+Bu sonuç, artık başarılı çıktılar için standart çıktıyı, hata mesajları içinse standart hatayı olması gerektiği gibi kullandığımızı gösterir.
+
+> Not: Unix türevi sistemlerde (Linux, macOS) ve modern Windows kabuklarında başlatılan her sürece otomatik olarak numaralandırılmış üç standart akış (*dosya tanıtıcısı / file descriptor*) atanır:
+> - **`0` — `stdin` (standart girdi):** Klavyeden veya başka bir süreçten gelen veriyi okur (`std::io::stdin()`).
+> - **`1` — `stdout` (standart çıktı):** Programın ürettiği normal sonuçları taşır (`print!`, `println!`).
+> - **`2` — `stderr` (standart hata):** Hata, uyarı ve tanılama mesajlarını taşır (`eprint!`, `eprintln!`, `dbg!`).
+>
+> Kabukta yazdığınız `>` operatörü aslında `1>` ifadesinin kısaltmasıdır ve yalnızca `stdout` akışını yönlendirir. Yalnızca hata mesajlarını bir dosyaya kaydetmek isterseniz `cargo run 2> hatalar.txt`, hem normal çıktıyı hem de hata mesajlarını aynı dosyada birleştirmek isterseniz `cargo run > tum_cikti.txt 2>&1` sözdizimini kullanabilirsiniz.
+>
+> `eprintln!` kullanımı özellikle borulama (*piping*, `|`) işlemlerinde hayati önem taşır. Örneğin eşleşen satır sayısını bulmak için `minigrep ne siir.txt | wc -l` gibi bir komut zinciri kurduğunuzda kabuk, birinci programın yalnızca `stdout` (`1`) akışını ikinci programın `stdin` (`0`) akışına bağlar. Hataları `println!` ile `stdout`'a yazarsanız sonraki program hata metnini gerçek veri sanıp yanlış sonuç üretir (örneğin hata mesajının satırını da sayar!) ya da ayrıştırma hatasıyla çöker; `eprintln!` kullandığınızda ise hata mesajları boruya karışmadan doğrudan ekranda görünür ve sonraki araca yalnızca temiz veri aktarılır.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="summary"></a>
+<a id="ozet"></a>
 
 ## Özet
 
-Bu bölüm, şimdiye kadar öğrendiğiniz bazı önemli kavramları özetledi ve Rust'ta yaygın G/Ç (I/O) işlemlerinin nasıl gerçekleştirileceğini ele aldı. Komut satırı argümanlarını (command line arguments), dosyaları, çevre değişkenlerini (environment variables) ve hataları yazdırmak için `eprintln!` makrosunu kullanarak, artık komut satırı uygulamaları yazmaya hazırsınız. Önceki bölümlerdeki kavramlarla birleştirildiğinde, kodunuz iyi organize edilmiş olacak, verileri uygun veri yapılarında etkili bir şekilde depolayacak, hataları güzel bir şekilde yönetecek ve iyi test edilmiş olacaktır.
+Bu bölümde, şimdiye kadar öğrendiğiniz pek çok temel kavramı yeniden hatırladık ve Rust'ta yaygın G/Ç işlemlerinin nasıl gerçekleştirileceğini ele aldık. Komut satırı argümanlarını, dosyaları, çevre değişkenlerini ve hataları yazdırmak için `eprintln!` makrosunu kullanarak artık komut satırı uygulamaları geliştirmeye hazırsınız. Önceki bölümlerdeki kavramlarla bir araya getirdiğinizde kodunuz iyi organize edilmiş olacak, verileri uygun veri yapılarında verimli biçimde saklayacak, hataları zarifçe yönetecek ve iyi test edilmiş olacaktır.
 
-Sırada fonksiyonel dillerden etkilenen bazı Rust özelliklerini inceleyeceğiz: kapanışlar ve yineleyiciler.
+Bir sonraki bölümde fonksiyonel dillerden esinlenen bazı Rust özelliklerini inceleyeceğiz: kapanışlar ve iteratörler.

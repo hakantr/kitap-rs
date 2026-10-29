@@ -1,41 +1,57 @@
-## Modülerliği ve Hata Yönetimini (Error Handling) İyileştirmek İçin Yeniden Düzenleme (Refactoring)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="refactoring-to-improve-modularity-and-error-handling"></a>
+<a id="modülerliği-ve-hata-yönetimini-error-handling-i̇yileştirmek-i̇çin-yeniden-düzenleme-refactoring"></a>
+<a id="modülerliği-ve-hata-yönetimini-error-handling-iyileştirmek-için-yeniden-düzenleme-refactoring"></a>
+<a id="modulerligi-ve-hata-yonetimini-iyilestirmek-icin-yeniden-duzenleme"></a>
 
-Programımızı iyileştirmek için, programın yapısıyla ve olası hataları nasıl ele aldığıyla ilgili dört sorunu çözeceğiz. Birincisi, `main` fonksiyonumuz şu anda iki görevi yerine getiriyor: Argümanları ayrıştırıyor (parses) ve dosyaları okuyor. Programımız büyüdükçe, `main` fonksiyonunun ele aldığı ayrı görevlerin sayısı artacaktır. Bir fonksiyon sorumluluk kazandıkça, hakkında akıl yürütmesi, test etmesi ve parçalarından birini bozmadan (breaking) değiştirmesi daha zor hale gelir. İşlevselliği ayırmak en iyisidir, böylece her fonksiyon tek bir görevden sorumlu olur.
+## Modülerliği ve Hata Yönetimini İyileştirmek İçin Yeniden Düzenleme
 
-Bu sorun aynı zamanda ikinci soruna da bağlıdır: `sorgu` ve `dosya_yolu` programımız için yapılandırma değişkenleri olmalarına rağmen, programın mantığını yerine getirmek için `icerik` gibi değişkenler de kullanılır. `main` ne kadar uzarsa, kapsama dahil etmemiz gereken değişkenler o kadar artar; kapsamda ne kadar çok değişkenimiz olursa, her birinin amacını takip etmek o kadar zor olur. Yapılandırma değişkenlerini amaçlarını netleştirmek için tek bir yapıda gruplamak en iyisidir.
+Programımızı iyileştirmek için, programın yapısıyla ve olası hataları nasıl ele aldığıyla ilgili dört sorunu çözeceğiz. Birincisi, `main` fonksiyonumuz şu anda iki ayrı işi yerine getiriyor: Argümanları ayrıştırıyor ve dosyaları okuyor. Programımız büyüdükçe `main` fonksiyonunun üstlendiği bağımsız görevlerin sayısı da artacaktır. Bir fonksiyonun sorumlulukları çoğaldıkça nasıl çalıştığını anlamak, onu test etmek ve bir parçasını bozmadan üzerinde değişiklik yapmak zorlaşır. En doğrusu işlevselliği her fonksiyon yalnızca tek bir görevden sorumlu olacak şekilde ayırmaktır.
 
-Üçüncü sorun, dosya okunurken hata oluştuğunda `expect` ile bir hata mesajı yazdırmış olmamızdır, ancak hata mesajı yalnızca `Dosya okunamadı` yazar. Bir dosyayı okumak çeşitli şekillerde başarısız olabilir: Örneğin, dosya eksik olabilir veya dosyayı açma iznimiz olmayabilir. Şu anda duruma bakılmaksızın her şey için aynı hata mesajını yazdırıyoruz, bu da kullanıcıya herhangi bir bilgi vermez!
+Bu durum aynı zamanda ikinci sorunla da bağlantılıdır: `sorgu` ve `dosya_yolu` programımızın yapılandırma değişkenleriyken, `icerik` gibi değişkenler programın asıl mantığını yürütmek için kullanılır. `main` uzadıkça kapsama dahil etmemiz gereken değişken sayısı artar; kapsamda ne kadar çok değişken bulunursa her birinin amacını takip etmek o kadar güçleşir. Amaçlarını netleştirmek adına yapılandırma değişkenlerini tek bir yapıda gruplamak en doğrusudur.
 
-Dördüncüsü, bir hatayı ele almak için `expect` kullanıyoruz ve eğer kullanıcı programımızı yeterli argüman belirtmeden çalıştırırsa, Rust'tan sorunu açıkça açıklamayan bir `index out of bounds` (indeks sınırların dışında) hatası alır. Eğer hata yönetimi (error-handling) kodunun tamamı tek bir yerde olsaydı, hata yönetimi mantığının değişmesi gerektiğinde gelecekteki bakımcıların koda bakmak için tek bir yeri olurdu. Tüm hata yönetimi kodunun tek bir yerde olması, son kullanıcılarımız için anlamlı mesajlar yazdırdığımızdan da emin olmamızı sağlar.
+Üçüncü sorun, dosya okuma işlemi başarısız olduğunda hata mesajı yazdırmak için `expect` kullanmış olmamız, ancak bu mesajın yalnızca `Dosya okunamadı` yazdırmasıdır. Oysa bir dosyayı okumak pek çok farklı nedenden başarısız olabilir: Örneğin dosya hiç olmayabilir ya da dosyayı açma iznimiz bulunmayabilir. Şu anda koşul ne olursa olsun her hata için aynı mesajı yazdırıyoruz; bu da kullanıcıya sorunun kaynağı hakkında hiçbir bilgi vermez!
 
-Projemizi yeniden düzenleyerek bu dört sorunu ele alalım.
+Dördüncüsü, hataları ele almak için `expect` kullanıyoruz ve kullanıcı programımızı yeterli argüman belirtmeden çalıştırırsa Rust'tan sorunu açıkça anlatmayan bir `index out of bounds` (*indeks sınırların dışında*) hatası alır. Hata yönetimi kodunun tamamı tek bir yerde toplansaydı, ileride hata yönetimi mantığının değişmesi gerektiğinde koda bakım yapan geliştiricilerin bakacağı tek bir nokta olurdu. Tüm hata yönetimi kodunu tek bir yerde toplamak, son kullanıcılarımız için gerçekten anlamlı mesajlar yazdırdığımızdan emin olmamızı da sağlar.
+
+Projemizi *yeniden düzenleyerek (refactoring)* bu dört sorunu adım adım ele alalım.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="separation-of-concerns-for-binary-projects"></a>
+<a id="separating-concerns-in-binary-projects"></a>
+<a id="i̇kili-binary-projelerde-i̇lgi-alanlarını-ayırmak-separating-concerns"></a>
+<a id="ikili-binary-projelerde-ilgi-alanlarını-ayırmak-separating-concerns"></a>
+<a id="ikili-projelerde-ilgi-alanlarını-ayırmak"></a>
+<a id="ikili-projelerde-ilgi-alanlarini-ayirmak"></a>
 
-### İkili (Binary) Projelerde İlgi Alanlarını Ayırmak (Separating Concerns)
+### İkili Projelerde İlgi Alanlarını Ayırma
 
-`main` fonksiyonuna birden fazla görevin sorumluluğunu atamaya dair bu organizasyonel sorun, pek çok ikili proje için ortaktır. Sonuç olarak pek çok Rust programcısı, `main` fonksiyonu büyümeye başladığında ikili bir programın ayrı ayrı ilgi alanlarını ayırmayı kullanışlı bulur. Bu sürecin aşağıdaki adımları vardır:
+`main` fonksiyonuna birden fazla görevin sorumluluğunu yüklemek, pek çok ikili projede karşılaşılan yaygın bir organizasyon sorunudur. Bu nedenle Rust topluluğu, `main` fonksiyonu büyümeye başladığında ikili bir programdaki *ilgi alanlarının ayrılması (separation of concerns)* için kullanışlı bir yol geliştirmiştir. Bu süreç şu adımlardan oluşur:
 
-- Programınızı bir _main.rs_ dosyasına ve bir _lib.rs_ dosyasına bölün ve programınızın mantığını _lib.rs_ dosyasına taşıyın.
+- Programınızı bir _main.rs_ ve bir _lib.rs_ dosyasına bölün ve programınızın asıl mantığını _lib.rs_ dosyasına taşıyın.
 - Komut satırı ayrıştırma mantığınız küçük olduğu sürece `main` fonksiyonunda kalabilir.
 - Komut satırı ayrıştırma mantığı karmaşıklaşmaya başladığında, onu `main` fonksiyonundan çıkarıp başka fonksiyonlara veya türlere taşıyın.
 
-Bu süreçten sonra `main` fonksiyonunda kalan sorumluluklar aşağıdakilerle sınırlı olmalıdır:
+Bu süreçten sonra `main` fonksiyonunda kalan sorumluluklar yalnızca şunlarla sınırlı olmalıdır:
 
 - Komut satırı ayrıştırma mantığını argüman değerleriyle çağırmak
-- Diğer yapılandırmaları ayarlamak
+- Diğer yapılandırmaları hazırlamak
 - _lib.rs_ içindeki bir `calistir` fonksiyonunu çağırmak
-- `calistir` bir hata döndürürse hatayı ele almak
+- `calistir` bir hata döndürürse bu hatayı ele almak
 
-Bu desen (pattern) ilgi alanlarını ayırmak ile ilgilidir: _main.rs_ programı çalıştırmayı, _lib.rs_ ise eldeki görevin tüm mantığını halleder. `main` fonksiyonunu doğrudan test edemediğiniz için bu yapı, programınızın tüm mantığını `main` fonksiyonunun dışına taşıyarak test etmenize olanak tanır. `main` fonksiyonunda kalan kod, okuyarak doğruluğunu kanıtlayacak kadar küçük olacaktır. Bu süreci izleyerek programımızı yeniden işleyelim.
+Bu desen tamamen ilgi alanlarını ayırmakla ilgilidir: _main.rs_ programın çalıştırılmasını üstlenirken, _lib.rs_ eldeki görevin tüm iş mantığını barındırır. `main` fonksiyonunu doğrudan test edemediğiniz için bu yapı, programınızın tüm mantığını `main` fonksiyonunun dışına taşıyarak test etmenize olanak tanır. `main` fonksiyonunda kalan kod ise yalnızca okuyarak doğruluğunu teyit edebileceğiniz kadar küçük olacaktır. Bu süreci izleyerek programımızı yeniden yapılandıralım.
 
-#### Argüman Ayrıştırıcısını (Argument Parser) Çıkarmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="extracting-the-argument-parser"></a>
+<a id="argüman-ayrıştırıcısını-argument-parser-çıkarmak"></a>
+<a id="argüman-ayrıştırıcısını-çıkarmak"></a>
+<a id="arguman-ayristiricisini-cikarmak"></a>
 
-Argümanları ayrıştırma işlevselliğini `main`'in çağıracağı bir fonksiyona çıkaracağız. Liste 12-5, _src/main.rs_ dosyasında tanımlayacağımız yeni bir fonksiyon olan `yapilandirma_ayristir`'ı (parse_config) çağıran `main` fonksiyonunun yeni başlangıcını göstermektedir.
+#### Argüman Ayrıştırıcısını Çıkarma
 
-<Listing number="12-5" file-name="src/main.rs" caption="`main`'den bir `yapilandirma_ayristir` fonksiyonu çıkarmak">
+Öncelikle argümanları ayrıştırma işlevselliğini, `main` fonksiyonunun çağıracağı ayrı bir fonksiyona çıkaracağız. Liste 12-5, _src/main.rs_ içinde tanımlayacağımız yeni `yapilandirma_ayristir` fonksiyonunu çağıran `main` fonksiyonunun güncellenmiş başlangıcını göstermektedir.
+
+<Listing number="12-5" file-name="src/main.rs" caption="`main` fonksiyonundan `yapilandirma_ayristir` fonksiyonunu çıkarma">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-05/src/main.rs:here}}
@@ -43,19 +59,25 @@ Argümanları ayrıştırma işlevselliğini `main`'in çağıracağı bir fonks
 
 </Listing>
 
-Komut satırı argümanlarını hala bir vektörde topluyoruz, ancak 1. indeksteki argüman değerini `main` fonksiyonu içinde `sorgu` değişkenine ve 2. indeksteki argüman değerini `dosya_yolu` değişkenine atamak yerine tüm vektörü `yapilandirma_ayristir` fonksiyonuna geçiriyoruz. `yapilandirma_ayristir` fonksiyonu daha sonra hangi argümanın hangi değişkene gideceğini belirleyen mantığı tutar ve değerleri `main`'e geri geçirir. `sorgu` ve `dosya_yolu` değişkenlerini hala `main`'de oluşturuyoruz, ancak `main` artık komut satırı argümanları ile değişkenlerin nasıl eşleştiğini belirleme sorumluluğuna sahip değildir.
+Komut satırı argümanlarını hâlâ bir vektörde topluyoruz; ancak `main` fonksiyonunun içinde `1` numaralı indeksteki argüman değerini `sorgu` değişkenine, `2` numaralı indeksteki argüman değerini de `dosya_yolu` değişkenine atamak yerine tüm vektörün dilimini `yapilandirma_ayristir` fonksiyonuna iletiyoruz. Hangi argümanın hangi değişkene karşılık geleceğini belirleyen mantığı artık `yapilandirma_ayristir` fonksiyonu barındırır ve elde ettiği değerleri `main` fonksiyonuna geri döndürür. `sorgu` ve `dosya_yolu` değişkenlerini hâlâ `main` içinde oluşturuyoruz, fakat komut satırı argümanları ile değişkenlerin nasıl eşleşeceğini belirleme sorumluluğu artık `main` fonksiyonuna ait değildir.
 
-Bu yeniden çalışma, küçük programımız için aşırı görünebilir, ancak küçük, artımlı adımlarla yeniden düzenleme yapıyoruz. Bu değişikliği yaptıktan sonra argüman ayrıştırmanın hâlâ çalıştığını doğrulamak için programı tekrar çalıştırın. Hata oluştuğunda nedenini belirlemeye yardımcı olması açısından ilerlemenizi sık sık kontrol etmek iyidir.
+Bu değişiklik küçük programımız için ilk bakışta fazladan iş gibi görünebilir; ancak yeniden düzenlemeyi küçük ve artımlı adımlarla gerçekleştiriyoruz. Bu değişikliği yaptıktan sonra argüman ayrıştırmanın hâlâ sorunsuz çalıştığını doğrulamak için programı tekrar çalıştırın. İlerlemenizi sık sık kontrol etmek, bir sorun ortaya çıktığında nedenini hızla tespit etmenize yardımcı olur.
 
-#### Yapılandırma (Configuration) Değerlerini Gruplamak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="grouping-configuration-values"></a>
+<a id="yapılandırma-configuration-değerlerini-gruplamak"></a>
+<a id="yapılandırma-değerlerini-gruplamak"></a>
+<a id="yapilandirma-degerlerini-gruplamak"></a>
 
-`yapilandirma_ayristir` fonksiyonunu daha da geliştirmek için küçük bir adım daha atabiliriz. Şu anda bir demet döndürüyoruz, ancak daha sonra bu demeti derhal yeniden ayrı parçalara bölüyoruz. Bu, belki de henüz doğru soyutlamaya sahip olmadığımızın bir işaretidir.
+#### Yapılandırma Değerlerini Gruplama
 
-Geliştirme için yer olduğunu gösteren bir diğer gösterge de `yapilandirma_ayristir`'ın (parse_config) `yapilandirma` (config) kısmıdır; bu da döndürdüğümüz iki değerin ilişkili olduğunu ve her ikisinin de tek bir yapılandırma değerinin parçası olduğunu ima eder. Şu anda iki değeri bir demet içinde gruplamak haricinde bu anlamı verinin yapısında aktarmıyoruz; bunun yerine iki değeri tek bir struct içine koyacağız ve struct alanlarının her birine anlamlı bir ad vereceğiz. Bunu yapmak, bu kodun gelecekteki bakımcılarının farklı değerlerin birbiriyle nasıl ilişki kurduğunu ve amaçlarının ne olduğunu anlamasını kolaylaştıracaktır.
+`yapilandirma_ayristir` fonksiyonunu daha da iyileştirmek için küçük bir adım daha atabiliriz. Şu anda bir demet döndürüyor, hemen ardından bu demeti tekrar tekil değişkenlere ayırıyoruz. Bu durum, henüz doğru soyutlamaya ulaşmadığımızın bir işaretidir.
 
-Liste 12-6, `yapilandirma_ayristir` fonksiyonundaki geliştirmeleri göstermektedir.
+İyileştirme fırsatı olduğunu gösteren bir diğer ipucu da `yapilandirma_ayristir` adındaki `yapilandirma` sözcüğüdür: Bu isim, döndürdüğümüz iki değerin birbiriyle yakından ilişkili olduğunu ve tek bir yapılandırma bilgisinin parçaları olduğunu ima eder. Şu anda bu iki değeri bir demet içinde gruplamak dışında verinin yapısında bu anlamı ifade etmiyoruz. Bunun yerine iki değeri tek bir struct içine koyacak ve struct alanlarının her birine anlamlı bir ad vereceğiz. Böylece ileride bu kod üzerinde çalışacak geliştiriciler, farklı değerlerin birbiriyle nasıl ilişkili olduğunu ve ne işe yaradığını çok daha kolay anlayacaktır.
 
-<Listing number="12-6" file-name="src/main.rs" caption="Bir `Yapilandirma` struct'ının bir örneğini döndürmek için `yapilandirma_ayristir` fonksiyonunu yeniden düzenlemek">
+Liste 12-6, `yapilandirma_ayristir` fonksiyonunda yapılan bu iyileştirmeleri göstermektedir.
+
+<Listing number="12-6" file-name="src/main.rs" caption="`yapilandirma_ayristir` fonksiyonunu bir `Yapilandirma` struct'ı örneği döndürecek şekilde yeniden düzenleme">
 
 ```rust,should_panic,noplayground
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-06/src/main.rs:here}}
@@ -63,25 +85,39 @@ Liste 12-6, `yapilandirma_ayristir` fonksiyonundaki geliştirmeleri göstermekte
 
 </Listing>
 
-`sorgu` ve `dosya_yolu` adında alanlara (fields) sahip olacak şekilde tanımlanmış `Yapilandirma` adında bir struct ekledik. `yapilandirma_ayristir` fonksiyonunun imzası artık bir `Yapilandirma` değeri döndürdüğünü gösteriyor. `yapilandirma_ayristir`'ın gövdesinde eskiden `argumanlar`'daki `String` değerlerine referans veren string dilimleri döndürdüğümüz yerde, artık `Yapilandirma`'yı sahiplenilmiş `String` değerleri içerecek şekilde tanımlıyoruz. `main`'deki `argumanlar` değişkeni argüman değerlerinin sahibidir ve `yapilandirma_ayristir` fonksiyonunun onları sadece ödünç almasına izin verir; yani `Yapilandirma`, `argumanlar`'daki değerlerin sahipliğini almaya kalksaydı Rust'ın ödünç alma kurallarını ihlal etmiş olurduk.
+`sorgu` ve `dosya_yolu` adında alanlara sahip `Yapilandirma` adlı bir struct tanımladık. `yapilandirma_ayristir` fonksiyonunun imzası artık bir `Yapilandirma` değeri döndürdüğünü belirtiyor. Fonksiyonun gövdesinde, eskiden `argumanlar` içindeki `String` değerlerine referans veren string dilimleri döndürürken, artık `Yapilandirma` struct'ını sahiplenilmiş `String` değerleri tutacak şekilde tanımlıyoruz. `main` içindeki `argumanlar` değişkeni argüman değerlerinin sahibidir ve `yapilandirma_ayristir` fonksiyonunun bu değerleri yalnızca ödünç almasına izin verir; dolayısıyla `Yapilandirma` struct'ı `argumanlar` içindeki değerlerin sahipliğini doğrudan almaya çalışsaydı Rust'ın ödünç alma kurallarını ihlal etmiş olurduk.
 
-`String` verilerini yönetebileceğimizin pek çok yolu vardır; en kolayı (biraz verimsiz olsa da) değerler üzerinde `clone` (klonla) metodunu çağırmaktır. Bu, `Yapilandirma` örneğinin sahip olması için verinin tam bir kopyasını çıkaracaktır, ki bu da string verisine bir referans depolamaktan daha fazla zaman ve bellek gerektirir. Ancak verileri klonlamak, referansların ömürlerini yönetmek zorunda kalmayacağımız için kodumuzu çok daha basit hale getirir; bu durumda basitlik elde etmek için biraz performanstan vazgeçmek değerli bir takastır.
+`String` verilerini yönetmenin birkaç farklı yolu vardır; bunların en kolayı — biraz verimsiz olsa da — değerler üzerinde `clone` metodunu çağırmaktır. Bu yöntem, `Yapilandirma` örneğinin sahip olabilmesi için verinin tam bir kopyasını üretir; bu da string verisine bir referans saklamaya kıyasla biraz daha fazla zaman ve bellek gerektirir. Buna karşılık veriyi klonlamak, referansların ömürlerini yönetmek zorunda kalmayacağımız için kodumuzu son derece sade tutar; bu koşullar altında sadelik kazanmak uğruna az miktarda performanstan feragat etmek yerinde bir *ödünleşimdir (trade-off)*.
 
-> ### `clone` Kullanımının Takasları (Trade-Offs)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="the-trade-offs-of-using-clone"></a>
+<a id="clone-kullanımının-takasları-trade-offs"></a>
+<a id="clone-kullanimini-takaslari-trade-offs"></a>
+<a id="clone-kullanımının-ödünleşimleri"></a>
+<a id="clone-kullanimini-odunlesimleri"></a>
+
+> ### `clone` Kullanımının Ödünleşimleri
 >
-> Birçok Rustacean arasında, çalışma zamanı maliyeti nedeniyle sahiplik sorunlarını düzeltmek için `clone` kullanmaktan kaçınma eğilimi vardır. [Bölüm 13][ch13]<!-- ignore -->'te, bu tür durumlarda daha verimli metotların nasıl kullanılacağını öğreneceksiniz. Ancak şimdilik ilerlemeye devam etmek için birkaç string'i kopyalamak uygundur çünkü bu kopyaları yalnızca bir kez yapacaksınız ve dosya yolunuz ile sorgu string'iniz çok küçüktür. İlk denemenizde kodunuzu aşırı optimize etmeye çalışmaktansa biraz verimsiz de olsa çalışan bir programa sahip olmak daha iyidir. Rust'ta daha deneyimli hale geldikçe, en verimli çözümle başlamak daha kolay olacaktır ancak şimdilik `clone` çağırmak kesinlikle kabul edilebilirdir.
+> Pek çok Rust programcısı, çalışma zamanı maliyeti nedeniyle sahiplik sorunlarını çözmek için `clone` kullanmaktan kaçınma eğilimindedir. [Bölüm 13][ch13]<!-- ignore -->'te bu tür durumlarda çok daha verimli yöntemlerin nasıl kullanılacağını öğreneceksiniz. Ancak şimdilik ilerlemeye devam etmek adına birkaç string'i kopyalamakta hiçbir sakınca yoktur; çünkü bu kopyaları program başlarken yalnızca bir kez oluşturacaksınız ve hem dosya yolunuz hem de sorgu metniniz oldukça küçüktür. İlk denemede kodu aşırı optimize etmeye çalışmaktansa, biraz verimsiz de olsa çalışan bir programa sahip olmak daha iyidir. Rust'ta deneyim kazandıkça doğrudan en verimli çözümle başlamak kolaylaşacaktır; ancak şimdilik `clone` çağırmak tamamen kabul edilebilirdir.
 
-`yapilandirma_ayristir` tarafından döndürülen `Yapilandirma` örneğini `yapilandirma` adında bir değişkene yerleştirmesi için `main` fonksiyonunu güncelledik ve daha önce ayrı `sorgu` ve `dosya_yolu` değişkenlerini kullanan kodu, artık bunun yerine `Yapilandirma` struct'ı üzerindeki alanları kullanacak şekilde güncelledik.
+`main` fonksiyonunu, `yapilandirma_ayristir` tarafından döndürülen `Yapilandirma` örneğini `yapilandirma` adlı bir değişkene yerleştirecek şekilde güncelledik ve daha önce ayrı `sorgu` ve `dosya_yolu` değişkenlerini kullanan kodu `Yapilandirma` struct'ının alanlarını kullanacak biçimde değiştirdik.
 
-Artık kodumuz, `sorgu` ve `dosya_yolu`'nun birbiriyle ilişkili olduğunu ve amaçlarının programın çalışma şeklini yapılandırmak olduğunu daha net bir şekilde yansıtıyor. Bu değerleri kullanan herhangi bir kod, onları `yapilandirma` örneğinde, amaçlarına göre isimlendirilmiş alanlarda (fields) bulacağını bilir.
+Artık kodumuz, `sorgu` ve `dosya_yolu` değerlerinin birbiriyle ilişkili olduğunu ve programın nasıl çalışacağını yapılandırma amacı taşıdığını çok daha net ifade ediyor. Bu değerleri kullanan herhangi bir kod, onları `yapilandirma` örneğinin amaçlarına göre adlandırılmış alanlarında bulacağını bilir.
 
-#### `Yapilandirma` İçin Bir Yapıcı (Constructor) Oluşturmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="creating-a-constructor-for-config"></a>
+<a id="yapilandirma-i̇çin-bir-yapıcı-constructor-oluşturmak"></a>
+<a id="yapilandirma-için-bir-yapıcı-constructor-oluşturmak"></a>
+<a id="yapilandirma-için-bir-yapıcı-oluşturmak"></a>
+<a id="yapilandirma-icin-bir-yapici-olusturmak"></a>
 
-Şimdiye kadar, komut satırı argümanlarını ayrıştırmaktan sorumlu mantığı `main`'den çıkarıp `yapilandirma_ayristir` fonksiyonuna yerleştirdik. Bunu yapmak `sorgu` ve `dosya_yolu` değerlerinin ilişkili olduğunu ve bu ilişkinin kodumuzda aktarılması gerektiğini görmemize yardımcı oldu. Ardından `sorgu` ve `dosya_yolu`'nun ilgili amacını isimlendirmek ve değerlerin isimlerini `yapilandirma_ayristir` fonksiyonundan struct alanı isimleri olarak döndürebilmek için bir `Yapilandirma` struct'ı ekledik.
+#### `Yapilandirma` İçin Bir Yapıcı Oluşturma
 
-Yani artık `yapilandirma_ayristir` fonksiyonunun amacı bir `Yapilandirma` örneği oluşturmak olduğuna göre, `yapilandirma_ayristir`'ı sıradan bir fonksiyondan `Yapilandirma` struct'ı ile ilişkili `new` adında bir fonksiyona değiştirebiliriz. Bu değişikliği yapmak kodu daha idiyomatik hale getirecektir. `String` gibi standart kütüphanedeki türlerin örneklerini `String::new` fonksiyonunu çağırarak oluşturabiliriz. Benzer şekilde, `yapilandirma_ayristir`'ı `Yapilandirma` ile ilişkili bir `new` fonksiyonuna dönüştürerek `Yapilandirma::new` fonksiyonunu çağırıp `Yapilandirma` örnekleri yaratabileceğiz. Liste 12-7 yapmamız gereken değişiklikleri gösteriyor.
+Şimdiye kadar komut satırı argümanlarını ayrıştırmaktan sorumlu mantığı `main` fonksiyonundan çıkarıp `yapilandirma_ayristir` fonksiyonuna yerleştirdik. Bu adım, `sorgu` ve `dosya_yolu` değerlerinin birbiriyle ilişkili olduğunu ve bu ilişkinin kodumuzda yansıtılması gerektiğini görmemize yardımcı oldu. Ardından `sorgu` ve `dosya_yolu`'nun ortak amacını adlandırmak ve bu değerleri `yapilandirma_ayristir` fonksiyonundan anlamlı alan adlarıyla döndürebilmek için `Yapilandirma` struct'ını ekledik.
 
-<Listing number="12-7" file-name="src/main.rs" caption="`yapilandirma_ayristir`'ı `Yapilandirma::new` olarak değiştirmek">
+Artık `yapilandirma_ayristir` fonksiyonunun amacı bir `Yapilandirma` örneği oluşturmak olduğuna göre, `yapilandirma_ayristir` fonksiyonunu bağımsız bir fonksiyondan `Yapilandirma` struct'ı ile ilişkili `new` adında bir *yapıcı (constructor)* fonksiyona dönüştürebiliriz. Bu değişiklik kodu daha deyimsel hale getirecektir. Standart kütüphanedeki `String` gibi türlerin örneklerini `String::new` çağrısıyla oluşturabiliyoruz. Benzer şekilde `yapilandirma_ayristir` fonksiyonunu `Yapilandirma` ile ilişkili bir `new` fonksiyonuna dönüştürdüğümüzde, `Yapilandirma::new` çağrısıyla `Yapilandirma` örnekleri oluşturabileceğiz. Liste 12-7 yapmamız gereken değişiklikleri göstermektedir.
+
+<Listing number="12-7" file-name="src/main.rs" caption="`yapilandirma_ayristir` fonksiyonunu `Yapilandirma::new` olarak değiştirme">
 
 ```rust,should_panic,noplayground
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-07/src/main.rs:here}}
@@ -89,23 +125,35 @@ Yani artık `yapilandirma_ayristir` fonksiyonunun amacı bir `Yapilandirma` örn
 
 </Listing>
 
-`main` fonksiyonunda daha önce `yapilandirma_ayristir` çağırdığımız yeri, onun yerine `Yapilandirma::new` çağıracak şekilde güncelledik. `yapilandirma_ayristir` adını `new` (yeni) olarak değiştirdik ve bunu, `new` fonksiyonunu `Yapilandirma` ile ilişkilendiren bir `impl` bloğunun içine taşıdık. Çalıştığından emin olmak için bu kodu tekrar derlemeyi deneyin.
+`main` fonksiyonunda daha önce `yapilandirma_ayristir` çağırdığımız yeri `Yapilandirma::new` çağıracak şekilde güncelledik. `yapilandirma_ayristir` fonksiyonunun adını `new` olarak değiştirdik ve onu `Yapilandirma` ile ilişkilendiren bir `impl` bloğunun içine taşıdık. Çalıştığından emin olmak için bu kodu tekrar derlemeyi deneyin.
 
-### Hata Yönetimini (Error Handling) Düzeltmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="fixing-the-error-handling"></a>
+<a id="hata-yönetimini-error-handling-düzeltmek"></a>
+<a id="hata-yönetimini-düzeltmek"></a>
+<a id="hata-yonetimini-duzeltmek"></a>
 
-Şimdi hata yönetimimizi düzeltmeye çalışacağız. Vektör üçten daha az öge barındırıyorsa `argumanlar` vektöründeki değerlere 1. indeks veya 2. indeksten erişme denemesinin programın paniklemesine neden olacağını hatırlayın. Programı herhangi bir argüman olmadan çalıştırmayı deneyin; şu şekilde görünecektir:
+### Hata Yönetimini Düzeltme
+
+Şimdi hata yönetimimizi düzeltmeye odaklanacağız. `argumanlar` vektörü üçten az öğe barındırıyorsa `1` veya `2` numaralı indeksteki değerlere erişmeye çalışmanın programın paniklemesine yol açacağını hatırlayın. Programı hiçbir argüman vermeden çalıştırmayı deneyin; çıktı şu şekilde görünecektir:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-07/output.txt}}
 ```
 
-`index out of bounds: the len is 1 but the index is 1` (indeks sınırların dışında: uzunluk 1 ancak indeks 1) satırı, programcılara yönelik bir hata mesajıdır. Bu son kullanıcılarımızın bunun yerine ne yapmaları gerektiğini anlamalarına yardımcı olmayacaktır. Haydi bunu şimdi düzeltelim.
+Çıktıdaki `index out of bounds: the len is 1 but the index is 1` (*indeks sınırların dışında: uzunluk 1 ama indeks 1*) satırı, programcılara yönelik teknik bir hata mesajıdır. Son kullanıcılarımızın neyi eksik yaptıklarını ve programı nasıl çalıştırmaları gerektiğini anlamalarına yardımcı olmaz. Şimdi bunu düzeltelim.
 
-#### Hata Mesajını İyileştirmek
+<!-- Old headings. Do not remove or links may break. -->
+<a id="improving-the-error-message"></a>
+<a id="hata-mesajını-i̇yileştirmek"></a>
+<a id="hata-mesajını-iyileştirmek"></a>
+<a id="hata-mesajini-iyilestirmek"></a>
 
-Liste 12-8'de, `new` fonksiyonuna 1. indeks ve 2. indekse erişmeden önce dilimin (slice) yeterince uzun olduğunu doğrulayacak bir kontrol ekliyoruz. Eğer dilim yeterince uzun değilse program panikler ve daha iyi bir hata mesajı görüntüler.
+#### Hata Mesajını İyileştirme
 
-<Listing number="12-8" file-name="src/main.rs" caption="Argüman sayısı için bir kontrol eklemek">
+Liste 12-8'de, `1` ve `2` numaralı indekslere erişmeden önce dilimin yeterince uzun olduğunu doğrulayan bir kontrolü `new` fonksiyonuna ekliyoruz. Dilim yeterince uzun değilse program panikler, ancak bu kez çok daha anlaşılır bir hata mesajı görüntüler.
+
+<Listing number="12-8" file-name="src/main.rs" caption="Argüman sayısı için kontrol ekleme">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-08/src/main.rs:here}}
@@ -113,27 +161,29 @@ Liste 12-8'de, `new` fonksiyonuna 1. indeks ve 2. indekse erişmeden önce dilim
 
 </Listing>
 
-Bu kod [Liste 9-13'te yazdığımız `Tahmin::new` fonksiyonuna][ch9-custom-types]<!-- ignore --> benzerdir, burada `deger` argümanı geçerli değerler aralığı dışındaysa `panic!` (panik) çağırıyorduk. Burada değerlerin bir aralığını kontrol etmek yerine `argumanlar`'ın uzunluğunun en az `3` olduğunu kontrol ediyoruz ve fonksiyonun geri kalanı bu koşulun karşılandığı varsayımı altında çalışabiliyor. Eğer `argumanlar` üçten az ögeye sahipse, bu koşul `true` olacak ve programı anında sonlandırmak için `panic!` makrosunu çağıracağız.
+Bu kod, `deger` argümanı geçerli değer aralığının dışındaysa `panic!` çağırdığımız [Liste 9-13'teki `Tahmin::new` fonksiyonuna][ch9-custom-types]<!-- ignore --> benzer. Burada bir değer aralığını denetlemek yerine `argumanlar` diliminin uzunluğunun en az `3` olduğunu kontrol ediyoruz; böylece fonksiyonun geri kalanı bu koşulun sağlandığı varsayımıyla güvenle çalışabiliyor. `argumanlar` üçten az öğeye sahipse bu koşul `true` olur ve programı derhal sonlandırmak üzere `panic!` makrosunu çağırırız.
 
-`new` içindeki bu ekstra birkaç satır kodla birlikte hatanın şimdi nasıl göründüğünü görmek için programı herhangi bir argüman olmadan tekrar çalıştıralım:
+`new` fonksiyonuna eklediğimiz bu birkaç satırla birlikte hata çıktısının artık nasıl göründüğünü görmek için programı tekrar hiçbir argüman vermeden çalıştıralım:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-08/output.txt}}
 ```
 
-Bu çıktı daha iyi: Artık makul bir hata mesajımız var. Ancak, kullanıcılarımıza vermek istemediğimiz yabancı bilgilerimiz de var. Belki de Liste 9-13'te kullandığımız teknik burada kullanmak için en iyisi değildir: `panic!` çağrısı, [Bölüm 9'da da tartışıldığı üzere][ch9-error-guidelines]<!-- ignore -->, bir kullanım probleminden ziyade bir programlama problemi için daha uygundur. Bunun yerine, Bölüm 9'da öğrendiğiniz diğer tekniği—başarıyı veya hatayı belirten [bir `Result` döndürmeyi][ch9-result]<!-- ignore --> kullanacağız.
+Bu çıktı daha iyi: Artık makul bir hata mesajımız var. Ne var ki çıktıda kullanıcılarımıza göstermek istemediğimiz fazladan teknik ayrıntılar da yer alıyor. Görünüşe göre Liste 9-13'te kullandığımız teknik burası için en uygun seçim değil: [Bölüm 9'da ele aldığımız üzere][ch9-error-guidelines]<!-- ignore --> bir `panic!` çağrısı, kullanıcı kaynaklı bir kullanım hatasından ziyade kod içindeki bir programlama hatası için uygundur. Bunun yerine Bölüm 9'da öğrendiğiniz diğer tekniği — başarıyı veya hatayı ifade eden [bir `Result` döndürmeyi][ch9-result]<!-- ignore --> — kullanacağız.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="returning-a-result-from-new-instead-of-calling-panic"></a>
+<a id="returning-a-result-instead-of-calling-panic"></a>
+<a id="panic-çağırmak-yerine-bir-result-döndürmek"></a>
+<a id="panic-cagirmak-yerine-bir-result-dondurmek"></a>
 
-#### `panic!` Çağırmak Yerine Bir `Result` Döndürmek
+#### `panic!` Çağırmak Yerine `Result` Döndürme
 
-Bunun yerine, başarılı durumda bir `Yapilandirma` örneğini barındıran ve hata durumunda problemi açıklayan bir `Result` (sonuç) değeri döndürebiliriz. Aynı zamanda fonksiyon adını `new`'den `olustur`'a (build) değiştireceğiz, çünkü pek çok programcı `new` fonksiyonlarının asla başarısız olmamasını bekler. `Yapilandirma::olustur` `main`'e bilgi ilettiğinde, bir sorun olduğunu sinyallemek için `Result` türünü kullanabiliriz. Daha sonra bir `panic!` çağrısının sebep olduğu `thread 'main'` ve `RUST_BACKTRACE` ile ilgili kısımlar olmadan `main`'i, `Err` varyantını (seçeneğini) kullanıcılarımız için daha pratik bir hataya dönüştürecek şekilde değiştirebiliriz.
+Paniklemek yerine, başarılı durumda bir `Yapilandirma` örneği barındıran, hata durumunda ise sorunu açıklayan bir `Result` değeri döndürebiliriz. Aynı zamanda fonksiyonun adını `new` yerine `olustur` (İngilizce Rust kodlarındaki yaygın kuralıyla `build`) olarak değiştireceğiz; çünkü pek çok Rust programcısı `new` adındaki fonksiyonların asla başarısız olmamasını bekler. `Yapilandirma::olustur`, `main` fonksiyonuyla iletişim kurarken bir sorun oluştuğunu bildirmek için `Result` türünü kullanabilir. Ardından `main` fonksiyonunu, bir `panic!` çağrısının yol açtığı `thread 'main'` ve `RUST_BACKTRACE` gibi teknik metinler olmadan `Err` varyantını kullanıcılarımız için sade ve pratik bir hata mesajına dönüştürecek şekilde güncelleyebiliriz.
 
-Liste 12-9, şimdi `Yapilandirma::olustur` olarak adlandırdığımız fonksiyonun dönüş değerinde yapmamız gereken değişiklikleri ve fonksiyon gövdesinde bir `Result` döndürmek için gerekenleri göstermektedir. Bu kodun, bir sonraki listede (listing) yapacağımız gibi `main`'i de güncelleyene kadar derlenmeyeceğini unutmayın.
+Liste 12-9, artık `Yapilandirma::olustur` adını verdiğimiz fonksiyonun dönüş türünde ve `Result` döndürmek için fonksiyon gövdesinde yapmamız gereken değişiklikleri göstermektedir. Bir sonraki listede `main` fonksiyonunu da güncelleyene kadar bu kodun derlenmeyeceğini unutmayın.
 
-<Listing number="12-9" file-name="src/main.rs" caption="`Yapilandirma::olustur`'dan bir `Result` döndürmek">
+<Listing number="12-9" file-name="src/main.rs" caption="`Yapilandirma::olustur` fonksiyonundan `Result` döndürme">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-09/src/main.rs:here}}
@@ -141,21 +191,24 @@ Liste 12-9, şimdi `Yapilandirma::olustur` olarak adlandırdığımız fonksiyon
 
 </Listing>
 
-Bizim `olustur` (build) fonksiyonumuz, başarılı (success) durumda bir `Yapilandirma` örneğiyle ve hatalı durumda bir string sabitiyle bir `Result` döndürür. Hata değerlerimiz her zaman `'static` ömre (lifetime) sahip string sabitleri olacaktır.
+`olustur` fonksiyonumuz başarı durumunda bir `Yapilandirma` örneği, hata durumunda ise bir string sabiti (`&'static str`) içeren bir `Result` döndürür. Hata değerlerimiz her zaman `'static` ömre sahip string sabitleri olacaktır.
 
-Fonksiyonun gövdesinde iki değişiklik yaptık: Artık kullanıcı yeterince argüman aktarmadığında `panic!` çağırmak yerine bir `Err` (hata) değeri döndürüyoruz ve `Yapilandirma` dönüş değerini bir `Ok` (tamam) içine sarmalıyoruz. Bu değişiklikler fonksiyonun yeni tür imzasına uymasını sağlar.
+Fonksiyon gövdesinde iki değişiklik yaptık: Kullanıcı yeterli sayıda argüman sağlamadığında `panic!` çağırmak yerine artık bir `Err` değeri döndürüyoruz ve dönüş değeri olan `Yapilandirma` örneğini `Ok` içine sarmalıyoruz. Bu değişiklikler fonksiyonun yeni tür imzasıyla uyumlu olmasını sağlar.
 
-`Yapilandirma::olustur`'dan bir `Err` değeri döndürmek, `main` fonksiyonunun `olustur` (build) fonksiyonundan döndürülen `Result` değerini yönetmesine ve hata durumunda işlemden daha temiz bir şekilde çıkmasına olanak tanır.
+`Yapilandirma::olustur` fonksiyonundan bir `Err` değeri döndürmek, `main` fonksiyonunun `olustur`'dan dönen `Result` değerini ele almasına ve hata durumunda süreci çok daha temiz bir şekilde sonlandırmasına olanak tanır.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="calling-confignew-and-handling-errors"></a>
+<a id="calling-configbuild-and-handling-errors"></a>
+<a id="yapilandirmaolusturu-çağırmak-ve-hataları-ele-almak-handling-errors"></a>
+<a id="yapilandirmaolusturu-çağırmak-ve-hataları-ele-almak"></a>
+<a id="yapilandirmaolusturu-cagirmak-ve-hatalari-ele-almak"></a>
 
-#### `Yapilandirma::olustur`'u Çağırmak ve Hataları Ele Almak (Handling Errors)
+#### `Yapilandirma::olustur`'u Çağırma ve Hataları Ele Alma
 
-Hata durumunu ele almak ve kullanıcı dostu bir mesaj yazdırmak için Liste 12-10'da gösterildiği gibi `Yapilandirma::olustur` tarafından döndürülen `Result`'ı yönetecek şekilde `main`'i güncellememiz gerekir. Ayrıca, komut satırı aracından sıfır olmayan bir hata koduyla çıkma sorumluluğunu `panic!`'ten alacak ve bunun yerine elimizle uygulayacağız. Sıfır olmayan bir çıkış durumu, programımızı çağıran prosese (işleme), programın bir hata durumuyla çıktığını bildiren bir kuraldır.
+Hata durumunu ele almak ve kullanıcı dostu bir mesaj yazdırmak için Liste 12-10'da gösterildiği gibi `main` fonksiyonunu `Yapilandirma::olustur` tarafından döndürülen `Result` değerini işleyecek şekilde güncellememiz gerekir. Ayrıca komut satırı aracından sıfır dışı (*nonzero*) bir hata koduyla çıkma sorumluluğunu da `panic!` makrosundan devralıp kendimiz uygulayacağız. Sıfır dışı bir çıkış durumu kodu, programımızı çağıran sürece programın bir hata durumuyla sonlandığını bildirmeye yarayan yerleşik bir kuraldır.
 
-<Listing number="12-10" file-name="src/main.rs" caption="Bir `Yapilandirma` oluşturmak başarısız olursa bir hata kodu ile çıkış (exiting) yapmak">
+<Listing number="12-10" file-name="src/main.rs" caption="`Yapilandirma` oluşturma işlemi başarısız olursa hata koduyla çıkış yapma">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-10/src/main.rs:here}}
@@ -163,27 +216,32 @@ Hata durumunu ele almak ve kullanıcı dostu bir mesaj yazdırmak için Liste 12
 
 </Listing>
 
-Bu listede henüz detaylı olarak işlemediğimiz bir metodu kullandık: `unwrap_or_else`, standart kütüphane tarafından `Result<T, E>` üzerinde tanımlanmıştır. `unwrap_or_else` kullanmak `panic!` tabanlı (non-`panic!`) olmayan bazı özel hata yönetimlerini tanımlamamızı sağlar. `Result` bir `Ok` değeri ise, bu metodun davranışı `unwrap`'e (paketi açmaya) benzer: `Ok`'un sarmaladığı iç değeri döndürür. Ancak değer bir `Err` değeri ise bu metot, tanımladığımız ve `unwrap_or_else`'e argüman olarak geçirdiğimiz anonim bir fonksiyon olan kapanıştaki kodu çağırır. Kapanışları [Bölüm 13][ch13]<!-- ignore -->'te daha detaylı olarak işleyeceğiz. Şimdilik sadece `unwrap_or_else`'in dikey çubuklar arasında görünen `hata` (err) argümanındaki kapanışımıza Liste 12-9'da eklediğimiz statik `"yeterli argüman yok"` string'i olan `Err`'nin iç değerini ileteceğini bilmeniz gerekir. Daha sonra kapanışın içindeki kod çalıştığında `hata` değerini kullanabilir.
+Bu listede henüz ayrıntılı olarak incelemediğimiz bir metot kullandık: Standart kütüphanede `Result<T, E>` üzerinde tanımlı olan `unwrap_or_else`. `unwrap_or_else` kullanmak, panik üretmeyen özel bir hata yönetimi tanımlamamıza olanak verir. Eğer `Result` değeri `Ok` ise bu metodun davranışı `unwrap` ile aynıdır: `Ok` varyantının sarmaladığı iç değeri döndürür. Ancak değer `Err` ise bu metot, tanımlayıp `unwrap_or_else`'e argüman olarak geçirdiğimiz isimsiz bir fonksiyon olan *kapanış (closure)* içindeki kodu çalıştırır. Kapanışları [Bölüm 13][ch13]<!-- ignore -->'te daha ayrıntılı olarak ele alacağız. Şimdilik bilmeniz gereken tek şey, `unwrap_or_else` metodunun `Err` varyantının içindeki değeri — yani Liste 12-9'da eklediğimiz `"yeterli argüman yok"` statik string sabitini — dikey çubuklar arasında yer alan `hata` parametresi üzerinden kapanışımıza aktaracağıdır. Böylece kapanışın içindeki kod çalıştığında bu `hata` değerini kullanabilir.
 
-Standart kütüphaneden `process`'i (işlem) kapsama almak için yeni bir `use` satırı ekledik. Hata durumunda çalıştırılacak kapanışın içindeki kod sadece iki satırdan oluşuyor: `hata` değerini yazdırıyoruz ve ardından `process::exit` çağırıyoruz. `process::exit` fonksiyonu programı anında durduracak ve çıkış durum kodu olarak iletilen (passed) numarayı döndürecektir. Bu Liste 12-8'de kullandığımız `panic!` temelli yönetime benziyor, ancak artık fazladan çıktının hiçbirini almıyoruz. Deneyelim:
+Standart kütüphaneden `process` modülünü kapsama dahil etmek için yeni bir `use` satırı ekledik. Hata durumunda çalışacak kapanışın içindeki kod yalnızca iki satırdan oluşur: `hata` değerini yazdırıyor ve hemen ardından `process::exit` fonksiyonunu çağırıyoruz. `process::exit` fonksiyonu programı anında durdurur ve kendisine argüman olarak verilen sayıyı çıkış durum kodu olarak döndürür. Bu yaklaşım Liste 12-8'de kullandığımız `panic!` tabanlı yönetime benzer, ancak artık fazladan teknik çıktıların hiçbirini almayız. Deneyelim:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-10/output.txt}}
 ```
 
-Mükemmel! Bu çıktı kullanıcılarımız için çok daha dostane.
+Harika! Bu çıktı kullanıcılarımız için çok daha anlaşılır ve dostça.
+
+> Not: C ve POSIX standartlarından bu yana işletim sistemlerinde bir sürecin `0` çıkış koduyla sonlanması işlemin **başarılı** olduğunu, `1` gibi sıfırdan farklı herhangi bir tamsayıyla sonlanması ise bir **hata** oluştuğunu belirtir (kabukta son komutun çıkış kodunu `echo $?` ile görebilirsiniz). Doğru çıkış kodu döndürmek, komut satırı araçlarının betiklerde veya `minigrep aranan siir.txt && diger_komut` gibi kabuk zincirlerinde güvenilir biçimde kullanılabilmesini sağlar; `minigrep` `1` koduyla çıktığında kabuk bir hata oluştuğunu anlar ve `&&` sonrasındaki komutu çalıştırmaz. Ayrıca `process::exit`, panik mekanizmasının aksine yığını geri sarmadan (*stack unwinding* yapmadan) ve yerel değişkenlerin `Drop` yıkıcılarını çalıştırmadan süreci anında sonlandırır; bu nedenle onu derinlerdeki yardımcı fonksiyonlar yerine, burada yaptığımız gibi tüm hata yönetiminin toplandığı `main` fonksiyonunda çağırmak en temiz yaklaşımdır.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="extracting-logic-from-the-main-function"></a>
+<a id="extracting-logic-from-main"></a>
+<a id="mantığı-logic-mainden-çıkarmak"></a>
+<a id="mantığı-mainden-çıkarmak"></a>
+<a id="mantigi-mainden-cikarmak"></a>
 
-### Mantığı (Logic) `main`'den Çıkarmak
+### Mantığı `main`'den Çıkarma
 
-Artık yapılandırma ayrıştırmasını yeniden düzenlemeyi bitirdiğimize göre, programın mantığına dönelim. [“İkili Projelerde İlgi Alanlarını Ayırmak (Separating Concerns)”](#separation-of-concerns-for-binary-projects)<!-- ignore --> kısmında belirttiğimiz gibi, yapılandırmayı ayarlamak veya hataları (errors) ele almak ile ilgili olmayan, şu anda `main` fonksiyonunda bulunan tüm mantığı tutacak `calistir` adında bir fonksiyon çıkaracağız. İşimizi bitirdiğimizde `main` fonksiyonu kısa olacak ve incelemeyle doğrulanması kolaylaşacak, ve tüm diğer mantık için testler yazabileceğiz.
+Yapılandırma ayrıştırma kısmını yeniden düzenlemeyi tamamladığımıza göre şimdi programın asıl mantığına dönelim. [“İkili Projelerde İlgi Alanlarını Ayırma”](#separation-of-concerns-for-binary-projects)<!-- ignore --> bölümünde belirttiğimiz gibi, şu anda `main` fonksiyonunda bulunan ve yapılandırmayı hazırlamak ya da hataları ele almakla ilgisi olmayan tüm mantığı barındıracak `calistir` adında bir fonksiyon çıkaracağız. İşimiz bittiğinde `main` fonksiyonu özlü ve bakarak doğrulanması kolay bir hale gelecek; geri kalan tüm mantık içinse testler yazabileceğiz.
 
-Liste 12-11, `calistir` fonksiyonunu ayırmanın ufak ve artımlı bir gelişimini gösteriyor.
+Liste 12-11, `calistir` fonksiyonunu ayırmaya yönelik bu küçük ve artımlı adımı göstermektedir.
 
-<Listing number="12-11" file-name="src/main.rs" caption="Program mantığının geri kalanını içeren `calistir` fonksiyonunu ayırmak">
+<Listing number="12-11" file-name="src/main.rs" caption="Program mantığının geri kalanını içeren `calistir` fonksiyonunu çıkarma">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-11/src/main.rs:here}}
@@ -191,17 +249,20 @@ Liste 12-11, `calistir` fonksiyonunu ayırmanın ufak ve artımlı bir gelişimi
 
 </Listing>
 
-Artık `calistir` fonksiyonu dosyayı okuma kısmından başlayarak `main`'in geri kalan mantığının tümünü kapsıyor. `calistir` fonksiyonu parametre (argument) olarak `Yapilandirma` örneğini alır.
+`calistir` fonksiyonu artık dosyayı okumaktan başlayarak `main` içindeki kalan tüm mantığı barındırıyor. Bu fonksiyon argüman olarak `Yapilandirma` örneğini alır.
 
 <!-- Old headings. Do not remove or links may break. -->
-
 <a id="returning-errors-from-the-run-function"></a>
+<a id="returning-errors-from-run"></a>
+<a id="calistir-fonksiyonundan-hata-error-döndürmek"></a>
+<a id="calistir-fonksiyonundan-hata-döndürmek"></a>
+<a id="calistir-fonksiyonundan-hata-dondurmek"></a>
 
-#### `calistir` Fonksiyonundan Hata (Error) Döndürmek
+#### `calistir` Fonksiyonundan Hata Döndürme
 
-Artık kalan program mantığı `calistir` fonksiyonuna ayrıldığına göre Liste 12-9'da `Yapilandirma::olustur` fonksiyonuyla yaptığımız gibi hata yönetimini iyileştirebiliriz. `expect` fonksiyonunu çağırıp programın panik yapmasına müsaade etmek yerine bir şeyler ters gittiğinde `calistir` fonksiyonu bir `Result<T, E>` değeri döndürecek. Bu, hataları yönetmeyle ilgili mantığı kullanıcı dostu bir yolla `main`'de pekiştirmemize izin verecek. Liste 12-12'de `calistir`'ın gövdesinde ve imzasında yapmamız gereken değişiklikler yer almaktadır.
+Geri kalan program mantığı `calistir` fonksiyonuna ayrıldığına göre, Liste 12-9'da `Yapilandirma::olustur` ile yaptığımız gibi hata yönetimini iyileştirebiliriz. `expect` çağrısıyla programın paniklemesine izin vermek yerine, `calistir` fonksiyonu bir şeyler ters gittiğinde bir `Result<T, E>` değeri döndürecektir. Böylece hataları ele alma mantığını kullanıcı dostu bir biçimde `main` içinde birleştirmeye devam edebiliriz. Liste 12-12, `calistir` fonksiyonunun imzasında ve gövdesinde yapmamız gereken değişiklikleri göstermektedir.
 
-<Listing number="12-12" file-name="src/main.rs" caption="`Result` değeri döndürebilmek için `calistir` fonksiyonunu değiştirmek">
+<Listing number="12-12" file-name="src/main.rs" caption="`calistir` fonksiyonunu `Result` döndürecek şekilde değiştirme">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-12/src/main.rs:here}}
@@ -209,25 +270,31 @@ Artık kalan program mantığı `calistir` fonksiyonuna ayrıldığına göre Li
 
 </Listing>
 
-Burada üç önemli değişiklik yaptık. Birincisi, `calistir` fonksiyonunun dönüş türünü `Result<(), Box<dyn Error>>` olarak değiştirdik. Bu fonksiyon daha önce birim türü olan `()` döndürüyordu, ve onu `Ok` (Tamam) durumu için dönen değer olarak tutuyoruz.
+Burada üç önemli değişiklik yaptık. Birincisi, `calistir` fonksiyonunun dönüş türünü `Result<(), Box<dyn Error>>` olarak değiştirdik. Bu fonksiyon daha önce birim türü olan `()` döndürüyordu; başarılı (`Ok`) durumda dönen değer olarak yine `()` türünü koruyoruz.
 
-Hata türü için, trait (özellik) objesi olan `Box<dyn Error>`'ı kullandık (ve üstte bir `use` satırıyla `std::error::Error`'ı çalışma alanımıza dâhil ettik). [Bölüm 18][ch18]<!-- ignore -->'de trait objelerini detaylı işleyeceğiz. Şimdilik yalnızca `Box<dyn Error>`'ın fonksiyonun `Error` (Hata) trait'ini uygulayan bir tür döndüreceği anlamına geldiğini bilmeniz yeterlidir, fakat dönen değerin tam olarak hangi tür olacağını belirlemek zorunda değiliz. Bu da bize farklı hata durumları için farklı türde hatalar döndürebilme esnekliğini kazandırır. `dyn` anahtar kelimesi _dinamik_ kelimesinin kısaltmasıdır.
+Hata türü içinse `Box<dyn Error>` *trait nesnesini* kullandık (ve dosyanın en üstüne bir `use` deyimi ekleyerek `std::error::Error` trait'ini kapsama dahil ettik). Trait nesnelerini [Bölüm 18][ch18]<!-- ignore -->'de ayrıntılı olarak işleyeceğiz. Şimdilik `Box<dyn Error>` ifadesinin, fonksiyonun `Error` trait'ini uygulayan bir tür döndüreceği anlamına geldiğini, ancak dönen değerin somut olarak hangi tür olacağını önceden belirtmek zorunda olmadığımızı bilmeniz yeterlidir. Bu bize farklı hata durumlarında farklı türlerde hata değerleri döndürebilme esnekliği kazandırır. Buradaki `dyn` anahtar kelimesi _dinamik (dynamic)_ sözcüğünün kısaltmasıdır.
 
-İkincisi, [Bölüm 9][ch9-question-mark]<!-- ignore -->'da bahsettiğimiz gibi `?` (soru işareti) operatörü lehine `expect` çağrısını kaldırdık. Hata durumunda `panic!` çağırmak yerine, `?` mevcut fonksiyondan gelen hatayı fonksiyonu çağıran kısma ele alması için döndürecek.
+İkincisi, [Bölüm 9][ch9-question-mark]<!-- ignore -->'da incelediğimiz gibi `expect` çağrısını kaldırıp yerine `?` operatörünü koyduk. Hata durumunda `panic!` çağırmak yerine `?` operatörü, hata değerini çağıran kodun ele alması için mevcut fonksiyondan dışarı döndürür (örneğin `fs::read_to_string`'in döndürdüğü `std::io::Error` hatasını standart `From` dönüşümüyle otomatik olarak `Box<dyn Error>` türüne çevirerek iletir).
 
-Üçüncüsü, `calistir` fonksiyonu artık başarılı durumlarda bir `Ok` (Tamam) değeri döndürüyor. İmzada `calistir` fonksiyonunun başarılı dönüş türünün `()` olacağını belirttik, bu nedenle birim türü değerini `Ok` değeri ile sarmalamamız gerekir. Başlangıçta bu `Ok(())` (Tamam) sözdizimi kulağa biraz garip gelebilir. Fakat `()` ifadesini bu şekilde kullanmak, `calistir` fonksiyonunu yalnızca fonksiyonun yapacağı yan etkileri için çağırdığımızın; dolayısıyla da geri döndürdüğü değere ihtiyaç duymadığımızın idiyomatik karşılığıdır.
+Üçüncüsü, `calistir` fonksiyonu artık başarı durumunda bir `Ok` değeri döndürüyor. Fonksiyon imzasında `calistir`'ın başarı türünü `()` olarak bildirdiğimiz için birim türü değerini `Ok` içine sarmalamamız gerekir. Bu `Ok(())` sözdizimi ilk bakışta biraz tuhaf görünebilir; ancak `()` türünü bu şekilde kullanmak, `calistir` fonksiyonunu yalnızca yan etkileri için çağırdığımızı ve döndürdüğü bir değere ihtiyaç duymadığımızı belirtmenin deyimsel yoludur.
 
-Bu kodu çalıştırdığınızda derlenecektir fakat ekranda bir uyarıyla karşılaşacaksınız:
+Bu kodu çalıştırdığınızda derlenecek, ancak ekranda bir uyarı görüntüleyecektir:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-12/output.txt}}
 ```
 
-Rust bize yazdığımız kodun bir `Result` değerini yok saydığını, oysaki bu değerin potansiyel bir hataya işaret edebileceğini söylüyor. Ortada bir hata olup olmadığını kontrol etmiyoruz ve derleyici bize büyük olasılıkla burada bir hata yönetimi (error-handling) yazmayı kastettiğimizi hatırlatıyor! Haydi şimdi o sorunu da halledelim.
+Rust derleyicisi, kodumuzun `Result` değerini yok saydığını (`unused Result that must be used`) ve bu `Result` değerinin bir hata oluştuğuna işaret edebileceğini bildiriyor. Bir hata oluşup oluşmadığını kontrol etmediğimiz için derleyici burada muhtemelen bir hata yönetimi kodu yazmak istediğimizi bize hatırlatıyor! Şimdi bu sorunu giderelim.
 
-#### `main` Fonksiyonunda, `calistir` Fonksiyonundan Dönen Hataların Yönetimi (Handling Errors)
+<!-- Old headings. Do not remove or links may break. -->
+<a id="handling-errors-returned-from-run-in-main"></a>
+<a id="main-fonksiyonunda-calistir-fonksiyonundan-dönen-hataların-yönetimi-handling-errors"></a>
+<a id="main-fonksiyonunda-calistir-fonksiyonundan-dönen-hataların-yönetimi"></a>
+<a id="main-fonksiyonunda-calistir-fonksiyonundan-donen-hatalarin-yonetimi"></a>
 
-Hataları Liste 12-10'da `Yapilandirma::olustur` fonksiyonunda kullandığımız tekniğe benzer ufak farklılıkları bulunan bir teknikle kontrol edip ele alacağız:
+#### `main` İçinde `calistir` Fonksiyonundan Dönen Hataları Ele Alma
+
+Hataları kontrol edip ele almak için Liste 12-10'da `Yapilandirma::olustur` ile kullandığımız tekniğe çok benzeyen, ancak küçük bir fark barındıran bir yaklaşım kullanacağız:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -235,19 +302,25 @@ Hataları Liste 12-10'da `Yapilandirma::olustur` fonksiyonunda kullandığımız
 {{#rustdoc_include ../listings/ch12-an-io-project/no-listing-01-handling-errors-in-main/src/main.rs:here}}
 ```
 
-Eğer `calistir` fonksiyonu bir `Err` (hata) değeri döndürdüyse bunu tespit edip, programı `process::exit(1)` komutuyla durdurmak için `unwrap_or_else` yerine `if let` komutunu kullandık. `calistir` fonksiyonu bizim için `Yapilandirma::olustur` fonksiyonu gibi `unwrap` ile paketten çıkartıp alabileceğimiz (return) bir değer sunmuyor. Başarılı senaryolarda `calistir` yalnızca `()` döndürdüğü için sadece hatayı tespit etmekle ilgileniyoruz; bu sebeple kullanıldığında sadece `()` döndürecek bir metoda yani `unwrap_or_else`'e ihtiyacımız yok.
+`calistir` fonksiyonunun bir `Err` değeri döndürüp döndürmediğini kontrol etmek ve döndürdüyse `process::exit(1)` çağrısıyla programı sonlandırmak için `unwrap_or_else` yerine `if let` kullandık. Çünkü `calistir` fonksiyonu, `Yapilandirma::olustur` fonksiyonunun `Yapilandirma` örneği döndürmesi gibi `unwrap` ile içinden çıkarıp kullanmak isteyeceğimiz bir değer döndürmez. Başarı durumunda `calistir` yalnızca `()` döndürdüğünden, tek önemsediğimiz şey bir hatayı yakalamaktır; dolayısıyla içinden yalnızca `()` çıkacak bir değeri açmak için `unwrap_or_else` kullanmamıza gerek yoktur.
 
-`if let` ile `unwrap_or_else` fonksiyonlarının gövdeleri her iki örnekte de tamamen aynıdır: Hatayı yazdırıyoruz ve programdan çıkıyoruz.
+Hem `if let` bloğunun hem de `unwrap_or_else` kapanışının gövdesi iki durumda da birebir aynıdır: Hatayı yazdırır ve programdan çıkarız.
 
-### Kodu Bir Kütüphane (Library) Crate'ine Ayırmak
+<!-- Old headings. Do not remove or links may break. -->
+<a id="splitting-code-into-a-library-crate"></a>
+<a id="kodu-bir-kütüphane-library-crateine-ayırmak"></a>
+<a id="kodu-bir-kütüphane-crateine-ayırmak"></a>
+<a id="kodu-bir-kutuphane-crateine-ayirmak"></a>
 
-Şu ana kadar `minigrep` projemiz hiç fena durmuyor! Artık _src/main.rs_ dosyasını bölecek ve kodun ufak bir kısmını _src/lib.rs_ dosyasına aktaracağız. Bu sayede kodlarımızı çok daha kolayca test edebilir (test) ve çok daha az sorumluluğa sahip olan bir _src/main.rs_ dosyası yaratabiliriz.
+### Kodu Bir Kütüphane Crate'ine Bölme
 
-Hadi _src/main.rs_ yerine metni aramaktan sorumlu kodu _src/lib.rs_'de tanımlayalım, bu bizim (veya `minigrep` kütüphanemizi kullanan herhangi birinin) arama fonksiyonunu kendi `minigrep` ikili dosyamızdan daha farklı bağlamlardan çağırmamıza olanak tanır.
+`minigrep` projemiz şu ana kadar oldukça iyi görünüyor! Şimdi _src/main.rs_ dosyasını bölecek ve kodun bir kısmını _src/lib.rs_ dosyasına koyacağız. Böylece kodu doğrudan test edebilecek ve sorumluluğu çok daha az olan bir _src/main.rs_ dosyası elde edeceğiz.
 
-İlk olarak, _src/lib.rs_ içerisindeki `ara` fonksiyonu imzasını Liste 12-13'te gösterildiği üzere bir `unimplemented!` makrosu ile tanımlayalım. Bir sonraki adımda içini kodlarla doldurduğumuzda imza hakkında daha ayrıntılı açıklama yapıyor olacağız.
+Metin aramaktan sorumlu kodu _src/main.rs_ yerine _src/lib.rs_ içinde tanımlayalım; bu sayede biz (veya `minigrep` kütüphanemizi kullanan herhangi biri) arama fonksiyonunu `minigrep` ikili dosyamız dışındaki farklı bağlamlardan da çağırabileceğiz.
 
-<Listing number="12-13" file-name="src/lib.rs" caption="_src/lib.rs_ dosyasında `ara` fonksiyonunu tanımlamak">
+İlk olarak Liste 12-13'te gösterildiği gibi _src/lib.rs_ içinde, gövdesinde `unimplemented!` makrosunu çağıran `ara` fonksiyonunun imzasını tanımlayalım. Bir sonraki bölümde fonksiyonun uygulamasını doldurduğumuzda bu imzayı çok daha ayrıntılı açıklayacağız.
+
+<Listing number="12-13" file-name="src/lib.rs" caption="*src/lib.rs* içinde `ara` fonksiyonunu tanımlama">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-13/src/lib.rs}}
@@ -255,11 +328,11 @@ Hadi _src/main.rs_ yerine metni aramaktan sorumlu kodu _src/lib.rs_'de tanımlay
 
 </Listing>
 
-Kütüphane crate'imizin açık bir API'sinin bir parçası olduğunu atamak için fonksiyon tanımlamasında `pub` anahtar sözcüğünü kullandık. Artık ikili crate'imizden de kolaylıkla kullanılabilecek, test edilebilir bir kütüphane crate'imiz var!
+`ara` fonksiyonunu kütüphane crate'imizin dışa açık API'sinin bir parçası olarak işaretlemek için fonksiyon tanımında `pub` anahtar kelimesini kullandık. Artık ikili crate'imizden kullanabileceğimiz ve doğrudan test edebileceğimiz bir kütüphane crate'imiz var!
 
-Artık Liste 12-14'te gösterildiği gibi _src/lib.rs_'de tanımlanan kodu _src/main.rs_ içerisindeki ikili crate'in kapsamına sokmamız ve çağırmamız gerekiyor.
+Şimdi Liste 12-14'te gösterildiği gibi _src/lib.rs_ içinde tanımladığımız kodu _src/main.rs_ içindeki ikili crate'in kapsamına dahil etmemiz ve çağırmamız gerekiyor.
 
-<Listing number="12-14" file-name="src/main.rs" caption="*src/main.rs* içerisinde `minigrep` kütüphanesinden `ara` fonksiyonunu çağırmak">
+<Listing number="12-14" file-name="src/main.rs" caption="*src/main.rs* içinde `minigrep` kütüphane crate'inin `ara` fonksiyonunu kullanma">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-14/src/main.rs:here}}
@@ -267,17 +340,19 @@ Artık Liste 12-14'te gösterildiği gibi _src/lib.rs_'de tanımlanan kodu _src/
 
 </Listing>
 
-Kütüphane crate'inin içerisindeki `ara` fonksiyonunu ikili crate'imizin kapsamına alabilmek için kodumuza `use minigrep::ara` satırını ekledik. Daha sonra, `calistir` fonksiyonunun içerisinden metni okuyup yazdırmak yerine, `ara` fonksiyonunu çağırıp içerisine argüman olarak `yapilandirma.sorgu` (config.query) değeri ile `icerik` değerini iletiyoruz. Böylelikle `calistir`, bir `for` döngüsü vasıtasıyla `ara` fonksiyonundan dönen ve aranan metne uygun her bir satırı kolaylıkla yazdırabilecektir. Bu aynı zamanda arama sonucunun ekrana başarıyla yansıtıldığı takdirde sadece aranan kelimeye dair bulguları yazdırabilmesi için `main` fonksiyonunun içerisinde çalıştırdığımız `sorgu` ile `dosya_yolu`nu yazdıran `println!` kodlarını da kaldırmak için en uygun zamandır.
+Kütüphane crate'indeki `ara` fonksiyonunu ikili crate'in kapsamına getirmek için `use minigrep::ara` satırını ekliyoruz. Ardından `calistir` fonksiyonunda dosyanın tüm içeriğini ekrana yazdırmak yerine `ara` fonksiyonunu çağırıyor ve `&yapilandirma.sorgu` değeri ile `&icerik` değerini argüman olarak iletiyoruz. Sonrasında `calistir`, `ara` fonksiyonundan dönen ve sorguyla eşleşen her bir satırı yazdırmak için bir `for` döngüsü kullanır. Ayrıca bu aşama, herhangi bir hata oluşmadığında programımızın yalnızca arama sonuçlarını yazdırması için `main` fonksiyonunda sorguyu ve dosya yolunu ekrana basan geçici `println!` çağrılarını kaldırmak için de doğru zamandır.
 
-Arama fonksiyonunun, herhangi bir yazdırma gerçekleşmeden önce tüm sonuçları döndürdüğü bir vektöre toplayacağını unutmayın. Bu tür bir yaklaşımda, büyük dosyalar üzerinde arama gerçekleştirilirken, bulunan her sonuç bulunduğu an basılamayacağı için çıktı oldukça yavaş verilebilir. Bunu çözmek adına kullanılabilecek olası çözüm olan yineleyicileri Bölüm 13'te işliyor olacağız.
+`ara` fonksiyonunun herhangi bir yazdırma işlemi gerçekleşmeden önce tüm sonuçları döndüreceği bir vektörde toplayacağına dikkat edin. Eşleşen satırlar bulundukları anda yazdırılmadığı için bu uygulama büyük dosyalarda arama yaparken sonuçları görüntülemekte yavaş kalabilir; Bölüm 13'te iteratörleri kullanarak bu durumu nasıl iyileştirebileceğimizi ele alacağız.
 
-Vay canına! Epey iş başardık, ama gelecekte kodlarımızın başarısı için kendi ayarlamalarımızı şimdiden yapmış olduk. Artık olası hata durumlarını yönetmek (handle errors) ve koda modüler bir görünüm kazandırmak daha kolay. İşimizin neredeyse tamamı bundan sonra _src/lib.rs_ üzerinden gerçekleşecek.
+> Not: Cargo, aynı pakette hem _src/lib.rs_ hem de _src/main.rs_ dosyalarını gördüğünde paket adıyla (`minigrep`) bir kütüphane crate'i ve aynı adla bir ikili crate derler. Rust'ta entegrasyon testleri (`tests/` dizini) ve harici paketler _src/main.rs_ içindeki öğeleri içe aktaramaz; yalnızca _src/lib.rs_ içindeki `pub` öğelere (`use minigrep::ara;` gibi) erişebilir. Gerçek dünyadaki büyük Rust komut satırı araçlarında bu mimari bir adım daha ileri taşınarak `Yapilandirma` ve `calistir` dahil neredeyse tüm uygulama katmanı _src/lib.rs_ altına yerleştirilir; _src/main.rs_ ise yalnızca argümanları alıp kütüphaneyi çağıran ve hataları çıkış koduna dönüştüren ince bir kabuk olarak bırakılır.
 
-Eski kodlarla yapılamayıp yeni edindiğimiz modüler özelliklerle kazandığımız yeni avantajların tadını, biraz test yazarak kutlayalım!
+Epey iş çıkardık ama gelecekteki geliştirmelerimiz için çok sağlam bir zemin hazırladık! Artık hataları ele almak çok daha kolay ve kodumuz çok daha modüler. Bundan sonraki çalışmalarımızın neredeyse tamamını _src/lib.rs_ içinde gerçekleştireceğiz.
+
+Yeni kazandığımız bu modülerlikten yararlanarak eski kodla zor olacak ama yeni yapıyla son derece kolaylaşan bir şey yapalım: Biraz test yazalım!
 
 [ch13]: ch13-00-fonksiyonel-ozellikler.html
-[ch9-custom-types]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#doğrulama-validation-için-özel-türler-custom-types
-[ch9-error-guidelines]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#hata-yönetimi-yönergeleri-guidelines-for-error-handling
+[ch9-custom-types]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#doğrulama-için-özel-türler
+[ch9-error-guidelines]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#hata-yönetimi-yönergeleri
 [ch9-result]: ch09-02-result-ile-kurtarilabilir-hatalar.html
 [ch18]: ch18-00-nyp.html
 [ch9-question-mark]: ch09-02-result-ile-kurtarilabilir-hatalar.html#-operatörü-kısayolu

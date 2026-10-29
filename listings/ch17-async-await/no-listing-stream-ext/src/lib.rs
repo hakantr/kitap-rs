@@ -15,6 +15,6 @@ trait StreamExt: Stream {
     where
         Self: Unpin;
 
-    // diger metotlar...
+    // diğer metotlar...
 }
 // ANCHOR_END: here

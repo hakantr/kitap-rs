@@ -1,11 +1,12 @@
-use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
+
+use rand::prelude::*;
 
 fn main() {
     println!("Sayıyı tahmin et!");
 
-    let gizli_sayi = rand::thread_rng().gen_range(1..=100);
+    let gizli_sayi = rand::rng().random_range(1..=100);
 
     // ANCHOR: here
     loop {
@@ -16,7 +17,9 @@ fn main() {
 
         let mut tahmin = String::new();
 
-        io::stdin().read_line(&mut tahmin).expect("Satır okunamadı");
+        io::stdin()
+            .read_line(&mut tahmin)
+            .expect("Satır okunamadı");
 
         // ANCHOR: here
         let tahmin: i32 = match tahmin.trim().parse() {

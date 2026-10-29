@@ -31,7 +31,7 @@ fn baglantiyi_isle(mut akis: TcpStream) {
 
         akis.write_all(yanit.as_bytes()).unwrap();
     } else {
-        // some other request
+        // başka bir istek
     }
 }
 // ANCHOR_END: here

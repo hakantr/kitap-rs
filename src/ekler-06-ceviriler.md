@@ -1,15 +1,21 @@
-## Ek F: Kitabın Çevirileri
+<!-- Old headings. Do not remove or links may break. -->
 
-İngilizce dışındaki dillerdeki kaynaklar için. Çoğu hâlâ devam etmektedir; yardım etmek veya yeni bir çeviriyi bize bildirmek için [Çeviriler (Translations) etiketine][label] bakın!
+<a id="appendix-f-translations-of-the-book"></a>
+<a id="ek-f-kitabın-çevirileri"></a>
+
+## F - Kitabın Çevirileri
+
+Bu ekte kitabın İngilizce dışındaki dillerde topluluk tarafından hazırlanan çevirilerine yer verilmiştir. Bu çevirilerin bir kısmı hâlâ devam etmektedir; katkıda bulunmak veya yeni bir çeviriyi bildirmek için resmi depodaki [Translations etiketine][label] göz atabilirsiniz!
 
 [label]: https://github.com/rust-lang/book/issues?q=is%3Aopen+is%3Aissue+label%3ATranslations
 
+- Türkçe: [hakantr/kitap-rs](https://github.com/hakantr/kitap-rs) *(elinizdeki çeviri)*
 - [Português](https://github.com/rust-br/rust-book-pt-br) (BR)
 - [Português](https://github.com/nunojesus/rust-book-pt-pt) (PT)
 - 简体中文: [KaiserY/trpl-zh-cn](https://github.com/KaiserY/trpl-zh-cn), [gnu4cn/rust-lang-Zh_CN](https://github.com/gnu4cn/rust-lang-Zh_CN)
 - [正體中文](https://github.com/rust-tw/book-tw)
 - [Українська](https://rust-lang-ua.github.io/rustbook_ukrainian)
-- [Español](https://github.com/thecodix/book), [alternate](https://github.com/ManRR/rust-book-es), [Español por RustLangES](https://github.com/RustLangES/rust-book-es)
+- [Español](https://github.com/thecodix/book), [alternatif](https://github.com/ManRR/rust-book-es), [Español por RustLangES](https://github.com/RustLangES/rust-book-es)
 - [Русский](https://github.com/rust-lang-ru/book)
 - [한국어](https://github.com/rust-kr/doc.rust-kr.org)
 - [日本語](https://github.com/rust-lang-ja/book-ja)

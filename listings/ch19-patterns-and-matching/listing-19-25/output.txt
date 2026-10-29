@@ -1,4 +1,5 @@
-    Checking desenler v0.1.0 (/home/hakanbiris/github/kitap/listings/ch19-patterns-and-matching/listing-19-25)
+$ cargo run
+   Compiling desenler v0.1.0 (file:///projects/desenler)
 error: `..` can only be used once per tuple pattern
  --> src/main.rs:5:22
   |

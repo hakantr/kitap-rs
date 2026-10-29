@@ -1,15 +1,15 @@
 $ cargo run
-   Compiling ownership v0.1.0 ($PROJE/listings/ch04-understanding-ownership/no-listing-12-immutable-and-mutable-not-allowed)
+   Compiling ownership v0.1.0 (file:///projects/ownership)
 error[E0502]: cannot borrow `metin` as mutable because it is also borrowed as immutable
- --> src/main.rs:7:14
+ --> src/main.rs:6:14
   |
-5 |     let r1 = &metin; // sorun yok
+4 |     let r1 = &metin; // sorun yok
   |              ------ immutable borrow occurs here
-6 |     let r2 = &metin; // sorun yok
-7 |     let r3 = &mut metin; // BÜYÜK SORUN
+5 |     let r2 = &metin; // sorun yok
+6 |     let r3 = &mut metin; // BÜYÜK SORUN
   |              ^^^^^^^^^^ mutable borrow occurs here
-8 |
-9 |     println!("{r1}, {r2}, ve {r3}");
+7 |
+8 |     println!("{r1}, {r2}, ve {r3}");
   |                -- immutable borrow later used here
 
 For more information about this error, try `rustc --explain E0502`.

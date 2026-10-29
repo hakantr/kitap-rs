@@ -1,13 +1,13 @@
-struct Rectangle {
-    width: u32,
-    height: u32,
+struct Dikdortgen {
+    genislik: u32,
+    yukseklik: u32,
 }
 
 fn main() {
-    let rect1 = Rectangle {
-        width: 30,
-        height: 50,
+    let dikdortgen1 = Dikdortgen {
+        genislik: 30,
+        yukseklik: 50,
     };
 
-    println!("rect1 is {:?}", rect1);
+    println!("dikdortgen1 şöyledir: {dikdortgen1:?}");
 }

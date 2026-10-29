@@ -1,13 +1,13 @@
 use gunce::Gonderi;
 
 fn main() {
-    let mut post = Gonderi::yeni();
+    let mut gonderi = Gonderi::yeni();
 
-    post.metin_ekle("Bugun ogle yemeginde salata yedim");
+    gonderi.metin_ekle("Bugün öğle yemeğinde salata yedim");
 
-    let post = post.inceleme_iste();
+    let gonderi = gonderi.inceleme_iste();
 
-    let post = post.onayla();
+    let gonderi = gonderi.onayla();
 
-    assert_eq!("Bugun ogle yemeginde salata yedim", post.icerik());
+    assert_eq!("Bugün öğle yemeğinde salata yedim", gonderi.icerik());
 }

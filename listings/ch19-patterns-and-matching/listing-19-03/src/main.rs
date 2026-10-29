@@ -4,16 +4,16 @@ fn main() {
     let yas: Result<u8, _> = "34".parse();
 
     if let Some(renk) = favori_renk {
-        println!("Arka plan olarak favori rengin olan {renk} kullaniliyor");
+        println!("Arka plan olarak favori rengin olan {renk} kullanılıyor");
     } else if sali_mi {
-        println!("Sali gunu yesil gunu!");
+        println!("Salı günü yeşil günü!");
     } else if let Ok(yas) = yas {
         if yas > 30 {
-            println!("Arka plan rengi olarak mor kullaniliyor");
+            println!("Arka plan rengi olarak mor kullanılıyor");
         } else {
-            println!("Arka plan rengi olarak turuncu kullaniliyor");
+            println!("Arka plan rengi olarak turuncu kullanılıyor");
         }
     } else {
-        println!("Arka plan rengi olarak mavi kullaniliyor");
+        println!("Arka plan rengi olarak mavi kullanılıyor");
     }
 }

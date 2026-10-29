@@ -23,7 +23,7 @@ impl Buyucu for Insan {
 
 impl Insan {
     fn fly(&self) {
-        println!("*çok selamlı kol çırpıyor*");
+        println!("*çılgınca kollarını çırpıyor*");
     }
 }
 // ANCHOR_END: here

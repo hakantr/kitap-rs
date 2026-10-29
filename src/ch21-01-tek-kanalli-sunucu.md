@@ -1,12 +1,24 @@
-## Tek İş Parçacıklı Bir Web Sunucusu Geliştirmek
+<!-- Old headings. Do not remove or links may break. -->
 
-İşe çalışan, tek iş parçacıklı bir web sunucusuyla başlayacağız. Kod yazmadan önce, web sunucularında karşımıza çıkan iki temel protokole çok kısa bakalım: _Aktarım Denetim Protokolü_ (Transmission Control Protocol, TCP) ve _Hiper Metin Aktarım Protokolü_ (Hypertext Transfer Protocol, HTTP). Bu protokollerin bütün ayrıntıları bu kitabın kapsamı dışında; ama ihtiyacımız olan kadarını bilirsek devam etmek kolay olur.
+<a id="building-a-single-threaded-web-server"></a>
+<a id="tek-iş-parçacıklı-bir-web-sunucusu-geliştirmek"></a>
 
-TCP, verinin bir makineden diğerine nasıl taşındığını anlatan daha düşük seviyeli protokoldür. HTTP ise TCP'nin üstünde çalışır ve istekle yanıtın içeriğini tanımlar. Teknik olarak HTTP başka protokollerle de kullanılabilir; fakat pratikte büyük çoğunlukla TCP üzerinden taşınır. Bu bölümde TCP ve HTTP istek/yanıtlarının ham baytlarıyla doğrudan çalışacağız.
+## Tek Kanallı (Single-Threaded) Web Sunucusu Geliştirme
 
-### TCP Bağlantısını Dinlemek
+İşe çalışan tek kanallı (tek thread'li) bir web sunucusuyla başlayacağız. Başlamadan önce, web sunucuları geliştirirken rol oynayan protokollere kısaca göz atalım. Bu protokollerin tüm ayrıntıları bu kitabın kapsamı dışındadır; ancak kısa bir genel bakış ihtiyacınız olan bilgiyi sağlayacaktır.
 
-Web sunucumuz önce bir TCP bağlantısını dinlemeli. Bunun için standart kütüphanedeki `std::net` modülünü kullanabiliriz. Önce her zamanki gibi yeni bir proje oluşturalım:
+Web sunucularında yer alan iki temel protokol _Hiper Metin Aktarım Protokolü_ (_Hypertext Transfer Protocol_ — _HTTP_) ve _Aktarım Denetim Protokolü_ (_Transmission Control Protocol_ — _TCP_) olarak adlandırılır. Her iki protokol de _istek-yanıt (request-response)_ protokolüdür; yani bir _istemci (client)_ istekleri başlatır, bir _sunucu (server)_ ise bu istekleri dinleyip istemciye bir yanıt sağlar. Bu istek ve yanıtların içerikleri söz konusu protokoller tarafından tanımlanır.
+
+TCP, bilginin bir sunucudan diğerine nasıl ulaştığının ayrıntılarını açıklayan, ancak bu bilginin ne olduğunu belirtmeyen daha alt seviyeli protokoldür. HTTP ise isteklerin ve yanıtların içeriğini tanımlayarak TCP'nin üzerine inşa edilir. HTTP'yi teknik olarak başka protokollerle kullanmak mümkündür; ancak vakaların büyük çoğunluğunda HTTP verilerini TCP üzerinden gönderir. Biz de bu bölümde TCP ve HTTP istek ve yanıtlarının ham baytlarıyla çalışacağız.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="listening-to-the-tcp-connection"></a>
+<a id="tcp-bağlantısını-dinlemek"></a>
+
+### TCP Bağlantısını Dinleme
+
+Web sunucumuzun bir TCP bağlantısını dinlemesi gerekir; dolayısıyla üzerinde çalışacağımız ilk kısım bu olacak. Standart kütüphane, bunu yapmamızı sağlayan bir `std::net` modülü sunar. Her zamanki gibi yeni bir proje oluşturalım:
 
 ```console
 $ cargo new merhaba
@@ -14,9 +26,9 @@ $ cargo new merhaba
 $ cd merhaba
 ```
 
-Şimdi Liste 21-1'deki kodu _src/main.rs_ içine yazın. Bu kod, yerel `127.0.0.1:7878` adresinde gelen TCP akışlarını dinler. Yeni bir akış geldiğinde de `Bağlantı kuruldu!` yazar.
+Başlamak için Liste 21-1'deki kodu _src/main.rs_ dosyasına girin. Bu kod, gelen TCP akışları için yerel `127.0.0.1:7878` adresini dinleyecektir. Gelen bir akış yakaladığında ekrana `Bağlantı kuruldu!` yazdıracaktır.
 
-<Listing number="21-1" file-name="src/main.rs" caption="Gelen akışları dinlemek ve bir akış aldığımızda ileti yazdırmak">
+<Listing number="21-1" file-name="src/main.rs" caption="Gelen akışları dinleme ve bir akış aldığımızda mesaj yazdırma">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-01/src/main.rs}}
@@ -24,27 +36,45 @@ $ cd merhaba
 
 </Listing>
 
-`TcpListener` ile `127.0.0.1:7878` adresindeki TCP bağlantılarını dinliyoruz. İki nokta üst üste işaretinden önceki bölüm bilgisayarınızın IP adresidir; `7878` ise port numarasıdır. Bu portu iki nedenle seçtik: genelde HTTP trafiği bu portta çalışmaz, dolayısıyla başka bir sunucuyla çakışma ihtimali düşüktür; ayrıca 7878, telefon tuş takımında _rust_ kelimesine karşılık gelir.
+`TcpListener` kullanarak `127.0.0.1:7878` adresindeki TCP bağlantılarını dinleyebiliriz. Adreste iki nokta üst üste işaretinden önceki kısım bilgisayarınızı temsil eden bir IP adresidir (bu adres her bilgisayarda aynıdır ve özellikle yazarların bilgisayarını temsil etmez), `7878` ise port numarasıdır. Bu portu iki nedenden ötürü seçtik: HTTP trafiği normalde bu port üzerinden kabul edilmez, dolayısıyla sunucumuzun makinenizde çalışıyor olabilecek başka bir web sunucusuyla çakışma olasılığı düşüktür; ayrıca 7878, telefon tuş takımında _rust_ kelimesinin tuşlanmış karşılığıdır.
 
-Buradaki `bind` fonksiyonu, anlam olarak `new` gibidir; yeni bir `TcpListener` döndürür. Ağ programlamasında bir portu dinlemeye başlamak "bir porta bağlanmak" olarak adlandırıldığı için fonksiyon adı `bind`'dır.
+Bu senaryoda `bind` fonksiyonu, yeni bir `TcpListener` örneği (`dinleyici`) döndürmesi bakımından `new` fonksiyonu gibi çalışır. Ağ programlamasında dinlemek üzere bir porta bağlanmak “bir porta bağlanma (*binding to a port*)” olarak bilindiği için fonksiyonun adı `bind` olarak seçilmiştir.
 
-`bind`, `Result<T, E>` döndürür; çünkü bağlanma işlemi başarısız olabilir. Örneğin aynı programdan iki tane açıp aynı portu dinlemeye kalkarsanız biri başarısız olur. Biz burada eğitim amaçlı basit bir sunucu yazdığımız için ayrıntılı hata yönetimi yapmayacağız; hata olursa program dursun diye `unwrap` kullanacağız.
+`bind` fonksiyonu bir `Result<T, E>` döndürür; bu da bağlanma işleminin başarısız olabileceğini gösterir. Örneğin, programımızın iki örneğini aynı anda çalıştırırsak ve dolayısıyla iki program aynı portu dinlemeye çalışırsa bağlanma başarısız olur. Yalnızca öğrenme amacıyla temel bir sunucu yazdığımız için bu tür hataları yönetmekle uğraşmayacağız; bunun yerine bir hata oluştuğunda programı durdurmak için `unwrap` kullanıyoruz.
 
-`TcpListener` üzerindeki `incoming` metodu, bize bir akışlar dizisi veren yineleyici döndürür. Daha doğrusu bunlar `TcpStream` türündeki akışlardır. Tek bir _akış_, istemciyle sunucu arasındaki açık bağlantıyı temsil eder. İstemcinin bağlanması, sunucunun yanıt üretmesi ve bağlantının kapanması sürecinin tamamına _bağlantı_ deriz. Dolayısıyla istemcinin ne gönderdiğini görmek için `TcpStream` üzerinden okuyacak, yanıtı geri göndermek için de aynı akışa yazacağız.
+`TcpListener` üzerindeki `incoming` metodu, bize bir akış dizisi (daha doğrusu `TcpStream` türünde akışlar) veren bir iteratör döndürür. Tek bir _akış (stream)_, istemci ile sunucu arasındaki açık bir bağlantıyı temsil eder. _Bağlantı (connection)_ ise bir istemcinin sunucuya bağlandığı, sunucunun bir yanıt ürettiği ve ardından sunucunun bağlantıyı kapattığı istek ve yanıt sürecinin tamamına verilen addır. Bu doğrultuda, istemcinin ne gönderdiğini görmek için `TcpStream` üzerinden okuma yapacak ve istemciye veri geri göndermek için yanıtımızı akışa yazacağız. Genel olarak bu `for` döngüsü her bağlantıyı sırayla işleyecek ve ele almamız için bir dizi akış üretecektir.
 
-Şimdilik yaptığımız tek şey, akışta hata varsa `unwrap` ile programı durdurmak; hata yoksa ileti yazmak. Bir sonraki listede başarılı durumda daha fazlasını yapacağız.
+Şimdilik akışı ele alışımız, akışta herhangi bir hata varsa programımızı sonlandırmak üzere `unwrap` çağırmaktan ibarettir; herhangi bir hata yoksa program bir mesaj yazdırır. Bir sonraki listede başarılı durum için daha fazla işlevsellik ekleyeceğiz. Bir istemci sunucuya bağlandığında `incoming` metodundan hata alabilmemizin nedeni, aslında doğrudan bağlantılar üzerinde değil, _bağlantı girişimleri (connection attempts)_ üzerinde iterasyon yapıyor olmamızdır. Bağlantı, çoğu işletim sistemine özgü olan çeşitli nedenlerle başarılı olmayabilir. Örneğin birçok işletim sisteminin aynı anda destekleyebileceği açık bağlantı sayısına ilişkin bir sınırı vardır; açık bağlantılardan bazıları kapatılana kadar bu sayıyı aşan yeni bağlantı girişimleri hata üretecektir.
 
-Bu kodu `cargo run` ile çalıştırıp tarayıcıda _127.0.0.1:7878_ adresini açın. Tarayıcı hata gösterecektir; çünkü sunucu henüz veri döndürmüyor. Ama terminalde birkaç kez `Bağlantı kuruldu!` yazdığını görmelisiniz.
+Bu kodu çalıştırmayı deneyelim! Terminalde `cargo run` komutunu çalıştırın ve ardından bir web tarayıcısında _127.0.0.1:7878_ adresini yükleyin. Sunucu şu anda geriye hiçbir veri göndermediği için tarayıcı “Bağlantı sıfırlandı” (“Connection reset”) benzeri bir hata mesajı göstermelidir. Ancak terminalinize baktığınızda, tarayıcı sunucuya bağlandığında yazdırılmış birkaç mesaj görmelisiniz!
 
-Bir tarayıcı isteği için birden fazla ileti görmeniz normaldir. Tarayıcı bazen sayfanın kendisine ek olarak sekmedeki küçük simge gibi başka kaynakları da istemeye çalışır. Ayrıca, sunucu henüz geçerli veri dönmediği için bazı tarayıcılar bağlantıyı yeniden denemeye çalışır.
+```text
+     Running `target/debug/merhaba`
+Bağlantı kuruldu!
+Bağlantı kuruldu!
+Bağlantı kuruldu!
+```
 
-Önemli nokta şu: artık gerçekten bir TCP bağlantısını ele alabiliyoruz.
+Bazen tek bir tarayıcı isteği için birden fazla mesaj yazdırıldığını görürsünüz; bunun nedeni tarayıcının sayfanın yanı sıra tarayıcı sekmesinde görünen _favicon.ico_ simgesi gibi diğer kaynaklar için de istek gönderiyor olması olabilir.
 
-### İsteği Okumak
+Ayrıca sunucu herhangi bir veriyle yanıt vermediği için tarayıcı sunucuya birden çok kez bağlanmaya çalışıyor da olabilir. Döngünün sonunda `akis` kapsam dışına çıkıp düşürüldüğünde, `drop` uygulamasının bir parçası olarak bağlantı kapatılır. Tarayıcılar bazen sorun geçici olabileceği için kapanan bağlantıları yeniden deneyerek ele alır.
 
-Sırada tarayıcının gönderdiği isteği okumak var. Bağlantıyı almak ile bağlantı üzerinde iş yapmak sorumluluklarını ayırmak için, bağlantıları işleyecek ayrı bir fonksiyon yazacağız. `baglantiyi_isle` adlı bu yeni fonksiyonda TCP akışından gelen veriyi okuyup ekrana basacağız. Böylece tarayıcının neler yolladığını görebileceğiz. Kodunuzu Liste 21-2'deki gibi değiştirin.
+Tarayıcılar kimi zaman da sunucuya henüz hiçbir istek göndermeden birden fazla bağlantı açar; böylece daha sonra gerçekten istek *gönderirlerse*, bu istekler daha hızlı gerçekleşebilir. Böyle bir durumda sunucumuz, üzerinden herhangi bir istek gelip gelmediğine bakmaksızın açılan her bağlantıyı görecektir. Örneğin Chrome tabanlı tarayıcıların birçok sürümü bunu yapar; gizli gezinme modunu kullanarak veya farklı bir tarayıcı tercih ederek bu optimizasyonu devre dışı bırakabilirsiniz.
 
-<Listing number="21-2" file-name="src/main.rs" caption="`TcpStream` içinden okumak ve gelen veriyi yazdırmak">
+Buradaki önemli nokta, bir TCP bağlantısını başarıyla yakalamış olmamızdır!
+
+Kodun belirli bir sürümünü çalıştırmayı bitirdiğinizde <kbd>ctrl</kbd>-<kbd>C</kbd> tuşlarına basarak programı durdurmayı unutmayın. Ardından, en güncel kodu çalıştırdığınızdan emin olmak için yaptığınız her kod değişikliği grubundan sonra `cargo run` komutunu çağırarak programı yeniden başlatın.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="reading-the-request"></a>
+<a id="isteği-okumak"></a>
+
+### İsteği Okuma
+
+Şimdi tarayıcıdan gelen isteği okuma işlevselliğini uygulayalım! Önce bir bağlantı alma ve ardından bağlantı üzerinde bir işlem yapma sorumluluklarını birbirinden ayırmak için bağlantıları işleyecek yeni bir fonksiyon başlatacağız. Bu yeni `baglantiyi_isle` fonksiyonunda TCP akışından veri okuyup yazdıracağız; böylece tarayıcıdan gönderilen veriyi görebileceğiz. Kodu Liste 21-2'deki gibi değiştirin.
+
+<Listing number="21-2" file-name="src/main.rs" caption="`TcpStream` üzerinden okuma ve veriyi yazdırma">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-02/src/main.rs}}
@@ -52,17 +82,24 @@ Sırada tarayıcının gönderdiği isteği okumak var. Bağlantıyı almak ile 
 
 </Listing>
 
-`std::io::BufReader` ile `std::io::prelude::*` öğelerini kapsam içine alıyoruz; çünkü akıştan okuma ve yazma için bunlara ihtiyacımız var. `main` içindeki `for` döngüsünde artık ileti yazdırmak yerine yeni `baglantiyi_isle` fonksiyonunu çağırıp `akis` değerini ona veriyoruz.
+Akıştan okuma ve akışa yazma yapmamızı sağlayan trait'lere ve türlere erişmek için `std::io::BufReader` ve `std::io::prelude` öğelerini kapsama dahil ediyoruz. `main` fonksiyonundaki `for` döngüsünde artık bağlantı kurduğumuzu söyleyen bir mesaj yazdırmak yerine yeni `baglantiyi_isle` fonksiyonunu çağırıyor ve `akis` değerini ona aktarıyoruz.
 
-`baglantiyi_isle` içinde, `akis` referansını saran bir `BufReader` oluşturuyoruz. `BufReader`, `std::io::Read` trait'i çağrılarını tamponlayarak bize daha rahat bir okuma arayüzü sunar.
+`baglantiyi_isle` fonksiyonunda, `akis` referansını sarmalayan yeni bir `BufReader` örneği (`tamponlu_okuyucu`) oluşturuyoruz. `BufReader`, `std::io::Read` trait metotlarına yapılan çağrıları bizim yerimize yöneterek tamponlama (*buffering*) ekler.
 
-Tarayıcının gönderdiği istek satırlarını toplamak için `http_istegi` adlı bir değişken oluşturuyoruz. Satırları vektörde toplayacağımızı belirtmek için `Vec<_>` tür açıklamasını ekliyoruz.
+Tarayıcının sunucumuza gönderdiği isteğin satırlarını toplamak için `http_istegi` adında bir değişken oluşturuyoruz. `Vec<_>` tür açıklamasını ekleyerek bu satırları bir vektörde toplamak istediğimizi belirtiyoruz.
 
-`BufReader`, `std::io::BufRead` trait'ini uygular; bu trait de `lines` metodunu verir. `lines`, her satır sonu görüldüğünde akışı bölen ve `Result<String, std::io::Error>` döndüren bir yineleyicidir. Her `String` değerini alabilmek için `map` içinde `unwrap` kullanıyoruz. Gerçek bir uygulamada bu hataları daha nazik biçimde ele almak gerekirdi; ama burada örneği sade tutmak istiyoruz.
+`BufReader`, `lines` metodunu sağlayan `std::io::BufRead` trait'ini uygular. `lines` metodu, veri akışında ne zaman bir satır sonu baytı görse akışı bölerek `Result<String, std::io::Error>` öğelerinden oluşan bir iteratör döndürür. Her bir `String` değerini elde etmek için her `Result` üzerinde `map` ve `unwrap` uyguluyoruz. Veri geçerli UTF-8 değilse veya akıştan okuma sırasında bir sorun yaşandıysa `Result` bir hata olabilir. Yine, üretime yönelik bir program bu hataları daha zarif biçimde ele almalıdır; ancak biz basitlik adına hata durumunda programı durdurmayı seçiyoruz.
 
-Tarayıcı, arka arkaya iki yeni satır göndererek HTTP isteğinin bittiğini belirtir. Bu yüzden boş satır gelene kadar satırları alıyoruz. Sonra bunları vektörde toplayıp biçimli hata ayıklama çıktısıyla ekrana yazdırıyoruz.
+Tarayıcı, art arda iki satır sonu karakteri göndererek bir HTTP isteğinin sonunu bildirir; bu nedenle akıştan tek bir istek almak için boş string olan bir satıra ulaşana dek satırları alıyoruz. Satırları vektörde topladıktan sonra, web tarayıcısının sunucumuza gönderdiği yönergelere göz atabilmek için bunları okunaklı hata ayıklama biçimlendirmesiyle ekrana yazdırıyoruz.
 
-Programı yeniden çalıştırıp tarayıcıdan bir istek gönderin. Tarayıcı yine hata sayfası gösterecek; ama terminalde buna benzer bir çıktı göreceksiniz:
+Bu kodu deneyelim! Programı başlatın ve bir web tarayıcısında yeniden istek gönderin. Tarayıcıda hâlâ bir hata sayfası alacağımıza dikkat edin; ancak programımızın terminaldeki çıktısı artık şuna benzer görünecektir:
+
+<!-- manual-regeneration
+cd listings/ch21-web-server/listing-21-02
+cargo run
+make a request to 127.0.0.1:7878
+Can't automate because the output depends on making requests
+-->
 
 ```console
 $ cargo run
@@ -72,15 +109,35 @@ $ cargo run
 İstek: [
     "GET / HTTP/1.1",
     "Host: 127.0.0.1:7878",
-    ...
+    "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:99.0) Gecko/20100101 Firefox/99.0",
+    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language: en-US,en;q=0.5",
+    "Accept-Encoding: gzip, deflate, br",
+    "DNT: 1",
+    "Connection: keep-alive",
+    "Upgrade-Insecure-Requests: 1",
+    "Sec-Fetch-Dest: document",
+    "Sec-Fetch-Mode: navigate",
+    "Sec-Fetch-Site: none",
+    "Sec-Fetch-User: ?1",
+    "Cache-Control: max-age=0",
 ]
 ```
 
-Tarayıcınıza göre satırlar biraz farklı olabilir. Ama artık sunucuya hangi HTTP isteğinin geldiğini açıkça görebiliyoruz.
+Tarayıcınıza bağlı olarak biraz farklı bir çıktı alabilirsiniz. Artık istek verisini yazdırdığımıza göre, isteğin ilk satırındaki `GET` ifadesinden sonra gelen yola bakarak tek bir tarayıcı isteğinden neden birden fazla bağlantı aldığımızı görebiliriz. Tekrarlanan bağlantıların tümü _/_ yolunu istiyorsa, programımızdan yanıt alamadığı için tarayıcının _/_ adresini tekrar tekrar getirmeye çalıştığını anlarız.
 
-### HTTP İsteğine Daha Yakından Bakmak
+Tarayıcının programımızdan ne istediğini anlamak için bu istek verisini parçalarına ayıralım.
 
-HTTP metin tabanlı bir protokoldür ve istek genel olarak şu biçimdedir:
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="a-closer-look-at-an-http-request"></a>
+<a id="looking-closer-at-an-http-request"></a>
+<a id="looking-more-closely-at-an-http-request"></a>
+<a id="http-isteğine-daha-yakından-bakmak"></a>
+
+### Bir HTTP İsteğine Daha Yakından Bakma
+
+HTTP metin tabanlı bir protokoldür ve bir istek şu biçimi alır:
 
 ```text
 Method Request-URI HTTP-Version CRLF
@@ -88,17 +145,28 @@ headers CRLF
 message-body
 ```
 
-İlk satır _istek satırı_ dır. İstemcinin ne istediğine dair temel bilgiyi taşır. İlk bölüm kullanılan metottur; örneğin `GET` ya da `POST`. Tarayıcımız burada `GET` kullanıyor; yani bilgi istiyor.
+İlk satır, istemcinin ne talep ettiğine dair bilgiyi tutan _istek satırıdır (request line)_. İstek satırının ilk bölümü, istemcinin bu isteği nasıl yaptığını açıklayan `GET` veya `POST` gibi kullanılan metodu belirtir. Bizim istemcimiz bir `GET` isteği kullandı; bu da bilgi talep ettiği anlamına gelir.
 
-Sonraki bölüm istenen _URI_ değeridir. Burada _/_ geliyor; yani kök yol isteniyor. Son bölüm HTTP sürümüdür. Satır da `CRLF` ile biter. `CRLF`, daktilo günlerinden gelen _carriage return_ ve _line feed_ ifadelerinin kısaltmasıdır; Rust içinde bunu çoğu zaman `\r\n` olarak görürüz.
+İstek satırının bir sonraki bölümü _/_ olup istemcinin talep ettiği _tekdüze kaynak tanımlayıcısını_ (_uniform resource identifier_ — _URI_) belirtir: Bir URI, _tekdüze kaynak bulucu_ (_uniform resource locator_ — _URL_) ile neredeyse aynıdır ama tam olarak aynı şey değildir. URI ile URL arasındaki fark bu bölümdeki amaçlarımız açısından önemli değildir; ancak HTTP belirtimi _URI_ terimini kullandığı için burada zihnimizde _URI_ yerine _URL_ koyabiliriz.
 
-İstek satırından sonra `Host:` ile başlayan kısım başlıklar bölümüdür. `GET` isteğinde çoğu zaman gövde bulunmaz.
+Son bölüm istemcinin kullandığı HTTP sürümüdür ve ardından istek satırı bir CRLF dizisiyle sona erer. (_CRLF_, daktilo günlerinden kalma terimler olan _carriage return_ [satır başı] ve _line feed_ [satır besleme] ifadelerinin kısaltmasıdır!) CRLF dizisi, `\r` satır başı ve `\n` satır besleme olmak üzere `\r\n` biçiminde de yazılabilir. _CRLF dizisi_, istek satırını geri kalan istek verisinden ayırır. CRLF yazdırıldığında ekranda `\r\n` görmek yerine yeni bir satırın başladığını gördüğümüze dikkat edin.
 
-Şimdi farklı bir adres, örneğin _127.0.0.1:7878/test_, isteyip gelen verinin nasıl değiştiğine bakabilirsiniz.
+Programımızı şimdiye kadar çalıştırdığımızda aldığımız istek satırı verisine baktığımızda; metodun `GET`, istek URI'sinin _/_ ve sürümün `HTTP/1.1` olduğunu görürüz.
 
-### Yanıt Yazmak
+İstek satırından sonra `Host:` satırından itibaren gelen kalan satırlar başlıklardır (*headers*). `GET` isteklerinin gövdesi (*body*) yoktur.
 
-Artık tarayıcı isteğini okuyabildiğimize göre istemciye veri de geri gönderebiliriz. HTTP yanıtları kabaca şu biçimdedir:
+İstek verisinin nasıl değiştiğini görmek için farklı bir tarayıcıdan istek göndermeyi veya _127.0.0.1:7878/test_ gibi farklı bir adresi istemeyi deneyin.
+
+Artık tarayıcının ne istediğini bildiğimize göre biraz veri geri gönderelim!
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="writing-a-response"></a>
+<a id="yanıt-yazmak"></a>
+
+### Bir Yanıt Yazma
+
+Bir istemci isteğine karşılık veri gönderme işlevini uygulayacağız. Yanıtlar aşağıdaki biçime sahiptir:
 
 ```text
 HTTP-Version Status-Code Reason-Phrase CRLF
@@ -106,17 +174,17 @@ headers CRLF
 message-body
 ```
 
-İlk satır _durum satırı_ dır. Burada HTTP sürümü, sayısal durum kodu ve metinsel açıklama yer alır.
+İlk satır; yanıtta kullanılan HTTP sürümünü, isteğin sonucunu özetleyen sayısal bir durum kodunu (*status code*) ve durum kodunun metinsel açıklamasını sağlayan bir neden ifadesini (*reason phrase*) içeren bir _durum satırıdır (status line)_. CRLF dizisinden sonra varsa başlıklar, bir başka CRLF dizisi ve yanıtın gövdesi yer alır.
 
-Örnek olarak, HTTP 1.1 kullanan, durum kodu `200`, açıklaması `OK` olan ve gövdesi bulunmayan minimal bir başarılı yanıt şöyledir:
+İşte HTTP 1.1 sürümünü kullanan, 200 durum koduna ve OK neden ifadesine sahip olan, başlığı ve gövdesi bulunmayan örnek bir yanıt:
 
 ```text
 HTTP/1.1 200 OK\r\n\r\n
 ```
 
-Şimdi bunu akışa yazarak istemciye ilk yanıtımızı gönderelim. Liste 21-3'te, `baglantiyi_isle` fonksiyonu bunu yapıyor.
+200 durum kodu standart başarılı yanıttır. Bu metin küçük bir başarılı HTTP yanıtıdır. Başarılı bir isteğe yanıtımız olarak bunu akışa yazalım! `baglantiyi_isle` fonksiyonundan istek verisini yazdıran `println!` çağrısını kaldırın ve yerine Liste 21-3'teki kodu koyun.
 
-<Listing number="21-3" file-name="src/main.rs" caption="Akışa küçük ama geçerli bir HTTP yanıtı yazmak">
+<Listing number="21-3" file-name="src/main.rs" caption="Akışa küçük bir başarılı HTTP yanıtı yazma">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-03/src/main.rs:here}}
@@ -124,15 +192,20 @@ HTTP/1.1 200 OK\r\n\r\n
 
 </Listing>
 
-`yanit` adlı string'i `as_bytes` ile baytlara çevirip `write_all` ile akışa yazıyoruz. Hata durumunda yine `unwrap` ile ilerliyoruz.
+Eklenen ilk yeni satır, başarı mesajının verisini tutan `yanit` değişkenini tanımlar. Ardından, string verisini baytlara dönüştürmek için `yanit` üzerinde `as_bytes` metodunu çağırıyoruz. `akis` üzerindeki `write_all` metodu bir `&[u8]` alır ve bu baytları doğrudan bağlantı üzerinden gönderir. `write_all` işlemi başarısız olabileceği için her zamanki gibi olası bir hata sonucu üzerinde `unwrap` kullanıyoruz. Yine, gerçek bir uygulamada buraya hata yönetimi eklemeniz gerekir.
 
-Bu kodla tarayıcı artık hata yerine boş bir sayfa gösterecektir. Yani HTTP isteği alıp geçerli HTTP yanıtı dönmeyi elle başarmış olduk.
+Bu değişikliklerle kodumuzu çalıştıralım ve bir istek gönderelim. Artık terminale herhangi bir veri yazdırmadığımız için Cargo'nun çıktısı dışında hiçbir çıktı görmeyeceğiz. Bir web tarayıcısında _127.0.0.1:7878_ adresini yüklediğinizde hata yerine boş bir sayfa almalısınız. Az önce bir HTTP isteği alıp yanıt göndermeyi elle kodladınız!
 
-### Gerçek HTML Döndürmek
+<!-- Old headings. Do not remove or links may break. -->
 
-Boş sayfa yerine gerçek içerik gösterelim. Projenin kök dizininde, _src_ içinde değil, _merhaba.html_ adlı yeni dosya oluşturun. Liste 21-4 örnek bir içerik gösteriyor.
+<a id="returning-real-html"></a>
+<a id="gerçek-html-döndürmek"></a>
 
-<Listing number="21-4" file-name="merhaba.html" caption="Yanıtta döndürülecek örnek HTML dosyası">
+### Gerçek HTML Döndürme
+
+Şimdi boş bir sayfadan fazlasını döndürme işlevselliğini uygulayalım. Proje dizininizin kökünde (_src_ dizininde değil) _merhaba.html_ adlı yeni dosyayı oluşturun. İstediğiniz herhangi bir HTML içeriğini girebilirsiniz; Liste 21-4 olası bir örneği göstermektedir.
+
+<Listing number="21-4" file-name="merhaba.html" caption="Bir yanıtta döndürülecek örnek HTML dosyası">
 
 ```html
 {{#include ../listings/ch21-web-server/listing-21-05/merhaba.html}}
@@ -140,9 +213,9 @@ Boş sayfa yerine gerçek içerik gösterelim. Projenin kök dizininde, _src_ i�
 
 </Listing>
 
-Sunucu bir istek aldığında bu dosyanın içeriğini okuyup yanıt gövdesi olarak ekleyeceğiz. Liste 21-5 bunu gösteriyor.
+Bu, bir başlık ve biraz metin içeren minimal bir HTML5 belgesidir. Bir istek alındığında sunucudan bunu döndürmek için `baglantiyi_isle` fonksiyonunu Liste 21-5'te gösterildiği gibi HTML dosyasını okuyacak, yanıt gövdesi olarak ekleyecek ve gönderecek şekilde değiştireceğiz.
 
-<Listing number="21-5" file-name="src/main.rs" caption="Yanıt gövdesi olarak *merhaba.html* içeriğini göndermek">
+<Listing number="21-5" file-name="src/main.rs" caption="Yanıtın gövdesi olarak *merhaba.html* içeriğini gönderme">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-05/src/main.rs:here}}
@@ -150,15 +223,26 @@ Sunucu bir istek aldığında bu dosyanın içeriğini okuyup yanıt gövdesi ol
 
 </Listing>
 
-Burada `fs` modülünü de kullanıma ekledik. Dosyayı string olarak okuyup `format!` ile HTTP yanıtının gövdesine ekliyoruz. Ayrıca geçerli bir HTTP yanıtı olması için `Content-Length` başlığını da ekliyoruz.
+Standart kütüphanenin dosya sistemi modülünü kapsama dahil etmek için `use` deyimine `fs` ekledik. Bir dosyanın içeriğini string'e okuma kodu tanıdık gelmelidir; bunu G/Ç projemiz için dosya içeriğini okuduğumuz Liste 12-4'te de kullanmıştık.
 
-Kodu çalıştırıp tarayıcıyı yenilerseniz artık HTML içeriğinin çizildiğini görmelisiniz.
+Ardından, dosyanın içeriğini (`icerik`) başarılı yanıtın gövdesi olarak eklemek için `format!` makrosunu kullanıyoruz. Geçerli bir HTTP yanıtı oluşturmak adına, yanıt gövdemizin boyutuna —bu örnekte `merhaba.html` dosyasının boyutuna (`uzunluk`)— ayarlanan `Content-Length` başlığını ekliyoruz.
 
-### İsteği Doğrulamak ve Seçici Yanıt Vermek
+> Not: HTTP protokolünde `Content-Length` başlığı karakter sayısını değil, gövdenin **bayt (octet) sayısını** belirtir. Rust'ta `icerik.len()` metodu da karakter sayısını değil, doğrudan UTF-8 bayt uzunluğunu döndürür. Bu sayede HTML dosyalarımızda (örneğin birazdan oluşturacağımız *404.html* içindeki `'Ü'`, `'ğ'`, `'ı'` gibi) UTF-8'de 2 bayt yer kaplayan Türkçe karakterler bulunsa bile yanıt gövdesinin uzunluğu tam ve doğru hesaplanır; böylece sayfa tarayıcıda kesilmeden eksiksiz görüntülenir.
 
-Şu anda istemci ne isterse istesin, sunucu hep aynı HTML dosyasını döndürüyor. Biraz daha gerçekçi davranıp yalnızca _/_ yoluna doğru biçimde gelen isteğe HTML dönelim; diğer tüm isteklerde hata sayfası gösterelim. Bunun için `baglantiyi_isle` fonksiyonunu Liste 21-6'daki gibi değiştiriyoruz.
+Bu kodu `cargo run` ile çalıştırın ve tarayıcınızda _127.0.0.1:7878_ adresini yükleyin; HTML içeriğinizin çizildiğini görmelisiniz!
 
-<Listing number="21-6" file-name="src/main.rs" caption="*/* yoluna gelen istekleri diğerlerinden farklı ele almak">
+Şu anda `http_istegi` içindeki istek verisini yok sayıyor ve HTML dosyasının içeriğini koşulsuz olarak geri gönderiyoruz. Bu da tarayıcınızda _127.0.0.1:7878/baska-bir-sey_ adresini istemeyi deneseniz bile yine aynı HTML yanıtını alacağınız anlamına gelir. Şu an itibarıyla sunucumuz oldukça sınırlıdır ve çoğu web sunucusunun yaptığını yapmamaktadır. Yanıtlarımızı gelen isteğe göre özelleştirmek ve HTML dosyasını yalnızca _/_ adresine yapılan düzgün biçimlendirilmiş bir istek için geri göndermek istiyoruz.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="validating-the-request-and-selectively-responding"></a>
+<a id="isteği-doğrulamak-ve-seçici-yanıt-vermek"></a>
+
+### İsteği Doğrulama ve Seçici Yanıt Verme
+
+Şu anda web sunucumuz, istemci ne talep etmiş olursa olsun dosyadaki HTML'i döndürecektir. HTML dosyasını döndürmeden önce tarayıcının _/_ yolunu isteyip istemediğini kontrol etme ve tarayıcı başka bir şey isterse bir hata döndürme işlevselliğini ekleyelim. Bunun için `baglantiyi_isle` fonksiyonunu Liste 21-6'da gösterildiği gibi değiştirmemiz gerekir. Bu yeni kod, alınan isteğin içeriğini _/_ için yapılan bir isteğin nasıl göründüğüne dair bilgimizle karşılaştırır ve isteklere farklı davranmak üzere `if` ve `else` blokları ekler.
+
+<Listing number="21-6" file-name="src/main.rs" caption="*/* yoluna gelen istekleri diğer isteklerden farklı ele alma">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-06/src/main.rs:here}}
@@ -166,11 +250,17 @@ Kodu çalıştırıp tarayıcıyı yenilerseniz artık HTML içeriğinin çizild
 
 </Listing>
 
-Artık isteğin yalnızca ilk satırını okuyoruz. Tamamını vektöre toplamak yerine `next` ile ilk öğeyi alıyoruz. `istek_satiri`, _/_ için gelen `GET` isteğiyle eşleşiyorsa HTML dosyasını döndürüyoruz; aksi durumda başka bir şey yapacağız.
+Yalnızca HTTP isteğinin ilk satırına bakacağımız için isteğin tamamını bir vektöre okumak yerine iteratörden ilk öğeyi almak üzere `next` metodunu çağırıyoruz. İlk `unwrap`, `Option` değerini ele alır ve iteratörde hiç öğe yoksa programı durdurur. İkinci `unwrap` ise `Result` değerini ele alır ve Liste 21-2'de eklenen `map` içindeki `unwrap` ile aynı etkiye sahiptir.
 
-Şimdi `else` bloğunu da dolduralım. Liste 21-7, başka her istek için `404 NOT FOUND` durum kodu ve hata sayfası döndürüyor.
+Ardından `istek_satiri` değerinin _/_ yoluna yapılan bir GET isteğinin istek satırına eşit olup olmadığını kontrol ediyoruz. Eşitse, `if` bloğu HTML dosyamızın içeriğini döndürür.
 
-<Listing number="21-7" file-name="src/main.rs" caption="*/* dışında bir şey istenirse 404 ve hata sayfası döndürmek">
+Eğer `istek_satiri` değeri _/_ yoluna yapılan GET isteğine eşit _değilse_, başka bir istek aldığımız anlamına gelir. Diğer tüm isteklere yanıt vermek için birazdan `else` bloğuna kod ekleyeceğiz.
+
+Şimdi bu kodu çalıştırın ve _127.0.0.1:7878_ adresine istek gönderin; _merhaba.html_ içindeki HTML'i almalısınız. _127.0.0.1:7878/baska-bir-sey_ gibi başka herhangi bir istek yaparsanız, Liste 21-1 ve Liste 21-2'deki kodu çalıştırdığınızda gördüklerinize benzer bir bağlantı hatası alırsınız.
+
+Şimdi isteğe karşılık gelen içeriğin bulunamadığını bildiren 404 durum kodlu bir yanıt döndürmek için Liste 21-7'deki kodu `else` bloğuna ekleyelim. Ayrıca son kullanıcıya yanıtı gösteren bir sayfanın tarayıcıda çizilmesi için biraz HTML de döndüreceğiz.
+
+<Listing number="21-7" file-name="src/main.rs" caption="*/* dışında bir şey istendiğinde 404 durum kodu ve bir hata sayfasıyla yanıt verme">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-07/src/main.rs:here}}
@@ -178,9 +268,9 @@ Artık isteğin yalnızca ilk satırını okuyoruz. Tamamını vektöre toplamak
 
 </Listing>
 
-Bu durumda yanıtın gövdesi _404.html_ dosyasından geliyor. Önce bu dosyayı oluşturmanız gerekir. Liste 21-8 örnek içerik gösteriyor.
+Burada yanıtımız, 404 durum kodunu ve `NOT FOUND` neden ifadesini içeren bir durum satırına sahiptir. Yanıtın gövdesi _404.html_ dosyasındaki HTML olacaktır. Hata sayfası için _merhaba.html_ dosyasının yanına bir _404.html_ dosyası oluşturmanız gerekecektir; yine istediğiniz herhangi bir HTML'i kullanmakta özgürsünüz ya da Liste 21-8'deki örnek HTML'i kullanabilirsiniz.
 
-<Listing number="21-8" file-name="404.html" caption="404 yanıtı için döndürülebilecek örnek HTML içerik">
+<Listing number="21-8" file-name="404.html" caption="Herhangi bir 404 yanıtıyla geri gönderilecek sayfa için örnek içerik">
 
 ```html
 {{#include ../listings/ch21-web-server/listing-21-07/404.html}}
@@ -188,13 +278,18 @@ Bu durumda yanıtın gövdesi _404.html_ dosyasından geliyor. Önce bu dosyayı
 
 </Listing>
 
-Bu değişikliklerden sonra _127.0.0.1:7878_ adresi *merhaba.html* içeriğini, örneğin _127.0.0.1:7878/foo_ gibi diğer adresler ise *404.html* içeriğini göstermelidir.
+Bu değişikliklerle sunucunuzu yeniden çalıştırın. _127.0.0.1:7878_ adresini istemek _merhaba.html_ içeriğini döndürmeli; _127.0.0.1:7878/foo_ gibi diğer herhangi bir istek ise _404.html_ içindeki hata HTML'ini döndürmelidir.
+
+<!-- Old headings. Do not remove or links may break. -->
+
+<a id="a-touch-of-refactoring"></a>
+<a id="refactoring"></a>
 
 ### Yeniden Düzenleme
 
-Şu an `if` ile `else` bloklarında ciddi tekrar var: iki durumda da dosya okuyor ve yanıt yazıyoruz; yalnızca durum satırı ile dosya adı değişiyor. Bunu sadeleştirmek için, farklı olan kısmı bir demet içinde iki değere ayırıp geri kalan ortak kodu tek noktaya toplayabiliriz. Liste 21-9 sonuçta ortaya çıkan sürümü gösteriyor.
+Şu anda `if` ve `else` bloklarında çok fazla tekrar var: Her ikisi de dosya okuyor ve dosyaların içeriğini akışa yazıyor. Tek fark durum satırı ve dosya adıdır. Bu farkları, durum satırı ve dosya adı değerlerini değişkenlere atayacak ayrı `if` ve `else` satırlarına çıkararak kodu daha özlü hâle getirelim; ardından dosyayı okumak ve yanıtı yazmak için bu değişkenleri kodda koşulsuz olarak kullanabiliriz. Liste 21-9, büyük `if` ve `else` bloklarının değiştirilmesinden sonra ortaya çıkan kodu göstermektedir.
 
-<Listing number="21-9" file-name="src/main.rs" caption="`if` ve `else` bloklarını yalnızca farklı kodu içerecek şekilde yeniden düzenlemek">
+<Listing number="21-9" file-name="src/main.rs" caption="`if` ve `else` bloklarını yalnızca iki durum arasında farklılık gösteren kodu içerecek şekilde yeniden düzenleme">
 
 ```rust,no_run
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-09/src/main.rs:here}}
@@ -202,8 +297,10 @@ Bu değişikliklerden sonra _127.0.0.1:7878_ adresi *merhaba.html* içeriğini, 
 
 </Listing>
 
-Artık `if` ve `else`, yalnızca `durum_satiri` ile `dosya_adi` değerlerini seçiyor. Dosyayı okuma ve yanıt yazma kodu ortak olduğu için dışarı alındı. Böylece iki durum arasındaki fark daha görünür, ortak davranış daha kolay değiştirilebilir hâle geliyor.
+Artık `if` ve `else` blokları yalnızca durum satırı ve dosya adı için uygun değerleri bir demet (*tuple*) içinde döndürüyor; ardından Bölüm 19'da ele aldığımız gibi `let` deyiminde bir desen kullanarak yapı bozma (*destructuring*) yoluyla bu iki değeri `durum_satiri` ve `dosya_adi` değişkenlerine atıyoruz.
 
-Yaklaşık 40 satırlık Rust koduyla, bir isteğe içerik döndüren ve diğer bütün isteklerde 404 veren basit bir web sunucumuz oldu.
+Daha önce tekrarlanan kod artık `if` ve `else` bloklarının dışındadır ve `durum_satiri` ile `dosya_adi` değişkenlerini kullanır. Bu sayede iki durum arasındaki farkı görmek kolaylaşır; ayrıca dosya okuma ve yanıt yazma biçimini değiştirmek istersek kodu güncelleyeceğimiz tek bir yer olur. Liste 21-9'daki kodun davranışı Liste 21-7'dekiyle aynı olacaktır.
 
-Ancak sunucu hâlâ tek iş parçacıklı çalışıyor; yani aynı anda yalnızca tek isteği işleyebiliyor. Şimdi bunun neden sorun olabileceğine bakalım, sonra da iş parçacığı havuzu ile sunucuyu çok iş parçacıklı hâle getirelim.
+Harika! Artık yaklaşık 40 satırlık Rust koduyla, bir isteğe içerik sayfasıyla ve diğer tüm isteklere 404 yanıtıyla karşılık veren basit bir web sunucumuz var.
+
+Şu anda sunucumuz tek bir thread üzerinde (tek kanallı olarak) çalışıyor; yani aynı anda yalnızca tek bir isteğe hizmet verebiliyor. Bazı yavaş istekleri simüle ederek bunun nasıl bir soruna yol açabileceğini inceleyelim. Ardından sunucumuzun aynı anda birden fazla isteği ele alabilmesi için bunu düzelteceğiz.

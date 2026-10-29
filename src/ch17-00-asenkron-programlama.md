@@ -1,155 +1,215 @@
-# Eşzamansız Programlamanın Temelleri: Async, Await, Future ve Akışlar
+<!-- Old headings. Do not remove or links may break. -->
+<a id="fundamentals-of-asynchronous-programming-async-await-futures-and-streams"></a>
+<a id="eşzamansız-programlamanın-temelleri-async-await-future-ve-akışlar"></a>
+<a id="eszamansiz-programlamanin-temelleri-async-await-future-ve-akislar"></a>
 
-Bilgisayardan yapmasını istediğimiz birçok işlem biraz zaman alabilir. Bu uzun
-süren işler tamamlanmayı beklerken başka bir şeyler de yapabilsek güzel olurdu.
-Modern bilgisayarlar aynı anda birden fazla iş üzerinde çalışmak için iki temel
-yaklaşım sunar: paralellik ve eşzamanlılık. Buna karşılık programlarımızın
-mantığı çoğu zaman daha doğrusal yazılır. Programın hangi işlemleri yapacağını
-ve bir fonksiyonun hangi noktalarda duraklayıp başka bir bölümün devreye
-girebileceğini, her kod parçasının tam olarak hangi sırayla ve nasıl
-çalışacağını en baştan tek tek tarif etmek zorunda kalmadan ifade edebilmek
-isteriz. _Eşzamansız programlama (asynchronous programming)_, tam da bunu
-sağlayan bir soyutlamadır: kodu, olası duraklama noktaları ve sonunda üretilecek
-sonuçlar üzerinden ifade etmemize izin verir; geri kalan koordinasyon
-ayrıntılarını da bizim yerimize üstlenir.
+# Asenkron Programlamanın Temelleri: Async, Await, Futures ve Streams
 
-Bu bölüm, 16. bölümde iş parçacıklarıyla gördüğümüz paralellik ve eşzamanlılık
-yaklaşımını temel alıp alternatif bir yol tanıtıyor: Rust'ın future'ları,
-akışları, `async` ve `await` sözdizimi ve eşzamansız işlemlerin yürütülmesini
-yöneten üçüncü taraf çalışma zamanı crate'leri.
+Bilgisayardan gerçekleştirmesini istediğimiz pek çok işlemin tamamlanması biraz
+zaman alabilir. Uzun süren bu işlemlerin bitmesini beklerken başka bir şeyler de
+yapabilsek harika olurdu. Modern bilgisayarlar aynı anda birden fazla işlem
+üzerinde çalışmak için iki teknik sunar: _paralellik (parallelism)_ ve
+_eşzamanlılık (concurrency)_. Buna karşılık, programlarımızın mantığı çoğunlukla
+doğrusal bir akışla yazılır. Her bir kod parçasının tam olarak hangi sırayla ve
+nasıl çalışacağını en baştan ayrıntısıyla belirlemek zorunda kalmadan; programın
+gerçekleştirmesi gereken işlemleri ve bir fonksiyonun duraklayıp onun yerine
+programın başka bir bölümünün çalışabileceği noktaları ifade edebilmek isteriz.
+_Asenkron programlama (asynchronous programming)_, kodumuzu olası duraklama
+noktaları ve nihai sonuçlar cinsinden ifade etmemizi sağlayan ve koordinasyon
+ayrıntılarını bizim yerimize üstlenen bir soyutlamadır.
 
-Bir örnek düşünelim. Diyelim ki aile kutlamasından hazırladığınız bir videoyu
-dışa aktarıyorsunuz. Bu işlem dakikalar, hatta saatler sürebilir. Video dışa
-aktarma, kullanabildiği kadar CPU ve GPU gücü tüketir. Eğer tek CPU çekirdeğiniz
-olsaydı ve işletim sistemi bu dışa aktarmayı bitene kadar durdurmasaydı, yani
-işlem _senkron_ çalışsaydı, bu görev sürerken bilgisayarda başka hiçbir şey
-yapamazdınız. Bu oldukça can sıkıcı olurdu. Neyse ki işletim sistemleri bu tür
-işleri görünmez biçimde yeterince sık bölerek aynı anda başka işlerin de
-yürümesine olanak tanır.
+Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için _thread'lerin (iş
+parçacıklarının)_ kullanımını temel alarak kod yazmaya yönelik alternatif bir
+yaklaşım sunar: işlemlerin nasıl asenkron olabileceğini ifade etmemizi sağlayan
+Rust'ın _future_'ları, _akışları (streams)_ ve `async` ile `await` sözdiziminin
+yanı sıra _asenkron çalışma zamanlarını (asynchronous runtimes)_ —yani asenkron
+işlemlerin yürütülmesini yöneten ve koordine eden kodları— uygulayan üçüncü
+taraf crate'ler.
 
-Şimdi de başkasının paylaştığı bir videoyu indirdiğinizi düşünün. Bu da zaman
-alabilir; ama CPU'yu video dışa aktarma kadar meşgul etmez. Burada CPU, ağdan
-veri gelmesini beklemek zorundadır. Veri gelmeye başlar başlamaz okumaya
-başlayabilirsiniz; ama tamamının ulaşması zaman alabilir. Veri geldikten sonra
-bile, video büyükse hepsini belleğe almak bir iki saniye sürebilir. Bu kısa
-gibi görünse de, saniyede milyarlarca işlem yapabilen modern işlemciler için
-uzun bir süredir. Yine işletim sistemi, ağ çağrısı tamamlanana kadar beklerken
-CPU'nun başka işler yapmasına olanak tanımak için programı görünmez biçimde
-keser.
+Bir örnek ele alalım. Diyelim ki bir aile kutlamasından hazırladığınız videoyu
+dışa aktarıyorsunuz; bu işlem dakikalardan saatlere kadar uzayabilir. Video dışa
+aktarma işlemi, kullanabildiği kadar çok CPU ve GPU gücü tüketecektir. Yalnızca
+tek bir CPU çekirdeğiniz olsaydı ve işletim sisteminiz bu dışa aktarmayı
+tamamlanana kadar hiç duraklatmasaydı —yani dışa aktarma işlemini _senkron_
+olarak yürütseydi— bu görev çalışırken bilgisayarınızda başka hiçbir şey
+yapamazdınız. Bu oldukça can sıkıcı bir deneyim olurdu. Neyse ki
+bilgisayarınızın işletim sistemi, eş anlı olarak başka işlerinizi de
+halledebilmeniz için dışa aktarma işlemini görünmez biçimde yeterince sık
+kesintiye uğratabilir ve gerçekten de uğratır.
 
-Video dışa aktarma, _CPU-bağımlı_ ya da _hesaplama-bağımlı_ bir işe örnektir.
-Sınırını, CPU veya GPU'nun işleme hızı ve bu hızın ne kadarını bu işe
-ayırabildiği belirler. Video indirme ise _G/Ç-bağımlı (I/O-bound)_ bir işlemdir;
-burada sınır, bilgisayarın _girdi/çıktı_ hızıdır. Ağ üzerinden veri ne kadar
-hızlı gelirse işlem de ancak o kadar hızlı ilerleyebilir.
+Şimdi de bir başkasının paylaştığı bir videoyu indirdiğinizi düşünelim; bu işlem
+de biraz zaman alabilir ama o kadar fazla CPU süresi tüketmez. Bu durumda CPU,
+ağdan verinin gelmesini beklemek zorundadır. Veri gelmeye başlar başlamaz
+okumaya başlayabilseniz de tamamının ulaşması biraz vakit alabilir. Verinin
+tamamı ulaştıktan sonra bile, video oldukça büyükse hepsini belleğe yüklemek en
+az bir iki saniye sürebilir. Bu kulağa pek uzun gelmeyebilir, ancak her saniye
+milyarlarca işlem gerçekleştirebilen modern bir işlemci için çok uzun bir
+süredir. İşletim sisteminiz yine ağ çağrısının tamamlanmasını beklerken CPU'nun
+başka işler yapabilmesine olanak tanımak için programınızı görünmez biçimde
+kesintiye uğratacaktır.
 
-Her iki örnekte de işletim sisteminin görünmez kesmeleri bir tür eşzamanlılık
-sağlar. Ancak bu eşzamanlılık tüm program düzeyindedir: işletim sistemi bir
-programı durdurup başka programlara çalışma fırsatı verir. Çoğu durumda ise,
-programlarımızı işletim sisteminden daha ayrıntılı bildiğimiz için, onun
-göremediği eşzamanlılık fırsatlarını biz fark edebiliriz.
+Video dışa aktarma, _CPU bağımlı (CPU-bound)_ veya _hesaplama bağımlı
+(compute-bound)_ bir işlem örneğidir. Bilgisayarın CPU veya GPU içindeki
+potansiyel veri işleme hızıyla ve bu hızın ne kadarını söz konusu işleme
+ayırabildiğiyle sınırlıdır. Video indirme ise _G/Ç bağımlı (I/O-bound)_ bir
+işlem örneğidir; çünkü bilgisayarın _girdi ve çıktı_ hızıyla sınırlıdır ve
+yalnızca verinin ağ üzerinden gönderilebildiği hız kadar hızlı ilerleyebilir.
 
-Örneğin dosya indirmelerini yöneten bir araç yazıyorsak, tek bir indirme
-başlatmanın arayüzü kilitlememesi gerekir; kullanıcılar aynı anda birden fazla
-indirme de başlatabilmelidir. Oysa ağla etkileşen birçok işletim sistemi API'si
-_bloklayıcıdır (blocking)_; yani işlediği veri tamamen hazır olana kadar
-programın ilerleyişini durdurur.
+Bu örneklerin her ikisinde de işletim sisteminin görünmez kesmeleri bir tür
+eşzamanlılık sağlar. Ne var ki bu eşzamanlılık yalnızca programın bütünü
+düzeyinde gerçekleşir: işletim sistemi diğer programların iş yapabilmesi için
+bir programı kesintiye uğratır. Pek çok durumda, programlarımızı işletim
+sisteminin anlayabileceğinden çok daha ince ayrıntılı bir düzeyde anladığımız
+için, işletim sisteminin göremediği eşzamanlılık fırsatlarını biz
+yakalayabiliriz.
 
-> Not: Aslında düşünürseniz çoğu fonksiyon çağrısı da böyledir. Ama
-> _bloklayıcı_ terimi genellikle dosyalar, ağ ya da bilgisayardaki başka
-> kaynaklarla etkileşen çağrılar için kullanılır; çünkü özellikle bu tür
-> durumlarda işlemin _bloklamayan_ olması program açısından önemli fayda sağlar.
+Örneğin, dosya indirmelerini yöneten bir araç geliştiriyorsak, programımızı bir
+indirme başlatmanın kullanıcı arayüzünü kilitlemeyeceği şekilde yazabilmeliyiz
+ve kullanıcılar aynı anda birden fazla indirme başlatabilmelidir. Ne var ki ağ
+ile etkileşim kurmaya yönelik pek çok işletim sistemi API'si _bloklayıcıdır
+(blocking)_; yani işledikleri veri tamamen hazır olana dek programın
+ilerleyişini durdurur.
 
-Ana iş parçacığımızı bloklamaktan kaçınmak için her dosya indirmesine ayrı bir
-iş parçacığı ayırabilirdik. Ancak bu iş parçacıklarının kullandığı sistem
-kaynaklarının ek maliyeti bir noktadan sonra sorun olur. İdeal olan, çağrının
-baştan bloklamaması ve bizim yalnızca programın tamamlamasını istediğimiz bir
-iş kümesini tanımlayıp, bunların en iyi sırayla ve biçimde nasıl çalıştırılacağı
-kararını çalışma zamanına bırakmamızdır.
+> Not: Üzerinde düşünürseniz, _çoğu_ fonksiyon çağrısı zaten bu şekilde çalışır.
+> Ancak _bloklayıcı_ terimi genellikle dosyalarla, ağla veya bilgisayardaki
+> diğer kaynaklarla etkileşime giren fonksiyon çağrıları için ayrılmıştır; çünkü
+> tek bir programın işlemin _bloklamayan (non-blocking)_ olmasından asıl fayda
+> sağlayacağı durumlar bunlardır.
 
-Rust'ın _async_ (yani _asynchronous_) soyutlaması tam olarak bunu sağlar. Bu
-bölümde şu başlıkları ele alacağız:
+Her dosyayı indirmek üzere ayrı bir thread başlatarak ana thread'imizi
+bloklamaktan kaçınabilirdik. Ancak bu thread'lerin tükettiği sistem
+kaynaklarının ek maliyeti bir noktadan sonra sorun haline gelirdi. Çağrının en
+baştan bloklamaması, bunun yerine programımızın tamamlamasını istediğimiz bir
+dizi _görevi (task)_ tanımlayıp bunları çalıştırmak için en uygun sırayı ve
+yöntemi seçmeyi çalışma zamanına bırakabilmemiz çok daha tercih edilir bir
+yaklaşımdır.
 
-- Rust'ın `async` ve `await` sözdizimi nasıl kullanılır, eşzamansız fonksiyonlar
-  bir çalışma zamanı ile nasıl yürütülür?
-- `async` modeli, 16. bölümde gördüğümüz bazı eşzamanlılık problemlerini çözmek
-  için nasıl kullanılır?
-- Çok iş parçacıklı yapı ile `async`, birbirini tamamlayan çözümler olarak
-  hangi durumlarda birlikte kullanılabilir?
+Rust'ın _async_ (_asynchronous_ yani _asenkron_ kelimesinin kısaltması)
+soyutlamasının bize sunduğu şey tam olarak budur. Bu bölümde şu konuları ele
+alırken async yapısını tüm yönleriyle öğreneceksiniz:
 
-Ama önce, `async`'in pratikte nasıl çalıştığını görmeden önce, paralellik ile
-eşzamanlılık arasındaki farkı biraz daha netleştirelim.
+- Rust'ın `async` ve `await` sözdiziminin nasıl kullanılacağı ve asenkron
+  fonksiyonların bir çalışma zamanı ile nasıl yürütüleceği
+- Bölüm 16'da incelediğimiz zorluklardan bazılarını çözmek için async modelinin
+  nasıl kullanılacağı
+- Çoklu thread kullanımı (_multithreading_) ile async'in pek çok durumda bir
+  arada kullanabileceğiniz tamamlayıcı çözümleri nasıl sunduğu
+
+Ancak async'in pratikte nasıl çalıştığını görmeden önce, paralellik ile
+eşzamanlılık arasındaki farkları ele almak için kısa bir parantez açmamız
+gerekiyor.
+
+<!-- Old headings. Do not remove or links may break. -->
+<a id="parallelism-and-concurrency"></a>
+<a id="paralellik-ve-eszamanlilik"></a>
 
 ## Paralellik ve Eşzamanlılık
 
-Şimdiye kadar paralellik ile eşzamanlılığı çoğu yerde neredeyse eş anlamlı gibi
-kullandık. Artık bunları biraz daha dikkatli ayırmamız gerekiyor; çünkü
-çalışmaya başladıkça aradaki farklar görünür hale gelecek.
+Şimdiye kadar paralellik ve eşzamanlılığı çoğunlukla birbirinin yerine geçebilen
+kavramlar gibi ele aldık. Artık aralarındaki ayrımı daha kesin biçimde yapmamız
+gerekiyor; çünkü çalışmaya başladığımızda bu farklar karşımıza çıkacak.
 
-Bir yazılım projesindeki işi bir ekibin nasıl paylaştırabileceğini düşünün.
-Tek bir kişiye birden fazla görev verebilir, her kişiye tek bir görev
-atayabilir ya da bu iki yaklaşımı karıştırabilirsiniz.
+Bir ekibin bir yazılım projesindeki işleri paylaşabileceği farklı yolları
+düşünün. Tek bir ekip üyesine birden fazla görev verebilir, her üyeye tek bir
+görev atayabilir ya da bu iki yaklaşımın bir karışımını kullanabilirsiniz.
 
-Bir kişi, görevlerin hiçbiri bitmeden önce birkaç farklı iş üzerinde sırayla
-çalışıyorsa bu _eşzamanlılık_tır. Bunu uygulamanın bir yolu, bilgisayarınızda
-iki farklı proje açık tutmaya benzer: birinden sıkıldığınızda ya da bir yerde
-takıldığınızda ötekine geçersiniz. Tek kişisinizdir; iki işte tam anlamıyla
-aynı anda ilerleyemezsiniz. Ama aralarında gidip gelerek ikisini de yavaş yavaş
-ilerletebilirsiniz (bkz. Şekil 17-1).
-
-<figure>
-
-<img src="img/trpl17-01.svg" class="center" alt="A ve B Görevi olarak etiketlenmiş kutularda alt görevlerin ve bunlar arasında geçişlerin gösterildiği diyagram." />
-
-<figcaption>Şekil 17-1: A ve B görevleri arasında geçiş yapılan eşzamanlı bir iş akışı</figcaption>
-
-</figure>
-
-Ekipteki herkes bir görev alıp onun üzerinde tek başına çalışıyorsa bu
-_paralellik_tir. Ekipteki her kişi tam anlamıyla aynı anda ilerleme
-kaydedebilir (bkz. Şekil 17-2).
+Bir kişinin, elindeki görevlerden herhangi biri tamamlanmadan önce birkaç farklı
+görev üzerinde çalışması _eşzamanlılıktır_. Eşzamanlılığı uygulamanın bir yolu,
+bilgisayarınızda iki farklı projeyi çalışma dizininde hazır bulundurup bir
+projeden sıkıldığınızda ya da bir noktada takıldığınızda diğerine geçmeye
+benzer. Yalnızca tek bir kişisinizdir; dolayısıyla her iki görevde kelimenin tam
+anlamıyla aynı anda ilerleme kaydedemezsiniz, ancak aralarında geçiş yapıp her
+seferinde biri üzerinde ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil
+17-1).
 
 <figure>
 
-<img src="img/trpl17-02.svg" class="center" alt="A ve B Görevi üzerinde bağımsız ilerleyen alt görevlerin gösterildiği paralel iş akışı diyagramı." />
+<img src="img/trpl17-01.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den B1'e, B1'den A2'ye, A2'den B2'ye, B2'den A3'e, A3'ten A4'e ve A4'ten B3'e işaret eder. Alt görevler arasındaki oklar, Task A ve Task B kutularının sınırlarını aşarak aralarında geçiş yapar." />
 
-<figcaption>Şekil 17-2: A ve B görevlerinin bağımsız yürüdüğü paralel iş akışı</figcaption>
+<figcaption>Şekil 17-1: A Görevi (Task A) ve B Görevi (Task B) arasında geçiş yapılan eşzamanlı bir iş akışı</figcaption>
 
 </figure>
 
-Bu iki iş akışında da görevler arasında koordinasyon gerekebilir. Diyelim ki
-bir kişiye verilen görevin ötekilerden tamamen bağımsız olduğunu sandınız ama
-aslında önce başka birinin işini bitirmesi gerekiyordu. Bu durumda işin bir
-kısmı paralel yapılabilirken, bir kısmı da aslında _seri_ olarak, yani birbiri
-ardına ilerlemek zorundadır (bkz. Şekil 17-3).
+Ekip, bir grup görevi her üyenin tek bir görev alıp onun üzerinde tek başına
+çalışacağı şekilde paylaştırdığında bu _paralelliktir_. Ekipteki her kişi
+kelimenin tam anlamıyla aynı anda ilerleme kaydedebilir (bkz. Şekil 17-2).
 
 <figure>
 
-<img src="img/trpl17-03.svg" class="center" alt="Bir görevin başka bir görevin sonucunu beklediği kısmen paralel iş akışı diyagramı." />
+<img src="img/trpl17-02.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den A2'ye, A2'den A3'e, A3'ten A4'e, B1'den B2'ye ve B2'den B3'e işaret eder. Task A ve Task B kutuları arasında karşıya geçen hiçbir ok yoktur." />
 
-<figcaption>Şekil 17-3: A3 adımının B3 sonucunu beklediği kısmen paralel bir iş akışı</figcaption>
+<figcaption>Şekil 17-2: A Görevi ve B Görevi üzerindeki çalışmaların birbirinden bağımsız gerçekleştiği paralel bir iş akışı</figcaption>
 
 </figure>
 
-Aynı şekilde, kendi işlerinizden birinin başka bir işinize bağlı olduğunu fark
-edebilirsiniz. Bu durumda eşzamanlı çalışmanız da kısmen seri hale gelir.
+Bu iş akışlarının her ikisinde de farklı görevler arasında koordinasyon
+sağlamanız gerekebilir. Belki bir kişiye atanan görevin diğer herkesin işinden
+tamamen bağımsız olduğunu düşünmüşsünüzdür, ancak gerçekte ekipteki başka bir
+kişinin önce kendi görevini bitirmesini gerektiriyordur. İşin bir kısmı paralel
+olarak yapılabilse de bir kısmı aslında _seridir (serial)_: Şekil 17-3'te olduğu
+gibi yalnızca sırayla, bir görev bittikten sonra diğeri başlayacak biçimde
+gerçekleşebilir.
 
-Paralellik ile eşzamanlılık bazen birbirinin içine de geçer. Bir iş arkadaşınız
-siz bir görevi bitirene kadar beklemek zorundaysa, büyük olasılıkla tüm
-enerjinizi o göreve verip onun önünü açarsınız. Böylece artık ne onunla paralel
-çalışıyorsunuzdur ne de kendi diğer işleriniz arasında eşzamanlı geçiş
-yapıyorsunuzdur.
+<figure>
 
-Aynı temel dinamik yazılım ve donanım için de geçerlidir. Tek CPU çekirdekli
-bir makinede işlemci aynı anda yalnızca tek bir iş yapabilir; ama yine de
-eşzamanlı çalışabilir. İş parçacıkları, süreçler ve `async` gibi araçlarla
-bilgisayar bir işi durdurup diğerlerine geçebilir, sonra yeniden ilkine döner.
-Birden fazla CPU çekirdeği olan makinede ise gerçekten paralel çalışma da
-mümkündür. Bir çekirdek bir işi yaparken diğeri tamamen farklı bir işi aynı
-anda yürütebilir.
+<img src="img/trpl17-03.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Task A kutusunda oklar A1'den A2'ye, A2'den 'duraklat' simgesine benzeyen kalın dikey bir çift çizgiye ve bu simgeden A3'e işaret eder. Task B kutusunda ise oklar B1'den B2'ye, B2'den B3'e, B3'ten A3'e ve B3'ten B4'e işaret eder." />
 
-Rust'ta `async` kod genellikle eşzamanlı yürür. Donanıma, işletim sistemine ve
-kullandığımız eşzamanlı çalışma zamanına bağlı olarak, bu eşzamanlılık arka
-planda paralellik de kullanabilir.
+<figcaption>Şekil 17-3: A3 görevi B3 görevinin sonuçlarını bekleyerek bloklanana kadar A Görevi ve B Görevi üzerindeki çalışmaların bağımsız gerçekleştiği kısmen paralel bir iş akışı.</figcaption>
 
-Şimdi Rust'ta eşzamansız programlamanın gerçekten nasıl çalıştığına bakalım.
+</figure>
+
+Benzer şekilde, kendi görevlerinizden birinin yine kendi görevlerinizden bir
+diğerine bağımlı olduğunu fark edebilirsiniz. Artık sizin eşzamanlı çalışmanız
+da seri hale gelmiştir.
+
+Paralellik ve eşzamanlılık birbiriyle kesişebilir de. Bir iş arkadaşınızın, siz
+görevlerinizden birini bitirene kadar takılıp kaldığını öğrenirseniz, muhtemelen
+iş arkadaşınızın “blokajını kaldırmak” (önünü açmak) için tüm çabanızı o göreve
+odaklarsınız. Artık iş arkadaşınızla paralel çalışamazsınız ve kendi
+görevleriniz üzerinde de eşzamanlı çalışamaz hale gelirsiniz.
+
+Aynı temel dinamikler yazılımda ve donanımda da devreye girer. Tek CPU
+çekirdekli bir makinede CPU her seferinde yalnızca tek bir işlem
+gerçekleştirebilir, ancak yine de eşzamanlı olarak çalışabilir. Thread'ler,
+süreçler (_processes_) ve async gibi araçları kullanan bilgisayar, bir etkinliği
+duraklatıp diğerlerine geçebilir ve sonunda döngüyü tamamlayarak yeniden o ilk
+etkinliğe geri dönebilir. Birden fazla CPU çekirdeğine sahip bir makinede ise
+işleri paralel olarak da yürütebilir. Bir çekirdek bir görevi yerine getirirken
+başka bir çekirdek onunla hiçbir ilgisi olmayan bambaşka bir görevi yürütebilir
+ve bu işlemler kelimenin tam anlamıyla aynı anda gerçekleşir.
+
+Rust'ta async kod çalıştırmak genellikle eşzamanlı olarak gerçekleşir. Donanıma,
+işletim sistemine ve kullandığımız asenkron çalışma zamanına (asenkron çalışma
+zamanlarına birazdan daha ayrıntılı değineceğiz) bağlı olarak, bu eşzamanlılık
+perde arkasında paralellikten de yararlanabilir.
+
+> Not: Rust'ın asenkron tasarım felsefesi, başka dillerden gelen geliştiriciler
+> için bilmekte büyük fayda olan iki temel mimari karara dayanır:
+>
+> - **Çalışma zamanının (*async runtime*) ekosisteme bırakılması:** Rust
+>   standart kütüphanesi yalnızca `std::future::Future` trait'ini ve
+>   derleyicinin desteklediği `async`/`await` sözdizimini tanımlar; görevleri
+>   çizelgeleyip yürüten bir asenkron çalışma zamanını bünyesinde barındırmaz.
+>   Çünkü yüksek trafikli bir web sunucusunun ihtiyaç duyduğu çok kanallı iş
+>   çalmalı (*work-stealing*) çalışma zamanı ile birkaç kilobayt belleğe sahip
+>   bir mikrodenetleyicinin gereksinimleri birbirinden tamamen farklıdır.
+>   Standart kütüphaneye tek tip bir çalışma zamanı dayatmamak (*sıfır maliyetli
+>   soyutlama* ilkesi) sayesinde; ağ ve sunucu uygulamalarında `tokio`, hafif ve
+>   yalın projelerde `smol`, işletim sistemsiz (*bare-metal*) gömülü sistemlerde
+>   ise `embassy` gibi hedefe özel çalışma zamanları seçilebilir. Bu bölümde de
+>   öğrenme sürecini sadeleştirmek amacıyla, perde arkasında `tokio` ve
+>   `futures` crate'lerini sarmalayan eğitim amaçlı `trpl` crate'ini
+>   kullanacağız.
+> - **Tembel (*lazy*) durum makineleri olarak future'lar:** JavaScript'teki
+>   `Promise` veya C# dilindeki `Task` yapıları **heveslidir (*eager*)**; yani
+>   oluşturuldukları anda arka planda çalışmaya başlarlar. Rust'ta ise bir
+>   `async` fonksiyonu çağırmak tek başına hiçbir iş yürütmez; yalnızca
+>   derleyicinin ürettiği **tembel (*lazy*) bir durum makinesi** olan ve ek öbek
+>   (*heap*) ayırması gerektirmeden oluşturulabilen bir `Future` değeri
+>   döndürür. Bir future, bir çalışma zamanına teslim edilip üzerinde `.await`
+>   çağrılmadıkça (yoklanmadıkça) hiçbir adım ilerlemez. Bu tasarım, görevleri
+>   başlatmadan önce birleştirmeyi ve bir future'ı düşürerek (*drop*) ek maliyet
+>   olmaksızın anında iptal etmeyi mümkün kılar.
+
+Şimdi, Rust'ta asenkron programlamanın gerçekte nasıl çalıştığına derinlemesine
+bakalım.

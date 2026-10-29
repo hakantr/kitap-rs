@@ -46,7 +46,7 @@ Güven kolay kazanılmaz.";
 
     #[test]
     fn buyuk_kucuk_harf_duyarsiz() {
-        let sorgu = "güven";
+        let sorgu = "gÜvEn";
         let icerik = "\
 Güven:
 önce sağlamlık gelir.

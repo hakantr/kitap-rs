@@ -41,7 +41,7 @@ impl Yapilandirma {
 fn calistir(yapilandirma: Yapilandirma) -> Result<(), Box<dyn Error>> {
     let icerik = fs::read_to_string(yapilandirma.dosya_yolu)?;
 
-    println!("With text:\n{icerik}");
+    println!("Metin içeriği:\n{icerik}");
 
     Ok(())
 }

@@ -19,7 +19,7 @@ impl Gonderi {
 }
 
 impl TaslakGonderi {
-    pub fn metin_ekle(&mut self, text: &str) {
-        self.icerik.push_str(text);
+    pub fn metin_ekle(&mut self, metin: &str) {
+        self.icerik.push_str(metin);
     }
 }

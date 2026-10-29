@@ -11,7 +11,7 @@ failures:
 
 ---- tests::buyuk_kucugu_tutabilir_mi stdout ----
 
-thread 'tests::buyuk_kucugu_tutabilir_mi' panicked at src/lib.rs:28:9:
+thread 'tests::buyuk_kucugu_tutabilir_mi' (6020788) panicked at src/lib.rs:28:9:
 assertion failed: buyuk.tutabilir_mi(&kucuk)
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 

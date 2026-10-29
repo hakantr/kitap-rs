@@ -11,9 +11,9 @@ fn main() {
         let gonderici1_gelecegi = async move {
             let degerler = vec![
                 String::from("merhaba"),
-                String::from("-den"),
-                String::from("gelecek"),
-                String::from("icinden"),
+                String::from("gelecekten"),
+                String::from("selam"),
+                String::from("var"),
             ];
 
             for deger in degerler {
@@ -23,8 +23,8 @@ fn main() {
         };
 
         let alici_gelecegi = async {
-            while let Some(value) = alici.recv().await {
-                println!("alındı '{value}'");
+            while let Some(alinan) = alici.recv().await {
+                println!("alındı '{alinan}'");
             }
         };
 

@@ -1,23 +1,28 @@
-# Final Proje: Çok İş Parçacıklı Bir Web Sunucusu Geliştirmek
+<a id="final-project-building-a-multithreaded-web-server"></a>
+<a id="final-proje-çok-iş-parçacıklı-bir-web-sunucusu-geliştirmek"></a>
 
-Uzun bir yol geldik; kitabın sonuna ulaştık. Bu bölümde, son bölümlerde öğrendiğimiz kavramların bir kısmını bir araya getiren son bir projeyi birlikte geliştireceğiz. Aynı zamanda önceki bölümlerden bazı önemli fikirleri de kısaca pekiştireceğiz.
+# Final Projesi: Çok Kanallı (Multithreaded) Web Sunucusu Geliştirme
 
-Bu final projesinde, tarayıcıda "Merhaba!" diyen basit bir web sunucusu yazacağız. Hedefimiz, Şekil 21-1'deki gibi görünen bir sayfa üretmek.
+Uzun bir yolculuk oldu ama kitabın sonuna ulaştık. Bu bölümde, son bölümlerde öğrendiğimiz kavramların bir kısmını uygulamalı olarak göstermek ve daha önceki bazı dersleri pekiştirmek için birlikte son bir proje daha geliştireceğiz.
 
-Web sunucusunu şu planla oluşturacağız:
+Bu final projesinde, “Merhaba!” diyen ve bir web tarayıcısında Şekil 21-1'deki gibi görünen bir web sunucusu oluşturacağız.
 
-1. TCP ve HTTP hakkında ihtiyaç duyduğumuz kadar bilgi edinmek
+Web sunucusunu şu planla geliştireceğiz:
+
+1. TCP ve HTTP hakkında biraz bilgi edinmek
 2. Bir soket üzerinden TCP bağlantılarını dinlemek
 3. Az sayıda HTTP isteğini ayrıştırmak
 4. Geçerli bir HTTP yanıtı oluşturmak
-5. İş parçacığı havuzu ile sunucunun aktarım kapasitesini artırmak
+5. Bir thread havuzu (*thread pool*) ile sunucumuzun işleme kapasitesini (*throughput*) artırmak
 
-<img alt="127.0.0.1:8080 adresini ziyaret eden tarayıcı ekran görüntüsü; sayfada “Merhaba! Rust'tan selam” yazıyor" src="img/trpl21-01.png" class="center" style="width: 50%;" />
+<img alt="127.0.0.1:8080 adresini ziyaret eden bir web tarayıcısının ekran görüntüsü; sayfada İngilizce örnekteki “Hello! Hi from Rust” (“Merhaba! Rust'tan selam”) içeriği görünüyor" src="img/trpl21-01.png" class="center" style="width: 50%;" />
 
-<span class="caption">Şekil 21-1: Finalde birlikte geliştireceğimiz proje</span>
+<span class="caption">Şekil 21-1: Birlikte geliştireceğimiz final projesi (ekran görüntüsünde İngilizce örnek çıktı yer almaktadır; kendi sunucumuz Türkçe “Merhaba! Rust'tan selam” yanıtını üretecektir)</span>
 
-Başlamadan önce iki noktayı belirtelim. Birincisi, burada kullanacağımız yöntem Rust ile web sunucusu geliştirmenin en iyi ya da en pratik yolu değildir. Topluluk üyeleri, [crates.io](https://crates.io/) üzerinde üretime uygun pek çok web sunucusu ve iş parçacığı havuzu crate'i yayımlamıştır. Ama bu bölümün amacı sizi hazır çözümü kullanmaya yöneltmek değil, alttaki fikirleri öğretmektir. Rust bir sistem programlama dili olduğu için hangi soyutlama düzeyinde çalışacağımıza biz karar veririz.
+Başlamadan önce iki ayrıntıya değinelim. Birincisi, kullanacağımız yöntem Rust ile bir web sunucusu geliştirmenin en iyi yolu olmayacaktır. Topluluk üyeleri, [crates.io](https://crates.io/) üzerinde bizim geliştireceğimizden çok daha eksiksiz web sunucusu ve thread havuzu uygulamaları sunan, üretime hazır pek çok crate yayımlamıştır. Ancak bu bölümdeki amacımız kolay yolu seçmek değil, öğrenmenize yardımcı olmaktır. Rust bir sistem programlama dili olduğundan, çalışmak istediğimiz soyutlama düzeyini kendimiz seçebilir ve diğer dillerde mümkün ya da pratik olandan daha alt bir seviyeye inebiliriz.
 
-İkincisi, bu bölümde `async` ve `await` kullanmayacağız. İş parçacığı havuzu kurmak tek başına yeterince büyük bir iştir; buna bir de asenkron çalışma zamanı eklemeyeceğiz. Yine de, burada karşılaşacağımız bazı problemlerde `async` ve `await`'in nasıl devreye girebileceğine ara ara değineceğiz. Sonuçta 17. bölümde de belirttiğimiz gibi, birçok asenkron çalışma zamanı işlerini yönetmek için zaten iş parçacığı havuzları kullanır.
+İkincisi, burada `async` ve `await` kullanmayacağız. Bir asenkron çalışma zamanı kurmayı işin içine katmadan, yalnızca bir thread havuzu geliştirmek bile tek başına yeterince büyük bir uğraştır! Yine de bu bölümde göreceğimiz bazı problemlere `async` ve `await`'in nasıl uygulanabileceğine değineceğiz. Sonuçta Bölüm 17'de de belirttiğimiz gibi, pek çok asenkron çalışma zamanı kendi işlerini yönetmek için arka planda thread havuzları kullanır.
 
-Bu nedenle temel HTTP sunucusunu ve iş parçacığı havuzunu elle yazacağız. Böylece ileride kullanabileceğiniz hazır crate'lerin arkasındaki genel yaklaşımı daha sağlam biçimde öğrenmiş olacaksınız.
+Bu nedenle temel HTTP sunucusunu ve thread havuzunu elle yazacağız; böylece gelecekte kullanabileceğiniz crate'lerin arkasındaki genel fikirleri ve teknikleri öğrenmiş olacaksınız.
+
+> Not: Gerçek dünya üretim sistemlerinde Rust ile web sunucusu veya HTTP servisi geliştirirken genellikle `tokio` asenkron çalışma zamanı üzerinde yükselen `axum` ya da `actix-web` gibi çatılar (*frameworks*) tercih edilir. Bu bölümde `TcpListener`, `TcpStream`, kanallar (`mpsc`), `Arc<Mutex<T>>` ve `Drop` trait'ini doğrudan kullanarak kendi sunucunuzu sıfırdan inşa etmeniz, bu modern çatıların kaputun altında bağlantıları, görev kuyruklarını ve zarif kapanışı (*graceful shutdown*) nasıl yönettiğini somut olarak kavramanızı sağlayacaktır.

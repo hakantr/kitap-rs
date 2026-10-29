@@ -1,25 +1,41 @@
-## Çürütülebilirlik: Bir Desenin Eşleşememe İhtimali
+<!-- Old headings. Do not remove or links may break. -->
+<a id="refutability-whether-a-pattern-might-fail-to-match"></a>
+<a id="çürütülebilirlik-bir-desenin-eşleşememe-ihtimali"></a>
+<a id="çürütülebilirlik-bir-desenin-eşleşmeme-ihtimali"></a>
 
-Desenler iki ana biçime ayrılır: çürütülebilir ve çürütülemez. Her olası
-değerle eşleşen desenlere _çürütülemez_ denir. Örneğin `let x = 5;`
-ifadesindeki `x` böyledir; çünkü her şeyle eşleşir. Bazı olası değerlerde
-eşleşmesi başarısız olabilen desenler ise _çürütülebilir_desendir. Örneğin
-`if let Some(x) = bir_deger` ifadesindeki `Some(x)` böyledir; çünkü değer
-`None` olursa desen eşleşmez.
+## Çürütülebilirlik (Refutability): Bir Desenin Eşleşmeme İhtimali
 
-Fonksiyon parametreleri, `let` ifadeleri ve `for` döngüleri yalnızca
-çürütülemez desen kabul eder. Çünkü eşleşme başarısız olduğunda programın o
-bağlamda anlamlı biçimde ne yapacağı belli değildir. `if let`, `while let` ve
-`let...else` ise çürütülebilir desenlerle çalışmak için tasarlanmıştır.
+Desenler iki biçimde karşımıza çıkar: çürütülebilir ve çürütülemez. Aktarılan
+her olası değerle eşleşecek olan desenler _çürütülemez_ (*irrefutable*)
+desenlerdir. Buna bir örnek, `let x = 5;` deyimindeki `x` desenidir; çünkü `x`
+her şeyle eşleşir ve dolayısıyla eşleşmemesi mümkün değildir. Bazı olası
+değerler için eşleşmesi başarısız olabilen desenler ise _çürütülebilir_
+(*refutable*) desenlerdir. Buna örnek olarak `if let Some(x) = bir_deger`
+ifadesindeki `Some(x)` verilebilir; çünkü `bir_deger` değişkenindeki değer
+`Some` yerine `None` olursa `Some(x)` deseni eşleşmeyecektir.
 
-Genelde bu ayrımı düşünmeniz gerekmez. Ama hata mesajlarında çürütülebilirlik
-karşınıza çıkınca, ya deseni ya da onu kullandığınız yapıyı değiştirmeniz
-gerektiğini anlamanız önemlidir.
+Fonksiyon parametreleri, `let` deyimleri ve `for` döngüleri yalnızca çürütülemez
+desenleri kabul edebilir; çünkü değerler eşleşmediğinde programın yapabileceği
+anlamlı hiçbir şey yoktur. `if let` ve `while let` ifadeleri ile `let...else`
+deyimi ise hem çürütülebilir hem de çürütülemez desenleri kabul eder; ancak
+derleyici çürütülemez desenlere karşı uyarı verir. Çünkü bu yapılar tanım gereği
+olası başarısızlık durumlarını ele almak için tasarlanmıştır: Bir koşul
+yapısının işlevselliği, başarı ya da başarısızlık durumuna göre farklı
+davranabilme yeteneğinde yatar.
 
-Önce, çürütülebilir bir deseni `let` içinde kullanmaya çalıştığımız bir örneğe
-bakalım. 19-8 numaralı liste bunu gösteriyor.
+Genel olarak çürütülebilir ve çürütülemez desenler arasındaki ayrım konusunda
+endişelenmenize gerek yoktur; ancak bir hata mesajında gördüğünüzde ne
+yapacağınızı bilmek için çürütülebilirlik kavramına aşina olmanız gerekir. Böyle
+durumlarda, kodun amaçlanan davranışına bağlı olarak ya deseni ya da deseni
+birlikte kullandığınız dil yapısını değiştirmeniz gerekecektir.
 
-<Listing number="19-8" caption="`let` ile çürütülebilir desen kullanmaya çalışmak">
+Şimdi Rust'ın çürütülemez bir desen zorunlu kıldığı yerde çürütülebilir bir
+desen kullanmaya çalıştığımızda — ve bunun tersi durumda — ne olduğuna bir
+örnekle bakalım. Liste 19-8 bir `let` deyimi göstermektedir, ancak desen olarak
+çürütülebilir bir desen olan `Some(x)` belirtilmiştir. Tahmin edebileceğiniz
+gibi bu kod derlenmeyecektir.
+
+<Listing number="19-8" caption="`let` ile çürütülebilir bir desen kullanmaya çalışmak">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-08/src/main.rs:here}}
@@ -27,21 +43,27 @@ bakalım. 19-8 numaralı liste bunu gösteriyor.
 
 </Listing>
 
-Eğer `bir_secenek_degeri`, `Some` yerine `None` olsaydı, `Some(x)` deseni
-eşleşemezdi. Ama `let` yalnızca çürütülemez desen kabul ettiği için derleyici
-hata verir:
+Eğer `bir_secenek_degeri` bir `None` değeri olsaydı `Some(x)` deseniyle
+eşleşemezdi; bu da desenin çürütülebilir olduğu anlamına gelir. Oysa `let`
+deyimi yalnızca çürütülemez bir deseni kabul edebilir; çünkü bir `None`
+değeriyle kodun yapabileceği geçerli hiçbir işlem yoktur. Derleme zamanında Rust
+derleyicisi, çürütülemez bir desenin gerektiği yerde çürütülebilir bir desen
+kullanmaya çalıştığımızı belirterek hata verir:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-08/output.txt}}
 ```
 
-Sorun, `Some(x)` deseninin bütün olasılıkları kapsamamasıdır.
+`Some(x)` deseniyle her geçerli değeri kapsamadığımız (ve kapsayamazdık da!)
+için Rust haklı olarak bir derleyici hatası üretir.
 
-Eğer çürütülebilir bir desene gerçekten ihtiyacımız varsa, `let` yerine
-`let...else` kullanabiliriz. Böylece desen eşleşmezse süslü parantez içindeki
-kod çalışır. 19-9 numaralı liste bunu gösteriyor.
+Çürütülemez bir desenin gerektiği yerde elimizde çürütülebilir bir desen varsa,
+bunu deseni kullanan kodu değiştirerek düzeltebiliriz: `let` kullanmak yerine
+`let...else` kullanabiliriz. Böylece desen eşleşmezse, süslü parantezler
+içindeki kod bu durumu ele alır. Liste 19-9, Liste 19-8'deki kodun nasıl
+düzeltileceğini göstermektedir.
 
-<Listing number="19-9" caption="Çürütülebilir desenlerde `let` yerine `let...else` kullanmak">
+<Listing number="19-9" caption="Çürütülebilir desenlerle `let` yerine `let...else` ve bir blok kullanmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-09/src/main.rs:here}}
@@ -49,14 +71,20 @@ kod çalışır. 19-9 numaralı liste bunu gösteriyor.
 
 </Listing>
 
-Bu biçimde desene bir çıkış yolu vermiş oluruz; desen eşleşmezse `else`
-kolundaki kod devreye girer.
+> Not: `let...else` deyimindeki `else` bloğu **ıraksayan** (*diverging*, dönüş
+> türü `!` — *never type* olan) bir blok olmak zorundadır; yani `return`,
+> `break`, `continue` veya `panic!` gibi kontrol akışını mevcut kapsamdan
+> çıkaran bir ifadeyle sonlanmalıdır. Normal akışın `else` bloğundan çıkıp alt
+> satırlara devam etmesine izin verilmez; böylece `let...else` satırından sonra
+> gelen dış kapsamda `x` değişkeninin her zaman ilklenmiş olması derleme
+> zamanında garanti edilir.
 
-Ama bu kez de ters durum mümkündür: `let...else` içine zaten her zaman
-eşleşecek bir desen koyarsanız, derleyici bunun anlamsız olduğunu söyler.
-19-10 numaralı liste buna örnek:
+Koda bir çıkış yolu verdik! Bu kod tamamen geçerlidir; ancak bu aynı zamanda,
+bir uyarı almadan çürütülemez bir desen kullanamayacağımız anlamına gelir.
+Liste 19-10'da gösterildiği gibi `let...else` yapısına `x` gibi her zaman
+eşleşecek bir desen verirsek derleyici bir uyarı üretecektir.
 
-<Listing number="19-10" caption="`let...else` ile çürütülemez desen kullanmaya çalışmak">
+<Listing number="19-10" caption="`let...else` ile çürütülemez bir desen kullanmaya çalışmak">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-10/src/main.rs:here}}
@@ -64,16 +92,19 @@ eşleşecek bir desen koyarsanız, derleyici bunun anlamsız olduğunu söyler.
 
 </Listing>
 
-Burada desen her zaman başarılı olduğu için `else` kolunun hiçbir anlamı kalmaz
-ve Rust uyarı verir:
+Rust derleyicisi, `else` bloğuna hiçbir zaman ulaşılamayacağı için `let...else`
+yapısını çürütülemez bir desenle kullanmanın mantıklı olmadığı konusunda uyarır:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-10/output.txt}}
 ```
 
-Bu nedenle `match` kolları genelde çürütülebilir desenler kullanır; son kol ise
-genellikle kalan her şeyi yakalayan çürütülemez bir desen olur.
+Bu nedenle `match` kolları — geriye kalan tüm değerlerle çürütülemez bir desen
+kullanarak eşleşmesi gereken son kol dışında — çürütülebilir desenler kullanmak
+zorundadır. Rust, tek kollu bir `match` ifadesinde çürütülemez bir desen
+kullanmamıza izin verir; ancak bu sözdizimi pek kullanışlı değildir ve daha
+basit bir `let` deyimiyle değiştirilebilir.
 
-Artık desenlerin nerede kullanılabileceğini ve çürütülebilirlik ayrımını
-gördük. Sırada, desen oluştururken kullanabileceğimiz sözdizimlerinin tamamı
-var.
+Artık desenlerin nerelerde kullanılacağını ve çürütülebilir ile çürütülemez
+desenler arasındaki farkı bildiğinize göre, desen oluşturmak için
+kullanabileceğimiz tüm sözdizimlerini ele alalım.
