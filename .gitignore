@@ -13,3 +13,4 @@ tmp
 ceviri_istegi.md
 ceviri_listesi.md
 ceviri_notlari.md
+listings/**/Cargo.lock
