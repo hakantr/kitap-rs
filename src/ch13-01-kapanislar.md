@@ -56,7 +56,7 @@ Fonksiyonlar ile kapanışlar arasında başka farklar da vardır. Kapanışlar 
 
 Kapanışlar genellikle kısadır ve her yerde geçerli genel senaryolardan ziyade yalnızca dar bir bağlamda anlam taşır. Bu sınırlı bağlamlar içinde derleyici, çoğu değişkenin türünü çıkarsayabildiği gibi kapanışların parametre türlerini ve dönüş türünü de çıkarsayabilir (derleyicinin kapanışlarda da tür açıklamasına ihtiyaç duyduğu nadir durumlar vardır).
 
-Değişkenlerde olduğu gibi, zorunlu olandan daha ayrıntılı yazma pahasına açıklığı ve okunabilirliği artırmak istersek kapanışlara da tür açıklamaları ekleyebiliriz. Bir kapanışın türlerini açıkça belirtmek Liste 13-2'deki tanıma benzer. Bu örnekte bir kapanış tanımlıyor ve onu Liste 13-1'de yaptığımız gibi doğrudan argüman olarak aktardığımız yerde tanımlamak yerine bir değişkende saklıyoruz.
+Değişkenlerde olduğu gibi, zorunlu olandan daha ayrıntılı yazma pahasına açıklığı ve okunabilirliği artırmak istersek kapanışlara da tür açıklamaları ekleyebiliriz. Tür açıklamaları eklenmiş bir kapanış, Liste 13-2'deki tanıma benzer. Bu örnekte kapanışı, Liste 13-1'de yaptığımız gibi argüman olarak aktardığımız yerde tanımlamak yerine tanımlayıp bir değişkende saklıyoruz.
 
 <Listing number="13-2" file-name="src/main.rs" caption="Kapanışta parametre ve dönüş değeri türleri için isteğe bağlı tür açıklamaları eklemek">
 
@@ -140,7 +140,7 @@ Bu kod derlenir, çalışır ve şunu yazdırır:
 
 `degistirilebilir_odunc_alir` kapanışının tanımlanması ile çağrılması arasında artık bir `println!` satırı bulunmadığına dikkat edin: `degistirilebilir_odunc_alir` tanımlandığı anda `liste`'ye değiştirilebilir bir referans yakalar (kapanış çağrıldığında kendi içindeki bu değiştirilebilir referansı kullandığı için `degistirilebilir_odunc_alir` değişkeninin kendisi de `mut` olarak tanımlanmıştır). Kapanış çağrıldıktan sonra bir daha kullanılmadığı için değiştirilebilir ödünç alma sona erer. Kapanış tanımı ile kapanış çağrısı arasında yazdırma amacıyla değiştirilemez bir ödünç almaya izin verilmez; çünkü etkin bir değiştirilebilir ödünç alma varken başka hiçbir ödünç almaya izin verilmez. Hangi hata mesajını aldığınızı görmek için araya bir `println!` eklemeyi deneyin!
 
-Kapanış gövdesi kesin olarak sahiplik gerektirmese bile, kapanışın çevreden kullandığı değerlerin sahipliğini almasını zorlamak istiyorsanız parametre listesinden önce `move` anahtar kelimesini kullanabilirsiniz.
+Kapanış gövdesi aslında sahipliğe ihtiyaç duymasa bile kapanışın çevreden kullandığı değerlerin sahipliğini almasını zorlamak istiyorsanız parametre listesinden önce `move` anahtar kelimesini kullanabilirsiniz.
 
 Bu teknik en çok, bir kapanışı yeni bir *thread'e (iş parçacığına)* aktarırken verinin sahipliğinin yeni thread'e geçmesi için kullanılır. Bölüm 16'da eşzamanlılıktan bahsederken thread'leri ve onları neden kullanmak isteyeceğinizi ayrıntılı olarak ele alacağız; şimdilik `move` anahtar kelimesini gerektiren bir kapanışla yeni bir thread başlatmayı kısaca inceleyelim. Liste 13-6, vektörü ana thread yerine yeni bir thread içinde yazdırmak üzere Liste 13-4'ün uyarlanmış halini göstermektedir.
 
@@ -175,7 +175,7 @@ Bir kapanışın çevredeki değerleri yakalama ve işleme biçimi, kapanışın
 * `FnMut`, yakaladığı değerleri gövdesinin dışına taşımayan ancak bu değerleri değiştirebilen kapanışlar için geçerlidir. Bu kapanışlar birden fazla kez çağrılabilir.
 * `Fn`, yakaladığı değerleri gövdesinin dışına taşımayan ve bu değerleri değiştirmeyen kapanışların yanı sıra çevresinden hiçbir şey yakalamayan kapanışlar için geçerlidir. Bu kapanışlar çevrelerini değiştirmeden birden fazla kez çağrılabilir; bu özellik, bir kapanışın eşzamanlı olarak birden çok kez çağrıldığı durumlarda büyük önem taşır.
 
-> Not: Standart kütüphanede bu üç trait birbirinin alt trait'i olarak tanımlanmıştır (`Fn: FnMut` ve `FnMut: FnOnce`). Dolayısıyla kapsam hiyerarşisi `FnOnce` ⊇ `FnMut` ⊇ `Fn` şeklindedir: `Fn` uygulayan her kapanış aynı zamanda `FnMut` ve `FnOnce` beklentilerini, `FnMut` uygulayan her kapanış da `FnOnce` beklentisini otomatik olarak karşılar.
+> Not: Standart kütüphanede bu üç trait birbirinin alt trait'i olarak tanımlanmıştır (`Fn: FnMut` ve `FnMut: FnOnce`). Dolayısıyla bu trait'leri uygulayan kapanış kümeleri arasında `FnOnce` ⊇ `FnMut` ⊇ `Fn` ilişkisi vardır: `Fn` uygulayan her kapanış aynı zamanda `FnMut` ve `FnOnce` beklentilerini, `FnMut` uygulayan her kapanış da `FnOnce` beklentisini otomatik olarak karşılar.
 >
 > Ayrıca `move` anahtar kelimesi ile `FnOnce` arasındaki ayrıma dikkat edin: `move`, kapanışın çevredeki değerleri **nasıl yakalayacağını** (sahipliği kapanışın *içine* taşıyarak) zorlar; kapanışın **hangi `Fn` trait'lerini uygulayacağını** ise kapanış gövdesinin yakalanan değerle **ne yaptığı** belirler. Dolayısıyla `move` kullanan bir kapanış, yakaladığı değeri gövdesinden dışarı taşımıyorsa veya değiştirmiyorsa `Fn` ve `FnMut` trait'lerini de uygular.
 
@@ -203,7 +203,7 @@ Jenerik `F` türü üzerinde belirtilen trait sınırı `FnOnce() -> T` şeklind
 
 > Not: Yapmak istediğimiz iş çevreden bir değer yakalamayı gerektirmiyorsa, `Fn` trait'lerinden birini uygulayan bir argüman beklenen yerlerde kapanış yerine doğrudan bir fonksiyonun adını da kullanabiliriz. Örneğin bir `Option<Vec<T>>` değeri üzerinde, değer `None` olduğunda yeni ve boş bir vektör elde etmek için `unwrap_or_else(Vec::new)` çağrısı yapabiliriz. Derleyici, bir fonksiyon tanımı için `Fn` trait'lerinden hangileri uygunsa onları otomatik olarak uygular.
 
-Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metottaki kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir niteliğine (alanına) göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
+Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metodun aldığı kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir niteliğine (alanına) göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
 
 <Listing number="13-7" file-name="src/main.rs" caption="Dikdörtgenleri genişliğe göre sıralamak için `sort_by_key` kullanmak">
 
@@ -239,7 +239,7 @@ Bu örnek, `liste` sıralanırken `sort_by_key` metodunun kapanışı kaç kez �
 
 Hata mesajı, kapanış gövdesinde `deger` değişkenini çevrenin dışına taşıyan satırı işaret eder; yardımcı (`help`) satırında da `Fn` ve `FnMut` kapanışlarının yakalanan değerleri birden çok kez kullanabilmeyi gerektirdiği, `FnOnce` kapanışlarının ise bunları yalnızca bir kez tüketebileceği belirtilir. Bunu düzeltmek için kapanış gövdesini değerleri çevrenin dışına taşımayacak şekilde değiştirmemiz gerekir. Çevrede bir sayaç tutmak ve kapanış gövdesinde bu sayacın değerini artırmak, kapanışın kaç kez çağrıldığını saymanın çok daha doğrudan ve anlaşılır bir yoludur. Liste 13-9'daki kapanış `sort_by_key` ile sorunsuz çalışır; çünkü `siralama_islemi_sayisi` sayacına yalnızca değiştirilebilir bir referans yakalar ve dolayısıyla birden fazla kez çağrılabilir.
 
-<Listing number="13-9" file-name="src/main.rs" caption="`sort_by_key` ile bir `FnMut` kapanışı kullanılmasına izin verilir.">
+<Listing number="13-9" file-name="src/main.rs" caption="`sort_by_key` ile bir `FnMut` kapanışı kullanılmasına izin verilir">
 
 ```rust
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-09/src/main.rs}}
@@ -247,6 +247,6 @@ Hata mesajı, kapanış gövdesinde `deger` değişkenini çevrenin dışına ta
 
 </Listing>
 
-Kapanışlardan yararlanan fonksiyonları veya türleri tanımlarken ya da kullanırken `Fn` trait'leri büyük önem taşır. Bir sonraki bölümde *iteratörleri (yineleyicileri)* ele alacağız. Pek çok iteratör metodu argüman olarak kapanış alır; bu nedenle devam ederken kapanışlarla ilgili bu ayrıntıları aklınızda bulundurun!
+Kapanışlardan yararlanan fonksiyonları veya türleri tanımlarken ya da kullanırken `Fn` trait'leri büyük önem taşır. Sıradaki kısımda *iteratörleri (yineleyicileri)* ele alacağız. Pek çok iteratör metodu argüman olarak kapanış alır; bu nedenle devam ederken kapanışlarla ilgili bu ayrıntıları aklınızda bulundurun!
 
 [unwrap-or-else]: ../std/option/enum.Option.html#method.unwrap_or_else

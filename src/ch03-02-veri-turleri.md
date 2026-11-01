@@ -47,7 +47,7 @@ _Tam sayı (integer)_, kesirli bileşeni olmayan bir sayıdır. Bölüm 2'de tam
 | 128 bit | `i128`   | `u128`    |
 | Mimariye bağlı | `isize`  | `usize`   |
 
-Her varyant işaretli veya işaretsiz olabilir ve açıkça belirlenmiş bir boyuta sahiptir. _İşaretli_ ve _işaretsiz_ terimleri sayının negatif olabilmesinin mümkün olup olmadığını ifade eder; başka bir deyişle, sayının yanında bir işaret taşıması gerekip gerekmediğini (işaretli) ya da yalnızca pozitif değerler alacağı için işaretsiz olarak temsil edilip edilemeyeceğini (işaretsiz) belirtir. Bunu kâğıda sayı yazmaya benzetebilirsiniz: İşaret önemli olduğunda sayı artı veya eksi işaretiyle gösterilir; ancak sayının pozitif olduğunu varsaymak güvenliyse herhangi bir işaret konulmadan yazılır. İşaretli sayılar bellekte [ikiye tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili kullanılarak saklanır.
+Her varyant işaretli veya işaretsiz olabilir ve açıkça belirlenmiş bir boyuta sahiptir. _İşaretli_ ve _işaretsiz_ terimleri sayının negatif olup olamayacağını ifade eder; başka bir deyişle, sayının bir işaretle birlikte yazılması mı gerektiğini (işaretli) yoksa her zaman pozitif olacağı için işaretsiz olarak temsil edilebileceğini mi (işaretsiz) belirtir. Bunu kâğıda sayı yazmaya benzetebilirsiniz: İşaret önemli olduğunda sayı artı veya eksi işaretiyle gösterilir; ancak sayının pozitif olduğunu varsaymak güvenliyse herhangi bir işaret konulmadan yazılır. İşaretli sayılar bellekte [ikiye tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili kullanılarak saklanır.
 
 Her işaretli varyant, _n_ ilgili varyantın kullandığı bit sayısı olmak üzere, −(2<sup>n − 1</sup>) ile 2<sup>n − 1</sup> − 1 (sınırlar dahil) aralığındaki sayıları saklayabilir. Dolayısıyla bir `i8`, −(2<sup>7</sup>) ile 2<sup>7</sup> − 1 aralığındaki, yani −128 ile 127 arasındaki sayıları tutabilir. İşaretsiz varyantlar ise 0 ile 2<sup>n</sup> − 1 aralığındaki sayıları saklayabilir; örneğin bir `u8`, 0 ile 2<sup>8</sup> − 1 aralığındaki, yani 0 ile 255 arasındaki sayıları tutabilir.
 
@@ -79,7 +79,7 @@ Peki hangi tam sayı türünü kullanacağınızı nasıl bileceksiniz? Emin de�
 >
 > Taşma olasılığını açıkça ele almak istediğinizde, standart kütüphanenin ilkel sayısal türler için sunduğu şu metot ailelerini kullanabilirsiniz:
 >
-> - `wrapping_*` metotlarıyla tüm derleme modlarında sarma işlemi yapmak (örneğin `wrapping_add` ile `255u8.wrapping_add(1)` çağrısı `0` döndürür).
+> - `wrapping_*` metotlarıyla tüm derleme modlarında sarma işlemi yapmak (örneğin `255u8.wrapping_add(1)` çağrısı `0` döndürür).
 > - `checked_*` metotlarıyla taşma durumunda `None` değeri döndürmek (örneğin `255u8.checked_add(1)` çağrısı `None` döndürür).
 > - `overflowing_*` metotlarıyla hem sarmalanmış değeri hem de taşma olup olmadığını belirten bir `bool` değerini birlikte döndürmek (örneğin `255u8.overflowing_add(1)` çağrısı `(0, true)` döndürür).
 > - `saturating_*` metotlarıyla değerin alt veya üst sınırında doygunluğa ulaşarak sabitlenmesini (*saturate*) sağlamak (örneğin `255u8.saturating_add(1)` çağrısı `255` döndürür).
@@ -106,7 +106,7 @@ Kayan noktalı sayılar IEEE-754 standardına göre temsil edilir.
 
 #### Sayısal İşlemler
 
-Rust, tüm sayı türleri için bekleyeceğiniz temel matematiksel işlemleri destekler: toplama, çıkarma, çarpma, bölme ve kalan (*mod alma*). Tam sayı bölmesi sonucu sıfıra doğru en yakın tam sayıya yuvarlayarak keser (*truncate*). Aşağıdaki kod, her bir sayısal işlemi bir `let` deyiminde nasıl kullanacağınızı gösterir:
+Rust, tüm sayı türleri için bekleyeceğiniz temel matematiksel işlemleri destekler: toplama, çıkarma, çarpma, bölme ve kalan (*mod alma*). Tam sayı bölmesi, sonucu sıfıra doğru en yakın tam sayıya yuvarlar; yani kesirli kısmı atar (*truncate*). Aşağıdaki kod, her bir sayısal işlemi bir `let` deyiminde nasıl kullanacağınızı gösterir:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -146,7 +146,7 @@ Rust'ın `char` türü, dilin en temel alfabetik veri türüdür. İşte `char` 
 
 Çift tırnak kullanan string sabit değerlerinin aksine, `char` sabit değerlerini tek tırnakla belirttiğimize dikkat edin. Rust'ın `char` türü 4 bayt boyutundadır ve bir Unicode skaler değerini temsil eder; bu sayede yalnızca ASCII karakterlerini değil, çok daha fazlasını ifade edebilir. Aksanlı ve noktalı harfler; Çince, Japonca ve Korece karakterler; emojiler ve sıfır genişlikli boşluklar Rust'ta geçerli birer `char` değeridir. Unicode skaler değerleri `U+0000` ile `U+D7FF` ve `U+E000` ile `U+10FFFF` (sınırlar dahil) aralıklarını kapsar. Bununla birlikte "karakter" aslında Unicode standardında doğrudan tanımlı bir kavram değildir; dolayısıyla bir "karakterin" ne olduğuna dair günlük sezgimiz Rust'taki `char` tanımıyla her zaman birebir örtüşmeyebilir. Bu konuyu Bölüm 8'deki ["String'lerle UTF-8 Kodlanmış Metin Saklama"][strings]<!-- ignore --> kısmında ayrıntılı olarak inceleyeceğiz.
 
-> Not: Türkçeye özgü `'ç'`, `'ğ'`, `'ı'`, `'İ'`, `'ö'`, `'ş'`, `'ü'` harfleri ve `'😻'` gibi tek skaler değerden oluşan emojiler geçerli birer `char` sabitidir ve bellekte her `char` sabit olarak **4 bayt** yer kaplar. Buna karşılık Bölüm 8'de göreceğimiz UTF-8 kodlamalı `String` ve `&str` metinlerinde karakterler değişken uzunlukta saklanır (örneğin ASCII harfler 1 bayt, `'ğ'` ve `'ş'` gibi Türkçe harfler 2 bayt, `'😻'` emojisi ise 4 bayt yer kaplar). Ayrıca birden fazla Unicode skaler değerinin birleşimiyle oluşturulan bazı birleşik emojiler (örneğin `'👨‍👩‍👧‍👦'`) tek bir `char` içine sığmaz.
+> Not: Türkçeye özgü `'ç'`, `'ğ'`, `'ı'`, `'İ'`, `'ö'`, `'ş'`, `'ü'` harfleri ve `'😻'` gibi tek skaler değerden oluşan emojiler geçerli birer `char` sabitidir; her `char` değeri, hangi karakteri tuttuğundan bağımsız olarak bellekte **4 bayt** yer kaplar. Buna karşılık Bölüm 8'de göreceğimiz UTF-8 kodlamalı `String` ve `&str` metinlerinde karakterler değişken uzunlukta saklanır (örneğin ASCII harfler 1 bayt, `'ğ'` ve `'ş'` gibi Türkçe harfler 2 bayt, `'😻'` emojisi ise 4 bayt yer kaplar). Ayrıca birden fazla Unicode skaler değerinin birleşimiyle oluşturulan bazı birleşik emojiler (örneğin `"👨‍👩‍👧‍👦"`) tek bir `char` içine sığmaz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="compound-types"></a>
@@ -180,9 +180,9 @@ Bir demet tek bir bileşik öğe olarak kabul edildiğinden `tup` değişkeni de
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-11-destructuring-tuples/src/main.rs}}
 ```
 
-Bu program önce bir demet oluşturup onu `tup` değişkenine bağlar. Ardından `let` ile birlikte bir desen kullanarak `tup` değerini alır ve üç ayrı değişkene (`x`, `y` ve `z`) ayırır. Tek bir demeti üç parçaya böldüğü için bu işleme _yapı sökümü / parçalama (destructuring)_ denir. Son olarak program, `6.4` olan `y` değerini ekrana yazdırır.
+Bu program önce bir demet oluşturup onu `tup` değişkenine bağlar. Ardından `let` ile birlikte bir desen kullanarak `tup` değerini alır ve üç ayrı değişkene (`x`, `y` ve `z`) ayırır. Tek bir demeti üç parçaya ayırdığı için bu işleme _yapı sökümü (destructuring)_ denir. Son olarak program, `6.4` olan `y` değerini ekrana yazdırır.
 
-Bir demet elemanına, doğrudan nokta (`.`) işareti ve ardından erişmek istediğimiz değerin indeksini yazarak da ulaşabiliriz. Örneğin:
+Bir demet elemanına, demetin adından sonra bir nokta (`.`) ve erişmek istediğimiz değerin indeksini yazarak doğrudan da ulaşabiliriz. Örneğin:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -229,7 +229,7 @@ let a: [i32; 5] = [1, 2, 3, 4, 5];
 
 Burada `i32` her bir elemanın türüdür. Noktalı virgülden sonraki `5` sayısı ise dizinin beş eleman içerdiğini belirtir.
 
-Ayrıca her elemanı aynı başlangıç değerine sahip olacak bir diziyi; köşeli parantez içinde önce başlangıç değerini, ardından noktalı virgülü ve son olarak dizinin uzunluğunu yazarak da başlatabilirsiniz:
+Tüm elemanları aynı değere sahip olacak bir diziyi, köşeli parantez içinde önce başlangıç değerini, ardından noktalı virgülü ve son olarak dizinin uzunluğunu yazarak da başlatabilirsiniz:
 
 ```rust
 let a = [3; 5];

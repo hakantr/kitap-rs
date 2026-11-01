@@ -74,7 +74,7 @@ Sırada `Yapilandirma::olustur` tanımını güncellemek var. `Yapilandirma::olu
 
 `env::args` fonksiyonunun standart kütüphane dokümantasyonu, döndürdüğü iteratörün türünün `std::env::Args` olduğunu ve bu türün `String` değerleri üretecek şekilde `Iterator` trait'ini uyguladığını gösterir.
 
-`Yapilandirma::olustur` fonksiyonunun imzasını, `argumanlar` parametresi `&[String]` yerine `impl Iterator<Item = String>` trait sınırına sahip jenerik bir tür olacak şekilde güncelledik. Bölüm 10'un ["Trait'leri Parametre Olarak Kullanma"][impl-trait]<!-- ignore --> bölümünde ele aldığımız `impl Trait` sözdiziminin bu kullanımı, `argumanlar` parametresinin `Iterator` trait'ini uygulayan ve `String` öğeleri döndüren herhangi bir tür olabileceği anlamına gelir.
+`Yapilandirma::olustur` fonksiyonunun imzasını, `argumanlar` parametresi `&[String]` yerine `impl Iterator<Item = String>` trait sınırına sahip jenerik bir tür olacak şekilde güncelledik. Bölüm 10'un ["Trait'leri Parametre Olarak Kullanma"][impl-trait]<!-- ignore --> kısmında ele aldığımız `impl Trait` sözdiziminin bu kullanımı, `argumanlar` parametresinin `Iterator` trait'ini uygulayan ve `String` öğeleri döndüren herhangi bir tür olabileceği anlamına gelir.
 
 `argumanlar` değerinin sahipliğini aldığımız ve üzerinde ilerleyerek iç durumunu değiştireceğimiz için, `argumanlar` parametresinin tanımına `mut` anahtar kelimesini ekleyerek onu değiştirilebilir hale getirebiliriz.
 
@@ -146,7 +146,7 @@ Daha ileri bir iyileştirme olarak, `collect` çağrısını kaldırıp dönüş
 
 ### Döngüler ve İteratörler Arasında Seçim Yapma
 
-Sıradaki mantıklı soru, kendi kodunuzda hangi stili ve neden seçmeniz gerektiğidir: Liste 13-21'deki orijinal uygulama mı, yoksa Liste 13-22'deki iteratör kullanan sürüm mü (doğrudan iteratör döndürmek yerine tüm sonuçları toplayıp döndürdüğümüzü varsayarsak)? Çoğu Rust programcısı iteratör stilini kullanmayı tercih eder. İlk başta alışması biraz daha zor olsa da çeşitli iteratör adaptörlerine ve ne işe yaradıklarına aşina olduğunuzda iteratörleri okumak çok daha kolaylaşır. Döngü ayrıntılarıyla ve yeni vektörler oluşturmakla uğraşmak yerine kod, döngünün üst düzey amacına odaklanır. Bu yaklaşım basmakalıp kod kalıplarını soyutlayarak, iteratördeki her öğenin sağlaması gereken filtreleme koşulu gibi bu koda özgü asıl mantığın çok daha net görülmesini sağlar.
+Sıradaki mantıklı soru, kendi kodunuzda hangi stili ve neden seçmeniz gerektiğidir: Liste 13-21'deki orijinal uygulama mı, yoksa Liste 13-22'deki iteratör kullanan sürüm mü (doğrudan iteratör döndürmek yerine tüm sonuçları toplayıp döndürdüğümüzü varsayarsak)? Çoğu Rust programcısı iteratör stilini kullanmayı tercih eder. İlk başta alışması biraz daha zor olsa da çeşitli iteratör adaptörlerine ve ne işe yaradıklarına aşina olduğunuzda iteratörleri okumak çok daha kolaylaşır. Döngü ayrıntılarıyla ve yeni vektörler oluşturmakla uğraşmak yerine kod, döngünün üst düzey amacına odaklanır. Bu yaklaşım sıradan, tekrar eden kodu soyutlayarak, iteratördeki her öğenin sağlaması gereken filtreleme koşulu gibi bu koda özgü asıl mantığın çok daha net görülmesini sağlar.
 
 Peki bu iki uygulama gerçekten eşdeğer midir? Sezgisel olarak daha alt düzey olan döngünün daha hızlı çalışacağı düşünülebilir. Şimdi performans konusunu ele alalım.
 

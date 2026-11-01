@@ -35,7 +35,7 @@ Bu bölümün ilk kısmında yeni `toplayici` projesini oluşturduğumuzda Cargo
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-01/src/lib.rs}}
 ```
 
-Otomatik olarak üretilen `tests` modülü üzerindeki `cfg` özniteliği İngilizce _configuration_ (yapılandırma) kelimesinin kısaltmasıdır ve Rust'a takip eden öğenin yalnızca belirli bir yapılandırma seçeneği sağlandığında derlemeye dahil edilmesi gerektiğini bildirir. Bu örnekte yapılandırma seçeneği, testleri derlemek ve çalıştırmak amacıyla Rust tarafından sağlanan `test` seçeneğidir. Cargo, `cfg` özniteliği sayesinde test kodumuzu yalnızca testleri `cargo test` komutuyla açıkça çalıştırdığımızda derler. Bu kapsam yalnızca `#[test]` ile işaretlenmiş fonksiyonlarla sınırlı değildir; bu modülün içinde yer alabilecek tüm yardımcı fonksiyonları da kapsar.
+Otomatik olarak üretilen `tests` modülü üzerindeki `cfg` özniteliği İngilizce _configuration_ (yapılandırma) kelimesinin kısaltmasıdır ve Rust'a takip eden öğenin yalnızca belirli bir yapılandırma seçeneği sağlandığında derlemeye dahil edilmesi gerektiğini bildirir. Bu örnekte yapılandırma seçeneği, testleri derlemek ve çalıştırmak amacıyla Rust tarafından sağlanan `test` seçeneğidir. Cargo, `cfg` özniteliği sayesinde test kodumuzu yalnızca testleri `cargo test` komutuyla açıkça çalıştırdığımızda derler. Bu kural yalnızca `#[test]` ile işaretlenmiş fonksiyonlar için değil, modülün içinde yer alabilecek tüm yardımcı fonksiyonlar için de geçerlidir.
 
 > Not: `#[cfg(test)]` özniteliğinin neden _src/lib.rs_ içinde zorunlu olduğu halde _tests/_ dizinindeki entegrasyon testlerinde gerekmediğini derleme hedefleri üzerinden kolayca anlayabiliriz:
 >
@@ -76,7 +76,7 @@ Rust'ta entegrasyon testleri kütüphanenizin tamamen dışındadır. Kütüphan
 
 #### _tests_ Dizini
 
-Proje dizinimizin en üst seviyesinde, _src_ dizininin hemen yanında bir _tests_ dizini oluştururuz. Cargo, entegrasyon testi dosyalarını bu dizinde arayacağını bilir. Ardından bu dizinde istediğimiz kadar test dosyası oluşturabiliriz; Cargo bu dosyaların her birini ayrı bir crate olarak derleyecektir.
+Proje dizinimizin en üst seviyesinde, _src_ dizininin hemen yanında bir _tests_ dizini oluştururuz. Cargo, entegrasyon testi dosyalarını bu dizinde araması gerektiğini bilir. Ardından bu dizinde istediğimiz kadar test dosyası oluşturabiliriz; Cargo bu dosyaların her birini ayrı bir crate olarak derleyecektir.
 
 Şimdi bir entegrasyon testi oluşturalım. Liste 11-12'deki kod _src/lib.rs_ dosyasında dururken bir _tests_ dizini oluşturun ve içine _tests/entegrasyon_testi.rs_ adında yeni bir dosya ekleyin. Dizin yapınız şu şekilde görünmelidir:
 
@@ -118,7 +118,7 @@ Her entegrasyon testi dosyasının çıktıda kendine ait bir bölümü vardır;
 
 > Not: Özetlemek gerekirse `cargo test` komutu testleri şu üç aşamalı sırayla yürütür:
 >
-> 1. **Birim testleri (`Running unittests src/lib.rs` ve varsa `src/main.rs`)**: Her modülü yalıtılmış olarak ve gizli (`private`) arayüzler dahil sınar.
+> 1. **Birim testleri (`Running unittests src/lib.rs` ve varsa `src/main.rs`)**: Her modülü yalıtılmış olarak ve gizli (*private*) arayüzler dahil sınar.
 > 2. **Entegrasyon testleri (`Running tests/<dosya_adı>.rs`)**: _tests/_ dizininin kökündeki her `.rs` dosyasını ayrı bir harici crate olarak derleyip yalnızca açık (`pub`) API üzerinden sınar.
 > 3. **Belgelendirme testleri (`Doc-tests <crate_adı>`)**: API belgelendirme yorumlarındaki (`///`) kod örneklerini derleyip çalıştırarak belgelerin kodla uyumlu kaldığını doğrular.
 >
@@ -141,7 +141,7 @@ Bu komut yalnızca _tests/entegrasyon_testi.rs_ dosyasındaki testleri çalışt
 
 #### Entegrasyon Testlerinde Alt Modüller
 
-Entegrasyon testlerinizin sayısı arttıkça bunları düzenli tutmak için _tests_ dizininde birden fazla dosya oluşturmak isteyebilirsiniz; örneğin test fonksiyonlarını sınadıkları işlevselliğe göre gruplandırabilirsiniz. Daha önce belirttiğimiz gibi _tests_ dizinindeki her dosya kendi başına ayrı bir crate olarak derlenir; bu da son kullanıcıların crate'inizi kullanma biçimini daha gerçekçi şekilde taklit eden ayrı kapsamlar oluşturmak açısından oldukça faydalıdır. Ancak bu durum, Bölüm 7'de kodu modüllere ve dosyalara ayırırken öğrendiğinizin aksine, _tests_ dizinindeki dosyaların _src_ dizinindeki dosyalarla aynı davranışı paylaşmadığı anlamına gelir.
+Entegrasyon testlerinizin sayısı arttıkça bunları düzenli tutmak için _tests_ dizininde birden fazla dosya oluşturmak isteyebilirsiniz; örneğin test fonksiyonlarını sınadıkları işlevselliğe göre gruplandırabilirsiniz. Daha önce belirttiğimiz gibi _tests_ dizinindeki her dosya kendi başına ayrı bir crate olarak derlenir; bu da son kullanıcıların crate'inizi kullanma biçimini daha gerçekçi şekilde taklit eden ayrı kapsamlar oluşturmak açısından oldukça faydalıdır. Ancak bu, _tests_ dizinindeki dosyaların, Bölüm 7'de kodu modüllere ve dosyalara ayırırken öğrendiğiniz _src_ dizini davranışını paylaşmadığı anlamına gelir.
 
 _tests_ dizinindeki dosyaların bu farklı davranışı, en çok birden fazla entegrasyon testi dosyasında kullanmak istediğiniz bir grup yardımcı fonksiyonunuz olduğunda ve bunları ortak bir modüle çıkarmak için Bölüm 7'deki ["Modülleri Farklı Dosyalara Ayırma"][separating-modules-into-files]<!-- ignore --> adımlarını izlemeye çalıştığınızda göze çarpar. Örneğin (Rust projelerinde genellikle _tests/common.rs_ olarak adlandırılan) _tests/ortak.rs_ adında bir dosya oluşturup içine `kurulum` adlı bir fonksiyon yerleştirirsek, birden fazla test dosyasındaki çeşitli test fonksiyonlarından çağırmak istediğimiz hazırlık kodlarını `kurulum` içine ekleyebiliriz:
 

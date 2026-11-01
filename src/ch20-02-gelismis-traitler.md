@@ -50,7 +50,7 @@ Bu sözdizimi jeneriklerinkine oldukça benzer görünüyor. Öyleyse `Iterator`
 
 </Listing>
 
-Aradaki fark şudur: Liste 20-14'te olduğu gibi jenerikleri kullandığımızda, her uygulamada türleri açıkça belirtmemiz gerekir; çünkü `Sayac` için `Iterator<String>` veya başka herhangi bir tür uygulamasını da yazabileceğimizden, `Sayac` için birden fazla `Iterator` uygulamasına sahip olabiliriz. Başka bir deyişle, bir trait jenerik bir parametreye sahip olduğunda, jenerik tür parametrelerinin somut türleri her seferinde değiştirilerek tek bir tür için birden fazla kez uygulanabilir. `Sayac` üzerinde `next` metodunu kullandığımızda ise hangi `Iterator` uygulamasını kullanmak istediğimizi belirtmek için tür açıklamaları eklememiz gerekirdi.
+Aradaki fark şudur: Liste 20-14'te olduğu gibi jenerikleri kullandığımızda, her uygulamada türleri açıkça belirtmemiz gerekir; çünkü `Sayac` için `Iterator<String>` ya da başka herhangi bir türle de bir uygulama yazabilir, böylece `Sayac` için birden fazla `Iterator` uygulamasına sahip olabiliriz. Başka bir deyişle, bir trait jenerik bir parametreye sahip olduğunda, jenerik tür parametrelerinin somut türleri her seferinde değiştirilerek tek bir tür için birden fazla kez uygulanabilir. `Sayac` üzerinde `next` metodunu kullandığımızda ise hangi `Iterator` uygulamasını kullanmak istediğimizi belirtmek için tür açıklamaları eklememiz gerekirdi.
 
 İlişkili türlerle ise tür açıklamaları eklememize gerek kalmaz; çünkü bir trait'i bir tür üzerinde birden fazla kez uygulayamayız. İlişkili türleri kullanan Liste 20-13'teki tanımda, `Sayac` için yalnızca tek bir `impl Iterator for Sayac` olabileceğinden `Item` türünün ne olacağını yalnızca bir kez seçebiliriz. `Sayac` üzerinde `next` çağırdığımız her yerde `u32` değerlerinden oluşan bir iteratör istediğimizi belirtmek zorunda kalmayız.
 
@@ -69,7 +69,7 @@ Aradaki fark şudur: Liste 20-14'te olduğu gibi jenerikleri kullandığımızda
 
 Jenerik tür parametreleri kullandığımızda, jenerik tür için varsayılan bir somut tür belirtebiliriz. Bu, varsayılan tür iş görüyorsa trait'i uygulayanların somut bir tür belirtme zorunluluğunu ortadan kaldırır. Jenerik bir türü bildirirken varsayılan türü `<YerTutucuTur=SomutTur>` sözdizimiyle belirtirsiniz.
 
-Bu tekniğin yararlı olduğu harika bir durum, belirli koşullarda bir operatörün (`+` gibi) davranışını özelleştirdiğiniz _operatör aşırı yüklemedir (operator overloading)_.
+Bu tekniğin yararlı olduğu harika bir durum, belirli koşullarda bir operatörün (`+` gibi) davranışını özelleştirdiğiniz _operatör aşırı yüklemesidir (operator overloading)_.
 
 Rust kendi operatörlerinizi oluşturmanıza veya rastgele operatörleri aşırı yüklemenize izin vermez. Ancak `std::ops` modülünde listelenen işlemleri ve bunlara karşılık gelen trait'leri, operatörle ilişkili trait'i uygulayarak aşırı yükleyebilirsiniz. Örneğin Liste 20-15'te, iki `Nokta` örneğini birbiriyle toplamak için `+` operatörünü aşırı yüklüyoruz. Bunu bir `Nokta` struct'ı üzerinde `Add` trait'ini uygulayarak yapıyoruz.
 
@@ -114,7 +114,7 @@ Varsayılan tür parametrelerini başlıca iki şekilde kullanırsınız:
 1. Mevcut kodu bozmadan bir türü genişletmek için
 2. Çoğu kullanıcının ihtiyaç duymayacağı özel durumlarda özelleştirmeye olanak tanımak için
 
-Standart kütüphanenin `Add` trait'i ikinci amaca örnektir: Genellikle birbirine benzer iki türü toplarsınız, ancak `Add` trait'i bunun ötesinde özelleştirme yapabilme olanağı sunar. `Add` trait tanımında varsayılan bir tür parametresi kullanmak, çoğu zaman fazladan parametreyi belirtmek zorunda kalmamanız anlamına gelir. Başka bir deyişle, uygulama sırasında tekrarlayan kalıp kodlara biraz daha az ihtiyaç duyulur ve bu da trait'in kullanımını kolaylaştırır.
+Standart kütüphanenin `Add` trait'i ikinci amaca örnektir: Genellikle aynı türden iki değeri toplarsınız, ancak `Add` trait'i bunun ötesinde özelleştirme yapabilme olanağı sunar. `Add` trait tanımında varsayılan bir tür parametresi kullanmak, çoğu zaman fazladan parametreyi belirtmek zorunda kalmamanız anlamına gelir. Başka bir deyişle, uygulama sırasında tekrarlayan kalıp kodlara biraz daha az ihtiyaç duyulur ve bu da trait'in kullanımını kolaylaştırır.
 
 İlk amaç ikinciye benzer, ancak ters yönde işler: Mevcut bir trait'e bir tür parametresi eklemek isterseniz, mevcut uygulama kodlarını bozmadan trait'in işlevselliğinin genişletilmesine olanak tanımak için bu parametreye bir varsayılan tür verebilirsiniz.
 
@@ -129,7 +129,7 @@ Standart kütüphanenin `Add` trait'i ikinci amaca örnektir: Genellikle birbiri
 
 Rust'ta hiçbir kural bir trait'in başka bir trait'in metoduyla aynı ada sahip bir metot barındırmasını engellemez; her iki trait'i tek bir tür üzerinde uygulamanıza da engel olmaz. Ayrıca trait'lerdeki metotlarla aynı ada sahip bir metodu doğrudan türün kendisi üzerinde uygulamak da mümkündür.
 
-Aynı ada sahip metotları çağırırken Rust'a hangisini kullanmak istediğinizi söylemeniz gerekir. Her ikisi de `fly` adında bir metoda sahip `Pilot` ve `Buyucu` adlı iki trait tanımladığımız Liste 20-17'deki kodu ele alalım. Ardından her iki trait'i, üzerinde halihazırda `fly` adlı bir metot uygulanmış olan `Insan` türü üzerinde uyguluyoruz. Her bir `fly` metodu farklı bir iş yapıyor.
+Aynı ada sahip metotları çağırırken Rust'a hangisini kullanmak istediğinizi söylemeniz gerekir. Her ikisi de `fly` adında bir metoda sahip `Pilot` ve `Buyucu` adlı iki trait tanımladığımız Liste 20-17'deki kodu ele alalım. Ardından her iki trait'i, üzerinde hâlihazırda `fly` adlı bir metot uygulanmış olan `Insan` türü üzerinde uyguluyoruz. Her bir `fly` metodu farklı bir iş yapıyor.
 
 <Listing number="20-17" file-name="src/main.rs" caption="`fly` metoduna sahip olacak şekilde tanımlanıp `Insan` türü üzerinde uygulanan iki trait ve doğrudan `Insan` üzerinde uygulanan bir `fly` metodu">
 
@@ -189,7 +189,7 @@ Tüm yavru köpeklere Karabaş adını verme kodunu, `Kopek` üzerinde tanımlan
 {{#include ../listings/ch20-advanced-features/listing-20-20/output.txt}}
 ```
 
-Bu çıktı bizim istediğimiz sonuç değildir. Biz `Kopek` üzerinde uyguladığımız `Hayvan` trait'inin bir parçası olan `baby_name` fonksiyonunu çağırmak istiyoruz; böylece kod `Bir yavru köpeğe yavru köpek denir` çıktısını üretsin. Liste 20-19'da kullandığımız trait adını belirtme tekniği burada işe yaramaz; `main` fonksiyonunu Liste 20-21'deki koda değiştirirsek bir derleme hatası alırız.
+Bu çıktı bizim istediğimiz sonuç değildir. Biz `Kopek` üzerinde uyguladığımız `Hayvan` trait'inin bir parçası olan `baby_name` fonksiyonunu çağırmak istiyoruz; böylece kod `Bir yavru köpeğe yavru köpek denir` çıktısını üretsin. Liste 20-19'da kullandığımız trait adını belirtme tekniği burada işe yaramaz; `main` fonksiyonunu Liste 20-21'deki gibi değiştirirsek bir derleme hatası alırız.
 
 <Listing number="20-21" file-name="src/main.rs" caption="`Hayvan` trait'inden `baby_name` fonksiyonunu çağırmayı denemek; ancak Rust hangi uygulamayı kullanacağını bilemez">
 
@@ -215,7 +215,7 @@ Belirsizliği gidermek ve Rust'a başka bir tür için olan `Hayvan` uygulaması
 
 </Listing>
 
-Açılı parantezler içinde Rust'a bir tür açıklaması sağlıyoruz; bu açıklama, bu fonksiyon çağrısı için `Kopek` türünü bir `Hayvan` olarak ele almak istediğimizi söyleyerek `Kopek` üzerinde uygulandığı hâliyle `Hayvan` trait'indeki `baby_name` metodunu çağırmak istediğimizi belirtir. Bu kod artık istediğimiz çıktıyı yazdıracaktır:
+Açılı parantezler içinde Rust'a bir tür açıklaması sağlıyoruz; bu açıklama, bu fonksiyon çağrısı için `Kopek` türünü bir `Hayvan` olarak ele almak istediğimizi söyleyerek `Kopek` üzerinde uygulandığı hâliyle `Hayvan` trait'indeki `baby_name` fonksiyonunu çağırmak istediğimizi belirtir. Bu kod artık istediğimiz çıktıyı yazdıracaktır:
 
 ```console
 {{#include ../listings/ch20-advanced-features/listing-20-22/output.txt}}
@@ -227,7 +227,7 @@ Genel olarak tam nitelikli sözdizimi şöyle tanımlanır:
 <Type as Trait>::function(receiver_if_method, next_arg, ...);
 ```
 
-Metot olmayan ilişkili fonksiyonlarda bir `receiver` (alıcı, yani `self`) bulunmaz: Yalnızca diğer argümanların listesi yer alır. Fonksiyon veya metot çağırdığınız her yerde tam nitelikli sözdizimini kullanabilirsiniz. Ancak Rust'ın programdaki diğer bilgilerden çıkarabildiği her kısmı bu sözdiziminden çıkarmanıza izin verilir. Bu daha ayrıntılı sözdizimini yalnızca aynı adı kullanan birden fazla uygulamanın bulunduğu ve Rust'ın hangi uygulamayı çağırmak istediğinizi belirlemek için yardıma ihtiyaç duyduğu durumlarda kullanmanız gerekir.
+Metot olmayan ilişkili fonksiyonlarda bir `receiver` (alıcı, yani `self`) bulunmaz: Yalnızca diğer argümanların listesi yer alır. Fonksiyon veya metot çağırdığınız her yerde tam nitelikli sözdizimini kullanabilirsiniz. Ancak Rust'ın programdaki diğer bilgilerden çıkarabildiği her kısmı bu sözdiziminden atlayabilirsiniz. Bu daha ayrıntılı sözdizimini yalnızca aynı adı kullanan birden fazla uygulamanın bulunduğu ve Rust'ın hangi uygulamayı çağırmak istediğinizi belirlemek için yardıma ihtiyaç duyduğu durumlarda kullanmanız gerekir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -238,7 +238,7 @@ Metot olmayan ilişkili fonksiyonlarda bir `receiver` (alıcı, yani `self`) bul
 
 Bazen başka bir trait'e bağımlı olan bir trait tanımı yazabilirsiniz: Bir türün ilk trait'i uygulayabilmesi için ikinci trait'i de uygulamasını zorunlu kılmak istersiniz. Bunu, trait tanımınızın ikinci trait'in ilişkili öğelerinden yararlanabilmesi için yaparsınız. Trait tanımınızın dayandığı bu trait'e, trait'inizin _üst trait'i (supertrait)_ denir.
 
-Örneğin, verilen bir değeri yıldız işaretleriyle çerçevelenmiş biçimde yazdıracak `outline_print` metoduna sahip bir `CerceveliYazdir` trait'i yapmak istediğimizi varsayalım. Yani standart kütüphanedeki `Display` trait'ini `(x, y)` sonucu üretecek biçimde uygulayan bir `Nokta` struct'ı verildiğinde, `x` için `1` ve `y` için `3` değerine sahip bir `Nokta` örneği üzerinde `outline_print` çağırdığımızda şunu yazdırmalıdır:
+Örneğin, verilen bir değeri yıldız işaretleriyle çerçevelenmiş biçimde yazdıracak `outline_print` metoduna sahip bir `CerceveliYazdir` trait'i yapmak istediğimizi varsayalım. Yani standart kütüphanedeki `Display` trait'ini `(x, y)` sonucu üretecek biçimde uygulayan bir `Nokta` struct'ı verildiğinde, `x` için `1` ve `y` için `3` değerine sahip bir `Nokta` örneği üzerinde `outline_print` çağırdığımızda metodun şunu yazdırması gerekir:
 
 ```text
 **********
@@ -311,7 +311,7 @@ Bölüm 10'daki [“Bir Tür Üzerinde Trait Uygulama”][implementing-a-trait-o
 
 `Sarmalayici` bir demet struct'ı olduğu ve `Vec<T>` demetteki 0 indeksli öğe olduğu için `Display` uygulaması içteki `Vec<T>` değerine erişmek üzere `self.0` ifadesini kullanır. Ardından `Sarmalayici` üzerinde `Display` trait'inin işlevselliğini kullanabiliriz.
 
-Bu tekniği kullanmanın dezavantajı, `Sarmalayici`'nın yeni bir tür olması ve dolayısıyla tuttuğu değerin metotlarına sahip olmamasıdır. `Sarmalayici`'ya tıpkı bir `Vec<T>` gibi davranabilmek için `Vec<T>`'nin tüm metotlarını doğrudan `Sarmalayici` üzerinde, işlevi `self.0`'a devredecek şekilde uygulamamız gerekirdi. Yeni türün içteki türün sahip olduğu her metoda sahip olmasını isteseydik, içteki türü döndürecek şekilde `Sarmalayici` üzerinde `Deref` trait'ini uygulamak bir çözüm olurdu (`Deref` trait'ini uygulamayı Bölüm 15'teki [“Akıllı İşaretçilere Normal Referanslar Gibi Davranma”][smart-pointer-deref]<!-- ignore --> bölümünde ele almıştık). Eğer `Sarmalayici` türünün içteki türün tüm metotlarına sahip olmasını istemeseydik —örneğin `Sarmalayici` türünün davranışını kısıtlamak amacıyla— yalnızca gerçekten istediğimiz metotları elle uygulamamız gerekirdi.
+Bu tekniği kullanmanın dezavantajı, `Sarmalayici`'nın yeni bir tür olması ve dolayısıyla tuttuğu değerin metotlarına sahip olmamasıdır. `Sarmalayici`'yı tıpkı bir `Vec<T>` gibi kullanabilmek için `Vec<T>`'nin tüm metotlarını doğrudan `Sarmalayici` üzerinde, işlevi `self.0`'a devredecek şekilde uygulamamız gerekirdi. Yeni türün içteki türün sahip olduğu her metoda sahip olmasını isteseydik, içteki türü döndürecek şekilde `Sarmalayici` üzerinde `Deref` trait'ini uygulamak bir çözüm olurdu (`Deref` trait'ini uygulamayı Bölüm 15'teki [“Akıllı İşaretçilere Normal Referanslar Gibi Davranma”][smart-pointer-deref]<!-- ignore --> bölümünde ele almıştık). Eğer `Sarmalayici` türünün içteki türün tüm metotlarına sahip olmasını istemeseydik —örneğin `Sarmalayici` türünün davranışını kısıtlamak amacıyla— yalnızca gerçekten istediğimiz metotları elle uygulamamız gerekirdi.
 
 Bu newtype deseni, işin içinde trait'ler olmadığında bile kullanışlıdır. Şimdi odağımızı değiştirelim ve Rust'ın tür sistemiyle etkileşim kurmanın bazı gelişmiş yollarına bakalım.
 

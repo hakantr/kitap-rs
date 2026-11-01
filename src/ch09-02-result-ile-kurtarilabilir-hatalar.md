@@ -74,7 +74,7 @@ tests to fail lol -->
 
 `File::open` fonksiyonunun `Err` varyantı içinde döndürdüğü değerin türü, standart kütüphanenin sunduğu bir struct olan `io::Error`'dır. Bu struct, bir `io::ErrorKind` değeri elde etmek için çağırabileceğimiz `kind` adında bir metoda sahiptir. Standart kütüphanede yer alan `io::ErrorKind` enum'ı, bir girdi/çıktı (`io`) işleminden kaynaklanabilecek farklı hata çeşitlerini temsil eden varyantlar barındırır. Burada kullanmak istediğimiz varyant, açmaya çalıştığımız dosyanın henüz var olmadığını belirten `ErrorKind::NotFound` varyantıdır. Bu doğrultuda `karsilama_dosyasi_sonucu` üzerinde eşleştirme yaparken `hata.kind()` üzerinde de bir iç eşleştirme kuruyoruz.
 
-İçteki eşleştirmede kontrol etmek istediğimiz koşul, `hata.kind()` çağrısının döndürdüğü değerin `ErrorKind` enum'ının `NotFound` varyantı olup olmadığıdır. Eğer öyleyse `File::create` ile dosyayı oluşturmayı deneriz. Ancak `File::create` işlemi de başarısız olabileceğinden en içteki `match` ifadesinde ikinci bir kola daha ihtiyaç duyarız. Dosya oluşturulamadığında farklı bir hata mesajı yazdırılır. Dıştaki `match` yapısının geri kalan kolu ise aynı kalır; böylece program, eksik dosya hatası dışındaki her türlü hatada panik yapar.
+İçteki eşleştirmede kontrol etmek istediğimiz koşul, `hata.kind()` çağrısının döndürdüğü değerin `ErrorKind` enum'ının `NotFound` varyantı olup olmadığıdır. Eğer öyleyse `File::create` ile dosyayı oluşturmayı deneriz. Ancak `File::create` işlemi de başarısız olabileceğinden en içteki `match` ifadesinde ikinci bir kola daha ihtiyaç duyarız. Dosya oluşturulamadığında farklı bir hata mesajı yazdırılır. `hata.kind()` üzerindeki `match` ifadesinin diğer kolu (`_`) ise Liste 9-4'tekiyle aynı biçimde `panic!` çağırır; böylece program, eksik dosya hatası dışındaki her türlü hatada panik yapar.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="alternatives-to-using-match-with-resultt-e"></a>
@@ -114,7 +114,7 @@ tests to fail lol -->
 
 #### Hata Durumunda Panik İçin Kısayollar
 
-`match` kullanımı işimizi görse de kimi zaman biraz uzun kalabilir ve asıl niyeti her zaman net biçimde yansıtmayabilir. `Result<T, E>` türü üzerinde çeşitli ve daha özgül görevleri yerine getirmek üzere tanımlanmış pek çok yardımcı metot bulunur. `unwrap` metodu, tıpkı Liste 9-4'te yazdığımız `match` ifadesi gibi çalışan bir kısayol metodudur: `Result` değeri `Ok` varyantıysa `Ok` içindeki değeri döndürür; `Err` varyantıysa bizim yerimize `panic!` makrosunu çağırır. Aşağıda `unwrap` metodunun çalışırkenki bir örneği yer almaktadır:
+`match` kullanımı işimizi görse de kimi zaman biraz uzun kalabilir ve asıl niyeti her zaman net biçimde yansıtmayabilir. `Result<T, E>` türü üzerinde çeşitli ve daha belirli görevleri yerine getirmek üzere tanımlanmış pek çok yardımcı metot bulunur. `unwrap` metodu, tıpkı Liste 9-4'te yazdığımız `match` ifadesi gibi çalışan bir kısayol metodudur: `Result` değeri `Ok` varyantıysa `Ok` içindeki değeri döndürür; `Err` varyantıysa bizim yerimize `panic!` makrosunu çağırır. Aşağıda `unwrap` metodunun kullanımına bir örnek görüyorsunuz:
 
 <Listing file-name="src/main.rs">
 
@@ -160,9 +160,9 @@ thread 'main' (6018134) panicked at src/main.rs:5:10:
 merhaba.txt bu projeye dahil edilmelidir: Os { code: 2, kind: NotFound, message: "No such file or directory" }
 ```
 
-Üretim kalitesindeki kodlarda çoğu Rust geliştiricisi (`Rustacean`), `unwrap` yerine `expect` kullanmayı tercih eder ve ilgili işlemin neden her zaman başarılı olmasının beklendiğine dair daha fazla bağlam sunar. Böylece varsayımlarınızın yanlış çıktığı bir durum yaşanırsa hata ayıklama sırasında elinizde çok daha yararlı bilgi bulunur.
+Üretim kalitesindeki kodlarda çoğu Rust geliştiricisi (*Rustacean*), `unwrap` yerine `expect` kullanmayı tercih eder ve mesajda ilgili işlemin neden her zaman başarılı olmasının beklendiğine dair bağlam sunar. Böylece varsayımlarınızın yanlış çıktığı bir durum yaşanırsa hata ayıklama sırasında elinizde çok daha yararlı bilgi bulunur.
 
-> Not: Ekip projelerinde `unwrap` yerine `expect` tercih edilmesinin temel nedeni, aylar sonra bir hata günlüğüne (*log*) bakıldığında tek başına `called Result::unwrap() on an Err value` mesajının *"bu kodu yazarken neye güvenmiştik?"* sorusuna yanıt vermemesidir. Rust topluluğunda yerleşmiş en iyi pratik, `expect` mesajını yalnızca neyin başarısız olduğunu tekrarlayacak şekilde (`"Dosya açılamadı"`) değil, **sağlanması beklenen ön koşulu** belgeleyecek şekilde (`"merhaba.txt kurulum aşamasında paketlenmiş olmalıdır"` veya `"Sabit yapılandırma adresi geçerli bir IP olmalıdır"`) yazmaktır. Böylece kodu okuyan ekip arkadaşlarınız bu satırın neden panik yapmayacağının varsayıldığını hemen görür; varsayım bozulduğunda da panik çıktısı doğrudan ihlal edilen ön koşula işaret eder. Hatta pek çok ekip, üretim kodunda açıklamasız `unwrap` kullanımını derleme aşamasında denetlemek için Clippy'nin `clippy::unwrap_used` uyarısını etkinleştirir.
+> Not: Ekip projelerinde `unwrap` yerine `expect` tercih edilmesinin temel nedeni, aylar sonra bir hata günlüğüne (*log*) bakıldığında tek başına `called Result::unwrap() on an Err value` mesajının *"bu kodu yazarken neye güvenmiştik?"* sorusuna yanıt vermemesidir. Rust topluluğunda yerleşmiş en iyi pratik, `expect` mesajını yalnızca neyin başarısız olduğunu tekrarlayacak şekilde (`"Dosya açılamadı"`) değil, **sağlanması beklenen ön koşulu** belgeleyecek şekilde (`"merhaba.txt kurulum aşamasında paketlenmiş olmalıdır"` veya `"Sabit yapılandırma adresi geçerli bir IP olmalıdır"`) yazmaktır. Böylece kodu okuyan ekip arkadaşlarınız bu satırın neden panik yapmayacağının varsayıldığını hemen görür; varsayım bozulduğunda da panik çıktısı doğrudan ihlal edilen ön koşula işaret eder. Hatta pek çok ekip, üretim kodundaki `unwrap` kullanımlarını otomatik olarak yakalamak için Clippy'nin `clippy::unwrap_used` denetimini (*lint*) etkinleştirir.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="propagating-errors"></a>
@@ -170,7 +170,7 @@ merhaba.txt bu projeye dahil edilmelidir: Os { code: 2, kind: NotFound, message:
 
 ### Hataları Yaymak
 
-Bir fonksiyonun gövdesi başarısız olabilecek bir işlem çağırdığında, hatayı fonksiyonun kendi içinde ele almak yerine ne yapılacağına karar verebilmesi için çağıran koda döndürebilirsiniz. Bu yaklaşıma hatayı *yayma (propagating)* adı verilir; böylece kendi fonksiyonunuzun dar bağlamında sahip olduğunuzdan daha fazla bilgiye veya iş mantığına sahip olabilecek çağıran koda daha yüksek kontrol alanı tanımış olursunuz.
+Bir fonksiyonun gövdesi başarısız olabilecek bir işlem çağırdığında, hatayı fonksiyonun kendi içinde ele almak yerine ne yapılacağına karar verebilmesi için çağıran koda döndürebilirsiniz. Bu yaklaşıma hatayı *yayma (propagating)* adı verilir. Böylece kontrolü, hatanın nasıl ele alınacağına dair kendi kodunuzun bağlamında bulunandan daha fazla bilgiye veya mantığa sahip olabilecek çağıran koda bırakmış olursunuz.
 
 Örneğin Liste 9-6, bir dosyadan kullanıcı adını okuyan bir fonksiyonu göstermektedir. Dosya mevcut değilse veya okunamıyorsa bu fonksiyon, oluşan hataları kendisini çağıran koda döndürür.
 
@@ -194,7 +194,7 @@ Fonksiyonun gövdesi `File::open` fonksiyonunu çağırarak başlar. Ardından d
 
 `kullanici_adi_dosyasi` içinde geçerli bir dosya tanıtıcısı elde ettiğimizde fonksiyon, `kullanici_adi` değişkeninde yeni bir `String` oluşturur ve dosya içeriğini `kullanici_adi` içine okumak üzere `kullanici_adi_dosyasi` üzerinde `read_to_string` metodunu çağırır. `File::open` başarılı olmuş olsa bile `read_to_string` metodu da başarısız olabileceği için yine bir `Result` döndürür. Dolayısıyla bu `Result` değerini ele almak için ikinci bir `match` ifadesine ihtiyaç duyarız: `read_to_string` başarılı olursa fonksiyonumuz amacına ulaşmış demektir ve artık `kullanici_adi` içinde bulunan kullanıcı adını `Ok` içine sararak döndürürüz. `read_to_string` başarısız olursa hata değerini, tıpkı `File::open` dönüş değerini ele alan `match` ifadesinde yaptığımız gibi döndürürüz. Ancak bu ifade fonksiyonun son ifadesi olduğu için burada açıkça `return` yazmamıza gerek yoktur.
 
-Bu fonksiyonu çağıran kod, sonuç olarak ya kullanıcı adını içeren bir `Ok` değeri ya da bir `io::Error` içeren `Err` değeri alacak ve bunlarla ne yapacağına kendisi karar verecektir. Çağıran kod bir `Err` değeri aldığında örneğin `panic!` çağırıp programı durdurabilir, varsayılan bir kullanıcı adı kullanabilir ya da kullanıcı adını dosya dışında başka bir kaynaktan arayabilir. Çağıran kodun asıl amacını bilmek için yeterli bağlama sahip olmadığımızdan, başarı ya da hata bilgisinin tamamını uygun biçimde değerlendirmesi için yukarıya yayarız.
+Bu fonksiyonu çağıran kod, sonuç olarak ya kullanıcı adını içeren bir `Ok` değeri ya da bir `io::Error` içeren `Err` değeri alacak ve bunlarla ne yapacağına kendisi karar verecektir. Çağıran kod bir `Err` değeri aldığında örneğin `panic!` çağırıp programı durdurabilir, varsayılan bir kullanıcı adı kullanabilir ya da kullanıcı adını dosya dışında başka bir kaynaktan arayabilir. Çağıran kodun aslında ne yapmaya çalıştığına dair yeterli bilgiye sahip olmadığımız için, başarı ya da hata bilgisinin tamamını, uygun biçimde ele alması amacıyla yukarıya, çağıran koda yayarız.
 
 Hataları yayma deseni Rust'ta o kadar yaygındır ki Rust, bu işlemi çok daha kolay hale getirmek için soru işareti operatörünü (`?`) sunar.
 
@@ -245,7 +245,7 @@ don't want to include it for rustdoc testing purposes. -->
 
 </Listing>
 
-`kullanici_adi` değişkeninde yeni `String` oluşturma adımını fonksiyonun başına taşıdık; bu kısımda bir değişiklik yok. Ardından ayrı bir `kullanici_adi_dosyasi` değişkeni tanımlamak yerine `read_to_string` çağrısını doğrudan `File::open("merhaba.txt")?` ifadesinin sonucuna zincirledik. `read_to_string` çağrısının sonunda yine `?` bulunuyor ve hem `File::open` hem de `read_to_string` hata vermek yerine başarılı olduğunda `kullanici_adi` değerini taşıyan bir `Ok` döndürüyoruz. İşlevsellik Liste 9-6 ve Liste 9-7 ile birebir aynıdır; bu yalnızca aynı mantığı yazmanın daha ergonomik bir yoludur.
+`kullanici_adi` değişkeninde yeni `String` oluşturma adımını fonksiyonun başına taşıdık; bu adımın kendisinde bir değişiklik yok. Ardından ayrı bir `kullanici_adi_dosyasi` değişkeni tanımlamak yerine `read_to_string` çağrısını doğrudan `File::open("merhaba.txt")?` ifadesinin sonucuna zincirledik. `read_to_string` çağrısının sonunda yine `?` bulunuyor ve hem `File::open` hem de `read_to_string` hata vermek yerine başarılı olduğunda `kullanici_adi` değerini taşıyan bir `Ok` döndürüyoruz. İşlevsellik Liste 9-6 ve Liste 9-7 ile birebir aynıdır; bu yalnızca aynı mantığı yazmanın daha ergonomik bir yoludur.
 
 Liste 9-9 ise `fs::read_to_string` kullanarak bu işlemi daha da kısaltmanın yolunu göstermektedir.
 
@@ -261,7 +261,7 @@ don't want to include it for rustdoc testing purposes. -->
 
 </Listing>
 
-Bir dosyayı bir string içine okumak son derece yaygın bir işlem olduğundan standart kütüphane; dosyayı açan, yeni bir `String` oluşturan, dosyanın içeriğini okuyup bu `String` içine yerleştiren ve sonucu döndüren kullanışlı `fs::read_to_string` fonksiyonunu sunar. Elbette doğrudan `fs::read_to_string` kullanmak bize hata yönetiminin adımlarını ayrıntılarıyla açıklama fırsatı vermeyeceği için önce uzun yoldan gittik.
+Bir dosyayı bir string içine okumak son derece yaygın bir işlem olduğundan standart kütüphane bu iş için kullanışlı `fs::read_to_string` fonksiyonunu sunar: Bu fonksiyon dosyayı açar, yeni bir `String` oluşturur, dosyanın içeriğini okuyup bu `String` içine yerleştirir ve sonucu döndürür. Elbette doğrudan `fs::read_to_string` kullanmak bize hata yönetiminin adımlarını ayrıntılarıyla açıklama fırsatı vermeyeceği için önce uzun yoldan gittik.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="where-the--operator-can-be-used"></a>
@@ -289,7 +289,7 @@ Bu kod, başarısız olabilecek bir dosya açma işlemi yapar. `File::open` ça�
 {{#include ../listings/ch09-error-handling/listing-09-10/output.txt}}
 ```
 
-Bu hata (`E0277`), `?` operatörünü yalnızca `Result`, `Option` veya `FromResidual` trait'ini uygulayan başka bir tür döndüren fonksiyonlarda kullanabileceğimizi belirtir (`cannot use the '?' operator in a function that returns '()'`).
+Bu hata (`E0277`), `?` operatörünü yalnızca `Result`, `Option` veya `FromResidual` trait'ini uygulayan başka bir tür döndüren fonksiyonlarda kullanabileceğimizi belirtir; hatalı satırın altındaki etiket de `()` döndüren bir fonksiyonda `?` operatörünün kullanılamayacağını söyler.
 
 Bu hatayı gidermek için iki seçeneğiniz vardır. Birinci seçenek, sizi engelleyen bir kısıtlama olmadığı sürece fonksiyonunuzun dönüş türünü `?` operatörünü uyguladığınız değerle uyumlu olacak biçimde değiştirmektir (nitekim derleyicinin `help:` satırı da tam olarak bunu önerir). İkinci seçenek ise `Result<T, E>` değerini uygun gördüğünüz şekilde işlemek üzere bir `match` ifadesi ya da `Result<T, E>` metotlarından birini kullanmaktır.
 
@@ -305,7 +305,7 @@ Hata mesajı, `?` operatörünün `Option<T>` değerleriyle de kullanılabilece�
 
 Bu fonksiyon `Option<char>` döndürür; çünkü orada bir karakter bulunması da bulunmaması da mümkündür. Kod, `metin` string dilimi argümanını alır ve üzerinde string içindeki satırlar boyunca ilerleyen bir *iteratör (yineleyici)* döndüren `lines` metodunu çağırır. Fonksiyon ilk satırı incelemek istediğinden, iteratörden ilk değeri almak üzere `next` metodunu çağırır. Eğer `metin` boş bir string ise bu `next` çağrısı `None` döndürür; bu durumda `?` operatörü işlemi durdurur ve `ilk_satirin_son_karakteri` fonksiyonundan `None` döndürür. `metin` boş değilse `next`, `metin` içindeki ilk satırın string dilimini tutan bir `Some` değeri döndürür.
 
-`?` operatörü bu string dilimini dışarı çıkarır ve böylece karakterlerine ait bir iteratör elde etmek için bu dilim üzerinde doğrudan `chars` metodunu çağırabiliriz. İlk satırdaki son karakterle ilgilendiğimiz için iteratördeki son öğeyi almak üzere `last` metodunu çağırırız. İlk satırın boş bir string olma ihtimali bulunduğundan —örneğin `"\nmerhaba"` metninde olduğu gibi `metin` boş bir satırla başlayıp sonraki satırlarda karakterler içeriyorsa— `last` çağrısının dönüş türü de bir `Option`'dır. İlk satırda bir son karakter varsa bu karakter `Some` varyantı içinde döndürülür. Ortadaki `?` operatörü bu mantığı son derece özlü biçimde ifade etmemize olanak tanıyarak fonksiyonu tek satırda yazmamızı sağlar. `Option` üzerinde `?` operatörünü kullanamasaydık bu mantığı daha fazla metot çağrısı veya bir `match` ifadesiyle kurmamız gerekirdi.
+`?` operatörü bu string dilimini dışarı çıkarır ve böylece karakterlerine ait bir iteratör elde etmek için bu dilim üzerinde doğrudan `chars` metodunu çağırabiliriz. İlk satırdaki son karakterle ilgilendiğimiz için iteratördeki son öğeyi almak üzere `last` metodunu çağırırız. İlk satırın boş bir string olma ihtimali bulunduğundan —örneğin `"\nmerhaba"` metninde olduğu gibi `metin` boş bir satırla başlayıp sonraki satırlarda karakterler içeriyorsa— `last` çağrısının dönüş türü de bir `Option`'dır. İlk satırda bir son karakter varsa bu karakter `Some` varyantı içinde döndürülür. Metot zincirinin ortasındaki `?` operatörü bu mantığı son derece özlü biçimde ifade etmemize olanak tanıyarak fonksiyonu tek satırda yazmamızı sağlar. `Option` üzerinde `?` operatörünü kullanamasaydık bu mantığı daha fazla metot çağrısı veya bir `match` ifadesiyle kurmamız gerekirdi.
 
 `Result` döndüren bir fonksiyonda `Result` üzerinde, `Option` döndüren bir fonksiyonda ise `Option` üzerinde `?` operatörünü kullanabileceğinizi; ancak bu ikisini doğrudan birbirine karıştıramayacağınızı unutmayın. `?` operatörü bir `Result` değerini otomatik olarak `Option`'a ya da `Option`'ı `Result`'a dönüştürmez; böyle durumlarda dönüşümü açıkça gerçekleştirmek için `Result` üzerindeki `ok` metodu veya `Option` üzerindeki `ok_or` metodu gibi yardımcı metotları kullanabilirsiniz.
 

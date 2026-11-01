@@ -23,7 +23,7 @@ Parametre olarak bir `Dikdortgen` örneği alan `alan` fonksiyonunu değiştirel
 
 </Listing>
 
-Fonksiyonu `Dikdortgen` bağlamında tanımlamak için `Dikdortgen` adına bir `impl` (*uygulama / implementation*) bloğu başlatırız. Bu `impl` bloğu içindeki her şey `Dikdortgen` türüyle ilişkilendirilir. Ardından `alan` fonksiyonunu `impl` süslü parantezlerinin içine taşır ve ilk (bu örnekte aynı zamanda tek) parametreyi hem imzada hem de gövdenin her yerinde `self` olacak şekilde değiştiririz. Daha önce `alan` fonksiyonunu çağırıp `dikdortgen1`'i argüman olarak geçirdiğimiz `main` fonksiyonunda ise artık `Dikdortgen` örneğimiz üzerindeki `alan` metodunu çağırmak için *metot sözdizimini (method syntax)* kullanabiliriz. Metot sözdizimi bir örnekten hemen sonra gelir: Bir nokta koyar, ardından metodun adını, parantezleri ve varsa argümanları yazarız.
+Fonksiyonu `Dikdortgen` bağlamında tanımlamak için `Dikdortgen` için bir `impl` (*uygulama / implementation*) bloğu başlatırız. Bu `impl` bloğu içindeki her şey `Dikdortgen` türüyle ilişkilendirilir. Ardından `alan` fonksiyonunu `impl` süslü parantezlerinin içine taşır ve ilk (bu örnekte aynı zamanda tek) parametreyi hem imzada hem de gövdenin her yerinde `self` olacak şekilde değiştiririz. Daha önce `alan` fonksiyonunu çağırıp `dikdortgen1`'i argüman olarak geçirdiğimiz `main` fonksiyonunda ise artık `Dikdortgen` örneğimiz üzerindeki `alan` metodunu çağırmak için *metot sözdizimini (method syntax)* kullanabiliriz. Metot sözdizimi bir örnekten hemen sonra gelir: Bir nokta koyar, ardından metodun adını, parantezleri ve varsa argümanları yazarız.
 
 `alan` metodunun imzasında `dikdortgen: &Dikdortgen` yerine `&self` kullanırız. Buradaki `&self` aslında `self: &Self` ifadesinin kısaltmasıdır. Bir `impl` bloğu içinde `Self` türü, o `impl` bloğunun ait olduğu türün takma adıdır. Metotların ilk parametresi `Self` türünde `self` adında bir parametre olmak zorundadır; bu nedenle Rust, ilk parametre konumunda bunu yalnızca `self` adıyla kısaltmanıza olanak tanır. Yine de tıpkı `dikdortgen: &Dikdortgen` kullanımında olduğu gibi, bu metodun `Self` örneğini ödünç aldığını belirtmek için `self` kısaltmasının önüne `&` koymamız gerektiğine dikkat edin. Metotlar, diğer herhangi bir parametrede olduğu gibi `self`'in sahipliğini alabilir, burada yaptığımız gibi `self`'i değiştirilemez biçimde ödünç alabilir veya `self`'i değiştirilebilir biçimde ödünç alabilir.
 
@@ -34,7 +34,7 @@ Fonksiyon sürümünde `&Dikdortgen` kullanmamızla aynı nedenden ötürü bura
 > - **`&mut self`**: Metot örneğin alanlarını yerinde güncelliyorsa kullanılır. Bu tür bir metodu çağırabilmek için ilgili değişkenin `let mut dikdortgen1 = ...` şeklinde değiştirilebilir tanımlanmış olması gerekir.
 > - **`self` (tüketen metot)**: Metot mevcut örneği tüketip içindeki veriyi başka bir türe dönüştürüyorsa (örneğin bir `String`'i ham bayt vektörüne dönüştüren `String::into_bytes`) veya bir kaynağı kapatıp geçersiz kılıyorsa kullanılır; derleyici çağrıdan sonra eski örneğin yanlışlıkla tekrar kullanılmasını derleme zamanında engeller.
 
-Metot sözdizimi sunmasının ve her metodun imzasında `self`'in türünü tekrarlama zorunluluğunu ortadan kaldırmasının yanı sıra, fonksiyonlar yerine metotları kullanmanın temel nedeni kod düzenidir. Bir türün örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda toplarız; böylece kodumuzu ileride kullanacak kişilerin `Dikdortgen`'in yeteneklerini sunduğumuz kütüphanenin farklı yerlerinde aramak zorunda kalmasını önleriz.
+Fonksiyonlar yerine metot kullanmanın temel nedeni, metot sözdizimini kullanabilmenin ve her metodun imzasında `self`'in türünü tekrarlamak zorunda kalmamanın yanı sıra, kod düzenidir. Bir türün örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda toplarız; böylece kodumuzu ileride kullanacak kişilerin `Dikdortgen`'in yeteneklerini sunduğumuz kütüphanenin farklı yerlerinde aramak zorunda kalmasını önleriz.
 
 Bir metoda struct'ın alanlarından biriyle aynı adı vermeyi de seçebileceğimize dikkat edin. Örneğin `Dikdortgen` üzerinde yine `genislik` adında bir metot tanımlayabiliriz:
 
@@ -46,7 +46,7 @@ Bir metoda struct'ın alanlarından biriyle aynı adı vermeyi de seçebileceği
 
 </Listing>
 
-Burada `genislik` metodunun, örneğin `genislik` alanındaki değer `0`'dan büyükse `true`, `0` ise `false` döndürmesini seçtik: Aynı adlı bir metot içinde bir alanı herhangi bir amaçla kullanabiliriz. `main` içinde `dikdortgen1.genislik` ifadesinin ardından parantez kullandığımızda Rust `genislik` metodunu kastettiğimizi anlar. Parantez kullanmadığımızda ise Rust `genislik` alanını kastettiğimizi bilir.
+Burada `genislik` metodunun, örnekteki `genislik` alanının değeri `0`'dan büyükse `true`, `0` ise `false` döndürmesini seçtik: Aynı adlı bir metot içinde o alanı istediğimiz amaçla kullanabiliriz. `main` içinde `dikdortgen1.genislik` ifadesinin ardından parantez kullandığımızda Rust `genislik` metodunu kastettiğimizi anlar. Parantez kullanmadığımızda ise Rust `genislik` alanını kastettiğimizi bilir.
 
 Her zaman olmasa da çoğu durumda, bir metoda bir alanla aynı adı verdiğimizde yalnızca alandaki değeri döndürmesini ve başka hiçbir şey yapmamasını isteriz. Bu tür metotlara *alıcı metotlar (getters)* denir ve Rust, bazı diğer dillerin aksine struct alanları için bunları otomatik olarak uygulamaz. Alıcı metotlar oldukça kullanışlıdır; çünkü alanı gizli (*private*), metodu ise açık (*public*) yaparak bu alana türün açık API'sinin bir parçası olarak salt okunur erişim sağlayabilirsiniz. Açık ve gizli kavramlarının ne olduğunu ve bir alanı ya da metodu nasıl açık veya gizli olarak belirleyeceğimizi [Bölüm 7][public]<!-- ignore -->'de ele alacağız.
 
@@ -142,7 +142,7 @@ Dönüş türündeki ve fonksiyon gövdesindeki `Self` anahtar kelimeleri, `impl
 
 Bu ilişkili fonksiyonu çağırmak için struct adıyla birlikte `::` sözdizimini kullanırız; `let k = Dikdortgen::kare(3);` ifadesi buna bir örnektir. Bu fonksiyon struct'ın *ad alanı (namespace)* altında yer alır: `::` sözdizimi hem ilişkili fonksiyonlar hem de modüllerin oluşturduğu ad alanları için kullanılır. Modülleri [Bölüm 7][modules]<!-- ignore -->'de ele alacağız.
 
-> Not: Rust'ta diğer pek çok nesne yönelimli dildeki gibi özel bir `new` anahtar kelimesi veya aynı adla farklı parametreler alan *aşırı yüklenmiş (overloaded)* yapıcılar yoktur. Bunun yerine `Turu::new(...)`, `Vec::with_capacity(...)`, `String::from(...)` veya `Dikdortgen::kare(...)` gibi açıklayıcı adlara sahip ilişkili fonksiyonlar tanımlamak standart Rust idiyomudur; böylece bir değerin nasıl oluşturulduğu çağrı noktasında ilk bakışta anlaşılır. Ayrıca tanımda `Self` kullanmak, ileride struct'ın adını değiştirseniz bile `impl` bloğu içindeki dönüş türlerini ve örneklemeleri tek tek güncelleme zahmetini ortadan kaldırır.
+> Not: Rust'ta, diğer pek çok nesne yönelimli dilde bulunan özel bir `new` anahtar kelimesi ya da aynı adla farklı parametreler alan *aşırı yüklenmiş (overloaded)* yapıcılar yoktur. Bunun yerine `Vec::new()`, `Vec::with_capacity(...)`, `String::from(...)` veya `Dikdortgen::kare(...)` gibi açıklayıcı adlara sahip ilişkili fonksiyonlar tanımlamak standart Rust idiyomudur; böylece bir değerin nasıl oluşturulduğu çağrı noktasında ilk bakışta anlaşılır. Ayrıca tanımda `Self` kullanmak, ileride struct'ın adını değiştirdiğinizde `impl` bloğu içindeki dönüş türlerini ve örneklemeleri tek tek güncelleme zahmetini ortadan kaldırır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="multiple-impl-blocks"></a>
@@ -159,7 +159,7 @@ Her struct'ın birden fazla `impl` bloğuna sahip olmasına izin verilir. Örne�
 
 </Listing>
 
-Burada bu metotları birden fazla `impl` bloğuna ayırmak için geçerli bir neden yoktur, ancak bu geçerli bir sözdizimidir. Jenerik türleri ve trait'leri ele alacağımız Bölüm 10'da, birden fazla `impl` bloğunun yararlı olduğu bir durumu göreceğiz.
+Burada bu metotları birden fazla `impl` bloğuna ayırmamızı gerektiren bir neden yok; ancak bu sözdizimi geçerlidir. Jenerik türleri ve trait'leri ele alacağımız Bölüm 10'da, birden fazla `impl` bloğunun yararlı olduğu bir durumu göreceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="summary"></a>

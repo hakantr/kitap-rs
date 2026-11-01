@@ -138,7 +138,7 @@ Bunun sonucunda `s` değişkeni `lol` değerini içerecektir.
 
 </Listing>
 
-`s3` string'i `Merhaba, dünya!` metnini barındıracaktır. Birleştirme işleminden sonra `s1`'in artık geçerli olmamasının ve `s2` için bir referans kullanmamızın nedeni, `+` operatörünü kullandığımızda çağrılan metodun imzasıyla ilgilidir. `+` operatörü, imzası şuna benzeyen `add` metodunu çağırır:
+`s3` string'i `Merhaba, dünya!` metnini barındıracaktır. Birleştirme işleminden sonra `s1`'in neden artık geçerli olmadığını ve `s2` için neden bir referans kullandığımızı, `+` operatörünü kullandığımızda çağrılan metodun imzası açıklar. `+` operatörü, imzası şuna benzeyen `add` metodunu çağırır:
 
 ```rust,ignore
 fn add(self, s: &str) -> String {
@@ -152,13 +152,13 @@ Standart kütüphanede `add` metodunun jenerikler ve ilişkili türler kullanıl
 
 İkinci olarak, imzada `self` parametresinin başında `&` _bulunmadığı_ için `add` metodunun `self`'in sahipliğini aldığını görebiliriz. Bu durum, Liste 8-18'deki `s1` değişkeninin `add` çağrısının içine taşınacağı ve sonrasında artık geçerli olmayacağı anlamına gelir. Dolayısıyla `let s3 = s1 + &s2;` deyimi her iki string'i kopyalayıp yeni bir string oluşturacakmış gibi görünse de aslında `s1`'in sahipliğini alır, `s2`'nin içeriğinin bir kopyasını onun sonuna ekler ve ardından sonuç değerinin sahipliğini döndürür. Başka bir deyişle, çok sayıda kopyalama yapıyormuş gibi görünse de yapmaz; bu uygulama kopyalamaktan çok daha verimlidir.
 
-Birden fazla string'i birleştirmemiz gerektiğinde `+` operatörünün kullanımı hantal bir hal alır:
+Birden fazla string'i birleştirmemiz gerektiğinde `+` operatörünün kullanımı hantal bir hâl alır:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-01-concat-multiple-strings/src/main.rs:here}}
 ```
 
-Bu noktada `s` değişkeninin değeri `tic-tac-toe` olur. Ancak bunca `+` ve `"` karakteri arasında ne olup bittiğini seçmek güçtür. String'leri daha karmaşık biçimlerde birleştirmek için bunun yerine `format!` makrosunu kullanabiliriz:
+Bu noktada `s` değişkeninin değeri `tic-tac-toe` olur. Ancak bunca `+` ve `"` karakteri arasında ne olup bittiğini anlamak güçtür. String'leri daha karmaşık biçimlerde birleştirmek için bunun yerine `format!` makrosunu kullanabiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-02-format/src/main.rs:here}}
@@ -166,7 +166,7 @@ Bu noktada `s` değişkeninin değeri `tic-tac-toe` olur. Ancak bunca `+` ve `"`
 
 Bu kod da `s` değişkenini `tic-tac-toe` olarak ayarlar. `format!` makrosu tıpkı `println!` gibi çalışır; ancak çıktıyı ekrana yazdırmak yerine içeriği barındıran yeni bir `String` döndürür. `format!` kullanan sürüm çok daha kolay okunur; üstelik `format!` makrosunun ürettiği kod referansları kullandığından parametrelerinin hiçbirinin sahipliğini almaz.
 
-> Not: `+` operatörü (`fn add(self, s: &str) -> String`) ile `format!` makrosunun bellek ve sahiplik davranışını şöyle özetleyebiliriz: `let s3 = s1 + &s2;` ifadesinde sol taraftaki `s1` (`self`) sahipliğiyle birlikte `add` metoduna taşınır; yığındaki (*stack*) işaretçi, uzunluk ve kapasite bilgisi devralınarak öbekteki (*heap*) mevcut bellek tamponu yeniden kullanılır ve `s1` işlemden sonra geçersiz hale gelir. Sağ taraftaki `&s2` ise deref zorlaması sayesinde `&str` dilimine (`&s2[..]`) dönüştürülerek yalnızca ödünç alınır; böylece `s2` geçerliliğini korur. Buna karşılık `format!` makrosu argümanların tamamını referansla okur, hiçbirinin sahipliğini tüketmez ve sonucu öbekte ayrılmış yeni bir `String` olarak döndürür.
+> Not: `+` operatörü (`fn add(self, s: &str) -> String`) ile `format!` makrosunun bellek ve sahiplik davranışını şöyle özetleyebiliriz: `let s3 = s1 + &s2;` ifadesinde sol taraftaki `s1` (`self`) sahipliğiyle birlikte `add` metoduna taşınır; yığındaki (*stack*) işaretçi, uzunluk ve kapasite bilgisi devralınarak öbekteki (*heap*) mevcut bellek tamponu yeniden kullanılır (kapasite yetmezse tampon büyütülür) ve `s1` işlemden sonra geçersiz hâle gelir. Sağ taraftaki `&s2` ise deref zorlaması sayesinde `&str` dilimine (`&s2[..]`) dönüştürülerek yalnızca ödünç alınır; böylece `s2` geçerliliğini korur. Buna karşılık `format!` makrosu argümanların tamamını referansla okur, hiçbirinin sahipliğini tüketmez ve sonucu öbekte ayrılmış yeni bir `String` olarak döndürür.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="indexing-into-strings"></a>
@@ -228,7 +228,7 @@ Sonuç olarak Rust, beklenmedik bir değer döndürmekten ve hemen fark edilemey
 
 #### Baytlar, Skaler Değerler ve Grafem Kümeleri
 
-UTF-8 ile ilgili bir diğer önemli nokta da Rust'ın bakış açısından string'lere bakmanın aslında üç farklı yolu olmasıdır: *baytlar (bytes)*, *skaler değerler (scalar values)* ve *grafem kümeleri (grapheme clusters)* — yani bizim günlük dilde _harf_ dediğimiz şeye en yakın birimler.
+UTF-8 ile ilgili bir diğer önemli nokta da Rust açısından string'leri ele almanın aslında üç farklı yolu olmasıdır: *baytlar (bytes)*, *skaler değerler (scalar values)* ve *grafem kümeleri (grapheme clusters)* — yani bizim günlük dilde _harf_ dediğimiz şeye en yakın birimler.
 
 Devanagari alfabesiyle yazılmış Hintçe “नमस्ते” kelimesine bakarsak, bu kelime bellekte şu şekilde bir `u8` değerleri vektörü olarak saklanır:
 
@@ -237,7 +237,7 @@ Devanagari alfabesiyle yazılmış Hintçe “नमस्ते” kelimesine b
 224, 165, 135]
 ```
 
-Bu 18 bayttır ve bilgisayarların bu veriyi nihayetinde bellekte saklama biçimidir. Aynı veriye Rust'ın `char` türünün karşılığı olan Unicode skaler değerleri olarak bakarsak baytlar şöyle görünür:
+Bu 18 bayttır ve bilgisayarların bu veriyi nihayetinde bellekte saklama biçimidir. Aynı veriye Rust'ın `char` türünün karşılığı olan Unicode skaler değerleri olarak bakarsak veri şöyle görünür:
 
 ```text
 ['न', 'म', 'स', '्', 'त', 'े']
@@ -277,7 +277,7 @@ Bir karakterin baytlarının yalnızca bir kısmını `&merhaba[0..1]` gibi bir 
 {{#include ../listings/ch08-common-collections/output-only-01-not-char-boundary/output.txt}}
 ```
 
-Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir. Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız; aksi halde programınızın çökmesine yol açabilirsiniz.
+Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir. Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız; aksi hâlde programınızın çökmesine yol açabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="methods-for-iterating-over-strings"></a>
@@ -331,7 +331,7 @@ Devanagari alfabesinde olduğu gibi string'lerden grafem kümeleri elde etmek ka
 
 ### String'lerin Karmaşıklıklarıyla Başa Çıkma
 
-Özetlemek gerekirse string'ler karmaşıktır. Farklı programlama dilleri, bu karmaşıklığı programcıya nasıl yansıtacakları konusunda farklı tercihler yapar. Rust, `String` verisinin doğru işlenmesini tüm Rust programları için varsayılan davranış haline getirmeyi seçmiştir; bu da programcıların UTF-8 verisini işleme konusunu en baştan düşünmesi gerektiği anlamına gelir. Bu ödünleşim, string'lerin karmaşıklığını diğer programlama dillerinde görünenden daha fazla göz önüne serer; ancak geliştirme yaşam döngünüzün ilerleyen aşamalarında ASCII dışı karakterlerden kaynaklanan hatalarla uğraşmak zorunda kalmanızı önler.
+Özetlemek gerekirse string'ler karmaşıktır. Farklı programlama dilleri, bu karmaşıklığı programcıya nasıl yansıtacakları konusunda farklı tercihler yapar. Rust, `String` verisinin doğru işlenmesini tüm Rust programları için varsayılan davranış hâline getirmeyi seçmiştir; bu da programcıların UTF-8 verisini işleme konusunu en baştan düşünmesi gerektiği anlamına gelir. Bu ödünleşim, string'lerin karmaşıklığını diğer programlama dillerinde görünenden daha fazla göz önüne serer; ancak geliştirme yaşam döngünüzün ilerleyen aşamalarında ASCII dışı karakterlerden kaynaklanan hatalarla uğraşmak zorunda kalmanızı önler.
 
 İyi haber şu ki standart kütüphane, bu karmaşık durumları doğru biçimde ele almanıza yardımcı olmak üzere `String` ve `&str` türleri üzerine inşa edilmiş pek çok işlev sunar. Bir string içinde arama yapmak için `contains` ve bir string'in belirli kısımlarını başka bir string ile değiştirmek için `replace` gibi kullanışlı metotlar için standart kütüphane belgelerine göz atmayı unutmayın.
 

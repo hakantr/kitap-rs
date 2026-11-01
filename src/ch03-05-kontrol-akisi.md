@@ -24,7 +24,7 @@ Bir `if` ifadesi, koşullara bağlı olarak kodunuzu dallandırmanıza olanak ta
 
 Tüm `if` ifadeleri `if` anahtar kelimesiyle başlar ve ardından bir koşul gelir. Bu örnekte koşul, `sayi` değişkeninin 5'ten küçük bir değere sahip olup olmadığını kontrol eder. Koşul `true` olduğunda çalıştırılacak kod bloğunu, koşuldan hemen sonra süslü parantezler (`{}`) içine yerleştiririz. `if` ifadelerindeki koşullarla ilişkili kod bloklarına, tıpkı Bölüm 2'deki ["Tahmini Gizli Sayıyla Karşılaştırmak"][comparing-the-guess-to-the-secret-number]<!-- ignore --> kısmında ele aldığımız `match` ifadelerindeki kollar gibi bazen _kollar (arms)_ adı verilir.
 
-> Not: C, C++, Java veya JavaScript gibi dillerin aksine Rust'ta `if` koşulunun etrafına parantez yazılmaz (`if (sayi < 5)` yerine doğrudan `if sayi < 5` yazılır). Koşulu gereksiz parantez içine alırsanız derleyici kodunuzu yine derler ancak gereksiz parantez kullanıldığına dair bir uyarı (`unnecessary parentheses around 'if' condition`) verir.
+> Not: C, C++, Java veya JavaScript gibi dillerin aksine Rust'ta `if` koşulunun etrafına parantez yazılmaz (`if (sayi < 5)` yerine doğrudan `if sayi < 5` yazılır). Koşulu gereksiz parantez içine alırsanız derleyici kodunuzu yine derler ancak gereksiz parantez kullanıldığına dair bir uyarı (`` unnecessary parentheses around `if` condition ``) verir.
 
 İsteğe bağlı olarak —bu örnekte yaptığımız gibi— koşulun `false` olarak değerlendirilmesi durumunda programın çalıştıracağı alternatif bir kod bloğu sunmak üzere bir `else` ifadesi de ekleyebiliriz. Bir `else` ifadesi sağlamazsanız ve koşul `false` çıkarsa program `if` bloğunu doğrudan atlar ve sıradaki kod parçasına geçer.
 
@@ -60,7 +60,7 @@ Bu kez `if` koşulu `3` değerini üretir ve Rust derleyicisi bir hata verir:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-28-if-condition-must-be-bool/output.txt}}
 ```
 
-Derleyici hatası (`expected 'bool', found integer`), Rust'ın bir `bool` beklediğini ancak bunun yerine bir tam sayıyla karşılaştığını bildirir. Ruby ve JavaScript gibi dillerin aksine Rust, Boolean olmayan türleri otomatik olarak Boolean değerine dönüştürmeye ("truthy/falsy" değerlendirmesi yapmaya) çalışmaz. Her zaman açık davranmalı ve `if` yapısına koşul olarak doğrudan bir `bool` ifadesi vermelisiniz. Örneğin `if` kod bloğunun yalnızca bir sayı `0`'a eşit olmadığında çalışmasını istiyorsak `if` ifadesini aşağıdaki gibi değiştirebiliriz:
+Derleyici hatası (`` expected `bool`, found integer ``), Rust'ın bir `bool` beklediğini ancak bunun yerine bir tam sayıyla karşılaştığını bildirir. Ruby ve JavaScript gibi dillerin aksine Rust, Boolean olmayan türleri otomatik olarak Boolean değerine dönüştürmeye ("truthy/falsy" değerlendirmesi yapmaya) çalışmaz. Her zaman açık davranmalı ve `if` yapısına koşul olarak doğrudan bir `bool` ifadesi vermelisiniz. Örneğin `if` kod bloğunun yalnızca bir sayı `0`'a eşit olmadığında çalışmasını istiyorsak `if` ifadesini aşağıdaki gibi değiştirebiliriz:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -129,7 +129,7 @@ Bu kodu derlemeye çalıştığımızda bir hata alırız. `if` ve `else` kollar
 {{#include ../listings/ch03-common-programming-concepts/no-listing-31-arms-must-return-same-type/output.txt}}
 ```
 
-`if` bloğundaki ifade bir tam sayı üretirken `else` bloğundaki ifade bir metin dilimi (`&str`) üretir. Bu kod derlenmez (`'if' and 'else' have incompatible types`); çünkü değişkenler tek bir türe sahip olmak zorundadır ve Rust'ın `sayi` değişkeninin hangi türde olduğunu derleme zamanında kesin olarak bilmesi gerekir. `sayi` değişkeninin türünü bilmek, derleyicinin `sayi` değişkenini kullandığımız her yerde türün geçerli olduğunu doğrulamasını sağlar. `sayi`'nin türü yalnızca çalışma zamanında belirlenseydi Rust bu doğrulamayı yapamazdı; derleyicinin herhangi bir değişken için birden fazla varsayımsal türü takip etmesi gerekseydi hem derleyici çok daha karmaşık hâle gelir hem de kod hakkında daha az güvenlik garantisi sunabilirdi.
+`if` bloğundaki ifade bir tam sayı üretirken `else` bloğundaki ifade bir metin dilimi (`&str`) üretir. Bu kod derlenmez (`` `if` and `else` have incompatible types ``); çünkü değişkenler tek bir türe sahip olmak zorundadır ve Rust'ın `sayi` değişkeninin hangi türde olduğunu derleme zamanında kesin olarak bilmesi gerekir. `sayi` değişkeninin türünü bilmek, derleyicinin `sayi` değişkenini kullandığımız her yerde türün geçerli olduğunu doğrulamasını sağlar. `sayi`'nin türü yalnızca çalışma zamanında belirlenseydi Rust bu doğrulamayı yapamazdı; derleyicinin herhangi bir değişken için birden fazla varsayımsal türü takip etmesi gerekseydi hem derleyici çok daha karmaşık olurdu hem de kod hakkında daha az garanti verebilirdi.
 
 > Not: Rust'ta `if` doğrudan değer üreten bir ifade olduğu için C, Java veya JavaScript'teki üçlü koşul operatörüne (`durum ? 5 : 6`) ihtiyaç duyulmaz; `if durum { 5 } else { 6 }` sözdizimi aynı işi çok daha okunaklı biçimde yapar. Liste 3-2'de `{ 5 }` ve `{ 6 }` bloklarının içinde noktalı virgül **bulunmadığına** (böylece birim tür `()` yerine `i32` döndürdüklerine), en sondaki noktalı virgülün (`};`) ise dıştaki `let` deyimini sonlandırdığına dikkat edin. Ayrıca bir değer üretmek üzere kullanılan her `if` ifadesinin mutlaka bir `else` kolu olmalıdır.
 
@@ -139,7 +139,7 @@ Bu kodu derlemeye çalıştığımızda bir hata alırız. `if` ve `else` kollar
 
 ### Döngülerle Tekrar
 
-Bir kod bloğunu birden fazla kez çalıştırmak çoğu zaman oldukça işlevseldir. Rust bu görev için, döngü gövdesindeki kodu sonuna kadar çalıştırıp ardından hemen başa dönerek devam eden çeşitli _döngüler (loops)_ sunar. Döngülerle denemeler yapmak için _donguler_ adında yeni bir proje oluşturalım.
+Bir kod bloğunu birden fazla kez çalıştırmak çoğu zaman işe yarar. Rust bu görev için, döngü gövdesindeki kodu sonuna kadar çalıştırıp ardından hemen başa dönerek devam eden çeşitli _döngüler (loops)_ sunar. Döngülerle denemeler yapmak için _donguler_ adında yeni bir proje oluşturalım.
 
 Rust'ta üç tür döngü vardır: `loop`, `while` ve `for`. Gelin her birini sırayla deneyelim.
 
@@ -192,7 +192,7 @@ Tahmin oyununda ayrıca `continue` anahtar kelimesini de kullanmıştık; `conti
 
 #### Döngülerden Değer Döndürmek
 
-`loop` yapısının kullanım alanlarından biri, örneğin bir thread'in işini tamamlayıp tamamlamadığını kontrol etmek gibi başarısız olabileceğini bildiğiniz bir işlemi yeniden denemektir. Üstelik bu işlemin sonucunu döngünün dışına, kodunuzun geri kalanına aktarmanız da gerekebilir. Bunu yapmak için döngüyü durdurmak amacıyla kullandığınız `break` ifadesinden sonra döndürülmesini istediğiniz değeri yazabilirsiniz; aşağıda gösterildiği gibi bu değer kullanabilmeniz için döngüden dışarı döndürülecektir:
+`loop` yapısının kullanım alanlarından biri, örneğin bir thread'in (iş parçacığı) işini tamamlayıp tamamlamadığını kontrol etmek gibi başarısız olabileceğini bildiğiniz bir işlemi yeniden denemektir. Üstelik bu işlemin sonucunu döngünün dışına, kodunuzun geri kalanına aktarmanız da gerekebilir. Bunu yapmak için döngüyü durdurmak amacıyla kullandığınız `break` ifadesinden sonra döndürülmesini istediğiniz değeri yazabilirsiniz; aşağıda gösterildiği gibi bu değer, kullanabilmeniz için döngünün dışına döndürülür:
 
 ```rust
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-33-return-value-from-loop/src/main.rs}}
@@ -230,7 +230,7 @@ Dıştaki döngü `'yukari_sayma` etiketine sahiptir ve `ileri_sayim` değişken
 
 #### `while` ile Koşullu Döngüleri Sadeleştirmek
 
-Bir programın döngü içinde bir koşulu değerlendirmesi sıklıkla gerekir. Koşul `true` olduğu sürece döngü çalışmaya devam eder; koşul `true` olmaktan çıktığında ise program `break` çağırarak döngüyü durdurur. Böyle bir davranışı `loop`, `if`, `else` ve `break` yapılarını bir arada kullanarak gerçeklemek mümkündür; dilerseniz bunu şimdi bir programda deneyebilirsiniz. Ancak bu kullanım kalıbı o kadar yaygındır ki Rust bunun için `while` döngüsü adı verilen yerleşik bir dil yapısı sunar. Liste 3-3'te programı üç kez döndürmek, her adımda geriye doğru saymak ve döngü bittikten sonra bir mesaj yazdırıp çıkmak için `while` kullanıyoruz.
+Bir programın döngü içinde bir koşulu değerlendirmesi sıklıkla gerekir. Koşul `true` olduğu sürece döngü çalışmaya devam eder; koşul `true` olmaktan çıktığında ise program `break` çağırarak döngüyü durdurur. Böyle bir davranışı `loop`, `if`, `else` ve `break` yapılarını bir arada kullanarak gerçeklemek mümkündür; dilerseniz bunu şimdi bir programda deneyebilirsiniz. Ancak bu kullanım kalıbı o kadar yaygındır ki Rust bunun için `while` döngüsü adı verilen yerleşik bir dil yapısı sunar. Liste 3-3'te döngüyü üç kez çalıştırmak, her adımda geriye doğru saymak ve döngü bittikten sonra bir mesaj yazdırıp çıkmak için `while` kullanıyoruz.
 
 <Listing number="3-3" file-name="src/main.rs" caption="Koşul `true` olduğu sürece kod çalıştırmak için `while` döngüsü kullanmak">
 
@@ -240,7 +240,7 @@ Bir programın döngü içinde bir koşulu değerlendirmesi sıklıkla gerekir. 
 
 </Listing>
 
-Bu yapı; `loop`, `if`, `else` ve `break` kullandığınızda gerekecek pek çok iç içe bloğu ortadan kaldırır ve kodu çok daha okunaklı kılar. Bir koşul `true` olarak değerlendirildiği sürece kod çalışır; aksi takdirde döngüden çıkılır.
+Bu yapı, `loop`, `if`, `else` ve `break` bir arada kullanıldığında gerekecek iç içe blokların çoğunu ortadan kaldırır ve kodu çok daha okunaklı kılar. Bir koşul `true` olarak değerlendirildiği sürece kod çalışır; aksi takdirde döngüden çıkılır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="looping-through-a-collection-with-for"></a>
@@ -248,7 +248,7 @@ Bu yapı; `loop`, `if`, `else` ve `break` kullandığınızda gerekecek pek çok
 
 #### `for` ile Bir Koleksiyon Üzerinde Döngü Kurmak
 
-Bir dizi gibi bir koleksiyonun elemanları üzerinde döngü kurmak için `while` yapısını kullanmayı tercih edebilirsiniz. Örneğin Liste 3-4'teki döngü, `a` dizisindeki her bir elemanı ekrana yazdırır.
+Bir dizi gibi bir koleksiyonun elemanları üzerinde döngü kurmak için `while` yapısını da kullanabilirsiniz. Örneğin Liste 3-4'teki döngü, `a` dizisindeki her bir elemanı ekrana yazdırır.
 
 <Listing number="3-4" file-name="src/main.rs" caption="Bir `while` döngüsü kullanarak koleksiyonun her bir elemanı üzerinde gezinmek">
 
@@ -284,7 +284,7 @@ Ayrıca `for` döngüsü kullandığınızda, dizideki eleman sayısını deği�
 
 `for` döngülerinin sunduğu güvenlik ve sadelik, onları Rust'ta en sık kullanılan döngü yapısı hâline getirir. Liste 3-3'te `while` döngüsüyle yazdığımız geri sayım örneğinde olduğu gibi belirli bir kodu sabit sayıda çalıştırmak istediğiniz durumlarda bile çoğu Rust geliştiricisi (*Rustacean*) `for` döngüsünü tercih eder. Bunu yapmanın yolu, standart kütüphane tarafından sağlanan ve bir sayıdan başlayıp diğer sayıya gelmeden önceki tüm sayıları sırayla üreten `Range` (*aralık*) türünü kullanmaktır.
 
-İşte aralığı tersine çeviren ve henüz değinmediğimiz `rev` metodu ile bir `for` döngüsü kullanılarak yazılmış geri sayım örneği:
+İşte bir `for` döngüsü ve aralığı tersine çeviren, henüz değinmediğimiz `rev` metodu kullanılarak yazılmış geri sayım örneği:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 

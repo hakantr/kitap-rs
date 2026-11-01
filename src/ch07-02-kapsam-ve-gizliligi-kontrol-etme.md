@@ -19,7 +19,7 @@ Bu alt bölümde modüllerden ve modül sisteminin diğer parçalarından söz e
 Modüllerin ve yolların ayrıntılarına girmeden önce; modüllerin, yolların, `use` ve `pub` anahtar kelimelerinin derleyicide nasıl çalıştığına ve geliştiricilerin büyük çoğunluğunun kodlarını nasıl düzenlediğine dair hızlı bir başvuru özeti sunuyoruz. Bu bölüm boyunca bu kuralların her birini örneklerle inceleyeceğiz; ancak modüllerin çalışma biçimini hatırlamak istediğinizde burası geri dönebileceğiniz harika bir başvuru noktasıdır.
 
 - **Crate kökünden başlama**: Bir crate derlenirken derleyici, derlenecek kodu bulmak için önce crate kök dosyasına (kütüphane crate'leri için genellikle _src/lib.rs_, ikili crate'ler içinse _src/main.rs_) bakar.
-- **Modül bildirme**: Crate kök dosyasında yeni modüller bildirebilirsiniz; örneğin `mod bahce;` ifadesiyle bir "bahce" modülü bildirdiğinizi varsayalım. Derleyici, bu modülün kodunu şu konumlarda arar:
+- **Modül bildirme**: Crate kök dosyasında yeni modüller bildirebilirsiniz; örneğin `mod bahce;` bildirimiyle bir "bahce" modülü bildirdiğinizi varsayalım. Derleyici, bu modülün kodunu şu konumlarda arar:
   - Satır içinde: `mod bahce` ifadesinden sonra noktalı virgül yerine açılan süslü parantezlerin içinde
   - _src/bahce.rs_ dosyasında
   - _src/bahce/mod.rs_ dosyasında

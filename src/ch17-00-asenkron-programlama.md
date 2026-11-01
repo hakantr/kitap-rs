@@ -10,21 +10,21 @@ zaman alabilir. Uzun süren bu işlemlerin bitmesini beklerken başka bir şeyle
 yapabilsek harika olurdu. Modern bilgisayarlar aynı anda birden fazla işlem
 üzerinde çalışmak için iki teknik sunar: _paralellik (parallelism)_ ve
 _eşzamanlılık (concurrency)_. Buna karşılık, programlarımızın mantığı çoğunlukla
-doğrusal bir akışla yazılır. Her bir kod parçasının tam olarak hangi sırayla ve
-nasıl çalışacağını en baştan ayrıntısıyla belirlemek zorunda kalmadan; programın
-gerçekleştirmesi gereken işlemleri ve bir fonksiyonun duraklayıp onun yerine
-programın başka bir bölümünün çalışabileceği noktaları ifade edebilmek isteriz.
+doğrusal bir akışla yazılır. Programın gerçekleştirmesi gereken işlemleri ve
+bir fonksiyonun duraklayıp onun yerine programın başka bir bölümünün
+çalışabileceği noktaları, her kod parçasının tam olarak hangi sırayla ve nasıl
+çalışacağını en baştan belirlemek zorunda kalmadan ifade edebilmek isteriz.
 _Asenkron programlama (asynchronous programming)_, kodumuzu olası duraklama
 noktaları ve nihai sonuçlar cinsinden ifade etmemizi sağlayan ve koordinasyon
 ayrıntılarını bizim yerimize üstlenen bir soyutlamadır.
 
-Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için _thread'lerin (iş
-parçacıklarının)_ kullanımını temel alarak kod yazmaya yönelik alternatif bir
-yaklaşım sunar: işlemlerin nasıl asenkron olabileceğini ifade etmemizi sağlayan
-Rust'ın _future_'ları, _akışları (streams)_ ve `async` ile `await` sözdiziminin
-yanı sıra _asenkron çalışma zamanlarını (asynchronous runtimes)_ —yani asenkron
-işlemlerin yürütülmesini yöneten ve koordine eden kodları— uygulayan üçüncü
-taraf crate'ler.
+Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için _thread'leri (iş
+parçacıklarını)_ kullanarak öğrendiklerimizin üzerine kod yazmanın alternatif
+bir yolunu ekliyor: İşlemlerin nasıl asenkron olabileceğini ifade etmemizi
+sağlayan Rust'ın _future_'ları, _akışları (streams)_ ve `async` ile `await`
+sözdizimi; bunların yanı sıra _asenkron çalışma zamanlarını (asynchronous
+runtimes)_ —yani asenkron işlemlerin yürütülmesini yöneten ve koordine eden
+kodları— uygulayan üçüncü taraf crate'ler.
 
 Bir örnek ele alalım. Diyelim ki bir aile kutlamasından hazırladığınız videoyu
 dışa aktarıyorsunuz; bu işlem dakikalardan saatlere kadar uzayabilir. Video dışa
@@ -33,7 +33,7 @@ tek bir CPU çekirdeğiniz olsaydı ve işletim sisteminiz bu dışa aktarmayı
 tamamlanana kadar hiç duraklatmasaydı —yani dışa aktarma işlemini _senkron_
 olarak yürütseydi— bu görev çalışırken bilgisayarınızda başka hiçbir şey
 yapamazdınız. Bu oldukça can sıkıcı bir deneyim olurdu. Neyse ki
-bilgisayarınızın işletim sistemi, eş anlı olarak başka işlerinizi de
+bilgisayarınızın işletim sistemi, aynı anda başka işlerinizi de
 halledebilmeniz için dışa aktarma işlemini görünmez biçimde yeterince sık
 kesintiye uğratabilir ve gerçekten de uğratır.
 
@@ -49,9 +49,9 @@ başka işler yapabilmesine olanak tanımak için programınızı görünmez bi�
 kesintiye uğratacaktır.
 
 Video dışa aktarma, _CPU bağımlı (CPU-bound)_ veya _hesaplama bağımlı
-(compute-bound)_ bir işlem örneğidir. Bilgisayarın CPU veya GPU içindeki
-potansiyel veri işleme hızıyla ve bu hızın ne kadarını söz konusu işleme
-ayırabildiğiyle sınırlıdır. Video indirme ise _G/Ç bağımlı (I/O-bound)_ bir
+(compute-bound)_ bir işlem örneğidir. Böyle bir işlem, bilgisayarın CPU veya
+GPU içinde veri işleyebileceği azami hızla ve bu hızın ne kadarını söz konusu
+işleme ayırabildiğiyle sınırlıdır. Video indirme ise _G/Ç bağımlı (I/O-bound)_ bir
 işlem örneğidir; çünkü bilgisayarın _girdi ve çıktı_ hızıyla sınırlıdır ve
 yalnızca verinin ağ üzerinden gönderilebildiği hız kadar hızlı ilerleyebilir.
 
@@ -59,7 +59,7 @@ Bu örneklerin her ikisinde de işletim sisteminin görünmez kesmeleri bir tür
 eşzamanlılık sağlar. Ne var ki bu eşzamanlılık yalnızca programın bütünü
 düzeyinde gerçekleşir: işletim sistemi diğer programların iş yapabilmesi için
 bir programı kesintiye uğratır. Pek çok durumda, programlarımızı işletim
-sisteminin anlayabileceğinden çok daha ince ayrıntılı bir düzeyde anladığımız
+sisteminin anlayabileceğinden çok daha ayrıntılı bir düzeyde anladığımız
 için, işletim sisteminin göremediği eşzamanlılık fırsatlarını biz
 yakalayabiliriz.
 
@@ -72,17 +72,17 @@ ilerleyişini durdurur.
 
 > Not: Üzerinde düşünürseniz, _çoğu_ fonksiyon çağrısı zaten bu şekilde çalışır.
 > Ancak _bloklayıcı_ terimi genellikle dosyalarla, ağla veya bilgisayardaki
-> diğer kaynaklarla etkileşime giren fonksiyon çağrıları için ayrılmıştır; çünkü
-> tek bir programın işlemin _bloklamayan (non-blocking)_ olmasından asıl fayda
-> sağlayacağı durumlar bunlardır.
+> diğer kaynaklarla etkileşime giren fonksiyon çağrıları için kullanılır; çünkü
+> bir programın, işlemin _bloklamayan (non-blocking)_ olmasından fayda göreceği
+> durumlar asıl bunlardır.
 
 Her dosyayı indirmek üzere ayrı bir thread başlatarak ana thread'imizi
 bloklamaktan kaçınabilirdik. Ancak bu thread'lerin tükettiği sistem
 kaynaklarının ek maliyeti bir noktadan sonra sorun haline gelirdi. Çağrının en
-baştan bloklamaması, bunun yerine programımızın tamamlamasını istediğimiz bir
-dizi _görevi (task)_ tanımlayıp bunları çalıştırmak için en uygun sırayı ve
-yöntemi seçmeyi çalışma zamanına bırakabilmemiz çok daha tercih edilir bir
-yaklaşımdır.
+baştan hiç bloklamaması çok daha iyi olurdu: Bunun yerine programımızın
+tamamlamasını istediğimiz bir dizi _görev (task)_ tanımlayabilir, bunları
+çalıştırmak için en uygun sırayı ve yöntemi seçmeyi de çalışma zamanına
+bırakabilirdik.
 
 Rust'ın _async_ (_asynchronous_ yani _asenkron_ kelimesinin kısaltması)
 soyutlamasının bize sunduğu şey tam olarak budur. Bu bölümde şu konuları ele
@@ -114,10 +114,10 @@ düşünün. Tek bir ekip üyesine birden fazla görev verebilir, her üyeye tek
 görev atayabilir ya da bu iki yaklaşımın bir karışımını kullanabilirsiniz.
 
 Bir kişinin, elindeki görevlerden herhangi biri tamamlanmadan önce birkaç farklı
-görev üzerinde çalışması _eşzamanlılıktır_. Eşzamanlılığı uygulamanın bir yolu,
-bilgisayarınızda iki farklı projeyi çalışma dizininde hazır bulundurup bir
-projeden sıkıldığınızda ya da bir noktada takıldığınızda diğerine geçmeye
-benzer. Yalnızca tek bir kişisinizdir; dolayısıyla her iki görevde kelimenin tam
+görev üzerinde çalışması _eşzamanlılıktır_. Bu, bilgisayarınızda iki farklı
+projeyi hazır bulundurup bir projeden sıkıldığınızda ya da bir noktada
+takıldığınızda diğerine geçmenize benzer. Yalnızca tek bir kişisinizdir;
+dolayısıyla her iki görevde kelimenin tam
 anlamıyla aynı anda ilerleme kaydedemezsiniz, ancak aralarında geçiş yapıp her
 seferinde biri üzerinde ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil
 17-1).
@@ -190,7 +190,7 @@ perde arkasında paralellikten de yararlanabilir.
 >   standart kütüphanesi yalnızca `std::future::Future` trait'ini ve
 >   derleyicinin desteklediği `async`/`await` sözdizimini tanımlar; görevleri
 >   çizelgeleyip yürüten bir asenkron çalışma zamanını bünyesinde barındırmaz.
->   Çünkü yüksek trafikli bir web sunucusunun ihtiyaç duyduğu çok kanallı iş
+>   Çünkü yüksek trafikli bir web sunucusunun ihtiyaç duyduğu çok thread'li iş
 >   çalmalı (*work-stealing*) çalışma zamanı ile birkaç kilobayt belleğe sahip
 >   bir mikrodenetleyicinin gereksinimleri birbirinden tamamen farklıdır.
 >   Standart kütüphaneye tek tip bir çalışma zamanı dayatmamak (*sıfır maliyetli
@@ -206,8 +206,9 @@ perde arkasında paralellikten de yararlanabilir.
 >   `async` fonksiyonu çağırmak tek başına hiçbir iş yürütmez; yalnızca
 >   derleyicinin ürettiği **tembel (*lazy*) bir durum makinesi** olan ve ek öbek
 >   (*heap*) ayırması gerektirmeden oluşturulabilen bir `Future` değeri
->   döndürür. Bir future, bir çalışma zamanına teslim edilip üzerinde `.await`
->   çağrılmadıkça (yoklanmadıkça) hiçbir adım ilerlemez. Bu tasarım, görevleri
+>   döndürür. Bir future, yoklanmadıkça (*poll*) —yani üzerinde `.await`
+>   kullanılmadıkça ya da bir çalışma zamanına teslim edilmedikçe— hiçbir adım
+>   ilerlemez. Bu tasarım, görevleri
 >   başlatmadan önce birleştirmeyi ve bir future'ı düşürerek (*drop*) ek maliyet
 >   olmaksızın anında iptal etmeyi mümkün kılar.
 

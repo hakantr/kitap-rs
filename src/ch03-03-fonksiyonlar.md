@@ -47,7 +47,7 @@ Bu programı çalıştırmayı deneyin; aşağıdaki çıktıyı almalısınız:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/output.txt}}
 ```
 
-`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır ve `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon` fonksiyonuna `5` değerini ilettiğimizde, `println!` makrosu biçim dizgesinde (*format string*) içinde `x` bulunan süslü parantez çiftinin yerine `5` değerini koyar.
+`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır ve `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon` fonksiyonuna `5` değerini ilettiğimizde, `println!` makrosu, biçim dizgesindeki (*format string*) içinde `x` bulunan süslü parantez çiftinin yerine `5` değerini koyar.
 
 Fonksiyon imzalarında her parametrenin türünü _mutlaka_ bildirmelisiniz. Bu, Rust'ın tasarımında bilinçli olarak alınmış bir karardır: Fonksiyon tanımlarında tür bildirimini zorunlu kılmak, derleyicinin kodun diğer kısımlarında hangi türü kastettiğinizi anlamak için sizden neredeyse hiçbir zaman tür bildirimi istememesi anlamına gelir. Ayrıca derleyici, fonksiyonun hangi türleri beklediğini bildiğinde çok daha açıklayıcı hata mesajları üretebilir.
 
@@ -110,7 +110,7 @@ Bu programı çalıştırdığınızda alacağınız hata şu şekilde görünü
 {{#include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/output.txt}}
 ```
 
-`let y = 6` deyimi bir değer döndürmediğinden `x` değişkeninin bağlanabileceği herhangi bir değer yoktur (derleyici de `expected expression, found 'let' statement` yani *"ifade bekleniyordu, `let` deyimi bulundu"* diyerek tam olarak bu noktaya işaret eder). Bu davranış, atama işleminin atanan değeri döndürdüğü C ve Ruby gibi dillerden farklıdır. O dillerde `x = y = 6` yazarak hem `x` hem de `y` değişkenlerinin `6` değerini almasını sağlayabilirsiniz; Rust'ta ise bu geçerli değildir.
+`let y = 6` deyimi bir değer döndürmediğinden `x` değişkeninin bağlanabileceği herhangi bir değer yoktur (derleyici de `` expected expression, found `let` statement `` yani *"ifade bekleniyordu, `let` deyimi bulundu"* diyerek tam olarak bu noktaya işaret eder). Bu davranış, atama işleminin atanan değeri döndürdüğü C ve Ruby gibi dillerden farklıdır. O dillerde `x = y = 6` yazarak hem `x` hem de `y` değişkenlerinin `6` değerini almasını sağlayabilirsiniz; Rust'ta ise bu geçerli değildir.
 
 İfadeler değerlendirilerek bir değer üretir ve Rust'ta yazacağınız kodun geri kalanının büyük çoğunluğunu oluşturur. Örneğin `5 + 6` gibi matematiksel bir işlemi düşünün; bu işlem değerlendirildiğinde `11` değerini üreten bir ifadedir. İfadeler, deyimlerin bir parçası olabilir: Liste 3-1'deki `let y = 6;` deyiminde yer alan `6`, değerlendirildiğinde `6` değerini üreten bir ifadedir. Bir fonksiyonu çağırmak bir ifadedir. Bir makroyu çağırmak bir ifadedir. Süslü parantezlerle oluşturulan yeni bir kapsam bloğu da bir ifadedir; örneğin:
 
@@ -139,7 +139,7 @@ bu örnekte değerlendirilerek `4` değerini üreten bir bloktur. Bu değer, `le
 
 ### Dönüş Değerleri Olan Fonksiyonlar
 
-Fonksiyonlar, kendilerini çağıran koda değer döndürebilir. Dönüş değerlerine isim vermeyiz ancak türlerini bir ok işaretinden (`->`) sonra mutlaka bildirmemiz gerekir. Rust'ta bir fonksiyonun dönüş değeri, fonksiyon gövdesi bloğundaki son ifadenin değeriyle eş anlamlıdır. `return` anahtar kelimesini kullanıp bir değer belirterek bir fonksiyondan erken dönebilirsiniz; ancak çoğu fonksiyon son ifadeyi örtük olarak (*implicitly*) döndürür. İşte değer döndüren bir fonksiyon örneği:
+Fonksiyonlar, kendilerini çağıran koda değer döndürebilir. Dönüş değerlerine isim vermeyiz ancak türlerini bir ok işaretinden (`->`) sonra mutlaka bildirmemiz gerekir. Rust'ta bir fonksiyonun dönüş değeri, fonksiyon gövdesi bloğundaki son ifadenin değeriyle aynıdır. `return` anahtar kelimesini kullanıp bir değer belirterek bir fonksiyondan erken dönebilirsiniz; ancak çoğu fonksiyon son ifadeyi örtük olarak (*implicitly*) döndürür. İşte değer döndüren bir fonksiyon örneği:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -183,6 +183,6 @@ Bu kodu derlemek aşağıdaki gibi bir hata üretecektir:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/output.txt}}
 ```
 
-Ana hata mesajı olan `error[E0308]: mismatched types` (*uyumsuz türler*), bu koddaki temel sorunu açıkça ortaya koyar. `arti_bir` fonksiyonunun tanımı bir `i32` döndüreceğini bildirir; ancak deyimler bir değer üretmez ve bu durum boş demet olan birim tür `()` ile temsil edilir (`expected 'i32', found '()'`). Derleyicinin belirttiği gibi, fonksiyon gövdesinde noktalı virgülsüz bir sonuç ifadesi (*tail expression*) veya `return` bulunmadığından fonksiyon örtük olarak `()` döndürür; bu da fonksiyon imzasındaki `-> i32` tanımıyla çelişerek derleme hatasına yol açar. Çıktının sonundaki `help: remove this semicolon to return this value` (*bu değeri döndürmek için bu noktalı virgülü kaldırın*) satırı ise hatayı nasıl düzelteceğimizi doğrudan gösterir.
+Ana hata mesajı olan `error[E0308]: mismatched types` (*uyuşmayan türler*), bu koddaki temel sorunu açıkça ortaya koyar. `arti_bir` fonksiyonunun tanımı bir `i32` döndüreceğini bildirir; ancak deyimler bir değer üretmez ve bu durum boş demet olan birim tür `()` ile temsil edilir (`` expected `i32`, found `()` ``). Derleyicinin belirttiği gibi, fonksiyon gövdesinde noktalı virgülsüz bir sonuç ifadesi (*tail expression*) veya `return` bulunmadığından fonksiyon örtük olarak `()` döndürür; bu da fonksiyon imzasındaki `-> i32` tanımıyla çelişerek derleme hatasına yol açar. Çıktının sonundaki `help: remove this semicolon to return this value` (*bu değeri döndürmek için bu noktalı virgülü kaldırın*) satırı ise hatayı nasıl düzelteceğimizi doğrudan gösterir.
 
 > Not: İdiyomatik Rust kodunda `return` anahtar kelimesi genellikle yalnızca bir koşul sağlandığında fonksiyonun sonuna gelmeden **erken çıkış** yapmak için kullanılır. Fonksiyonun son satırında `return x + 1;` yazmak derlense de Rust topluluğunda gereksiz kabul edilir (hatta `cargo clippy` aracı bu kullanımda uyarı verir); bunun yerine son satırı `x + 1` biçiminde noktalı virgülsüz bir sonuç ifadesi olarak bırakmak standart yaklaşımdır.

@@ -22,7 +22,7 @@ Bazen kodunuzda işler ters gider ve bu konuda yapabileceğiniz hiçbir şey yok
 > panic = 'abort'
 > ```
 
-> Not: `panic = 'unwind'` (varsayılan) ile `panic = 'abort'` arasındaki seçim yalnızca ikili dosya boyutunu değil, kaynak temizleme davranışını da doğrudan etkiler. *Geri sarma* modunda Rust, çağrı yığınındaki her çerçeveden çıkarken kapsamda bulunan yerel değişkenler için `Drop` trait'inin (Bölüm 15'te ayrıntılarıyla inceleyeceğimiz) yıkıcı (*destructor*) kodlarını çalıştırır; böylece öbekte (*heap*) ayrılmış bellek alanları serbest bırakılır, açık dosya tamponları diske yazılır ve kilitler temiz bir şekilde kapatılır. Ancak her fonksiyon için bu geri sarma tablolarını ve temizlik kodlarını üretmek ikili dosyayı büyütür. `panic = 'abort'` seçildiğinde ise geri sarma tabloları ikili dosyaya hiç eklenmez (bu da özellikle gömülü sistemlerde ve WebAssembly hedeflerinde önemli ölçüde boyut tasarrufu sağlar), fakat panik anında `Drop` yıkıcıları **çalıştırılmaz**; süreç anında sonlandırılır ve yalnızca işletim sisteminin süreç bazında yaptığı bellek ve dosya tanıtıcısı temizliği gerçekleşir.
+> Not: `panic = 'unwind'` (varsayılan) ile `panic = 'abort'` arasındaki seçim yalnızca ikili dosya boyutunu değil, kaynak temizleme davranışını da doğrudan etkiler. *Geri sarma* modunda Rust, çağrı yığınındaki her çerçeveden çıkarken kapsamdaki yerel değişkenler için, Bölüm 15'te ayrıntılı olarak inceleyeceğimiz `Drop` trait'ine ait yıkıcı (*destructor*) kodları çalıştırır; böylece öbekte (*heap*) ayrılmış bellek alanları serbest bırakılır, tamponlanmış dosya yazıcıları içeriklerini diske aktarır ve tutulan kilitler serbest bırakılır. Ancak her fonksiyon için geri sarma tablolarını ve temizlik kodlarını üretmek ikili dosyayı büyütür. `panic = 'abort'` seçildiğinde ise bu temizlik kodları üretilmez (bu da özellikle gömülü sistemlerde ve WebAssembly hedeflerinde önemli ölçüde boyut tasarrufu sağlar), fakat panik anında `Drop` yıkıcıları **çalıştırılmaz**; süreç anında sonlandırılır ve yalnızca işletim sisteminin süreç bazında yaptığı bellek ve dosya tanıtıcısı temizliği gerçekleşir.
 
 Basit bir programda `panic!` makrosunu çağırmayı deneyelim:
 
@@ -40,7 +40,7 @@ Programı çalıştırdığınızda şuna benzer bir çıktı görürsünüz:
 {{#include ../listings/ch09-error-handling/no-listing-01-panic/output.txt}}
 ```
 
-`panic!` çağrısı, çıktının son bölümünde yer alan hata mesajını üretir. Panik çıktısının ilk iki satırı kaynak kodumuzda paniğin gerçekleştiği konumu ve panik mesajımızı (`çök ve yan`) gösterir: _src/main.rs:2:5_ ifadesi, bunun _src/main.rs_ dosyamızın ikinci satırının beşinci karakteri olduğunu belirtir (parantez içindeki sayı ise ana *thread*'in kimlik numarasıdır).
+`panic!` çağrısı, çıktının son bölümünde yer alan hata mesajını üretir. Panik çıktısının ilk iki satırı kaynak kodumuzda paniğin gerçekleştiği konumu ve panik mesajımızı (`çök ve yan`) gösterir: _src/main.rs:2:5_ ifadesi, paniğin _src/main.rs_ dosyamızın ikinci satırının beşinci karakterinde gerçekleştiğini belirtir (parantez içindeki sayı ise ana *thread*'in kimlik numarasıdır).
 
 Bu örnekte işaret edilen satır doğrudan bizim yazdığımız koda aittir ve o satıra baktığımızda `panic!` makro çağrısını görürüz. Başka durumlarda ise `panic!` çağrısı, kodumuzun çağırdığı harici bir kodun içinde yer alabilir; bu durumda hata mesajında bildirilen dosya adı ve satır numarası, en başta `panic!` çağrısına yol açan bizim kodumuzdaki satırı değil, `panic!` makrosunun bizzat çağrıldığı başka bir koddaki satırı gösterir.
 
@@ -48,7 +48,7 @@ Bu örnekte işaret edilen satır doğrudan bizim yazdığımız koda aittir ve 
 <a id="using-a-panic-backtrace"></a>
 <a id="bir-panic-geri-izlemesi-kullanmak"></a>
 
-Kodumuzun soruna yol açan kısmını bulmak için, `panic!` çağrısının gerçekleştiği noktaya gelene dek çağrılan fonksiyonların *geri izlemesini (backtrace)* kullanabiliriz. Bir `panic!` geri izlemesinin nasıl kullanıldığını anlamak için başka bir örneğe bakalım ve `panic!` çağrısı makroyu doğrudan bizim çağırmamız yerine kodumuzdaki bir kusur (*bug*) yüzünden bir kütüphaneden geldiğinde neyle karşılaştığımızı görelim. Liste 9-1'de bir vektörün geçerli indeks aralığının ötesindeki bir indekse erişmeye çalışan bir kod yer almaktadır.
+Kodumuzun soruna yol açan kısmını bulmak için, `panic!` çağrısının gerçekleştiği noktaya gelene dek çağrılan fonksiyonların *geri izlemesini (backtrace)* kullanabiliriz. Bir `panic!` geri izlemesinin nasıl kullanıldığını anlamak için başka bir örneğe bakalım: Bu kez `panic!` çağrısını doğrudan biz yapmayacağız; çağrı, kodumuzdaki bir kusur nedeniyle bir kütüphanenin içinden gelecek. Böyle bir durumda neyle karşılaştığımızı görelim. Liste 9-1'de bir vektörün geçerli indeks aralığının ötesindeki bir indekse erişmeye çalışan bir kod yer almaktadır.
 
 <Listing number="9-1" file-name="src/main.rs" caption="Bir vektörün sonunun ötesindeki bir elemana erişmeye çalışma; bu işlem `panic!` çağrısına yol açar">
 
@@ -60,7 +60,7 @@ Kodumuzun soruna yol açan kısmını bulmak için, `panic!` çağrısının ger
 
 Burada vektörümüzün 100. elemanına (indeksleme sıfırdan başladığı için 99. indeksteki elemana) erişmeye çalışıyoruz; ancak vektörde yalnızca üç eleman var. Bu durumda Rust panik yapacaktır. `[]` operatörünün bir eleman döndürmesi beklenir; fakat geçersiz bir indeks verirseniz Rust'ın burada doğru olarak döndürebileceği hiçbir eleman yoktur.
 
-C dilinde bir veri yapısının sonunun ötesini okumaya çalışmak *tanımsız davranıştır (undefined behavior)*. Söz konusu bellek alanı o veri yapısına ait olmasa bile, bellekte o indekse karşılık gelen adreste ne bulunuyorsa onu okuyabilirsiniz. Buna *tampon aşımı (buffer overread)* (tampon sınırının ötesini okuma) adı verilir ve bir saldırganın indeksi kurcalayarak veri yapısından hemen sonra bellekte tutulan, erişmemesi gereken hassas verileri okumasına imkân tanıdığında ciddi güvenlik açıklarına yol açabilir.
+C dilinde bir veri yapısının sonunun ötesini okumaya çalışmak *tanımsız davranıştır (undefined behavior)*. Söz konusu bellek alanı o veri yapısına ait olmasa bile, bellekte o indekse karşılık gelen adreste ne bulunuyorsa onu okuyabilirsiniz. Buna *tampon sınırı ötesini okuma (buffer overread)* adı verilir ve bir saldırganın indeksi kurcalayarak veri yapısından hemen sonra bellekte tutulan, erişmemesi gereken hassas verileri okumasına imkân tanıdığında ciddi güvenlik açıklarına yol açabilir.
 
 Programınızı bu tür güvenlik açıklarından korumak amacıyla Rust, var olmayan bir indeksteki elemanı okumaya çalıştığınızda yürütmeyi durdurur ve devam etmeyi reddeder. Gelin bunu deneyip görelim:
 

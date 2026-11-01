@@ -62,7 +62,7 @@ cd ../../..
 
 Dosya, test edecek bir kodumuz olması için örnek bir `topla` fonksiyonuyla başlar (`cargo new --lib` komutu varsayılan şablonda İngilizce `add` ve `it_works` adlarını üretir; örneklerimizle uyumlu olması için burada `topla` ve `calisiyor` adlarını kullanıyoruz).
 
-Şimdilik yalnızca `calisiyor` fonksiyonuna odaklanalım. `#[test]` özniteliğine dikkat edin: Bu öznitelik fonksiyonun bir test fonksiyonu olduğunu belirtir; böylece test çalıştırıcısı bu fonksiyonu bir test olarak ele alacağını bilir. Ortak senaryoları hazırlamak veya sık tekrarlanan işlemleri yürütmek amacıyla `tests` modülü içinde test olmayan yardımcı fonksiyonlar da bulundurabiliriz; bu yüzden hangi fonksiyonların test olduğunu her zaman açıkça belirtmemiz gerekir.
+Şimdilik yalnızca `calisiyor` fonksiyonuna odaklanalım. `#[test]` özniteliğine dikkat edin: Bu öznitelik fonksiyonun bir test fonksiyonu olduğunu belirtir; böylece test çalıştırıcısı bu fonksiyonu bir test olarak ele alması gerektiğini bilir. Ortak senaryoları hazırlamak veya sık tekrarlanan işlemleri yürütmek amacıyla `tests` modülü içinde test olmayan yardımcı fonksiyonlar da bulundurabiliriz; bu yüzden hangi fonksiyonların test olduğunu her zaman açıkça belirtmemiz gerekir.
 
 Örnek fonksiyon gövdesi, `topla` fonksiyonunu `2` ve `2` argümanlarıyla çağırmanın sonucunu tutan `sonuc` değişkeninin `4`'e eşit olduğunu doğrulamak (*assert*) için `assert_eq!` makrosunu kullanır. Bu doğrulama ifadesi, tipik bir testin biçimine örnek teşkil eder. Testin geçtiğini görmek için çalıştıralım.
 
@@ -82,7 +82,7 @@ Bir testi belirli bir çalıştırmada yürütülmemesi için yok sayılmış ol
 
 `0 measured` (0 ölçüldü) istatistiği, performansı ölçen kıyaslama (*benchmark*) testleri içindir. Kıyaslama testleri, bu satırların yazıldığı sırada yalnızca Rust'ın gecelik (*nightly*) sürümünde kullanılabilmektedir. Daha fazla bilgi edinmek için [kıyaslama testleri hakkındaki belgelere][bench] göz atabilirsiniz.
 
-Test çıktısının `Doc-tests toplayici` ile başlayan bir sonraki bölümü ise *belgelendirme testlerinin (`Doc-tests`)* sonuçlarına ayrılmıştır. Henüz herhangi bir belgelendirme testimiz yok; ancak Rust, API belgelendirmemizde yer alan kod örneklerini derleyip çalıştırabilir. Bu özellik, belgeleriniz ile kodunuzu her zaman senkronize tutmanıza yardımcı olur! Belgelendirme testlerinin nasıl yazılacağını Bölüm 14'teki ["Belgelendirme Yorumlarını Test Olarak Kullanmak"][doc-comments]<!-- ignore --> başlığında ele alacağız. Şimdilik `Doc-tests` çıktısını göz ardı edeceğiz.
+Test çıktısının `Doc-tests toplayici` ile başlayan bir sonraki bölümü ise *belgelendirme testlerinin (`Doc-tests`)* sonuçlarına ayrılmıştır. Henüz herhangi bir belgelendirme testimiz yok; ancak Rust, API belgelendirmemizde yer alan kod örneklerini derleyip çalıştırabilir. Bu özellik, belgelerinizin kodunuzla her zaman uyumlu kalmasına yardımcı olur! Belgelendirme testlerinin nasıl yazılacağını Bölüm 14'teki ["Belgelendirme Yorumlarını Test Olarak Kullanmak"][doc-comments]<!-- ignore --> başlığında ele alacağız. Şimdilik `Doc-tests` çıktısını göz ardı edeceğiz.
 
 Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak `calisiyor` fonksiyonunun adını farklı bir adla, örneğin aşağıdaki gibi `kesif` olarak değiştirin:
 
@@ -98,7 +98,7 @@ Ardından `cargo test` komutunu tekrar çalıştırın. Çıktı artık `calisiy
 {{#include ../listings/ch11-writing-automated-tests/no-listing-01-changing-test-name/output.txt}}
 ```
 
-Şimdi bir test daha ekleyeceğiz, ancak bu kez başarısız olan bir test yazacağız! Test fonksiyonunun içindeki bir kod paniklediğinde test başarısız olur. Her test ayrı bir thread'de (iş parçacığında) çalıştırılır ve ana thread bir test thread'inin sonlandığını gördüğünde o testi başarısız olarak işaretler. Bölüm 9'da panik oluşturmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak ekleyin; _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünecektir.
+Şimdi bir test daha ekleyeceğiz, ancak bu kez başarısız olan bir test yazacağız! Test fonksiyonunun içindeki bir kod paniklediğinde test başarısız olur. Her test ayrı bir thread'de (iş parçacığında) çalıştırılır ve ana thread bir test thread'inin çöktüğünü gördüğünde o testi başarısız olarak işaretler. Bölüm 9'da panik oluşturmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak ekleyin; _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünecektir.
 
 <Listing number="11-3" file-name="src/lib.rs" caption="`panic!` makrosunu çağırdığımız için başarısız olacak ikinci bir test ekleme">
 
@@ -239,7 +239,7 @@ Testleri tekrar çalıştırın:
 
 Testimiz hatayı yakaladı! `tests::iki_ekliyor` testi başarısız oldu; hata mesajı bize başarısız olan doğrulamanın `left == right` olduğunu ve `left` (sol) ile `right` (sağ) değerlerinin ne olduğunu açıkça söylüyor. Bu bilgi hata ayıklamaya hemen başlamamıza yardımcı olur: `iki_ekle(2)` çağrısının sonucunu verdiğimiz `left` argümanı `5` iken `right` argümanı `4` idi. Çok sayıda testimizin bulunduğu projelerde bu çıktının ne kadar işe yarayacağını tahmin edebilirsiniz.
 
-Bazı programlama dillerinde ve test çatılarında eşitlik doğrulama fonksiyonlarının parametrelerine `expected` (beklenen) ve `actual` (gerçekleşen) adı verilir; dolayısıyla argümanları belirttiğimiz sıra önem taşır. Rust'ta ise bu parametreler `left` ve `right` olarak adlandırılır; beklediğimiz değer ile kodun ürettiği değeri hangi sırayla yazdığımızın bir önemi yoktur. Bu testteki doğrulamayı `assert_eq!(4, sonuc)` olarak da yazabilirdik ve başarısızlık durumunda yine `` assertion `left == right` failed `` şeklinde aynı hata mesajını alırdık.
+Bazı programlama dillerinde ve test çerçevelerinde eşitlik doğrulama fonksiyonlarının parametrelerine `expected` (beklenen) ve `actual` (gerçekleşen) adı verilir; dolayısıyla argümanları belirttiğimiz sıra önem taşır. Rust'ta ise bu parametreler `left` ve `right` olarak adlandırılır; beklediğimiz değer ile kodun ürettiği değeri hangi sırayla yazdığımızın bir önemi yoktur. Bu testteki doğrulamayı `assert_eq!(4, sonuc)` olarak da yazabilirdik ve başarısızlık durumunda yine `` assertion `left == right` failed `` şeklinde aynı hata mesajını alırdık.
 
 `assert_ne!` makrosu ise verdiğimiz iki değer birbirine eşit değilse geçer, eşitse başarısız olur. Bu makro en çok bir değerin ne _olacağından_ emin olmadığımız, ancak kesinlikle ne _olmaması_ gerektiğini bildiğimiz durumlarda kullanışlıdır. Örneğin girdisini bir şekilde değiştirmesi garanti edilen, ancak bu değişikliğin biçimi testleri çalıştırdığımız haftanın gününe bağlı olan bir fonksiyonu test ediyorsak, doğrulanabilecek en iyi koşul fonksiyon çıktısının girdiye eşit olmaması olabilir.
 
@@ -265,7 +265,7 @@ Başarısızlık mesajıyla birlikte yazdırılacak özel bir açıklamayı `ass
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-05-greeter/src/lib.rs}}
 ```
 
-Bu programa ilişkin gereksinimler henüz kesinleşmedi ve selamlamanın başındaki `Merhaba` metninin ileride değişeceğinden neredeyse eminiz. Gereksinimler değiştiğinde testi yeniden güncellemek istemediğimiz için, `selamlama` fonksiyonundan dönen değer üzerinde tam eşitlik kontrolü yapmak yerine yalnızca çıktının girdi parametresindeki metni içerdiğini doğrulamayı tercih ettik.
+Bu programa ilişkin gereksinimler henüz kesinleşmedi ve selamlamanın başındaki `Merhaba` metninin ileride değişeceğinden neredeyse eminiz. Gereksinimler her değiştiğinde testi de güncellemek zorunda kalmak istemediğimiz için, `selamlama` fonksiyonundan dönen değer üzerinde tam eşitlik kontrolü yapmak yerine yalnızca çıktının girdi parametresindeki metni içerdiğini doğrulamayı tercih ettik.
 
 Şimdi `selamlama` fonksiyonunu `isim` parametresini dışarıda bırakacak şekilde değiştirerek bu koda bir hata ekleyelim ve varsayılan test başarısızlığının nasıl göründüğüne bakalım:
 
@@ -279,7 +279,7 @@ Bu testi çalıştırmak aşağıdaki çıktıyı üretir:
 {{#include ../listings/ch11-writing-automated-tests/no-listing-06-greeter-with-bug/output.txt}}
 ```
 
-Bu sonuç yalnızca doğrulamanın başarısız olduğunu ve hangi satırda gerçekleştiğini bildirir. Daha kullanışlı bir başarısızlık mesajı, `selamlama` fonksiyonundan dönen gerçek değeri de yazdırırdı. Şimdi `selamlama` fonksiyonundan aldığımız gerçek değerle doldurulan bir yer tutucuya sahip biçimlendirme dizgisinden oluşan özel bir başarısızlık mesajı ekleyelim:
+Bu sonuç yalnızca doğrulamanın başarısız olduğunu ve hangi satırda gerçekleştiğini bildirir. Daha kullanışlı bir başarısızlık mesajı, `selamlama` fonksiyonundan dönen gerçek değeri de yazdırırdı. Şimdi özel bir başarısızlık mesajı ekleyelim. Bu mesaj, `selamlama` fonksiyonundan aldığımız gerçek değerle doldurulan bir yer tutucu içeren bir biçimlendirme dizgisinden oluşsun:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-07-custom-failure-message/src/lib.rs:here}}

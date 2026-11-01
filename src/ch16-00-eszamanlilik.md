@@ -20,10 +20,10 @@ olduğunu düşünüyordu. Zamanla ekip, sahiplik ve tür sistemlerinin hem bell
 güvenliğini _hem de_ eşzamanlılık sorunlarını yönetmeye yardımcı olan çok güçlü
 bir araç seti olduğunu keşfetti! Sahiplik ve tür denetiminden yararlanılması
 sayesinde pek çok eşzamanlılık hatası, Rust'ta çalışma zamanı hatası yerine
-derleme zamanı hatası haline gelir. Böylece, çalışma zamanında ortaya çıkan bir
-eşzamanlılık hatasının oluştuğu birebir aynı koşulları yeniden üretmeye
-çalışarak uzun zaman harcamanız yerine, hatalı kod derlenmeyi reddeder ve sorunu
-açıklayan bir hata mesajı sunar. Sonuç olarak kodunuzu, belki de canlı ortama
+derleme zamanı hatası hâline gelir. Böylece çalışma zamanında ortaya çıkan bir
+eşzamanlılık hatasının oluştuğu koşulları birebir yeniden üretmeye çalışarak
+uzun zaman harcamak zorunda kalmazsınız; hatalı kod derlenmez ve derleyici
+sorunu açıklayan bir hata mesajı gösterir. Sonuç olarak kodunuzu canlı ortama
 (üretime) alındıktan sonra değil, henüz üzerinde çalışırken düzeltebilirsiniz.
 Rust'ın bu yönüne _korkusuz eşzamanlılık_ adını verdik. Korkusuz eşzamanlılık,
 fark edilmesi güç sinsi hatalardan arınmış ve yeni hatalara yol açmadan kolayca
@@ -40,10 +40,10 @@ Pek çok dil, eşzamanlı sorunları ele almak için sunduğu çözümler konusu
 (dogmatik) bir yaklaşım benimser. Örneğin Erlang, _mesaj iletimine (message
 passing)_ dayalı eşzamanlılık için zarif olanaklar sunar; ancak _thread'ler (iş
 parçacıkları)_ arasında durum paylaşmak için yalnızca dolaylı ve anlaşılması güç
-yollar barındırır. Olası çözümlerin yalnızca bir alt kümesini desteklemek üst
-düzey diller için makul bir stratejidir; çünkü üst düzey bir dil, soyutlamalar
-kazanmak adına bir miktar denetimden feragat etmenin karşılığında çeşitli
-avantajlar sağlamayı vaat eder. Buna karşılık alt düzey dillerden, her durumda
+yollar sunar. Olası çözümlerin yalnızca bir alt kümesini desteklemek üst düzey
+diller için makul bir stratejidir; çünkü üst düzey bir dil, soyutlama kazanmak
+uğruna denetimin bir kısmından vazgeçmenin getireceği yararları vaat eder. Buna
+karşılık alt düzey dillerden, her durumda
 en yüksek performansı sağlayan çözümü sunmaları ve donanım üzerinde daha az
 soyutlama katmanı bulundurmaları beklenir. Bu nedenle Rust, problemleri kendi
 durumunuza ve gereksinimlerinize en uygun biçimde modelleyebilmeniz için çeşitli
@@ -54,7 +54,7 @@ Bu bölümde ele alacağımız konular şunlardır:
 - Aynı anda birden fazla kod parçasını çalıştırmak için thread'lerin nasıl
   oluşturulacağı
 - Kanalların thread'ler arasında mesaj gönderdiği _mesaj iletimli_ eşzamanlılık
-- Birden fazla thread'in belirli bir veriye erişebildiği _paylaşımlı durum
+- Birden fazla thread'in aynı veriye erişebildiği _paylaşımlı durum
   (shared-state)_ eşzamanlılığı
 - Rust'ın eşzamanlılık güvencelerini, standart kütüphanenin sunduğu türlerin
   yanı sıra kullanıcı tanımlı türlere de genişleten `Sync` ve `Send` trait'leri

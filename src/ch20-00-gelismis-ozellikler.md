@@ -13,4 +13,4 @@ Bu bölümde şunları ele alacağız:
 
 Bu bölüm, herkese hitap eden zengin bir Rust özellikleri seçkisi sunuyor! Haydi başlayalım!
 
-> Not: Kendi uygulama kodunuzda `unsafe` bloklarına, prosedürel makrolara veya karmaşık ilişkili tür sınırlarına nadiren ihtiyaç duysanız bile; standart kütüphanenin (`std`) ve ekosistemdeki popüler kütüphanelerin (`serde`, `tokio`, `rayon` vb.) API imzalarını veya kaynak kodlarını okurken bu bölümdeki yapılarla sıkça karşılaşırsınız. Bu özellikleri tanımak, üçüncü parti kütüphanelerin belgelendirmelerini ve derleyici hata mesajlarını çok daha rahat yorumlamanızı sağlar.
+> Not: Kendi uygulama kodunuzda `unsafe` bloklarına, prosedürel makrolara veya karmaşık ilişkili tür sınırlarına nadiren ihtiyaç duysanız bile, standart kütüphanenin (`std`) ve ekosistemdeki popüler kütüphanelerin (`serde`, `tokio`, `rayon` vb.) API imzalarını veya kaynak kodlarını okurken bu bölümdeki yapılarla sıkça karşılaşırsınız. Bu özellikleri tanımak, üçüncü parti kütüphanelerin belgelerini ve derleyici hata mesajlarını çok daha rahat yorumlamanızı sağlar.

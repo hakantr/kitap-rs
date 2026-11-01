@@ -55,8 +55,8 @@ ilerledikçe bilmeniz gereken her şeyi açıklayacağız.
 
 ## İlk Async Programımız
 
-Bu bölümün odağını ekosistemin parçalarını bir arada tutmaya çalışmak yerine
-asenkron programlamayı öğrenmekte tutmak için `trpl` crate'ini oluşturduk
+Bu bölümün odağını ekosistemin farklı parçalarıyla uğraşmak yerine asenkron
+programlamayı öğrenmekte tutmak için `trpl` crate'ini oluşturduk
 (`trpl`, “The Rust Programming Language” ifadesinin kısaltmasıdır). Bu crate,
 başta [`futures`][futures-crate]<!-- ignore --> ve [`tokio`][tokio]<!-- ignore -->
 crate'leri olmak üzere ihtiyaç duyacağınız tüm türleri, trait'leri ve
@@ -142,8 +142,8 @@ tanır.
 
 `yanit_metni` değerini elde ettikten sonra, `Html::parse` kullanarak onu `Html`
 türünün bir örneğine ayrıştırabiliriz. Artık ham bir string yerine, HTML ile
-daha zengin bir veri yapısı olarak çalışmak üzere kullanabileceğimiz bir veri
-türümüz vardır. Özellikle, verilen bir CSS seçicisinin ilk örneğini bulmak için
+daha zengin bir veri yapısı olarak çalışmamızı sağlayan bir veri türümüz var.
+Özellikle, verilen bir CSS seçicisiyle eşleşen ilk öğeyi bulmak için
 `select_first` metodunu kullanabiliriz. `"title"` string'ini geçirerek belgede
 varsa ilk `<title>` öğesini alırız. Eşleşen hiçbir öğe bulunmayabileceği için
 `select_first` bir `Option<ElementRef>` döndürür. Son olarak, `Option` içinde
@@ -298,8 +298,8 @@ işlevlerin asenkron sürümlerini de beraberinde sunar.
 Burada ve bölümün geri kalanı boyunca, `trpl` crate'indeki `block_on`
 fonksiyonunu kullanacağız; bu fonksiyon argüman olarak bir future alır ve bu
 future tamamlanana kadar mevcut thread'i bloklar. Perde arkasında `block_on`
-çağrısı, kendisine geçirilen future'ı çalıştırmak için kullanılan `tokio`
-crate'ini temel alarak bir çalışma zamanı kurar (`trpl` crate'inin `block_on`
+çağrısı, kendisine geçirilen future'ı çalıştırmak için `tokio` crate'ini
+kullanarak bir çalışma zamanı kurar (`trpl` crate'inin `block_on`
 davranışı, diğer çalışma zamanı crate'lerinin `block_on` fonksiyonlarına
 benzer). Future tamamlandığında `block_on`, future hangi değeri ürettiyse onu
 döndürür.
@@ -339,7 +339,7 @@ https://www.rust-lang.org için başlık
             Rust Programming Language idi
 ```
 
-Oh be — sonunda çalışan bir asenkron kodumuz oldu! Ancak iki siteyi birbiriyle
+Oh be, sonunda çalışan bir asenkron kodumuz oldu! Ancak iki siteyi birbiriyle
 yarıştıracak kodu eklemeden önce, dikkatimizi kısaca future'ların nasıl
 çalıştığına çevirelim.
 
@@ -347,9 +347,9 @@ Her _bekleme noktası (await point)_ —yani kodun `await` anahtar kelimesini
 kullandığı her yer— denetimin çalışma zamanına geri devredildiği bir noktayı
 temsil eder. Bunun çalışabilmesi için Rust'ın asenkron blokta yer alan durumu
 takip etmesi gerekir; böylece çalışma zamanı başka bir işi başlatabilir ve ilk
-işi tekrar ilerletmeyi denemeye hazır olduğunda geri dönebilir. Bu yapı, her
-bekleme noktasında mevcut durumu kaydetmek için sanki aşağıdaki gibi bir enum
-yazmışsınız gibi çalışan görünmez bir durum makinesidir (*state machine*):
+işi tekrar ilerletmeyi denemeye hazır olduğunda geri dönebilir. Bu, her bekleme
+noktasındaki mevcut durumu kaydetmek için aşağıdaki gibi bir enum yazmışsınız
+gibi işleyen görünmez bir durum makinesidir (*state machine*):
 
 ```rust
 {{#rustdoc_include ../listings/ch17-async-await/no-listing-state-machine/src/lib.rs:enum}}
@@ -403,7 +403,7 @@ Liste 17-5'te komut satırından geçirilen iki farklı URL ile `sayfa_basligi`
 fonksiyonunu çağırıyor ve hangi future önce biterse onu seçerek ikisini
 yarıştırıyoruz.
 
-<Listing number="17-5" caption="Hangisinin önce döneceğini görmek için iki URL adına `sayfa_basligi` çağırma" file-name="src/main.rs">
+<Listing number="17-5" caption="Hangisinin önce döneceğini görmek için iki URL için `sayfa_basligi` çağırma" file-name="src/main.rs">
 
 <!-- should_panic,noplayground because mdbook does not pass args -->
 

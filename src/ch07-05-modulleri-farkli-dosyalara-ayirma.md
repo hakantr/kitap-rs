@@ -7,7 +7,7 @@
 
 Bu bölümdeki tüm örneklerde şimdiye kadar birden fazla modülü tek bir dosyada tanımladık. Modüller büyüdüğünde, kod içinde gezinmeyi kolaylaştırmak amacıyla modül tanımlarını ayrı dosyalara taşımak isteyebilirsiniz.
 
-Örneğin, birden fazla restoran modülü barındıran Liste 7-17'deki koddan başlayalım. Tüm modülleri crate kök dosyasında tanımlamak yerine her birini ayrı dosyalara ayıracağız. Bu örnekte crate kök dosyası _src/lib.rs_ dosyasıdır; ancak aynı yöntem, crate kök dosyası _src/main.rs_ olan ikili crate'lerde de birebir aynı şekilde çalışır.
+Örneğin, birden fazla restoran modülü barındıran Liste 7-17'deki koddan başlayalım. Tüm modülleri crate kök dosyasında tanımlamak yerine her birini ayrı dosyalara ayıracağız. Bu örnekte crate kök dosyası _src/lib.rs_ dosyasıdır; ancak aynı yöntem, crate kök dosyası _src/main.rs_ olan ikili crate'lerde de işe yarar.
 
 İlk olarak `restoran_on_kisim` modülünü kendi dosyasına çıkaracağız. `restoran_on_kisim` modülünün süslü parantezleri arasındaki kodu kaldırıp geriye yalnızca `mod restoran_on_kisim;` bildirimini bırakın; böylece _src/lib.rs_ dosyası Liste 7-21'deki hâlini alacaktır. Liste 7-22'deki _src/restoran_on_kisim.rs_ dosyasını oluşturana kadar bu kodun derlenmeyeceğini unutmayın.
 
@@ -29,7 +29,7 @@ Ardından, daha önce süslü parantezlerin içinde yer alan kodu Liste 7-22'de 
 
 </Listing>
 
-Modül ağacınızda bir dosyayı yüklemek için `mod` bildirimini yalnızca _bir kez_ kullanmanız gerektiğine dikkat edin. Derleyici, dosyanın projenin bir parçası olduğunu ve `mod` deyimini koyduğunuz yere göre kodun modül ağacının neresinde konumlandığını bir kez öğrendikten sonra, projenizdeki diğer dosyalar yüklenen bu dosyanın koduna ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths]<!-- ignore --> bölümünde ele aldığımız gibi modülün bildirildiği konuma giden bir yol üzerinden başvurmalıdır. Başka bir deyişle `mod`, diğer programlama dillerinde görmüş olabileceğiniz C/C++ `#include` veya Python/JavaScript `import` benzeri bir dosya içe aktarma işlemi _değildir_.
+Modül ağacınızda bir dosyayı yüklemek için `mod` bildirimini yalnızca _bir kez_ kullanmanız gerektiğine dikkat edin. Derleyici, dosyanın projenin bir parçası olduğunu ve `mod` deyimini koyduğunuz yere göre kodun modül ağacının neresinde konumlandığını bir kez öğrendikten sonra, projenizdeki diğer dosyalar yüklenen bu dosyanın koduna ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths]<!-- ignore --> kısmında ele aldığımız gibi modülün bildirildiği konuma giden bir yol üzerinden başvurmalıdır. Başka bir deyişle `mod`, diğer programlama dillerinde görmüş olabileceğiniz C/C++ `#include` veya Python/JavaScript `import` benzeri bir dosya içe aktarma işlemi _değildir_.
 
 > Not: Rust'a yeni başlayanların en sık yaptığı hatalardan biri `mod` ile `use` anahtar kelimelerini birbirine karıştırmaktır:
 > - **`mod restoran_on_kisim;`** derleyiciye *"Bu noktada yeni bir alt modül oluştur ve gövdesini ilgili `.rs` dosyasından derle"* der. Örneğin _src/lib.rs_ içinde zaten bildirdiğiniz `restoran_on_kisim` modülünü _src/musteri.rs_ adlı başka bir dosyada kullanmak isterken yanlışlıkla tekrar `mod restoran_on_kisim;` yazarsanız derleyici _src/musteri/restoran_on_kisim.rs_ adında yeni bir alt modül dosyası arar ve `error[E0583]: file not found for module 'restoran_on_kisim'` hatası verir (hatta hata mesajının altında modülü `use crate::...` ile içe aktarmanız gerektiğini hatırlatır).

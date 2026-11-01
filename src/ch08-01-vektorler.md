@@ -24,7 +24,7 @@ Yeni ve boş bir vektör oluşturmak için Liste 8-1'de gösterildiği gibi `Vec
 
 Burada açık bir tür bildirimi eklediğimize dikkat edin. Bu vektöre herhangi bir değer eklemediğimiz için Rust, ne tür elemanlar saklamayı planladığımızı bilemez. Bu önemli bir noktadır. Vektörler jenerikler kullanılarak uygulanmıştır; kendi türlerinizle jenerikleri nasıl kullanacağınızı Bölüm 10'da ele alacağız. Şimdilik standart kütüphanenin sunduğu `Vec<T>` türünün herhangi bir türü barındırabileceğini bilmeniz yeterlidir. Belirli bir türü tutacak bir vektör oluşturduğumuzda, bu türü açılı parantezler (`< >`) içinde belirtebiliriz. Liste 8-1'de Rust'a, `v` değişkenindeki `Vec<T>` yapısının `i32` türünden elemanlar tutacağını söyledik.
 
-Çoğu zaman başlangıç değerlerine sahip bir `Vec<T>` oluşturursunuz ve Rust saklamak istediğiniz değerin türünü kendiliğinden çıkarır; bu nedenle açık tür bildirimine nadiren ihtiyaç duyarsınız. Rust bu amaçla, verdiğiniz değerleri tutan yeni bir vektör oluşturan kullanışlı `vec!` makrosunu sunar. Liste 8-2; `1`, `2` ve `3` değerlerini tutan yeni bir `Vec<i32>` oluşturur. Bölüm 3'teki ["Veri Türleri"][data-types]<!-- ignore --> kısmında ele aldığımız üzere varsayılan tam sayı türü `i32` olduğundan burada tam sayı türü `i32` olarak belirlenir.
+Çoğu zaman başlangıç değerlerine sahip bir `Vec<T>` oluşturursunuz ve Rust saklamak istediğiniz değerin türünü kendiliğinden çıkarır; bu nedenle açık tür bildirimine nadiren ihtiyaç duyarsınız. Rust bu amaçla, verdiğiniz değerleri tutan yeni bir vektör oluşturan kullanışlı `vec!` makrosunu sunar. Liste 8-2; `1`, `2` ve `3` değerlerini tutan yeni bir `Vec<i32>` oluşturur. Tam sayı türünün `i32` olmasının nedeni, Bölüm 3'teki ["Veri Türleri"][data-types]<!-- ignore --> kısmında ele aldığımız üzere varsayılan tam sayı türünün `i32` olmasıdır.
 
 <Listing number="8-2" caption="Değerler içeren yeni bir vektör oluşturmak">
 
@@ -60,7 +60,7 @@ Bölüm 3'te ele aldığımız üzere, her değişkende olduğu gibi değerini d
 
 ### Vektörlerin Elemanlarını Okuma
 
-Bir vektörde saklanan bir değere referans vermenin iki yolu vardır: indeksleme yoluyla veya `get` metodunu kullanarak. Aşağıdaki örneklerde, daha net anlaşılması adına bu işlemlerden döndürülen değerlerin türlerini açıkça belirttik.
+Bir vektörde saklanan bir değere başvurmanın iki yolu vardır: indeksleme yoluyla veya `get` metodunu kullanarak. Aşağıdaki örneklerde, daha net anlaşılması adına bu işlemlerden döndürülen değerlerin türlerini açıkça belirttik.
 
 Liste 8-4, indeksleme sözdizimi ve `get` metodu ile bir vektördeki değere erişmenin her iki yolunu da gösterir.
 
@@ -136,7 +136,7 @@ Tüm elemanlarda değişiklik yapmak amacıyla değiştirilebilir bir vektördek
 
 </Listing>
 
-Değiştirilebilir referansın işaret ettiği değeri değiştirmek için, `+=` operatörünü kullanmadan önce `i` içindeki değere ulaşmak amacıyla `*` *başvuru çözme operatörünü (dereference operator)* kullanmamız gerekir (`i` değişkeninin türü `&mut i32` olduğundan, `*i` ifadesi referansı takip ederek asıl `i32` değerine erişir). Başvuru çözme operatörü hakkında daha ayrıntılı bilgiyi Bölüm 15'teki ["Referansın Göstediği Değere Gitmek"][deref]<!-- ignore --> bölümünde ele alacağız.
+Değiştirilebilir referansın işaret ettiği değeri değiştirmek için, `+=` operatörünü kullanmadan önce `i` içindeki değere ulaşmak amacıyla `*` *başvuru çözme operatörünü (dereference operator)* kullanmamız gerekir (`i` değişkeninin türü `&mut i32` olduğundan, `*i` ifadesi referansı takip ederek asıl `i32` değerine erişir). Başvuru çözme operatörü hakkında daha ayrıntılı bilgiyi Bölüm 15'teki ["Referansı İzleyerek Değere Ulaşmak"][deref]<!-- ignore --> kısmında ele alacağız.
 
 Bir vektör üzerinde ister değiştirilemez ister değiştirilebilir şekilde yineleme yapmak, ödünç alma denetleyicisinin kuralları sayesinde tamamen güvenlidir. Liste 8-7 ve Liste 8-8'deki `for` döngüsü gövdelerinin içinde vektöre öğe eklemeye veya vektörden öğe çıkarmaya çalışsaydık, Liste 8-6'daki kodda aldığımıza benzer bir derleyici hatası alırdık. `for` döngüsünün vektöre tuttuğu referans, döngü devam ederken vektörün bütününün eşzamanlı olarak değiştirilmesini engeller.
 
@@ -158,7 +158,7 @@ Vektörler yalnızca aynı türdeki değerleri saklayabilir. Bu kısıtlama kimi
 
 </Listing>
 
-Rust'ın, her bir elemanı *öbekte* saklamak için tam olarak ne kadar belleğe ihtiyaç duyulacağını bilmesi adına vektörde hangi türlerin yer alacağını derleme zamanında bilmesi gerekir. Ayrıca bu vektörde hangi türlere izin verildiğini açıkça belirtmemiz gerekir. Eğer Rust bir vektörün rastgele herhangi bir türü barındırmasına izin verseydi, elemanlar üzerinde gerçekleştirilen işlemlerde bu türlerden bir veya birkaçının hataya yol açma riski doğardı. Bir enum ile birlikte `match` ifadesi kullanmak, Bölüm 6'da ele aldığımız gibi Rust'ın olası her durumun işlendiğini derleme zamanında garanti altına almasını sağlar.
+Rust'ın, her bir elemanı *öbekte* saklamak için tam olarak ne kadar belleğe ihtiyaç duyulacağını bilmesi adına vektörde hangi türlerin yer alacağını derleme zamanında bilmesi gerekir. Ayrıca bu vektörde hangi türlere izin verildiğini açıkça belirtmemiz gerekir. Eğer Rust bir vektörün herhangi bir türü barındırmasına izin verseydi, elemanlar üzerinde gerçekleştirilen işlemlerde bu türlerden bir veya birkaçının hataya yol açma riski doğardı. Bir enum ile birlikte `match` ifadesi kullanmak, Bölüm 6'da ele aldığımız gibi Rust'ın olası her durumun işlendiğini derleme zamanında garanti altına almasını sağlar.
 
 Programınızın çalışma zamanında vektörde saklamak üzere karşılaşacağı tüm türlerin kümesini önceden bilmiyorsanız enum tekniği işinize yaramayacaktır. Bunun yerine, Bölüm 18'de inceleyeceğimiz bir *trait nesnesi (trait object)* kullanabilirsiniz.
 

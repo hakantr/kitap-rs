@@ -29,7 +29,7 @@ Metin dosyasını hazırladıktan sonra _src/main.rs_ dosyasını düzenleyin ve
 
 `main` fonksiyonunda eklediğimiz yeni `fs::read_to_string` çağrısı `dosya_yolu` değerini alır, ilgili dosyayı açar ve dosya içeriğini barındıran `std::io::Result<String>` türünde bir değer döndürür. Hemen ardından gelen `.expect("Dosya okunamadı")` çağrısı ise okuma başarılı olduğunda bu `Result` içindeki `String` değerini `icerik` değişkenine çıkarır; dosya okunamazsa programı belirtilen mesajla panikletir.
 
-Sonrasında, programın bu aşamaya kadar doğru çalıştığını kontrol edebilmek için dosya okunduktan sonra `icerik` değerini ekrana yazdıran geçici bir `println!` makrosu daha ekliyoruz.
+Sonrasında, programın bu aşamaya kadar doğru çalıştığını kontrol edebilmek için dosya okunduktan sonra `icerik` değerini ekrana yazdıran geçici bir `println!` çağrısı daha ekliyoruz.
 
 Henüz arama kısmını uygulamadığımız için ilk komut satırı argümanı olarak herhangi bir string, ikinci argüman olarak da _siir.txt_ dosyasını vererek bu kodu çalıştıralım:
 

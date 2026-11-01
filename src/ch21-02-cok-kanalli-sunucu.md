@@ -45,9 +45,9 @@ Yavaş bir isteğin arkasında diğer isteklerin birikmesini önlemek için Böl
 
 _Thread havuzu (thread pool)_, bir görevi ele almaya hazır olarak bekleyen, önceden başlatılmış bir thread grubudur. Program yeni bir görev aldığında, havuzdaki thread'lerden birini bu göreve atar ve o thread görevi işler. Havuzda kalan diğer thread'ler, ilk thread çalışmaya devam ederken gelen başka görevleri ele almak üzere hazırdır. İlk thread görevini işlemeyi bitirdiğinde, yeni bir görevi üstlenmeye hazır biçimde boşta bekleyen thread'ler havuzuna geri döner. Bir thread havuzu, bağlantıları eşzamanlı olarak işlemenize olanak tanıyarak sunucunuzun işleme kapasitesini (*throughput*) artırır.
 
-Bizi hizmet aksatma (*Denial of Service* — *DoS*) saldırılarından koruması için havuzdaki thread sayısını küçük bir sayıyla sınırlandıracağız; programımızın gelen her istek için yeni bir thread oluşturmasını sağlasaydık, sunucumuza 10 milyon istek gönderen biri sunucumuzun tüm kaynaklarını tüketip isteklerin işlenmesini durma noktasına getirerek büyük bir yıkıma yol açabilirdi.
+Bizi hizmet reddi (*Denial of Service* — *DoS*) saldırılarından korumak için havuzdaki thread sayısını küçük bir sayıyla sınırlandıracağız. Programımız gelen her istek için yeni bir thread oluştursaydı, sunucumuza 10 milyon istek gönderen biri sunucumuzun tüm kaynaklarını tüketip isteklerin işlenmesini durma noktasına getirerek büyük bir hasara yol açabilirdi.
 
-Dolayısıyla sınırsız sayıda thread başlatmak yerine, havuzda bekleyen sabit sayıda thread bulunduracağız. Gelen istekler işlenmek üzere havuza gönderilir. Havuz, gelen isteklerden oluşan bir kuyruk tutar. Havuzdaki thread'lerin her biri bu kuyruktan bir istek çeker, isteği işler ve ardından kuyruktan başka bir istek ister. Bu tasarımla aynı anda en fazla _`N`_ isteği eşzamanlı olarak işleyebiliriz; burada _`N`_ thread sayısıdır. Her bir thread uzun süren bir isteğe yanıt veriyorsa, sonradan gelen istekler yine kuyrukta birikebilir; ancak o noktaya ulaşmadan önce ele alabileceğimiz uzun süreli istek sayısını artırmış oluruz.
+Dolayısıyla sınırsız sayıda thread başlatmak yerine, havuzda bekleyen sabit sayıda thread bulunduracağız. Gelen istekler işlenmek üzere havuza gönderilir. Havuz, gelen isteklerden oluşan bir kuyruk tutar. Havuzdaki thread'lerin her biri bu kuyruktan bir istek çeker, isteği işler ve ardından kuyruktan başka bir istek ister. Bu tasarımla en fazla _`N`_ isteği eşzamanlı olarak işleyebiliriz; burada _`N`_ thread sayısıdır. Thread'lerin her biri uzun süren bir isteğe yanıt veriyorsa, sonradan gelen istekler yine kuyrukta birikebilir; ancak o noktaya ulaşmadan önce ele alabileceğimiz uzun süreli istek sayısını artırmış oluruz.
 
 Bu teknik, bir web sunucusunun işleme kapasitesini artırmanın pek çok yolundan yalnızca biridir. İnceleyebileceğiniz diğer seçenekler arasında *fork/join* modeli, tek kanallı asenkron G/Ç (*single-threaded async I/O*) modeli ve çok kanallı asenkron G/Ç (*multithreaded async I/O*) modeli yer alır. Bu konuya ilgi duyuyorsanız diğer çözümler hakkında daha fazla okuma yapabilir ve bunları uygulamayı deneyebilirsiniz; Rust gibi alt seviyeli bir dille bu seçeneklerin tamamı mümkündür.
 
@@ -107,7 +107,7 @@ Yapılandırılabilir sayıda —bu örnekte dört— thread içeren yeni bir th
 
 #### Derleyici Yönlendirmeli Geliştirme ile `IsParcacigiHavuzu` Oluşturmak
 
-Liste 21-12'deki değişiklikleri _src/main.rs_ dosyasına uygulayın ve ardından geliştirme sürecimizi yönlendirmek için `cargo check` komutundan gelen derleyici hatalarını kullanalım. Aldığımız ilk hata şöyledir:
+Liste 21-12'deki değişiklikleri _src/main.rs_ dosyasına uygulayın; ardından geliştirme sürecimizi yönlendirmek için `cargo check` komutunun verdiği derleyici hatalarından yararlanalım. Aldığımız ilk hata şöyledir:
 
 ```console
 {{#include ../listings/ch21-web-server/listing-21-12/output.txt}}
@@ -265,7 +265,7 @@ Geçerli bir boyut alındığında `IsParcacigiHavuzu` yapımız `boyut` adet ö
 
 #### `IsParcacigiHavuzu`'ndan Bir Thread'e Kod Göndermek
 
-Liste 21-14'teki `for` döngüsünde thread'lerin oluşturulmasına ilişkin bir yorum bırakmıştık. Şimdi thread'leri gerçekte nasıl oluşturacağımıza bakalım. Standart kütüphane, thread oluşturmanın bir yolu olarak `thread::spawn` fonksiyonunu sunar ve `thread::spawn`, thread oluşturulur oluşturulmaz çalıştırması gereken bir kod almayı bekler. Ancak bizim durumumuzda thread'leri oluşturmak ve daha sonra göndereceğimiz kodu _beklemelerini_ istiyoruz. Standart kütüphanenin thread uygulaması bunu yapmanın herhangi bir yolunu içermez; bunu bizim elle uygulamamız gerekir.
+Liste 21-14'teki `for` döngüsünde thread'lerin oluşturulmasına ilişkin bir yorum bırakmıştık. Şimdi thread'leri gerçekte nasıl oluşturacağımıza bakalım. Standart kütüphane, thread oluşturmanın bir yolu olarak `thread::spawn` fonksiyonunu sunar ve `thread::spawn`, thread oluşturulur oluşturulmaz çalıştırması gereken bir kod almayı bekler. Ancak bizim durumumuzda thread'leri oluşturup daha sonra göndereceğimiz kodu _beklemelerini_ sağlamak istiyoruz. Standart kütüphanenin thread uygulaması bunu yapmanın herhangi bir yolunu içermez; bunu bizim elle uygulamamız gerekir.
 
 Bu davranışı, `IsParcacigiHavuzu` ile thread'ler arasına bu yeni davranışı yönetecek yeni bir veri yapısı ekleyerek uygulayacağız. Havuzlama (*pooling*) uygulamalarında yaygın bir terim olan *Worker* (çalışan) kavramına karşılık bu veri yapısına `Calisan` adını vereceğiz. `Calisan`, çalıştırılması gereken kodu alır ve bu kodu kendi thread'inde çalıştırır.
 
@@ -397,7 +397,7 @@ Ancak işimiz henüz tam olarak bitmedi! `Calisan` içinde `thread::spawn` fonks
 
 Burada önce mutex kilidini edinmek için `alici` üzerinde `lock` çağırıyor, ardından olası herhangi bir hatada paniklemek üzere `unwrap` çağırıyoruz. Mutex _zehirlenmiş (poisoned)_ bir durumdaysa kilit edinme işlemi başarısız olabilir; bu durum, başka bir thread kilidi serbest bırakmak yerine kilidi elinde tutarken paniklediyse gerçekleşebilir. Böyle bir durumda bu thread'in de paniklemesi için `unwrap` çağırmak yapılacak doğru eylemdir. Bu `unwrap` çağrısını sizin için anlamlı bir hata mesajı içeren bir `expect` çağrısıyla değiştirmekte özgürsünüz.
 
-Mutex üzerindeki kilidi alırsak kanaldan bir `Gorev` almak için `recv` çağırırız. Son bir `unwrap` buradaki olası hataları da geçer; alıcı kapandığında `send` metodunun `Err` döndürmesine benzer biçimde, göndericiyi tutan thread kapandıysa burada hata oluşabilir.
+Kilidi edinebilirsek kanaldan bir `Gorev` almak için `recv` çağırırız. Sondaki `unwrap` da buradaki olası hatalarda aynı şekilde programı durdurur; alıcı kapandığında `send` metodunun `Err` döndürmesine benzer biçimde, göndericiyi tutan thread kapandıysa burada da hata oluşabilir.
 
 `recv` çağrısı engelleyicidir (*blocking*); yani henüz bir görev yoksa mevcut thread bir görev hazır olana kadar bekleyecektir. `Mutex<T>`, aynı anda yalnızca bir `Calisan` thread'inin görev istemeye çalışmasını güvence altına alır.
 
@@ -448,11 +448,11 @@ warning: `merhaba` (lib) generated 2 warnings
 Çalışan 2 bir görev aldı; çalıştırılıyor.
 ```
 
-Başardık! Artık bağlantıları eşzamansız olarak yürüten bir thread havuzumuz var. Hiçbir zaman dörtten fazla thread oluşturulmadığından, sunucu çok sayıda istek alsa bile sistemimiz aşırı yüklenmeyecektir. _/sleep_ yoluna bir istek yaparsak, sunucu diğer istekleri başka bir thread'e çalıştırarak yanıtlayabilecektir.
+Başardık! Artık bağlantıları eşzamansız olarak yürüten bir thread havuzumuz var. Hiçbir zaman dörtten fazla thread oluşturulmadığından, sunucu çok sayıda istek alsa bile sistemimiz aşırı yüklenmeyecektir. _/sleep_ yoluna bir istek yaparsak sunucu, diğer istekleri başka thread'lerde çalıştırarak yanıtlamaya devam edebilecektir.
 
 > Not: Aynı anda birden fazla tarayıcı penceresinde _/sleep_ adresini açarsanız, sayfalar beşer saniyelik aralıklarla teker teker yüklenebilir. Bazı web tarayıcıları, önbellekleme (*caching*) nedenleriyle aynı isteğin birden fazla örneğini sırayla yürütür. Bu kısıtlama bizim web sunucumuzdan kaynaklanmamaktadır.
 
-Burası durup yapılacak iş için kapanış yerine *future* kullanıyor olsaydık Liste 21-18, 21-19 ve 21-20'deki kodların nasıl farklılaşacağını düşünmek için iyi bir noktadır. Hangi türler değişirdi? Metot imzaları —eğer değişecekse— nasıl farklı olurdu? Kodun hangi kısımları aynı kalırdı?
+Şimdi bir an durup şunu düşünmenin tam zamanı: Yapılacak iş için kapanış yerine *future* kullansaydık Liste 21-18, 21-19 ve 21-20'deki kod nasıl farklılaşırdı? Hangi türler değişirdi? Metot imzaları —eğer değişecekse— nasıl farklı olurdu? Kodun hangi kısımları aynı kalırdı?
 
 Bölüm 17 ve Bölüm 19'da `while let` döngüsünü öğrendikten sonra, `Calisan` thread kodunu neden Liste 21-21'de gösterildiği gibi yazmadığımızı merak ediyor olabilirsiniz.
 
@@ -468,7 +468,7 @@ Bu kod derlenir ve çalışır, ancak istediğimiz çoklu thread davranışını
 
 Liste 21-20'de `let gorev = alici.lock().unwrap().recv().unwrap();` kullanan kod sorunsuz çalışır; çünkü `let` ile, eşittir işaretinin sağ tarafındaki ifadede kullanılan tüm geçici değerler (*temporary values*), `let` deyimi sona erdiği anda derhal düşürülür (`drop`). Buna karşılık `while let` (ve `if let` ile `match`), geçici değerleri ilişkili bloğun sonuna kadar düşürmez. Liste 21-21'de kilit, `gorev()` çağrısı süresince tutulmaya devam eder; bu da diğer `Calisan` örneklerinin görev alamaması anlamına gelir.
 
-> Not: Rust 2024 Sürümü'nde `if let` ifadelerinde (`else` koluna geçmeden önce) ve blok sonu kuyruk ifadelerinde (*tail expressions*) geçici değer düşürme (*temporary lifetime*) kuralları iyileştirilmiş olsa bile `while let` döngülerinde koşul ifadesinde üretilen geçici `MutexGuard` hâlâ döngü gövdesi boyunca tutulmaya devam eder. Bu nedenle `Mutex` kilitlerini mümkün olan en dar kapsamda serbest bırakmak ve kilit tutarken uzun süren işlemleri çalıştırmaktan kaçınmak için `let gorev = alici.lock().unwrap().recv().unwrap();` gibi açık bir `let` deyimi kullanmak Rust'ta en güvenli idiyomdur: Noktalı virgüle ulaşıldığı anda geçici `MutexGuard` düşürülür ve kilit, `gorev()` çağrısı başlamadan hemen önce serbest bırakılır.
+> Not: Rust 2024 Sürümü'nde geçici değerlerin ömrüne (*temporary lifetime*) ilişkin kurallar `if let` ifadeleri (geçici değerler artık `else` koluna geçmeden önce düşürülür) ve blok sonundaki kuyruk ifadeleri (*tail expressions*) için iyileştirilmiş olsa da `while let` döngüsünün koşul ifadesinde üretilen geçici `MutexGuard` hâlâ döngü gövdesi boyunca tutulur. Bu nedenle `Mutex` kilitlerini mümkün olan en dar kapsamda serbest bırakmak ve kilidi tutarken uzun süren işlemler çalıştırmaktan kaçınmak için `let gorev = alici.lock().unwrap().recv().unwrap();` gibi açık bir `let` deyimi kullanmak en güvenli yoldur: Noktalı virgüle ulaşıldığı anda geçici `MutexGuard` düşürülür ve kilit, `gorev()` çağrısından önce serbest bırakılır.
 
 [type-aliases]: ch20-03-gelismis-turler.html#type-synonyms-and-type-aliases
 [integer-types]: ch03-02-veri-turleri.html#tam-sayı-türleri-integer-types

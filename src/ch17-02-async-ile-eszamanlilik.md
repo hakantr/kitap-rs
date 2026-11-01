@@ -51,11 +51,11 @@ Başlangıç noktası olarak, en üst düzey fonksiyonumuzun asenkron olabilmesi
 > `main` fonksiyonunda yaptığımız gibi bunu da çoğu zaman atlayacağız. Kendi
 > kodunuza eklemeyi unutmayın!
 
-Ardından bu bloğun içinde, her biri bir sonraki mesajı göndermeden önce yarım
+Ardından bu bloğun içinde, her biri bir sonraki mesajı yazdırmadan önce yarım
 saniye (500 milisaniye) bekleyen bir `trpl::sleep` çağrısı içeren iki döngü
-yazıyoruz. Döngülerden birini `trpl::spawn_task` gövdesine, diğerini ise en üst
-düzey bir `for` döngüsüne yerleştiriyoruz. Ayrıca `sleep` çağrılarının sonuna
-birer `await` ekliyoruz.
+yazıyoruz. Döngülerden birini `trpl::spawn_task` gövdesine koyuyor, diğerini ise
+en üst düzeyde bir `for` döngüsü olarak bırakıyoruz. Ayrıca `sleep` çağrılarının
+sonuna birer `await` ekliyoruz.
 
 > Not: Asenkron kod yazarken duraklama işlemleri için standart kütüphanedeki
 > senkron `std::thread::sleep` yerine mutlaka `trpl::sleep(...).await` (gerçek
@@ -223,8 +223,9 @@ kullanacağız, ancak bu kez türlerin ve fonksiyonların asenkron sürümleriyl
 Thread tabanlı ve future tabanlı eşzamanlılık arasındaki bazı temel farkları
 göstermek için Bölüm 16'daki [“Mesaj İletimiyle Thread'ler Arası Veri
 Transferi”][message-passing-threads]<!-- ignore --> başlığında izlediğimizden
-biraz farklı bir yol izleyeceğiz. Liste 17-9'da, ayrı bir thread başlattığımız
-gibi ayrı bir görev _başlatmadan_, yalnızca tek bir async blokla başlayacağız.
+biraz farklı bir yol izleyeceğiz. Orada ayrı bir thread başlatmıştık; Liste
+17-9'da ise ayrı bir görev bile _başlatmadan_, yalnızca tek bir async blokla
+başlayacağız.
 
 <Listing number="17-9" caption="Asenkron bir kanal oluşturma ve iki yarısını `gonderici` ile `alici` değişkenlerine atama" file-name="src/main.rs">
 
@@ -290,8 +291,8 @@ sürümüdür. Döngü, belirttiği desen değerle eşleşmeye devam ettiği sü
 çalışmayı sürdürür.
 
 `alici.recv` çağrısı bir future üretir ve biz de onu bekleriz. Çalışma zamanı,
-hazır olana dek future'ı duraklatacaktır. Bir mesaj ulaştığında future, her mesaj
-gelişinde `Some(alinan)` olarak çözülecektir. Kanal kapandığında ise, _herhangi_
+hazır olana dek future'ı duraklatacaktır. Future, her mesaj ulaştığında
+`Some(alinan)` olarak çözülecektir. Kanal kapandığında ise, _herhangi_
 bir mesaj ulaşıp ulaşmadığına bakılmaksızın, artık başka değer kalmadığını ve
 dolayısıyla yoklamayı —yani beklemeyi— durdurmamız gerektiğini belirtmek üzere
 future bunun yerine `None` olarak çözülecektir.
@@ -410,9 +411,9 @@ düzgün bir şekilde kapanır.
 > aktarılmayıp aynı kapsam içinde `trpl::join` ile beklendiğinden, derleyici
 > `&gonderici` referansının kapsam boyunca geçerli kalacağını kanıtlayabilmiş ve
 > kodu derlemişti. Burada `async move` kullanmamızın nedeni ödünç alma
-> denetleyicisini tatmin etmek değil, `gonderici` değerinin yaşam süresini
-> bilerek o bloğun kapsamıyla sınırlayıp blok biter bitmez `Drop` edilmesini
-> (ve böylece kanalın otomatik kapanmasını) sağlamaktır.
+> denetleyicisini tatmin etmek değil, `gonderici` değerinin ömrünü bilerek o
+> bloğun kapsamıyla sınırlayıp blok biter bitmez düşürülmesini (*drop*) (ve
+> böylece kanalın otomatik olarak kapanmasını) sağlamaktır.
 
 Şimdi, birden fazla future'dan veri göndermek için nelerin değişmesi
 gerekeceğine bakalım.
@@ -439,7 +440,7 @@ Bu asenkron kanal aynı zamanda çoklu üreticili bir kanal olduğundan, Liste
 
 İlk olarak, birinci async bloğun dışında `gonderici` değişkenini klonlayarak
 `gonderici1` oluşturuyoruz. Tıpkı daha önce `gonderici` ile yaptığımız gibi
-`gonderici1` değerini bu bloğun içine taşıyoruz. Ardından, daha sonra orijinal
+`gonderici1` değerini bu bloğun içine taşıyoruz. Ardından orijinal
 `gonderici` değerini _yeni_ bir async bloğa taşıyor ve orada biraz daha yavaş bir
 gecikmeyle daha fazla mesaj gönderiyoruz. Bu yeni async bloğu tesadüfen mesajları
 alan async bloktan sonraya koyduk, ancak ondan önceye de koyabilirdik. Burada

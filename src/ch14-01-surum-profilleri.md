@@ -42,7 +42,7 @@ opt-level = 3
 
 `opt-level` (*optimizasyon düzeyi*) ayarı, Rust'ın kodunuza uygulayacağı optimizasyon sayısını kontrol eder ve 0 ile 3 arasında bir değer alır. Daha fazla optimizasyon uygulamak derleme süresini uzatır; dolayısıyla geliştirme aşamasındaysanız ve kodunuzu sık sık derliyorsanız, ortaya çıkan kod daha yavaş çalışsa bile derlemenin daha hızlı tamamlanması için daha az optimizasyon yapılmasını istersiniz. Bu nedenle `dev` profili için varsayılan `opt-level` değeri `0`'dır. Kodunuzu yayınlamaya hazır olduğunuzda ise derlemeye daha fazla zaman ayırmak en doğrusudur. Sürüm modunda yalnızca bir kez derleme yaparsınız, ancak derlenmiş programı pek çok kez çalıştırırsınız; dolayısıyla sürüm modu, daha hızlı çalışan bir kod elde etmek adına daha uzun derleme süresini göze alır. `release` profili için varsayılan `opt-level` değerinin `3` olmasının nedeni budur.
 
-Varsayılan bir ayarı, _Cargo.toml_ dosyasında o ayar için farklı bir değer belirterek geçersiz kılabilirsiniz. Örneğin geliştirme profilinde 1. optimizasyon düzeyini kullanmak istersek projemizin _Cargo.toml_ dosyasına şu iki satırı ekleyebiliriz:
+Varsayılan bir ayarı, _Cargo.toml_ dosyasında o ayar için farklı bir değer belirterek geçersiz kılabilirsiniz. Örneğin geliştirme profilinde optimizasyon düzeyi olarak 1'i kullanmak istersek projemizin _Cargo.toml_ dosyasına şu iki satırı ekleyebiliriz:
 
 <span class="filename">Dosya adı: Cargo.toml</span>
 
@@ -61,7 +61,7 @@ Her profile ait yapılandırma seçeneklerinin ve varsayılan değerlerin tam li
 > - **`lto` (*Link-Time Optimization* — Bağlama Zamanı Optimizasyonu):** Varsayılan olarak `false` değerindedir. `lto = "thin"` (derleme süresini makul tutarak crate'ler arası satır içi açma ve ölü kod eleme yapar) veya `lto = true` (tüm bağımlılık ağacını tek bütün halinde analiz eder) kullanıldığında hem çalışma hızı artar hem de ikili dosya boyutu küçülür.
 > - **`codegen-units = 1`:** Cargo paralel derlemeyi hızlandırmak için bir crate'i varsayılan olarak birden fazla kod üretim birimine böler (`release` profilinde `16`). Bu değeri `1` yapmak paralel kod üretimini devre dışı bırakıp derleme süresini uzatsa da derleyicinin tüm crate genelinde daha bütünsel optimizasyonlar üretmesine olanak tanır.
 > - **`panic = "abort"`:** [Bölüm 9'da][ch09-unwinding] gördüğümüz gibi, panik anında yığını geri sarmak (`"unwind"`) yerine programı doğrudan sonlandırır; geri sarma tabloları üretilmediği için ikili dosya küçülür.
-> - **`strip = true` (veya `"symbols"` / `"debuginfo"`):** Sembol tablolarını ve hata ayıklama bilgilerini derlenen ikili dosyadan temizleyerek çalışma hızından ödün vermeden dosya boyutunu önemli ölçüde azaltır (ancak panik anındaki *geri izleme* çıktısında fonksiyon ve satır adları okunamaz hale gelir).
+> - **`strip = true` (veya `"symbols"` / `"debuginfo"`):** Sembol tablolarını ve hata ayıklama bilgilerini derlenen ikili dosyadan temizleyerek çalışma hızından ödün vermeden dosya boyutunu önemli ölçüde azaltır (ancak panik anındaki *geri izleme (backtrace)* çıktısında fonksiyon adları ve satır numaraları görünmez hale gelir).
 >
 > Örneğin hem yüksek çalışma performansı hem de küçük ikili dosya boyutu hedefleyen tipik bir üretim yapılandırması ve geliştirme sırasında yalnızca harici bağımlılıkları optimize etme ipucu _Cargo.toml_ içinde şöyle görünebilir:
 >

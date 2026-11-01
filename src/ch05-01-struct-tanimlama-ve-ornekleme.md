@@ -16,7 +16,7 @@ Bir struct tanımlamak için `struct` anahtar kelimesini yazar ve struct'ın tam
 
 </Listing>
 
-Tanımladığımız bir struct'ı kullanmak için, her bir alana somut değerler vererek o struct'ın bir _örneğini (instance)_ oluştururuz. Örnek oluştururken önce struct'ın adını yazar, ardından içine _`anahtar: değer`_ çiftlerini yerleştirdiğimiz süslü parantezler açarız; buradaki anahtarlar alanların adları, değerler ise o alanlarda saklamak istediğimiz verilerdir. Alanları, struct tanımındaki bildirim sırasıyla yazmak zorunda değiliz. Başka bir deyişle struct tanımı, tür için genel bir şablon gibidir; örnekler ise bu şablonu belirli verilerle doldurarak o türe ait somut değerler üretir. Örneğin Liste 5-2'de gösterildiği gibi belirli bir kullanıcı tanımlayabiliriz.
+Tanımladığımız bir struct'ı kullanmak için, her bir alana somut değerler vererek o struct'ın bir _örneğini (instance)_ oluştururuz. Örnek oluştururken önce struct'ın adını yazar, ardından içine _`anahtar: değer`_ çiftlerini yerleştirdiğimiz süslü parantezler açarız; buradaki anahtarlar alanların adları, değerler ise o alanlarda saklamak istediğimiz verilerdir. Alanları, struct tanımındaki bildirim sırasıyla yazmak zorunda değiliz. Struct tanımı, tür için genel bir şablon gibidir; örnekler ise bu şablonu belirli verilerle doldurarak o türe ait somut değerler üretir. Örneğin Liste 5-2'de gösterildiği gibi belirli bir kullanıcı tanımlayabiliriz.
 
 <Listing number="5-2" file-name="src/main.rs" caption="`Kullanici` struct'ının bir örneğini oluşturma">
 
@@ -36,7 +36,7 @@ Bir struct içinden belirli bir değeri okumak için nokta gösterimini (*dot no
 
 </Listing>
 
-Örneğin tamamının değiştirilebilir olması gerektiğine dikkat edin; Rust yalnızca belirli alanları değiştirilebilir olarak işaretlememize izin vermez. Diğer tüm ifadelerde olduğu gibi, bir fonksiyon gövdesinin son ifadesi olarak struct'ın yeni bir örneğini oluşturabilir ve bu örneği örtük olarak döndürebiliriz.
+Örneğin tamamının değiştirilebilir olması gerektiğine dikkat edin; Rust yalnızca belirli alanları değiştirilebilir olarak işaretlememize izin vermez. Struct örneği oluşturmak da bir ifade olduğundan, her ifadede olduğu gibi, fonksiyon gövdesinin son ifadesi olarak struct'ın yeni bir örneğini oluşturabilir ve bu örneği örtük olarak döndürebiliriz.
 
 > Not: Rust'ta değiştirilebilirlik (`mut`), struct tanımındaki tekil alanların değil, örneği tutan değişken bağlamasının (veya `&mut` referansının) bir özelliğidir; bu nedenle `struct Kullanici { mut eposta: String }` gibi alan bazlı bir sözdizimi geçerli değildir. Bu tasarım sayesinde aynı `Kullanici` türünü kodun bir yerinde tamamen değiştirilemez (`let kullanici1 = ...`), başka bir yerinde ise değiştirilebilir (`let mut kullanici2 = ...`) olarak güvenle kullanabilirsiniz. Değiştirilemez bir referans arkasındayken yalnızca belirli bir alanı güncellemenin gerektiği özel senaryolar içinse Bölüm 15'te *içsel değiştirilebilirlik (interior mutability)* desenini (`Cell<T>` ve `RefCell<T>`) inceleyeceğiz.
 
@@ -50,7 +50,7 @@ Liste 5-4, verilen e-posta ve kullanıcı adıyla bir `Kullanici` örneği dönd
 
 </Listing>
 
-Fonksiyon parametrelerine struct alanlarıyla aynı adları vermek mantıklıdır; ancak `eposta` ve `kullanici_adi` alan adlarını ve değişkenlerini tekrar tekrar yazmak biraz zahmetlidir. Struct daha fazla alana sahip olsaydı her bir adı bu şekilde yinelemek daha da can sıkıcı hâle gelirdi. Neyse ki bunun için kullanışlı bir kısayol vardır!
+Fonksiyon parametrelerine struct alanlarıyla aynı adları vermek mantıklıdır; ancak `eposta` ve `kullanici_adi` adlarını hem alan adı hem de değişken olarak ikişer kez yazmak biraz zahmetlidir. Struct daha fazla alana sahip olsaydı her bir adı bu şekilde yinelemek daha da can sıkıcı hâle gelirdi. Neyse ki bunun için kullanışlı bir kısayol vardır!
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="using-the-field-init-shorthand-when-variables-and-fields-have-the-same-name"></a>
@@ -60,7 +60,7 @@ Fonksiyon parametrelerine struct alanlarıyla aynı adları vermek mantıklıdı
 
 ### Alan Başlatma Kısayolunu Kullanma
 
-Liste 5-4'teki parametre adları ile struct alan adları birebir aynı olduğundan, _alan başlatma kısayolu (field init shorthand)_ sözdizimini kullanarak `kullanici_olustur` fonksiyonunu yeniden yazabiliriz. Liste 5-5'te görüldüğü gibi fonksiyon birebir aynı şekilde çalışır, ancak `kullanici_adi` ve `eposta` tekrarlarından kurtulmuş olur.
+Liste 5-4'teki parametre adları ile struct alan adları birebir aynı olduğundan, _alan başlatma kısayolu (field init shorthand)_ sözdizimini kullanarak `kullanici_olustur` fonksiyonunu yeniden yazabiliriz. Liste 5-5'teki yeni sürüm öncekiyle aynı şekilde çalışır, ancak `kullanici_adi` ve `eposta` adlarını tekrar etmez.
 
 <Listing number="5-5" file-name="src/main.rs" caption="`kullanici_adi` ve `eposta` parametreleri struct alanlarıyla aynı ada sahip olduğu için alan başlatma kısayolunu kullanan `kullanici_olustur` fonksiyonu">
 
@@ -79,7 +79,7 @@ Burada, `eposta` adında bir alanı bulunan `Kullanici` struct'ının yeni bir �
 
 ### Struct Güncelleme Sözdizimi ile Örnekler Oluşturma
 
-Aynı türdeki mevcut bir örneğin değerlerinin çoğunu koruyup yalnızca birkaçını değiştirerek yeni bir struct örneği oluşturmak çoğu zaman oldukça işlevseldir. Bunu _struct güncelleme sözdizimi (struct update syntax)_ ile yapabilirsiniz.
+Aynı türdeki mevcut bir örneğin değerlerinin çoğunu koruyup yalnızca birkaçını değiştirerek yeni bir struct örneği oluşturmak çoğu zaman işe yarar. Bunu _struct güncelleme sözdizimi (struct update syntax)_ ile yapabilirsiniz.
 
 Öncelikle Liste 5-6'da, güncelleme sözdizimini kullanmadan sıradan yöntemle `kullanici2` içinde yeni bir `Kullanici` örneğini nasıl oluşturacağımızı görelim. `eposta` alanı için yeni bir değer belirliyor, geri kalan alanlarda ise Liste 5-2'de oluşturduğumuz `kullanici1` örneğindeki değerlerin aynısını kullanıyoruz.
 
@@ -105,7 +105,7 @@ Liste 5-7'deki kod da `kullanici2` içinde `eposta` alanı farklı, ancak `kulla
 
 Struct güncelleme sözdiziminin tıpkı bir atama işlemi gibi `=` kullandığına dikkat edin; bunun nedeni, verileri ["Değişkenlerin ve Verilerin Taşıma ile Etkileşimi"][move]<!-- ignore --> bölümünde gördüğümüz şekilde taşımasıdır. Bu örnekte `kullanici2` oluşturulduktan sonra artık `kullanici1` örneğini bir bütün olarak kullanamayız; çünkü `kullanici1`'in `kullanici_adi` alanındaki `String` değeri `kullanici2` içine taşınmıştır. Eğer `kullanici2`'ye hem `eposta` hem de `kullanici_adi` için yeni `String` değerleri verseydik ve böylece `kullanici1` içinden yalnızca `aktif` ile `giris_sayisi` alanlarını alsaydık, `kullanici2` oluşturulduktan sonra `kullanici1` tamamen geçerli kalmaya devam ederdi. Hem `aktif` hem de `giris_sayisi`, `Copy` trait'ini uygulayan türlerde olduğundan ["Yalnızca Yığındaki Veri: Copy"][copy]<!-- ignore --> bölümünde ele aldığımız kurallar devreye girerdi. Ayrıca mevcut örneğimizde `kullanici1.eposta` alanını hâlâ kullanabiliriz; çünkü bu alanın değeri `kullanici1` dışına taşınmamıştır.
 
-> Not: Derleyicinin bir struct örneğindeki bazı alanların taşındığını, bazılarının ise yerinde kaldığını alan bazında takip etmesine _kısmi taşıma (partial move)_ denir. Liste 5-7'de `..kullanici1` sonrasında `kullanici1.kullanici_adi` taşındığı için `kullanici1` değişkenini bir bütün olarak başka bir fonksiyona aktarmaya veya yazdırmaya çalışırsanız `error[E0382]: borrow of partially moved value: 'kullanici1'` (*kısmen taşınmış değerin ödünç alınması*) hatası alırsınız. Buna karşılık taşınmayan `kullanici1.eposta` alanına veya `Copy` olan `kullanici1.aktif` ve `kullanici1.giris_sayisi` alanlarına tek tek erişmeye devam edebilirsiniz. Eğer `kullanici1` örneğinin tamamının geçerli kalmasını istiyorsanız, `String` alanını açıkça klonlayarak (`kullanici_adi: kullanici1.kullanici_adi.clone()`) yeni örneği oluşturabilirsiniz.
+> Not: Derleyicinin bir struct örneğindeki bazı alanların taşındığını, bazılarının ise yerinde kaldığını alan bazında takip etmesine _kısmi taşıma (partial move)_ denir. Liste 5-7'de `..kullanici1` sonrasında `kullanici1.kullanici_adi` taşındığı için `kullanici1` değişkenini bir bütün olarak kullanmaya çalışırsanız (örneğin onu değer olarak başka bir fonksiyona aktarırsanız) `error[E0382]: use of partially moved value: 'kullanici1'` (*kısmen taşınmış değerin kullanımı*) hatası alırsınız; bütünü ödünç almaya çalıştığınızda ise hata `borrow of partially moved value` biçiminde olur. Buna karşılık taşınmayan `kullanici1.eposta` alanına veya `Copy` olan `kullanici1.aktif` ve `kullanici1.giris_sayisi` alanlarına tek tek erişmeye devam edebilirsiniz. Eğer `kullanici1` örneğinin tamamının geçerli kalmasını istiyorsanız, `String` alanını açıkça klonlayarak (`kullanici_adi: kullanici1.kullanici_adi.clone()`) yeni örneği oluşturabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="using-tuple-structs-without-named-fields-to-create-different-types"></a>
@@ -114,7 +114,7 @@ Struct güncelleme sözdiziminin tıpkı bir atama işlemi gibi `=` kullandığ�
 
 ### Demet Struct'ları ile Farklı Türler Oluşturma
 
-Rust ayrıca demetlere benzeyen ve _demet struct'ları (tuple structs)_ olarak adlandırılan yapıları da destekler. Demet struct'ları, struct adının kazandırdığı ek anlama sahiptir; ancak alanlarının isimleri yoktur, yalnızca alan türleri belirtilir. Demet struct'ları, demetin tamamına bir ad vererek onu diğer demetlerden ayrı bir tür hâline getirmek istediğinizde ve her bir alanı normal bir struct'taki gibi isimlendirmenin gereksiz ya da fazlalık olacağı durumlarda kullanışlıdır.
+Rust ayrıca demetlere benzeyen ve _demet struct'ları (tuple structs)_ olarak adlandırılan yapıları da destekler. Demet struct'ları, struct adının kazandırdığı ek anlama sahiptir; ancak alanlarının isimleri yoktur, yalnızca alan türleri belirtilir. Demet struct'ları, demetin tamamına bir ad vererek onu diğer demetlerden ayrı bir tür hâline getirmek istediğinizde ve her bir alanı normal bir struct'taki gibi isimlendirmenin gereksiz yere uzun ya da yinelemeli olacağı durumlarda kullanışlıdır.
 
 Bir demet struct'ı tanımlamak için `struct` anahtar kelimesiyle başlayıp struct adını yazar, ardından parantez içinde demetteki türleri belirtirsiniz. Örneğin aşağıda `Renk` ve `Nokta` adında iki demet struct'ı tanımlayıp kullanıyoruz:
 
@@ -137,7 +137,7 @@ Bir demet struct'ı tanımlamak için `struct` anahtar kelimesiyle başlayıp st
 
 ### Birim Benzeri Struct'ları Tanımlama
 
-Hiçbir alanı olmayan struct'lar da tanımlayabilirsiniz! Bunlara, ["Demet Türü"][tuples]<!-- ignore --> bölümünde değindiğimiz birim türe `()` benzer biçimde davrandıkları için _birim benzeri struct'lar (unit-like structs)_ adı verilir. Birim benzeri struct'lar, bir tür üzerinde bir trait uygulamanız gerektiğinde ancak türün kendisinde saklamak istediğiniz herhangi bir veri bulunmadığında oldukça işe yarar. Trait'leri Bölüm 10'da ele alacağız. Aşağıda `HerZamanEsit` adında bir birim struct tanımlama ve örnekleme örneği verilmiştir:
+Hiçbir alanı olmayan struct'lar da tanımlayabilirsiniz! Bunlara, ["Demet Türü"][tuples]<!-- ignore --> bölümünde değindiğimiz birim türe (`()`) benzer biçimde davrandıkları için _birim benzeri struct'lar (unit-like structs)_ adı verilir. Birim benzeri struct'lar, bir tür üzerinde bir trait uygulamanız gerektiğinde ancak türün kendisinde saklamak istediğiniz herhangi bir veri bulunmadığında oldukça işe yarar. Trait'leri Bölüm 10'da ele alacağız. Aşağıda `HerZamanEsit` adlı birim benzeri bir struct'ı tanımlayıp örnekliyoruz:
 
 <Listing file-name="src/main.rs">
 
@@ -147,7 +147,7 @@ Hiçbir alanı olmayan struct'lar da tanımlayabilirsiniz! Bunlara, ["Demet Tür
 
 </Listing>
 
-`HerZamanEsit` türünü tanımlamak için `struct` anahtar kelimesini, istediğimiz adı ve ardından noktalı virgülü yazarız. Süslü parantezlere veya normal parantezlere gerek yoktur! Ardından `ozne` değişkeninde bir `HerZamanEsit` örneği elde etmek için de benzer şekilde, herhangi bir süslü ya da normal parantez kullanmadan doğrudan tanımladığımız adı yazarız. İleride, belki de test amacıyla önceden bilinen bir sonuç elde etmek için bu türe özel bir davranış kazandıracağımızı —örneğin `HerZamanEsit` türünün her örneğinin, diğer tüm türlerin her örneğine daima eşit kabul edilmesini sağlayacağımızı— düşünün. Böyle bir davranışı uygulamak için struct içinde herhangi bir veri tutmamıza gerek yoktur! Bölüm 10'da trait'leri nasıl tanımlayacağınızı ve birim benzeri struct'lar da dahil olmak üzere herhangi bir tür üzerinde nasıl uygulayacağınızı göreceksiniz.
+`HerZamanEsit` türünü tanımlamak için `struct` anahtar kelimesini, istediğimiz adı ve ardından noktalı virgülü yazarız. Süslü parantezlere veya normal parantezlere gerek yoktur! Ardından `ozne` değişkeninde bir `HerZamanEsit` örneği elde etmek için de benzer şekilde, herhangi bir süslü ya da normal parantez kullanmadan doğrudan tanımladığımız adı yazarız. İleride bu tür için, `HerZamanEsit` türünün her örneğinin diğer tüm türlerin her örneğine daima eşit kabul edileceği bir davranış uygulayacağımızı düşünün; böyle bir davranış, örneğin testlerde sonucu önceden bilinen bir karşılaştırma elde etmek için işe yarayabilir. Böyle bir davranışı uygulamak için struct içinde herhangi bir veri tutmamıza gerek yoktur! Bölüm 10'da trait'leri nasıl tanımlayacağınızı ve birim benzeri struct'lar da dahil olmak üzere herhangi bir tür üzerinde nasıl uygulayacağınızı göreceksiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="ownership-of-struct-data"></a>
@@ -158,7 +158,7 @@ Hiçbir alanı olmayan struct'lar da tanımlayabilirsiniz! Bunlara, ["Demet Tür
 >
 > Liste 5-1'deki `Kullanici` struct tanımında, `&str` string dilimi türü yerine verinin sahibi olan `String` türünü kullandık. Bu bilinçli bir tercihtir; çünkü bu struct'ın her örneğinin kendi verilerinin tamamına sahip olmasını ve bu verilerin, struct'ın kendisi geçerli olduğu sürece geçerli kalmasını istiyoruz.
 >
-> Struct'ların başka bir değişkene ait verilere referans saklaması da mümkündür; ancak bunun için Bölüm 10'da inceleyeceğimiz bir Rust özelliği olan _ömürlerin (lifetimes)_ kullanılması gerekir. Ömürler, bir struct tarafından referans verilen verilerin struct var olduğu sürece geçerli kalmasını garanti eder. Diyelim ki ömürleri belirtmeden bir struct içinde, *src/main.rs* dosyasındaki gibi referans saklamayı denediniz; bu kod derlenmeyecektir:
+> Struct'ların başka bir değişkene ait verilere referans saklaması da mümkündür; ancak bunun için Bölüm 10'da inceleyeceğimiz bir Rust özelliği olan _ömürlerin (lifetimes)_ kullanılması gerekir. Ömürler, bir struct tarafından referans verilen verilerin struct var olduğu sürece geçerli kalmasını garanti eder. Diyelim ki aşağıdaki *src/main.rs* dosyasında olduğu gibi, ömür belirtmeden bir struct içinde referans saklamayı denediniz; bu kod derlenmez:
 >
 > <Listing file-name="src/main.rs">
 >

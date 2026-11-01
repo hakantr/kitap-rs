@@ -208,7 +208,7 @@ Bunun yerine aynı öğeleri tek satırda kapsama dahil etmek için *iç içe yo
 
 Daha büyük programlarda aynı crate'ten ya da modülden pek çok öğeyi iç içe yollarla kapsama dahil etmek, gereken ayrı `use` deyimlerinin sayısını önemli ölçüde azaltabilir!
 
-İç içe yolu bir yolun herhangi bir seviyesinde kullanabiliriz; bu özellik, ortak bir alt yolu paylaşan iki `use` deyimini birleştirirken oldukça işlevseldir. Örneğin Liste 7-19 iki `use` deyimi gösterir: Biri `std::io` modülünü, diğeri ise `std::io::Write` öğesini kapsama dahil eder.
+İç içe yolu bir yolun herhangi bir seviyesinde kullanabiliriz; bu, alt yollardan birini paylaşan iki `use` deyimini birleştirirken işe yarar. Örneğin Liste 7-19 iki `use` deyimi gösterir: Biri `std::io` modülünü, diğeri ise `std::io::Write` öğesini kapsama dahil eder.
 
 <Listing number="7-19" file-name="src/lib.rs" caption="Biri diğerinin alt yolu olan iki `use` deyimi">
 
@@ -251,7 +251,7 @@ Bu `use` deyimi, `std::collections` içinde tanımlı tüm açık öğeleri geç
 Glob operatörü, test yazarken test edilecek her şeyi `tests` modülünün içine almak için sıkça kullanılır; bunu Bölüm 11'deki ["Nasıl Test Yazılır"][writing-tests]<!-- ignore --> kısmında ele alacağız. Glob operatörü bazen _prelude_ (ön hazırlık) deseninin bir parçası olarak da kullanılır: Bu desen hakkında daha fazla bilgi için [standart kütüphane dokümantasyonuna](../std/prelude/index.html#other-preludes)<!-- ignore --> bakabilirsiniz.
 
 > Not: Sıradan uygulama kodunda glob (`*`) operatöründen kaçınılmasının temel nedeni ad alanı kirliliği ve sürüm yükseltmelerinde yaşanabilecek sürpriz isim çakışmalarıdır; buna karşılık `prelude` ve `tests` modüllerinde durum farklıdır:
-> - **`prelude` deseni**: Bir kütüphanenin `prelude` modülü (örneğin yukarıda kullandığımız `rand::prelude`), kütüphanedeki rastgele tüm öğeleri değil, yazarların glob ile güvenle içe aktarılmak üzere özenle seçip yeniden dışa aktardığı (`pub use`) az sayıdaki temel trait ve türü barındırır. Özellikle metot çağrılarının çalışabilmesi için kapsama alınması gereken trait'leri (`RngExt` gibi) kullanıcıya tek satırda (`use rand::prelude::*;`) sunmak amacıyla tasarlanmıştır.
+> - **`prelude` deseni**: Bir kütüphanenin `prelude` modülü (örneğin yukarıda kullandığımız `rand::prelude`), kütüphanedeki öğelerin tamamını değil, yazarların glob ile güvenle içe aktarılmak üzere özenle seçip yeniden dışa aktardığı (`pub use`) az sayıdaki temel trait ve türü barındırır. Özellikle metot çağrılarının çalışabilmesi için kapsama alınması gereken trait'leri (`RngExt` gibi) kullanıcıya tek satırda (`use rand::prelude::*;`) sunmak amacıyla tasarlanmıştır.
 > - **`tests` modülü**: Birim testleri genellikle test ettikleri kodla aynı dosyanın içindeki `mod tests` alt modülünde yazılır ve `use super::*;` ile üst modüldeki tüm öğeleri (gizli olanlar dahil) tek seferde kapsama alır. Üst modül zaten sizin yazdığınız ve kontrol ettiğiniz kod olduğundan burada harici bağımlılık kaynaklı beklenmedik çakışma riski yoktur.
 
 [ch14-pub-use]: ch14-02-crates-io-da-yayinlama.html#kullanışlı-bir-açık-api-dışa-aktarmak

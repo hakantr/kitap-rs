@@ -146,7 +146,7 @@ görürüz!
 >
 > Ayrıca kod bloğunun açılış satırına ekleyebileceğiniz `no_run` (kodu derler
 > ama ağ isteği veya dosya yazma gibi yan etkileri çalıştırmaz), `should_panic`
-> (örneğin paniklemesini bekler) ve `compile_fail` (hatalı kullanımın derleme
+> (örnek kodun paniklemesini bekler) ve `compile_fail` (hatalı kullanımın derleme
 > zamanında reddedildiğini doğrular) nitelikleriyle belge testlerinizi farklı
 > senaryolara uyarlayabilirsiniz.
 
@@ -205,7 +205,7 @@ içeren `benim_crate` (`my_crate`) belgelendirmesi</span>
 > - **`//!` (İç belgelendirme yorumu — *inner doc comment*):** İçinde *bulunduğu*
 >   kapsayıcıyı (_src/lib.rs_ crate kökünü ya da bir `mod` bloğunu) belgeler ve
 >   `#![doc = "..."]` niteliğine dönüştürülür. Bu yüzden dosyanın veya modülün
->   en başında tek başına yer alabilir.
+>   en başında, diğer öğelerden önce yer almalıdır.
 >
 > Crates.io üzerinde yayınladığınız her açık kaynaklı kütüphanenin `//!` ve `///`
 > yorumları, [docs.rs](https://docs.rs/)<!-- ignore --> tarafından otomatik
@@ -234,8 +234,8 @@ benim_crate::FaydaliTur;` yazmak yerine `use
 benim_crate::bir_modul::baska_modul::FaydaliTur;` yazmak zorunda kalmak da
 can sıkıcı olabilir.
 
-İyi haber şu ki mevcut yapı başka bir kütüphaneden kullanacak kişiler için
-_kullanışlı değilse_ iç organizasyonunuzu değiştirmek zorunda değilsiniz: Bunun
+İyi haber şu ki bu yapı, crate'inizi başka bir kütüphaneden kullanacak kişiler
+için _kullanışlı değilse_ iç organizasyonunuzu değiştirmek zorunda değilsiniz: Bunun
 yerine `pub use` kullanarak öğeleri yeniden dışa aktarabilir ve gizli iç
 yapınızdan farklı bir açık API yapısı oluşturabilirsiniz. *Yeniden dışa aktarma
 (re-exporting)*, bir konumdaki açık bir öğeyi alır ve sanki diğer konumda
@@ -352,8 +352,8 @@ ve bir API belirteci (*API token*) almanız gerekir. Bunun için
 GitHub hesabıyla oturum açın. (GitHub hesabı şu an için zorunludur, ancak site
 gelecekte hesap oluşturmak için başka yöntemleri de destekleyebilir.) Oturum
 açtıktan sonra [https://crates.io/me/](https://crates.io/me/)<!-- ignore -->
-adresindeki hesap ayarlarınıza gidin ve API anahtarınızı alın. Ardından
-`cargo login` komutunu çalıştırın ve istendiğinde API anahtarınızı şu şekilde
+adresindeki hesap ayarlarınıza gidin ve API belirtecinizi alın. Ardından
+`cargo login` komutunu çalıştırın ve istendiğinde API belirtecinizi şu şekilde
 yapıştırın:
 
 ```console
@@ -448,7 +448,7 @@ dışındadır. Rust topluluğundaki pek çok kişi, projelerini Rust ile aynı 
 birden fazla lisansa sahip olmak için `OR` ile ayrılmış birden çok lisans
 tanımlayıcısı belirtebileceğinizi de gösterir.
 
-Benzersiz bir ad, sürüm numarası, açıklamanız ve bir lisans eklendiğinde,
+Benzersiz bir ad, sürüm numarası, açıklama ve lisans eklendiğinde,
 yayınlanmaya hazır bir projenin _Cargo.toml_ dosyası şöyle görünebilir:
 
 <span class="filename">Dosya adı: Cargo.toml</span>

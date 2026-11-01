@@ -11,7 +11,7 @@ Tüm programcılar kodlarını kolay anlaşılır kılmak için çaba gösterir;
 // merhaba, dünya
 ```
 
-Rust'ta idiyomatik yorum stili, yoruma iki eğik çizgi (`//`) ile başlamaktır ve yorum satır sonuna kadar devam eder. Tek bir satırı aşan yorumlarda her satırın başına şu şekilde `//` eklemeniz gerekir:
+Rust'ta idiyomatik yorum stilinde yorum iki eğik çizgiyle (`//`) başlar ve satır sonuna kadar devam eder. Tek bir satırı aşan yorumlarda her satırın başına şu şekilde `//` eklemeniz gerekir:
 
 ```rust
 // Burada oldukça karmaşık bir işlem yapıyoruz; bunu açıklamak için birden
@@ -27,7 +27,7 @@ Yorumlar, kod içeren satırların sonuna da yerleştirilebilir:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-24-comments-end-of-line/src/main.rs}}
 ```
 
-Ancak yorumların çoğunlukla bu biçimde, yani açıkladığı kodun hemen üstünde ayrı bir satırda kullanıldığını görürsünüz:
+Ancak yorumların çoğunlukla bu biçimde, yani açıkladıkları kodun hemen üstünde ayrı bir satırda kullanıldığını görürsünüz:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -35,7 +35,7 @@ Ancak yorumların çoğunlukla bu biçimde, yani açıkladığı kodun hemen üs
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-25-comments-above-line/src/main.rs}}
 ```
 
-Rust'ta ayrıca Bölüm 14'teki ["Crates.io'da Bir Crate Yayınlama"][publishing]<!-- ignore --> bölümünde ele alacağımız _belgelendirme yorumları (documentation comments)_ adında başka bir yorum türü daha vardır.
+Rust'ta ayrıca Bölüm 14'teki ["Crates.io'da Bir Crate Yayınlama"][publishing]<!-- ignore --> kısmında ele alacağımız _belgelendirme yorumları (documentation comments)_ adında başka bir yorum türü daha vardır.
 
 > Not: Rust'taki yorum biçimleri kullanım amacına göre birbirinden ayrılır:
 >

@@ -6,19 +6,19 @@
 <a id="object-oriented-programming-features-of-rust"></a>
 
 Nesne yönelimli programlama (NYP; İng. _object-oriented programming_, _OOP_),
-programları modellemenin yollarından biridir. Programatik bir kavram olarak
+programları modellemenin yollarından biridir. Bir programlama kavramı olarak
 nesneler, 1960'larda Simula programlama dilinde ortaya çıktı. Bu nesneler, Alan
 Kay'in nesnelerin birbirine mesaj ilettiği programlama mimarisini etkiledi. Kay,
-1967'de bu mimariyi tanımlamak için _nesne yönelimli programlama
-(object-oriented programming)_ terimini ortaya attı. NYP'nin ne olduğunu
-açıklayan birbiriyle rekabet halinde pek çok tanım vardır ve bu tanımlardan
-bazılarına göre Rust nesne yönelimlidir, bazılarına göreyse değildir.
+1967'de bu mimariyi tanımlamak için _nesne yönelimli programlama_ terimini
+ortaya attı. NYP'nin ne olduğuna dair birbiriyle çelişen pek çok tanım vardır;
+bu tanımların bazılarına göre Rust nesne yönelimlidir, bazılarına göreyse
+değildir.
 
-Bu bölümde, yaygın biçimde nesne yönelimli kabul edilen belirli karakteristikleri
-ve bu karakteristiklerin deyimsel Rust'a nasıl tercüme edildiğini inceleyeceğiz.
+Bu bölümde, yaygın olarak nesne yönelimli kabul edilen bazı karakteristikleri ve
+bu karakteristiklerin deyimsel Rust'ta nasıl karşılık bulduğunu inceleyeceğiz.
 Ardından nesne yönelimli bir tasarım desenini Rust'ta nasıl uygulayacağınızı
-gösterecek ve bunu yapmanın ödünleşimlerini, Rust'ın güçlü yönlerinden
-yararlanan bir çözüm geliştirmekle karşılaştırarak tartışacağız.
+gösterecek, bu yolun ödünleşimlerini de (*trade-offs*) Rust'ın güçlü
+yönlerinden yararlanan bir çözümle karşılaştırarak tartışacağız.
 
 > Not: Rust çok paradigmalı (*multi-paradigm*) bir dildir: veriyi `struct` ve
 > `enum` ile, davranışı ise `impl` blokları ve `trait`'lerle modeller. Klasik

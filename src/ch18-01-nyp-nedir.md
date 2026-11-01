@@ -8,10 +8,10 @@
 
 Programlama topluluğunda, bir dilin nesne yönelimli sayılabilmesi için hangi
 özelliklere sahip olması gerektiği konusunda bir fikir birliği yoktur. Rust,
-NYP (OOP) dahil olmak üzere pek çok programlama paradigmasından etkilenmiştir;
+NYP dahil olmak üzere pek çok programlama paradigmasından etkilenmiştir;
 örneğin Bölüm 13'te fonksiyonel programlamadan gelen özellikleri incelemiştik.
-Genel kabul gören görüşe göre NYP dilleri bazı ortak karakteristikleri
-paylaşır: nesneler, kapsülleme ve kalıtım. Şimdi bu karakteristiklerin her
+Tartışmaya açık olsa da NYP dillerinin bazı ortak karakteristikleri paylaştığı
+söylenebilir: nesneler, kapsülleme ve kalıtım. Şimdi bu karakteristiklerin her
 birinin ne anlama geldiğine ve Rust'ın bunları destekleyip desteklemediğine
 bakalım.
 
@@ -21,11 +21,10 @@ bakalım.
 
 ### Nesneler Veri ve Davranışı Birlikte Taşır
 
-Erich Gamma, Richard Helm, Ralph Johnson ve John Vlissides tarafından yazılan
-(Addison-Wesley, 1994) ve yaygın olarak _Dörtlü Çete (The Gang of Four)_ kitabı
-diye anılan _Design Patterns: Elements of Reusable Object-Oriented Software_,
-nesne yönelimli tasarım desenlerinin bir kataloğudur. Bu kitap NYP'yi şu
-şekilde tanımlar:
+Erich Gamma, Richard Helm, Ralph Johnson ve John Vlissides'in yazdığı _Design
+Patterns: Elements of Reusable Object-Oriented Software_ (Addison-Wesley, 1994),
+halk arasında _Dörtlü Çete (The Gang of Four)_ kitabı olarak bilinir ve nesne
+yönelimli tasarım desenlerinin bir kataloğudur. Bu kitap NYP'yi şöyle tanımlar:
 
 > Nesne yönelimli programlar nesnelerden oluşur. Bir **nesne**, hem veriyi hem
 > de o veri üzerinde çalışan yordamları bir arada paketler. Bu yordamlar
@@ -33,8 +32,8 @@ nesne yönelimli tasarım desenlerinin bir kataloğudur. Bu kitap NYP'yi şu
 
 Bu tanıma göre Rust nesne yönelimlidir: struct'lar ve enum'lar veri tutar,
 `impl` blokları ise struct'lar ve enum'lar üzerinde metotlar sağlar. Metotlara
-sahip struct ve enum'lar _nesne_ olarak adlandırılmasa da, Gang of Four'un
-nesne tanımına göre aynı işlevselliği sunarlar.
+sahip struct ve enum'lar _nesne_ olarak adlandırılmasa da Dörtlü Çete'nin
+nesne tanımındaki işlevselliğin aynısını sunarlar.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -45,7 +44,7 @@ nesne tanımına göre aynı işlevselliği sunarlar.
 NYP ile sıkça ilişkilendirilen bir diğer yön de, bir nesnenin uygulama
 ayrıntılarının o nesneyi kullanan kod tarafından erişilebilir olmaması anlamına
 gelen _kapsülleme (encapsulation)_ düşüncesidir. Dolayısıyla bir nesneyle
-etkileşim kurmanın tek yolu onun açık API'si üzerindendir; nesneyi kullanan
+etkileşim kurmanın tek yolu, onun açık (*public*) API'sidir; nesneyi kullanan
 kod, nesnenin iç yapısına ulaşıp veriyi veya davranışı doğrudan
 değiştirememelidir. Bu sayede programcı, nesneyi kullanan kodu değiştirmeye
 gerek duymadan nesnenin iç yapısını değiştirebilir ve yeniden düzenleyebilir.
@@ -155,9 +154,8 @@ kılmasına benzer.
 
 Kalıtımı kullanmanın diğer nedeni tür sistemiyle ilgilidir: alt türün, üst
 türle aynı yerlerde kullanılabilmesini sağlamak. Buna _çok biçimlilik
-(polymorphism)_ de denir; yani belirli karakteristikleri paylaşıyorlarsa
-çalışma zamanında birden fazla nesneyi birbiri yerine geçirebilmeniz anlamına
-gelir.
+(polymorphism)_ de denir: Belirli karakteristikleri paylaşan birden fazla
+nesneyi çalışma zamanında birbirinin yerine kullanabilmeniz anlamına gelir.
 
 > ### Çok Biçimlilik
 >
@@ -174,9 +172,9 @@ Rust, kalıtım sunmayarak farklı bir ödünleşim kümesi seçmiştir. Kalıt�
 zaman gerekenden fazla kod paylaşma riski taşır. Alt sınıflar üst sınıflarının
 tüm karakteristiklerini her zaman paylaşmamalıdır, ancak kalıtım
 kullanıldığında bunu yaparlar. Bu durum bir programın tasarımını daha az esnek
-hale getirebilir. Ayrıca metotlar alt sınıfa uymadığı için, alt sınıflar
-üzerinde anlamsız olan veya hatalara yol açan metotların çağrılması olasılığını
-da doğurur. Buna ek olarak bazı diller yalnızca _tekli kalıtıma (single
+hâle getirebilir. Ayrıca alt sınıfa uymayan metotlar yüzünden, alt sınıflar
+üzerinde anlamsız olan veya hatalara yol açan metotların çağrılması olasılığı
+da doğar. Buna ek olarak bazı diller yalnızca _tekli kalıtıma (single
 inheritance)_ —yani bir alt sınıfın yalnızca tek bir sınıftan miras
 alabilmesine— izin vererek program tasarımının esnekliğini daha da kısıtlar.
 

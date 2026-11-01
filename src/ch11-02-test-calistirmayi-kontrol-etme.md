@@ -4,9 +4,9 @@
 
 ## Testlerin Nasıl Çalıştırılacağını Kontrol Etme
 
-Tıpkı `cargo run` komutunun kodunuzu derleyip ardından üretilen ikili dosyayı çalıştırması gibi, `cargo test` komutu da kodunuzu test modunda derler ve üretilen test ikili dosyasını çalıştırır. `cargo test` tarafından üretilen ikilinin varsayılan davranışı, tüm testleri paralel olarak çalıştırmak ve testlerin çalışması sırasında üretilen çıktıyı yakalamaktır; böylece bu çıktının ekrana basılması engellenir ve doğrudan test sonuçlarıyla ilgili özetin okunması kolaylaşır. Bununla birlikte, bu varsayılan davranışı değiştirmek için komut satırı seçenekleri belirtebilirsiniz.
+Tıpkı `cargo run` komutunun kodunuzu derleyip ardından üretilen ikili dosyayı çalıştırması gibi, `cargo test` komutu da kodunuzu test modunda derler ve üretilen test ikili dosyasını çalıştırır. `cargo test` tarafından üretilen ikilinin varsayılan davranışı, tüm testleri paralel olarak çalıştırmak ve testlerin çalışması sırasında üretilen çıktıyı yakalamaktır; böylece bu çıktı ekranda görüntülenmez ve test sonuçlarıyla ilgili çıktıyı okumak kolaylaşır. Bununla birlikte, bu varsayılan davranışı değiştirmek için komut satırı seçenekleri belirtebilirsiniz.
 
-Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretilen test ikili dosyasına iletilir. Bu iki argüman türünü birbirinden ayırmak için önce `cargo test`'e gidecek argümanları, ardından `--` ayırıcısını ve sonrasında test ikilisine gidecek argümanları sıralarsınız. `cargo test --help` komutunu çalıştırmak `cargo test` ile kullanabileceğiniz seçenekleri listelerken, `cargo test -- --help` komutunu çalıştırmak ayırıcıdan sonra kullanabileceğiniz seçenekleri gösterir. Bu seçenekler ayrıca [_`rustc` Kitabı_'nın "Tests" bölümünde][tests] de belgelenmiştir.
+Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretilen test ikili dosyasına iletilir. Bu iki argüman türünü birbirinden ayırmak için önce `cargo test`'e gidecek argümanları, ardından `--` ayırıcısını ve sonrasında test ikilisine gidecek argümanları sıralarsınız. `cargo test --help` komutunu çalıştırmak `cargo test` ile kullanabileceğiniz seçenekleri listelerken, `cargo test -- --help` komutunu çalıştırmak ayırıcıdan sonra kullanabileceğiniz seçenekleri gösterir. Bu seçenekler [_`rustc` Kitabı_'nın "Tests" bölümünde][tests] de belgelenmiştir.
 
 > Not: Pratikte `--` ayırıcısının solundaki ve sağındaki seçenekler iki farklı katmanı kontrol eder:
 >
@@ -20,7 +20,7 @@ Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretile
 
 ### Testleri Paralel veya Ardışık Olarak Çalıştırma
 
-Birden fazla testi çalıştırdığınızda bunlar varsayılan olarak *thread'ler (iş parçacıkları)* aracılığıyla paralel biçimde çalışır; bu sayede testler daha kısa sürede tamamlanır ve çok daha hızlı geri bildirim alırsınız. Testler aynı anda çalıştığı için, geçerli çalışma dizini veya çevre değişkenleri gibi paylaşılan bir ortam da dahil olmak üzere testlerinizin birbirine ya da paylaşılan herhangi bir duruma bağımlı olmadığından emin olmalısınız.
+Birden fazla testi çalıştırdığınızda bunlar varsayılan olarak *thread'ler (iş parçacıkları)* aracılığıyla paralel biçimde çalışır; bu sayede testler daha kısa sürede tamamlanır ve çok daha hızlı geri bildirim alırsınız. Testler aynı anda çalıştığı için testlerinizin birbirine ya da paylaşılan herhangi bir duruma bağımlı olmadığından emin olmalısınız; geçerli çalışma dizini veya çevre değişkenleri gibi ortak bir ortam da bu paylaşılan duruma dahildir.
 
 Örneğin testlerinizin her birinin diskte _test-ciktisi.txt_ adında bir dosya oluşturan ve bu dosyaya veri yazan bir kod çalıştırdığını düşünelim. Ardından her test bu dosyadaki veriyi okur ve dosyanın —her testte farklı olan— belirli bir değeri içerdiğini doğrular. Testler aynı anda çalıştığı için, bir test dosyaya yazma ile dosyayı okuma işlemleri arasındayken başka bir test aynı dosyanın üzerine yazabilir. Bu durumda ikinci test, kod hatalı olduğu için değil, paralel çalışan testler birbirinin işleyişine müdahale ettiği için başarısız olur. Çözümlerden biri her testin farklı bir dosyaya yazmasını sağlamaktır; diğer bir çözüm ise testleri teker teker çalıştırmaktır.
 

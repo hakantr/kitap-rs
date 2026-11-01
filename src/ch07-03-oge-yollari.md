@@ -20,7 +20,7 @@ Liste 7-1'e geri dönelim ve `bekleme_listesine_ekle` fonksiyonunu çağırmak i
 
 Crate kökünde tanımlanan `restoranda_yemek_ye` adlı yeni bir fonksiyondan `bekleme_listesine_ekle` fonksiyonunu çağırmanın iki yolunu göstereceğiz. Bu yollar doğrudur; ancak örneğin bu hâliyle derlenmesini engelleyecek başka bir sorun daha vardır. Nedenini birazdan açıklayacağız.
 
-`restoranda_yemek_ye` fonksiyonu, kütüphane crate'imizin açık API'sinin bir parçası olduğu için onu `pub` anahtar kelimesiyle işaretliyoruz. ["Yolları `pub` Anahtar Kelimesiyle Dışarıya Açma"][pub]<!-- ignore --> bölümünde `pub` hakkında daha fazla ayrıntıya gireceğiz.
+`restoranda_yemek_ye` fonksiyonu, kütüphane crate'imizin açık API'sinin bir parçası olduğu için onu `pub` anahtar kelimesiyle işaretliyoruz. ["Yolları `pub` Anahtar Kelimesiyle Dışarıya Açma"][pub]<!-- ignore --> kısmında `pub` hakkında daha fazla ayrıntıya gireceğiz.
 
 <Listing number="7-3" file-name="src/lib.rs" caption="`bekleme_listesine_ekle` fonksiyonunu mutlak ve göreli yollar kullanarak çağırma">
 
@@ -142,7 +142,7 @@ Bir şefin hatalı bir siparişi düzeltip bizzat müşteriye götürdüğü dur
 
 </Listing>
 
-`yanlis_siparisi_duzelt` fonksiyonu `restoran_arka_kisim` modülü içinde yer aldığından, `restoran_arka_kisim` modülünün üst modülüne — bu örnekte kök modül olan `crate` kapsamına — çıkmak için `super` kullanabiliriz. Oradan `siparisi_teslim_et` fonksiyonunu arar ve buluruz. Başardık! Crate'in modül ağacını yeniden düzenlemeye karar verirsek `restoran_arka_kisim` modülü ile `siparisi_teslim_et` fonksiyonunun aralarındaki ilişkiyi koruyup birlikte taşınma olasılığının yüksek olduğunu öngörüyoruz. Bu nedenle `super` kullandık; böylece bu kod gelecekte başka bir modüle taşındığında güncellememiz gereken yer sayısı daha az olacaktır.
+`yanlis_siparisi_duzelt` fonksiyonu `restoran_arka_kisim` modülü içinde yer aldığından, `restoran_arka_kisim` modülünün üst modülüne — bu örnekte kök modül olan `crate` kapsamına — çıkmak için `super` kullanabiliriz. Oradan `siparisi_teslim_et` fonksiyonunu arar ve buluruz. Başardık! `restoran_arka_kisim` modülü ile `siparisi_teslim_et` fonksiyonunun birbiriyle ilişkili kalacağını ve crate'in modül ağacını yeniden düzenlemeye karar verirsek birlikte taşınacaklarını düşünüyoruz. Bu nedenle `super` kullandık; böylece bu kod gelecekte başka bir modüle taşındığında güncellememiz gereken yer sayısı daha az olacaktır.
 
 <!-- Old headings. Do not remove or links may break. -->
 

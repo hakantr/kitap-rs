@@ -54,7 +54,7 @@ pub trait Iterator {
 
 Bu tanımda yeni bir sözdizimi kullanıldığına dikkat edin: `type Item` ve `Self::Item`, bu trait ile bağlantılı bir *ilişkili tür (associated type)* tanımlar. İlişkili türleri Bölüm 20'de derinlemesine ele alacağız. Şimdilik bilmeniz gereken tek şey, bu kodun `Iterator` trait'ini uygularken aynı zamanda bir `Item` türü tanımlamanızı zorunlu kıldığı ve bu `Item` türünün `next` metodunun dönüş türünde kullanıldığıdır. Başka bir deyişle `Item` türü, iteratörden döndürülecek öğelerin türü olacaktır.
 
-`Iterator` trait'i, onu uygulayan türlerin yalnızca tek bir metodu tanımlamasını gerektirir: her çağrıldığında iteratörün sıradaki bir öğesini `Some` içine sarılmış olarak döndüren, yineleme sona erdiğinde ise `None` döndüren `next` metodu.
+`Iterator` trait'i, onu uygulayan türlerin yalnızca tek bir metodu tanımlamasını gerektirir: her çağrıldığında iteratörün sıradaki öğesini `Some` içine sarılmış olarak döndüren, yineleme sona erdiğinde ise `None` döndüren `next` metodu.
 
 İteratörler üzerinde `next` metodunu doğrudan çağırabiliriz; Liste 13-12, vektörden oluşturulan iteratör üzerinde art arda yapılan `next` çağrılarının hangi değerleri döndürdüğünü göstermektedir.
 
@@ -106,7 +106,7 @@ Ayrıca `next` çağrılarından elde ettiğimiz değerlerin vektördeki değerl
 
 _İteratör adaptörleri (iterator adapters)_, `Iterator` trait'i üzerinde tanımlanan ve iteratörü tüketmeyen metotlardır. Bunun yerine orijinal iteratörün belirli bir yönünü değiştirerek yeni ve farklı iteratörler üretirler.
 
-Liste 13-14, öğeler üzerinde ilerlenirken her bir öğe için çağrılacak bir kapanış alan `map` iteratör adaptörünün kullanımını göstermektedir. `map` metodu, değiştirilmiş öğeleri üreten yeni bir iteratör döndürür. Buradaki kapanış, vektördeki her bir öğenin 1 artırılacağı yeni bir iteratör oluşturur.
+Liste 13-14, öğeler üzerinde ilerlenirken her bir öğe için çağrılacak bir kapanış alan `map` iteratör adaptörünün kullanımını göstermektedir. `map` metodu, değiştirilmiş öğeleri üreten yeni bir iteratör döndürür. Buradaki kapanış sayesinde, vektördeki her öğenin 1 artırılmış halini üreten yeni bir iteratör elde ederiz.
 
 <Listing number="13-14" file-name="src/main.rs" caption="Yeni bir iteratör oluşturmak için `map` iteratör adaptörünü çağırmak">
 
@@ -143,7 +143,7 @@ Karmaşık işlemleri okunabilir bir biçimde gerçekleştirmek için birden faz
 > Not: **İteratör Adaptörleri ile Tüketen Adaptörler Arasındaki Fark**: Bir iteratör hattını kurarken metotları iki gruba ayırmak zihinsel modeli çok netleştirir:
 >
 > - **İteratör adaptörleri** (`map`, `filter`, `take`, `skip`, `enumerate`, `zip` vb.) hattın *ara halkalarıdır*: Yalnızca yapılacak dönüşümün tarifini taşıyan yeni bir iteratör sarmalayıcısı (örneğin `Map` veya `Filter` struct'ı) döndürürler; tek başlarına `next` çağırmaz ve hiçbir öğeyi işlemezler. Standart kütüphanede bu türler `#[must_use]` niteliğiyle işaretlendiğinden, zinciri tüketmeyi unuttuğunuzda derleyici `unused_must_use` uyarısıyla sizi uyarır.
-> - **Tüketen adaptörler** (`collect`, `sum`, `count`, `for_each`, `any`, `all`, `find` vb. ya da bir `for` döngüsü) hattın *son halkasıdır*: Arka planda `next` metodunu tekrar tekrar çağırarak tüm zinciri harekete geçirir ve nihai sonucu üretir. Ayrıca `collect` yalnızca `Vec<T>` değil, `String` veya `HashMap<K, V>` gibi pek çok farklı koleksiyon üretebildiğinden, Liste 13-15'teki `let v2: Vec<_>` gibi bir tür açıklamasıyla hedef koleksiyonu belirtmek (öğe türünü `_` ile yine derleyiciye bırakarak) yaygın bir Rust deyimidir.
+> - **Tüketen adaptörler** (`collect`, `sum`, `count`, `for_each`, `any`, `all`, `find` vb.; bir `for` döngüsü de aynı rolü üstlenir) hattın *son halkasıdır*: Arka planda `next` metodunu tekrar tekrar çağırarak tüm zinciri harekete geçirir ve nihai sonucu üretir. Ayrıca `collect` yalnızca `Vec<T>` değil, `String` veya `HashMap<K, V>` gibi pek çok farklı koleksiyon üretebildiğinden, Liste 13-15'teki `let v2: Vec<_>` gibi bir tür açıklamasıyla hedef koleksiyonu belirtmek (öğe türünü `_` ile yine derleyiciye bırakarak) yaygın bir Rust deyimidir.
 
 <!-- Old headings. Do not remove or links may break. -->
 

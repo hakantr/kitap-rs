@@ -82,7 +82,7 @@ Burada bir struct tanımlayıp ona `Dikdortgen` adını verdik. Süslü parantez
 
 ### Türetilen Trait'lerle İşlevsellik Ekleme
 
-Programımızda hata ayıklarken (*debugging*) bir `Dikdortgen` örneğini ekrana yazdırıp tüm alanlarının değerlerini görebilmek oldukça işlevsel olurdu. Liste 5-11'de, önceki bölümlerde yaptığımız gibi [`println!` makrosunu][println]<!-- ignore --> kullanmayı deniyoruz. Ne var ki bu kod derlenmeyecektir.
+Programımızda hata ayıklarken (*debugging*) bir `Dikdortgen` örneğini ekrana yazdırıp tüm alanlarının değerlerini görebilmek çok işe yarardı. Liste 5-11'de, önceki bölümlerde yaptığımız gibi [`println!` makrosunu][println]<!-- ignore --> kullanmayı deniyoruz. Ne var ki bu kod derlenmeyecektir.
 
 <Listing number="5-11" file-name="src/main.rs" caption="Bir `Dikdortgen` örneğini ekrana yazdırmayı deneme">
 
@@ -144,12 +144,12 @@ Harika! En şık çıktı olmayabilir, ancak bu örneğin tüm alanlarının de�
 
 > Not: `println!` ve `format!` gibi biçimlendirme makrolarındaki üç temel gösterimi kısaca şöyle özetleyebiliriz:
 > - `{}` (`std::fmt::Display`): Son kullanıcıya yönelik temiz metin çıktısı üretir. Özel türler için nasıl görüneceği belirsiz olduğundan `#[derive(Display)]` diye otomatik bir türetme yoktur; Bölüm 10'da göreceğimiz gibi `Display` trait'ini kendi türleriniz için elle uygulayabilirsiniz.
-> - `{:?}` (`std::fmt::Debug`): Geliştiriciye yönelik tek satırlık hata ayıklama çıktısı üretir; `#[derive(Debug)]` özniteliğiyle otomatik olarak türetilebilir (`Dikdortgen`'in tüm alanları da `Debug` uyguladığı sürece).
-> - `{:#?}` (*okunaklı `Debug`*): Çok alanlı veya iç içe geçmiş büyük veri yapılarını her alanı ayrı satıra ve girintili yerleştirecek şekilde okunaklı biçimde yazdırır.
+> - `{:?}` (`std::fmt::Debug`): Geliştiriciye yönelik tek satırlık hata ayıklama çıktısı üretir; `#[derive(Debug)]` özniteliğiyle otomatik olarak türetilebilir (türün tüm alanları da `Debug` uyguladığı sürece).
+> - `{:#?}` (*okunaklı `Debug`*): Çok alanlı veya iç içe geçmiş büyük veri yapılarını, her alanı girintili olarak ayrı bir satıra yerleştirip okunaklı biçimde yazdırır.
 
 `Debug` biçimini kullanarak bir değeri yazdırmanın bir diğer yolu da [`dbg!` makrosunu][dbg]<!-- ignore --> kullanmaktır. Referans alan `println!` makrosunun aksine `dbg!` makrosu bir ifadenin sahipliğini alır, kodunuzda `dbg!` çağrısının yapıldığı dosya ve satır numarasını o ifadenin hesaplanan değeriyle birlikte yazdırır ve ardından değerin sahipliğini geri döndürür.
 
-> Not: `dbg!` makrosunu çağırmak, standart çıktı akışına (`stdout`) yazan `println!` makrosunun aksine standart hata akışına (`stderr`) yazar. Böylece örneğin `cargo run > cikti.txt` komutuyla programın normal çıktısını bir dosyaya yönlendirseniz bile `dbg!` ile ürettiğiniz hata ayıklama mesajları dosyayı kirletmez ve doğrudan terminal ekranında görünmeye devam eder. Bölüm 12'deki ["Hataları Standart Hata Çıktısına Yönlendirme"][err]<!-- ignore --> bölümünde `stderr` ve `stdout` akışlarını daha ayrıntılı ele alacağız.
+> Not: `dbg!` makrosu, standart çıktı akışına (`stdout`) yazan `println!` makrosunun aksine standart hata akışına (`stderr`) yazar. Böylece örneğin `cargo run > cikti.txt` komutuyla programın normal çıktısını bir dosyaya yönlendirseniz bile `dbg!` ile ürettiğiniz hata ayıklama mesajları dosyayı kirletmez ve doğrudan terminal ekranında görünmeye devam eder. Bölüm 12'deki ["Hataları Standart Hata Çıktısına Yönlendirme"][err]<!-- ignore --> kısmında `stderr` ve `stdout` akışlarını daha ayrıntılı ele alacağız.
 
 Aşağıda, hem `dikdortgen1` içindeki struct'ın tamamının değeriyle hem de `genislik` alanına atanan ara değerle ilgilendiğimiz bir örnek yer alıyor:
 
@@ -157,17 +157,17 @@ Aşağıda, hem `dikdortgen1` içindeki struct'ın tamamının değeriyle hem de
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/no-listing-05-dbg-macro/src/main.rs}}
 ```
 
-`30 * olcek` ifadesini `dbg!` içine alabiliriz; `dbg!` ifadenin değerinin sahipliğini geri döndürdüğü için `genislik` alanı, orada `dbg!` çağrısı hiç yokmuş gibi aynı değeri alacaktır. Bir sonraki çağrıda ise `dbg!` makrosunun `dikdortgen1`'in sahipliğini tüketmesini istemediğimiz için `dikdortgen1`'e bir referans (`&dikdortgen1`) geçiriyoruz. Bu örneğin çıktısı şöyle görünür:
+`30 * olcek` ifadesini `dbg!` içine alabiliriz; `dbg!` ifadenin değerinin sahipliğini geri döndürdüğü için `genislik` alanı, orada `dbg!` çağrısı hiç yokmuş gibi aynı değeri alacaktır. Bir sonraki çağrıda ise `dbg!` makrosunun `dikdortgen1`'in sahipliğini almasını istemediğimiz için `dikdortgen1`'e bir referans (`&dikdortgen1`) geçiriyoruz. Bu örneğin çıktısı şöyle görünür:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/no-listing-05-dbg-macro/output.txt}}
 ```
 
-Çıktının ilk kısmının, `30 * olcek` ifadesinde hata ayıkladığımız _src/main.rs_ dosyasının 10. satırından geldiğini ve ifadenin sonucunun `60` olduğunu görebiliriz (tamsayılar için tanımlı `Debug` biçimlendirmesi yalnızca sayının kendisini yazdırır). _src/main.rs_ dosyasının 14. satırındaki `dbg!` çağrısı ise `Dikdortgen` struct'ına referans olan `&dikdortgen1`'in değerini yazdırır. Bu çıktı, `Dikdortgen` türünün *okunaklı (pretty)* `Debug` biçimlendirmesini kullanır. Kodunuzun çalışma anında ne yaptığını anlamaya çalışırken `dbg!` makrosu gerçekten çok işinize yarayabilir!
+Çıktının ilk kısmının, `30 * olcek` ifadesinde hata ayıkladığımız _src/main.rs_ dosyasının 10. satırından geldiğini ve ifadenin sonucunun `60` olduğunu görebiliriz (tamsayılar için tanımlı `Debug` biçimlendirmesi yalnızca sayının kendisini yazdırır). _src/main.rs_ dosyasının 14. satırındaki `dbg!` çağrısı ise `Dikdortgen` struct'ına referans olan `&dikdortgen1`'in değerini yazdırır. Bu çıktı, `Dikdortgen` türünün *okunaklı (pretty)* `Debug` biçimlendirmesini kullanır. Kodunuzun çalışma zamanında ne yaptığını anlamaya çalışırken `dbg!` makrosu gerçekten çok işinize yarayabilir!
 
-> Not: `dbg!` makrosunun sahipliği alıp geri döndürmesi (`T -> T`), onu başka bir ifadenin tam ortasına (`genislik: dbg!(30 * olcek)`) geçici değişken tanımlamadan yerleştirebilmenizi sağlar. Ancak `Copy` olmayan bir değişkeni tek başına `dbg!(dikdortgen1);` şeklinde noktalı virgülle biten bir deyim olarak çağırırsanız, `dikdortgen1`'in sahipliği `dbg!` içine taşınır ve dönen değer hiçbir değişkene bağlanmadığı için o satırın sonunda düşürülür (*drop*). Değişkeni sonraki satırlarda da kullanmaya devam etmek istediğinizde yukarıdaki gibi `dbg!(&dikdortgen1);` şeklinde referans geçirmeniz (veya `let dikdortgen1 = dbg!(dikdortgen1);` ile sahipliği yeniden bağlamanız) gerekir.
+> Not: `dbg!` makrosunun sahipliği alıp geri döndürmesi (`T -> T`), onu başka bir ifadenin tam ortasına (`genislik: dbg!(30 * olcek)`) geçici değişken tanımlamadan yerleştirebilmenizi sağlar. Ancak `dbg!` makrosunu `Copy` olmayan bir değişkenle, tek başına ve noktalı virgülle biten bir deyim olarak (`dbg!(dikdortgen1);`) çağırırsanız, `dikdortgen1`'in sahipliği `dbg!` içine taşınır ve dönen değer hiçbir değişkene bağlanmadığı için o satırın sonunda düşürülür (*drop*). Değişkeni sonraki satırlarda da kullanmaya devam etmek istediğinizde yukarıdaki gibi `dbg!(&dikdortgen1);` şeklinde referans geçirmeniz (veya `let dikdortgen1 = dbg!(dikdortgen1);` ile sahipliği yeniden bağlamanız) gerekir.
 
-`Debug` trait'ine ek olarak Rust, özel türlerimize yararlı davranışlar kazandırabilmemiz için `derive` özniteliğiyle birlikte kullanabileceğimiz pek çok trait sunmuştur. Bu trait'ler ve sağladıkları davranışlar [Ek C][app-c]<!-- ignore -->'de listelenmiştir. Bölüm 10'da bu trait'leri özelleştirilmiş davranışlarla nasıl uygulayacağınızı ve kendi trait'lerinizi nasıl oluşturacağınızı inceleyeceğiz. Ayrıca `derive` dışında pek çok başka öznitelik de vardır; daha fazla bilgi için [Rust Referansı'ndaki "Attributes" (Öznitelikler) bölümüne][attributes] bakabilirsiniz.
+`Debug` trait'ine ek olarak Rust, özel türlerimize yararlı davranışlar kazandırabilmemiz için `derive` özniteliğiyle birlikte kullanabileceğimiz pek çok trait sunar. Bu trait'ler ve sağladıkları davranışlar [Ek C][app-c]<!-- ignore -->'de listelenmiştir. Bölüm 10'da bu trait'leri özelleştirilmiş davranışlarla nasıl uygulayacağınızı ve kendi trait'lerinizi nasıl oluşturacağınızı inceleyeceğiz. Ayrıca `derive` dışında pek çok başka öznitelik de vardır; daha fazla bilgi için [Rust Referansı'ndaki "Attributes" (Öznitelikler) bölümüne][attributes] bakabilirsiniz.
 
 `alan` fonksiyonumuz oldukça özel amaçlıdır: Yalnızca dikdörtgenlerin alanını hesaplar. Başka hiçbir türle çalışmayacağı için bu davranışı `Dikdortgen` struct'ımıza daha sıkı biçimde bağlamak çok daha yerinde olur. Gelin `alan` fonksiyonunu `Dikdortgen` türümüz üzerinde tanımlı bir `alan` metoduna dönüştürerek bu kodu yeniden düzenlemeye nasıl devam edebileceğimize bakalım.
 

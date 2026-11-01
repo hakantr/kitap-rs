@@ -18,12 +18,13 @@ kümesinden oluştuğunda bu son derece iyi bir çözümdür.
 
 Ancak kimi zaman kütüphanemizi kullanan geliştiricilerin, belirli bir durumda
 geçerli olan tür kümesini genişletebilmesini isteriz. Bunu nasıl
-başarabileceğimizi göstermek için, bir öğe listesi üzerinde yineleme yaparak her
-öğeyi ekrana çizmek üzere üzerinde `ciz` metodunu çağıran örnek bir grafiksel
-kullanıcı arayüzü (*GUI*) aracı oluşturacağız; bu, GUI araçlarında yaygın olarak
-kullanılan bir tekniktir. Bir GUI kütüphanesinin iskeletini barındıran `arayuz`
-adında bir kütüphane crate'i oluşturacağız. Bu crate, geliştiricilerin
-kullanabileceği `Dugme` veya `MetinAlani` gibi bazı hazır türler içerebilir.
+başarabileceğimizi göstermek için örnek bir grafiksel kullanıcı arayüzü (*GUI*)
+aracı oluşturacağız. Bu araç, bir öğe listesi üzerinde yineleme yaparak her
+öğeyi ekrana çizmek için öğenin `ciz` metodunu çağıracak; bu, GUI araçlarında
+yaygın olarak kullanılan bir tekniktir. Bir GUI kütüphanesinin iskeletini
+barındıran `arayuz` adında bir kütüphane crate'i oluşturacağız. Bu crate,
+geliştiricilerin kullanabileceği `Dugme` veya `MetinAlani` gibi bazı hazır
+türler içerebilir.
 Buna ek olarak, `arayuz` kullanıcıları ekrana çizilebilen kendi türlerini de
 oluşturmak isteyecektir: Örneğin bir programcı `Gorsel` türü eklerken, bir
 başkası `SecimKutusu` türü ekleyebilir.
@@ -55,7 +56,7 @@ ihtiyacımız vardır.
 
 `arayuz` kütüphanesinin sahip olmasını istediğimiz davranışı uygulamak için,
 üzerinde `ciz` adında tek bir metot bulunan `Ciz` adlı bir trait tanımlayacağız.
-Ardından bir trait nesnesi alan bir vektör tanımlayabiliriz. Bir _trait nesnesi
+Ardından trait nesnelerini tutan bir vektör tanımlayabiliriz. Bir _trait nesnesi
 (trait object)_, hem belirttiğimiz trait'i uygulayan bir türün örneğine hem de
 çalışma zamanında o tür üzerindeki trait metotlarını bulmak için kullanılan bir
 tabloya işaret eder. Bir referans veya `Box<T>` akıllı işaretçisi gibi bir tür
@@ -63,20 +64,22 @@ işaretçi, ardından `dyn` anahtar kelimesi ve son olarak ilgili trait'i
 belirterek bir trait nesnesi oluştururuz. (Trait nesnelerinin neden bir işaretçi
 kullanmak zorunda olduğunu Bölüm 20'deki
 [“Dinamik Boyutlu Türler ve `Sized` Trait'i”][dynamically-sized]<!-- ignore -->
-alt bölümünde ele alacağız.) Trait nesnelerini jenerik veya somut bir türün yerine kullanabiliriz. Bir trait
-nesnesi kullandığımız her yerde Rust'ın tür sistemi, o bağlamda kullanılan her
-değerin ilgili trait nesnesinin trait'ini uyguladığını derleme zamanında güvence
-altına alır. Sonuç olarak derleme zamanında olası tüm türleri bilmemize gerek
-kalmaz.
+alt bölümünde ele alacağız.) Trait nesnelerini jenerik veya somut bir türün
+yerine kullanabiliriz. Bir trait nesnesi kullandığımız her yerde Rust'ın tür
+sistemi, o bağlamda kullanılan her değerin ilgili trait nesnesinin trait'ini
+uyguladığını derleme zamanında güvence altına alır. Sonuç olarak derleme
+zamanında olası tüm türleri bilmemize gerek kalmaz.
 
 Rust'ta struct'ları ve enum'ları diğer dillerdeki nesnelerden ayırt etmek için
 onlara "nesne" demekten kaçındığımızdan bahsetmiştik. Bir struct veya enum'da,
 struct alanlarındaki veri ile `impl` bloklarındaki davranış birbirinden
 ayrılmıştır; oysa diğer dillerde tek bir kavram altında birleştirilen veri ve
-davranış genellikle nesne olarak adlandırılır. Trait nesneleri, kendilerine veri
-ekleyemememiz bakımından diğer dillerdeki nesnelerden ayrılır. Trait nesneleri
-diğer dillerdeki nesneler kadar genel amaçlı değildir: Özgül amaçları, ortak
-davranış üzerinde soyutlama yapılmasına olanak tanımaktır.
+davranış genellikle nesne olarak adlandırılır. Bununla birlikte trait nesneleri,
+veriyi ve davranışı bir araya getirmeleri bakımından diğer dillerdeki nesnelere
+daha çok benzer. Ancak trait nesnelerine veri ekleyemememiz, onları geleneksel
+nesnelerden ayırır. Trait nesneleri diğer dillerdeki nesneler kadar genel
+amaçlı değildir: Asıl amaçları, ortak davranış üzerinde soyutlama yapılmasına
+olanak tanımaktır.
 
 Liste 18-3, `ciz` adında tek bir metoda sahip `Ciz` adlı bir trait'in nasıl
 tanımlanacağını gösterir.
@@ -111,11 +114,12 @@ türün yerini tutar.
 > öbekteki veya yığındaki somut verinin (`Dugme`, `SecimKutusu` vb.) bellek
 > adresini, ikincisi ise derleyicinin o somut tür ve trait çifti için ürettiği
 > **sanal metot tablosunu (*vtable*)** gösterir. Sanal metot tablosunda somut
-> türün boyutu, hizalaması (*alignment*), değer bellekten düşürülürken
-> çağrılacak `drop` fonksiyon işaretçisi ve `Ciz::ciz` gibi trait metotlarının
-> fonksiyon işaretçileri yer alır. Her `Box<dyn Ciz>` yığında sabit 16 bayt yer
-> kapladığından, `Vec<Box<dyn Ciz>>` vektörü öbek üzerindeki boyutları
-> birbirinden farklı bileşenleri güvenle yan yana tutabilir.
+> türün boyutu, hizalaması (*alignment*), değer düşürülürken (*drop*)
+> çağrılacak fonksiyonun işaretçisi ve `Ciz::ciz` gibi trait metotlarının
+> fonksiyon işaretçileri yer alır. Her `Box<dyn Ciz>` öğesi, gösterdiği somut
+> türden bağımsız olarak sabit boyutta (64-bit mimarilerde 16 bayt) olduğundan,
+> `Vec<Box<dyn Ciz>>` vektörü öbek üzerindeki boyutları birbirinden farklı
+> bileşenleri güvenle yan yana tutabilir.
 
 `Ekran` struct'ı üzerinde, Liste 18-5'te gösterildiği gibi `bilesenler`
 alanındaki her bir öğe üzerinde `ciz` metodunu çağıracak `calistir` adlı bir
@@ -182,7 +186,7 @@ alanlara ek olarak bir `yer_tutucu` (`placeholder`) alanına sahip olabilir.
 Ekrana çizmek istediğimiz türlerin her biri `Ciz` trait'ini uygulayacak, ancak
 tıpkı burada `Dugme` türünün yaptığı gibi (belirttiğimiz üzere gerçek GUI kodu
 olmaksızın) o türe özgü çizim işleminin nasıl yapılacağını tanımlamak için `ciz`
-metodunda farklı kodlar kullanacaktır. Örneğin `Dugme` türü, kullanıcı düğmeye
+metodunda farklı kodlar kullanacaktır. Ayrıca `Dugme` türü, kullanıcı düğmeye
 tıkladığında ne olacağıyla ilgili metotlar içeren ek bir `impl` bloğuna sahip
 olabilir. Bu tür metotlar `MetinAlani` gibi türler için geçerli olmayacaktır.
 
@@ -221,8 +225,8 @@ ve onu çizebildi.
 Bir değerin somut türünden ziyade yalnızca yanıt verdiği mesajlarla ilgilenme
 düşüncesi, dinamik tür sistemine sahip dillerdeki _ördek tiplemesi (duck
 typing)_ kavramına benzer: Bir şey ördek gibi yürüyor ve ördek gibi vaklıyorsa,
-o bir ördek olmalıdır! Liste 18-5'te `Ekran` üzerindeki `calistir` uygulamasında
-`calistir` metodunun her bir bileşenin somut türünün ne olduğunu bilmesine gerek
+o bir ördek olmalıdır! Liste 18-5'te `Ekran` üzerinde tanımladığımız `calistir`
+metodunun, her bir bileşenin somut türünün ne olduğunu bilmesine gerek
 yoktur. Bir bileşenin `Dugme` mi yoksa `SecimKutusu` örneği mi olduğunu
 denetlemez; yalnızca bileşen üzerinde `ciz` metodunu çağırır. `bilesenler`
 vektöründeki değerlerin türü olarak `Box<dyn Ciz>` belirterek, `Ekran`
@@ -301,13 +305,15 @@ destekleyebildiğimiz kodda fazladan esneklik elde ettik; dolayısıyla bu, göz
 > anahtar kelimesiyle doğrudan ilişkilendirilerek resmî olarak **`dyn`
 > uyumluluğu (*dyn compatibility*)** adını almıştır. Bir trait'in `dyn Trait`
 > biçiminde trait nesnesi olarak kullanılabilmesi için sağlaması gereken en
-> temel kurallar şunlardır: trait metotları geri dönüş türü veya parametre
-> olarak somut boyutu derleme zamanında bilinmeyen `Self` türünü doğrudan
-> kullanmamalı (örneğin standart kütüphanedeki `Clone` trait'i
-> `fn clone(&self) -> Self` imzasına sahip olduğu için `dyn Clone` yazılamaz) ve
-> metotların kendisi jenerik tür parametreleri (`fn islem<T>(&self, x: T)`)
-> içermemelidir (çünkü sanal metot tablosuna sonsuz sayıda olası `T` türü için
-> fonksiyon işaretçisi eklenemez).
+> temel kurallar şunlardır: `where Self: Sized` ile ayrıca sınırlanmadıkça
+> trait metotları, somut boyutu derleme zamanında bilinmeyen `Self` türünü
+> geri dönüş türü veya parametre türü olarak doğrudan kullanmamalı ve
+> jenerik tür parametreleri (`fn islem<T>(&self, x: T)`) içermemelidir (çünkü
+> sanal metot tablosuna sonsuz sayıda olası `T` türü için fonksiyon işaretçisi
+> eklenemez). Ayrıca trait'in kendisi `Sized` gerektirmemelidir; örneğin
+> standart kütüphanedeki `Clone` trait'i `Sized` gerektirdiği ve
+> `fn clone(&self) -> Self` metodu `Self` döndürdüğü için `dyn Clone`
+> yazılamaz.
 
 [performance-of-code-using-generics]: ch10-01-jenerik-veri-turleri.html#jenerik-kullanan-kodların-performansı
 [dynamically-sized]: ch20-03-gelismis-turler.html#dinamik-boyutlu-türler-ve-sized-traiti
