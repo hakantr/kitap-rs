@@ -1,0 +1,7 @@
+/* Intrinsic SVG dimensions match their viewBox. Resize both axes together. */
+.content img[src^="img/trpl"][src$=".svg"] {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+}
