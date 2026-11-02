@@ -17,9 +17,9 @@ Web sunucusunu şu planla geliştireceğiz:
 4. Geçerli bir HTTP yanıtı oluşturmak
 5. Bir thread havuzu (*thread pool*) ile sunucumuzun işleme kapasitesini (*throughput*) artırmak
 
-<img alt="127.0.0.1:8080 adresini ziyaret eden bir web tarayıcısının ekran görüntüsü; sayfada İngilizce örnekteki “Hello! Hi from Rust” (“Merhaba! Rust'tan selam”) içeriği görünüyor" src="img/trpl21-01.png" class="center" style="width: 50%;" />
+<img alt="127.0.0.1:8080 adresini ziyaret eden bir web tarayıcısının ekran görüntüsü; sekme başlığında ve sayfa başlığında “Merhaba!”, altında ise “Rust'tan selam” yazıyor" src="img/trpl21-01.png" class="center" style="width: 50%;" />
 
-<span class="caption">Şekil 21-1: Birlikte geliştireceğimiz final projesi (ekran görüntüsünde İngilizce örnek çıktı yer almaktadır; kendi sunucumuz Türkçe “Merhaba! Rust'tan selam” yanıtını üretecektir)</span>
+<span class="caption">Şekil 21-1: Birlikte geliştireceğimiz web sunucusunun “Merhaba!” ve “Rust'tan selam” içeriğini sunduğu sayfa</span>
 
 Başlamadan önce iki ayrıntıya değinelim. Birincisi, kullanacağımız yöntem Rust ile bir web sunucusu geliştirmenin en iyi yolu olmayacaktır. Topluluk üyeleri, [crates.io](https://crates.io/) üzerinde bizim geliştireceğimizden çok daha eksiksiz web sunucusu ve thread havuzu uygulamaları sunan, üretime hazır pek çok crate yayımlamıştır. Ancak bu bölümdeki amacımız kolay yolu seçmek değil, öğrenmenize yardımcı olmaktır. Rust bir sistem programlama dili olduğundan, çalışmak istediğimiz soyutlama düzeyini kendimiz seçebilir ve diğer dillerde mümkün ya da pratik olandan daha alt bir seviyeye inebiliriz.
 
