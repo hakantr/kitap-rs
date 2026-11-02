@@ -133,7 +133,17 @@ iletmek açısından faydalıdır. Ayrıca bu değerin gelecekte
 güncellenmesi gerektiğinde kodunuzda değiştirmeniz gereken yalnızca tek bir yer
 olmasını sağlar.
 
-> Not: Değiştirilemez bir `let` değişkeni ile `const` arasındaki pratik farkı şöyle özetleyebiliriz: `let` yalnızca fonksiyon ve blok kapsamlarında tanımlanabilir, derleyicinin tür çıkarımından yararlanabilir ve kullanıcı girdisi ya da dosya okuma gibi çalışma zamanında üretilen bir değeri (sonradan değiştirilmemek üzere) bağlayabilir. `const` ise modül ve dosya düzeyinde küresel olarak da bildirilebilir, açık tür bildirimi zorunludur ve değeri derleme zamanında kesin olarak hesaplanıp kullanıldığı her yere doğrudan yerleştirilir. Rust'ta ayrıca `static` anahtar kelimesiyle bildirilen ve program boyunca bellekte sabit bir adreste tutulan küresel değişkenler de vardır; bunları Bölüm 20'de güvenli olmayan Rust'ı incelerken ele alacağız.
+> Not: Değiştirilemez bir `let` değişkeni ile `const` arasındaki pratik farkı
+> şöyle özetleyebiliriz: `let` yalnızca fonksiyon ve blok kapsamlarında
+> tanımlanabilir, derleyicinin tür çıkarımından yararlanabilir ve kullanıcı
+> girdisi ya da dosya okuma gibi çalışma zamanında üretilen bir değeri (sonradan
+> değiştirilmemek üzere) bağlayabilir. `const` ise modül ve dosya düzeyinde
+> küresel olarak da bildirilebilir, açık tür bildirimi zorunludur ve değeri
+> derleme zamanında hesaplanabilen bir ifade olmalıdır. Sabit için bütün
+> kullanımların paylaştığı tek bir bellek adresi garanti edilmez. Rust'ta ayrıca
+> `static` anahtar kelimesiyle bildirilen ve program boyunca bellekte sabit bir
+> adreste tutulan küresel değişkenler de vardır; bunları Bölüm 20'de güvenli
+> olmayan Rust'ı incelerken ele alacağız.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="shadowing"></a>
@@ -164,7 +174,9 @@ tekrarlayarak yeni bir `x` değişkeni oluşturur; önceki değeri alıp üzerin
 oluşturulan bir iç kapsamda, üçüncü `let` deyimi de `x`'i
 gölgeleyerek yeni bir değişken oluşturur ve önceki değeri `2` ile çarparak `x`'e `12` değerini verir.
 Bu iç kapsam sona erdiğinde içteki gölgeleme biter
-ve `x` yeniden `6` değerine döner. Programı çalıştırdığımızda şu çıktıyı alırız:
+ve dış kapsamdaki, değeri hâlâ `6` olan `x` yeniden görünür hâle gelir. Burada
+bir değişkenin değeri geri alınmaz; aynı adlı farklı bağlamalar arasında kapsam
+değişir. Programı çalıştırdığımızda şu çıktıyı alırız:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-03-shadowing/output.txt}}

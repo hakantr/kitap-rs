@@ -10,6 +10,17 @@ Rust, hataları iki ana kategoriye ayırır: *kurtarılabilir (recoverable)* ve 
 
 Çoğu programlama dili bu iki hata türü arasında ayrım yapmaz ve *istisnalar (exceptions)* gibi mekanizmalar kullanarak her ikisini de aynı biçimde ele alır. Rust'ta istisna mekanizması yoktur. Bunun yerine Rust, kurtarılabilir hatalar için `Result<T, E>` türüne ve program kurtarılamayan bir hatayla karşılaştığında yürütmeyi durduran `panic!` makrosuna sahiptir. Bu bölümde önce `panic!` makrosunu çağırmayı, ardından `Result<T, E>` değerleri döndürmeyi ele alacağız. Ek olarak, bir hatadan kurtulmaya çalışmak ile programın yürütülmesini durdurmak arasında karar verirken göz önünde bulundurulması gereken ölçütleri inceleyeceğiz.
 
-> Not: C++, Java, Python, C# veya JavaScript gibi `try`/`catch` tabanlı istisna fırlatan dillerden geliyorsanız, Rust'ın hataları fırlatmak yerine **sıradan dönüş değerleri** olarak modellemesi ilk başta farklı gelebilir. İstisna kullanan pek çok dilde yalnızca bir fonksiyonun imzasına bakarak o fonksiyonun hata fırlatıp fırlatmayacağını anlamak zordur; gözden kaçan bir istisna çağrı yığını boyunca sessizce yükselip canlı ortamda beklenmedik çökmelere yol açabilir. Rust'ta ise başarısız olabilecek her işlem bunu dönüş türündeki `Result<T, E>` ile açıkça beyan eder ve döndürülen bir `Result` değerini yanlışlıkla görmezden geldiğinizde derleyici (`#[must_use]` özniteliği sayesinde) sizi uyarır. Üstelik birazdan göreceğimiz `?` operatörü sayesinde, hataları üst fonksiyonlara iletmek en az istisnalar kadar kısa ve okunaklıdır.
+> Not: C++, Java, Python, C# veya JavaScript gibi `try`/`catch` tabanlı istisna
+> fırlatan dillerden geliyorsanız, Rust'ın hataları fırlatmak yerine **sıradan
+> dönüş değerleri** olarak modellemesi ilk başta farklı gelebilir. İstisna
+> kullanan pek çok dilde yalnızca bir fonksiyonun imzasına bakarak o fonksiyonun
+> hata fırlatıp fırlatmayacağını anlamak zordur; gözden kaçan bir istisna çağrı
+> yığını boyunca sessizce yükselip canlı ortamda beklenmedik çökmelere yol
+> açabilir. Rust'ta ise kurtarılabilir hatalar genellikle dönüş türündeki
+> `Result<T, E>` ile açıkça belirtilir ve döndürülen bir `Result` değerini
+> yanlışlıkla görmezden geldiğinizde derleyici (`#[must_use]` özniteliği
+> sayesinde) sizi uyarır. Bu, bir fonksiyonun panikleyemeyeceği anlamına gelmez:
+> `Result`, normal hata akışını modeller. Birazdan göreceğimiz `?` operatörü de
+> bu hataları çağıran fonksiyona kısa ve okunaklı biçimde iletmemizi sağlar.
 >
 > Standart kütüphanedeki bu sağlam temelin üzerine gerçek dünya projelerinde topluluğun geliştirdiği iki popüler crate de sıklıkla eklenir: kütüphane geliştirirken yapılandırılmış özel hata türleri tanımlamayı kolaylaştıran **`thiserror`** ve uygulama katmanında farklı hata türlerini bağlam (*context*) bilgisiyle ergonomik biçimde yönetmeyi sağlayan **`anyhow`**. Bu bölümde `panic!` ve `Result<T, E>` mekanizmalarını sağlam biçimde kavradığınızda, ekosistemdeki bu araçları da zahmetsizce kullanabilirsiniz.

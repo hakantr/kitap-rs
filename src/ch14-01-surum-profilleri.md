@@ -58,7 +58,15 @@ Her profile ait yapılandırma seçeneklerinin ve varsayılan değerlerin tam li
 > Not: Üretim ortamına çıkacak gerçek dünya projelerinde, gömülü sistemlerde veya WebAssembly (`wasm32`) hedeflerinde yalnızca sayısal `opt-level` (`0..=3`) ile yetinmeyip çalıştırılabilir dosyanın hızını artıran ya da diskteki boyutunu küçülten başka profil ayarlarıyla da sıkça karşılaşırsınız:
 >
 > - **Boyut odaklı `opt-level` değerleri (`"s"` ve `"z"`):** `opt-level` ayarı `0..=3` tam sayılarının yanı sıra ikili dosya boyutunu küçültmeye odaklanan `"s"` değerini ve döngü vektörleştirmeyi de kapatarak boyutu daha agresif biçimde küçülten `"z"` değerini alabilir.
-> - **`lto` (*Link-Time Optimization* — Bağlama Zamanı Optimizasyonu):** Varsayılan değeri `false` olsa da bu durumda bile her crate kendi içinde sınırlı bir optimizasyondan geçer; crate'ler arası optimizasyon ise yapılmaz. `lto = "thin"` (derleme süresini makul tutarak crate'ler arası satır içi açma ve ölü kod eleme yapar) veya `lto = true` (tüm bağımlılık ağacını tek bütün hâlinde analiz eder) kullanıldığında hem çalışma hızı artar hem de ikili dosya boyutu küçülür.
+> - **`lto` (*Link-Time Optimization* — Bağlama Zamanı Optimizasyonu):**
+>   Varsayılan değeri `false` olsa da bu durumda bile her crate kendi içinde
+>   sınırlı bir optimizasyondan geçer; crate'ler arası optimizasyon ise
+>   yapılmaz. `lto = "thin"` (derleme süresini makul tutarak crate'ler arası
+>   satır içi açma ve ölü kod eleme yapar) veya `lto = true` (tüm bağımlılık
+>   ağacını tek bütün hâlinde analiz eder) kullanıldığında çalışma hızı veya
+>   ikili dosya boyutu iyileşebilir; sonuç iş yüküne ve diğer derleme ayarlarına
+>   bağlıdır. Bu seçenekler derleme süresini de artırabilir, bu yüzden etkileri
+>   ölçülmelidir.
 > - **`codegen-units = 1`:** Cargo paralel derlemeyi hızlandırmak için bir crate'i varsayılan olarak birden fazla kod üretim birimine böler (`release` profilinde `16`). Bu değeri `1` yapmak paralel kod üretimini devre dışı bırakıp derleme süresini uzatsa da derleyicinin tüm crate genelinde daha bütünsel optimizasyonlar üretmesine olanak tanır.
 > - **`panic = "abort"`:** [Bölüm 9'da][ch09-unwinding] gördüğümüz gibi, panik anında yığını geri sarmak (`"unwind"`) yerine programı doğrudan sonlandırır; geri sarma tabloları üretilmediği için ikili dosya küçülür.
 > - **`strip = true` (veya `"symbols"` / `"debuginfo"`):** Sembol tablolarını ve hata ayıklama bilgilerini derlenen ikili dosyadan temizleyerek çalışma hızından ödün vermeden dosya boyutunu önemli ölçüde azaltır (ancak panik anındaki *geri izleme (backtrace)* çıktısında fonksiyon adları ve satır numaraları görünmez hâle gelir). Rust 1.77'den itibaren `release` profili, `debug` ayarı açık değilse hata ayıklama bilgilerini (`strip = "debuginfo"`) varsayılan olarak zaten temizler; `strip = true` ise buna ek olarak sembol tablosunu da kaldırır.

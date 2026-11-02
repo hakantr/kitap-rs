@@ -128,7 +128,16 @@ Bir demet struct'ı tanımlamak için `struct` anahtar kelimesiyle başlayıp st
 
 `siyah` ve `orijin` değerlerinin, farklı demet struct'larının örnekleri oldukları için farklı türlere sahip olduğuna dikkat edin. Tanımladığınız her struct, içerdiği alanlar aynı türlerde olsa bile başlı başına ayrı bir türdür. Örneğin her iki tür de üç adet `i32` değerinden oluşmasına rağmen, `Renk` türünde bir parametre bekleyen bir fonksiyona argüman olarak bir `Nokta` veremezsiniz. Bunun dışında demet struct örnekleri demetlere benzer: Onları tekil parçalarına ayırabilir ve belirli bir değere erişmek için nokta (`.`) işaretinin ardından indeks numarasını yazabilirsiniz. Ancak sıradan demetlerden farklı olarak demet struct'ları, yapı sökümü (*destructuring*) yaparken struct'ın tür adını belirtmenizi gerektirir. Örneğin `orijin` noktasındaki değerleri `x`, `y` ve `z` adlı değişkenlere ayırmak için `let Nokta(x, y, z) = orijin;` yazarız.
 
-> Not: Tek bir alana sahip demet struct'ları (örneğin `struct Metre(f64);` ve `struct Saniye(f64);` ya da `struct KullaniciId(u64);`), Rust ekosisteminde _newtype (yeni tür) deseni_ olarak sıkça kullanılır. Bu sarmalayıcı türler çalışma zamanında içerdikleri veriyle birebir aynı bellek temsiline sahip oldukları için ek bir performans maliyeti getirmez; buna karşılık metre beklenen bir fonksiyona yanlışlıkla saniye gönderilmesi gibi birimleri veya kimlikleri karıştırma hatalarını derleme zamanında yakalamanızı sağlar. Bu desenin gelişmiş kullanımlarını Bölüm 20'de yeniden ele alacağız.
+> Not: Tek bir alana sahip demet struct'ları (örneğin `struct Metre(f64);` ve
+> `struct Saniye(f64);` ya da `struct KullaniciId(u64);`), Rust ekosisteminde
+> _newtype (yeni tür) deseni_ olarak sıkça kullanılır. Bu sarmalayıcı türler,
+> içerdikleri değerin etrafında yeni bir tür sınırı oluşturur ve genellikle ek
+> çalışma zamanı maliyeti getirmez. Bununla birlikte, varsayılan Rust temsilinde
+> aynı bellek yerleşimi ve çağrı biçimi garanti edilmez; böyle bir güvence
+> gerektiğinde uygun tek alanlı türlerde `#[repr(transparent)]` kullanılır. Bu
+> türler, metre beklenen bir fonksiyona yanlışlıkla saniye gönderilmesi gibi
+> birimleri veya kimlikleri karıştırma hatalarını derleme zamanında yakalamanızı
+> sağlar. Bu desenin gelişmiş kullanımlarını Bölüm 20'de yeniden ele alacağız.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="unit-like-structs-without-any-fields"></a>

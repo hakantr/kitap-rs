@@ -358,10 +358,12 @@ düğümlere işaret etmesini sağlayabilirsiniz.
 >   `'static` referansa dönüştüren `Box::leak` metodu `unsafe` gerektirmeyen,
 >   tamamen güvenli API'lerdir.
 > - **Kim `Rc<T>`, kim `Weak<T>` tutmalı?** Çift yönlü yapılarda yönü
->   belirlemek için şu soruyu sorun: _“A nesnesi yok olduğunda B nesnesinin de
->   onunla birlikte yok olması gerekir mi?”_ Yanıt **evet** ise A'dan B'ye
->   güçlü sahiplik (`Rc<T>`), yanıt **hayır** ise B'den A'ya sahiplik iddia
->   etmeyen gözlemci referans (`Weak<T>`) kullanın:
+>   belirlemek için şu soruyu sorun: _“A nesnesi, B nesnesini hayatta tutmaktan
+>   sorumlu mu?”_ Yanıt **evet** ise A'dan B'ye güçlü sahiplik (`Rc<T>`),
+>   yanıt **hayır** ise A'dan B'ye sahiplik iddia etmeyen gözlemci bağlantısı
+>   (`Weak<T>`) kullanın. A'nın düşürülmesi B'yi ancak başka güçlü sahibi
+>   kalmamışsa düşürür. Döngüdeki sahiplik iddia etmeyen geri bağlantılar için
+>   de `Weak<T>` tercih edilir:
 >   - **Ağaç ve arayüz (DOM/UI) hiyerarşileri:** Ebeveynden çocuğa `Rc<T>`,
 >     çocuktan ebeveyne `Weak<T>`.
 >   - **Çift yönlü bağlı listeler (*doubly linked list*):** İleri bağlantı

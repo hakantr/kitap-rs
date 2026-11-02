@@ -5,7 +5,12 @@
 
 ## E - Sürümler
 
-Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*) bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele alıyoruz!
+Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*)
+bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele
+alıyoruz! Buradaki *sürüm (edition)*, `rustc 1.85.0` gibi bir derleyici
+sürümünden farklıdır: `edition`, crate'in kaynak kodunun hangi dil kurallarıyla
+yorumlanacağını seçer. Aynı derleyici birden fazla edition'ı destekleyebilir;
+derleyiciyi güncellemek projenizin `edition` ayarını kendiliğinden değiştirmez.
 
 Rust dili ve derleyicisi altı haftalık bir yayın döngüsüne sahiptir; yani kullanıcılar sürekli olarak yeni özelliklere kavuşur. Diğer pek çok programlama dili daha büyük değişiklikleri daha seyrek aralıklarla yayınlarken, Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük iyileştirmeler üst üste birikir. Yine de bir yayından diğerine geriye dönüp baktığınızda, “Vay canına, Rust 1.10 ile Rust 1.31 arasında dil ne kadar değişmiş!” diyebilmek her zaman kolay olmayabilir.
 
@@ -31,7 +36,11 @@ Netleştirmek gerekirse: Yeni özelliklerin büyük çoğunluğu tüm sürümler
 > - **Rust 2018:** Modül sisteminde `extern crate` zorunluluğunun kalkması, sözcüksel olmayan ömürler (*non-lexical lifetimes* — NLL) ve `async`/`await` anahtar kelimeleri.
 > - **Rust 2021:** Diziler (`[T; N]`) için doğrudan değer üzerinden `IntoIterator`, kapanışlarda alan bazlı (*disjoint*) yakalama ve ön tanımlı kapsama (`prelude`) `TryInto`, `TryFrom`, `FromIterator` eklenmesi.
 > - **Rust 2024:** Ön tanımlı kapsama `Future` ve `IntoFuture` eklenmesi, `-> impl Trait` dönüş türlerinde ömür yakalama kurallarının sadeleşmesi, `if let` ve blok sonu ifadelerinde geçici değer düşürme kapsamlarının iyileştirilmesi, `unsafe extern` ve `unsafe fn` içi güvenli olmayan işlem uyarıları, ayrılmış `gen` anahtar kelimesi ve Cargo'da MSRV duyarlı `resolver = "3"`.
-> - Mevcut bir crate'i yeni sürüme yükseltmek için önce `cargo fix --edition` komutunu çalıştırıp kodunuzu uyumlu hâle getirebilir, ardından _Cargo.toml_ içinde `edition = "2024"` yazıp `cargo test` ile doğrulayabilirsiniz.
+> - Mevcut bir crate'i yeni sürüme yükseltmek için edition geçişlerini sırayla
+>   yapın. Örneğin Rust 2021'den Rust 2024'e geçerken önce mevcut edition
+>   ayarıyla `cargo fix --edition` çalıştırın; ardından _Cargo.toml_ içinde
+>   `edition = "2024"` yazıp `cargo test` ile doğrulayın. Daha eski bir edition
+>   kullanıyorsanız önce aradaki edition'lara geçişleri tamamlayın.
 
 Daha fazla ayrıntı için [_Rust Sürüm Rehberi_][edition-guide] kitabına başvurabilirsiniz. Bu rehber, sürümler arasındaki tüm farkları tek tek sıralayan ve `cargo fix` aracılığıyla kodunuzu yeni bir sürüme otomatik olarak nasıl yükselteceğinizi adım adım açıklayan kapsamlı bir kaynaktır.
 

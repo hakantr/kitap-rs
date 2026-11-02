@@ -5,7 +5,9 @@
 <a id="from-a-single-threaded-to-a-multithreaded-server"></a>
 <a id="tek-iş-parçacıklı-sunucudan-çok-iş-parçacıklı-sunucuya"></a>
 
-## Tek Kanallıdan Çok Kanallı Sunucuya Geçiş
+<a id="tek-kanallıdan-çok-kanallı-sunucuya-geçiş"></a>
+
+## Tek İş Parçacıklı Sunucudan Çok İş Parçacıklı Sunucuya Geçiş
 
 Şu anda sunucu her isteği sırayla işliyor; yani ilk bağlantının işlenmesi tamamlanmadan ikinci bir bağlantıyı işlemeye geçmiyor. Sunucu giderek daha fazla istek aldığında, bu sıralı çalıştırma biçimi gitgide daha verimsiz hâle gelecektir. Sunucu işlenmesi uzun süren bir istek alırsa, sonradan gelen yeni istekler hızlıca işlenebilecek olsa bile uzun isteğin bitmesini beklemek zorunda kalacaktır. Bu sorunu çözmemiz gerekecek; ancak önce sorunu çalışırken gözlemleyelim.
 

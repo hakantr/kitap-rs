@@ -88,7 +88,11 @@ Bu bildirim `std::io` modülü içinde yer aldığından, tam nitelikli `std::io
 
 Tür takma adı iki açıdan yardımcı olur: Kodu yazmayı kolaylaştırır _ve_ tüm `std::io` genelinde bize tutarlı bir arayüz sunar. Bu yalnızca bir takma ad olduğundan özünde bildiğimiz `Result<T, E>` türünden ibarettir; yani `Result<T, E>` üzerinde çalışan tüm metotları ve `?` operatörü gibi özel sözdizimlerini onunla da doğrudan kullanabiliriz.
 
-> Not: **Newtype Deseni (`struct Km(i32);`) ile Tür Takma Adı (`type Km = i32;`) Arasındaki Fark:** Her iki yapı da çalışma zamanında ek bellek veya performans maliyeti getirmez; ancak derleme zamanındaki davranışları birbirinden tamamen farklıdır:
+> Not: **Newtype Deseni (`struct Km(i32);`) ile Tür Takma Adı (`type Km = i32;`)
+> Arasındaki Fark:** Tür takma adı yalnızca başka bir ad verir; newtype ise ek
+> bir öbek tahsisi gerektirmeden ayrı bir tür oluşturur. Newtype için içteki
+> türle aynı bellek yerleşiminin garanti edilmesi ayrıca `#[repr(transparent)]`
+> gerektirebilir. Derleme zamanındaki temel farklar şunlardır:
 > - **Newtype (`struct Km(i32);`)**, derleyicinin gözünde yepyeni ve bağımsız bir tür oluşturur. Değerlerin yanlışlıkla birbirine karıştırılmasını derleme zamanında engeller, iç alanı gizleyerek kapsülleme sağlar ve yetim kuralına (*orphan rule*) takılmadan dış trait'leri uygulamanıza olanak tanır. Buna karşılık içteki `i32` türünün metotlarını ve `+` gibi operatörlerini kendiliğinden devralmaz (`self.0` üzerinden erişmeniz veya ilgili trait'leri uygulamanız gerekir).
 > - **Tür takma adı (`type Km = i32;`)** ise yeni bir tür oluşturmaz; yalnızca mevcut türe okunabilirliği artıran kısa bir eşanlamlı ad verir. Asıl türün tüm metotları, trait uygulamaları ve operatörleri herhangi bir sarmalama veya açma işlemi gerektirmeden doğrudan çalışır; ancak derleyici `Km` ile `i32` arasında hiçbir tür ayrımı yapmaz ve üzerinde ayrıca dış trait uygulamanıza izin vermez.
 

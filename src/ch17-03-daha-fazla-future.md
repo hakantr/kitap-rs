@@ -271,7 +271,10 @@ edersek, `()` değerini `_` ile yok sayıp `Err(azami_sure)` döndürürüz.
 > (`Drop`). Bu _düşürülme yoluyla iptal (cancellation on drop)_ mekanizması
 > sayesinde, `denenecek_future` erken biterse zamanlayıcı, zaman aşımı önce
 > dolarsa da `denenecek_future` fazladan bir iptal kodu yazmanıza gerek kalmadan
-> otomatik olarak durdurulup temizlenir.
+> artık yoklanmaz ve tuttuğu yerel kaynaklar düşürülür. Ancak daha önce
+> gerçekleşmiş yan etkiler geri alınmaz; ayrı bir görevde veya işletim
+> sisteminde devam eden işlemin iptal edilip edilmediği kullanılan API'nin
+> sözleşmesine bağlıdır.
 
 Böylece diğer iki async yardımcı üzerine inşa edilmiş, çalışan bir `timeout`
 fonksiyonuna sahip olduk. Kodumuzu çalıştırdığımızda zaman aşımının ardından

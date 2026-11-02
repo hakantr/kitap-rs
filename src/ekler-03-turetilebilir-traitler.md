@@ -85,7 +85,11 @@ Struct'lar üzerinde türetildiğinde `PartialOrd`, her alandaki değerleri alan
 
 `Clone` trait'inin gerekli olduğu duruma bir örnek, bir dilim (`&[T]`) üzerinde `to_vec` metodunu çağırmaktır. Dilim içerdiği tür örneklerinin sahibi değildir, ancak `to_vec` çağrısından döndürülen `Vec<T>` kendi örneklerinin sahibi olmak zorundadır; bu nedenle `to_vec` her öğe üzerinde `clone` çağırır. Dolayısıyla dilimde saklanan türün `Clone` uygulaması gerekir.
 
-`Copy` trait'i, bir değeri yalnızca yığında (*stack*) saklanan bitleri kopyalayarak çoğaltmanıza olanak tanır; hiçbir ek özel kod çalıştırılmaz. `Copy` hakkında daha fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri: Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
+`Copy` trait'i, bir değeri oluşturan bitleri kopyalayarak çoğaltmanıza olanak
+tanır; bu işlem için türe özel bir klonlama kodu çalıştırılmaz. Bu özellik
+değerin yığında mı, öbekte mi tutulduğuna bağlı değildir. `Copy` hakkında daha
+fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri:
+Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
 
 `Copy` trait'i, programcıların herhangi bir metodu özel olarak uygulayıp “arka planda hiçbir özel kod çalıştırılmadığı” varsayımını ihlal etmesini önlemek amacıyla hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir `Copy` değerini kopyalamanın çok hızlı (yalnızca bit düzeyinde kopyalama) olacağını güvenle varsayabilir.
 
@@ -121,8 +125,21 @@ Tüm parçaları `Copy` uygulayan herhangi bir tür üzerinde `Copy` türetebili
 
 > Not: **Pratik `derive` İpuçları (`#[default]`, Üst-Trait Bağımlılıkları ve `Hash`/`PartialEq` Sözleşmesi):**
 > - **Enum'larda `#[derive(Default)]`:** Yalnızca struct'larda değil, birim varyantlarından birinin üzerine `#[default]` özniteliği ekleyerek enum'larda da `Default` türetebilirsiniz (örneğin `#[derive(Default)] enum Durum { #[default] Beklemede, Calisiyor }`).
-> - **Birlikte Türetme Gereksinimleri:** Üst-trait (*supertrait*) ilişkileri nedeniyle `Copy` türetirken `Clone`'u (`#[derive(Clone, Copy)]`), `Eq` türetirken `PartialEq`'yu, `Ord` türetirken ise `PartialEq, Eq, PartialOrd, Ord` dörtlüsünü birlikte türetmeniz gerekir.
-> - **`Hash` ve `PartialEq` Uyum Kuralı:** Bir tür üzerinde `PartialEq` trait'ini elle uygularsanız (`impl PartialEq for ...`), `k1 == k2` olduğunda `hash(k1) == hash(k2)` eşitliğinin bozulmaması için `Hash` trait'ini `#[derive(Hash)]` ile otomatik türetmek yerine aynı alanları kullanacak şekilde elle uygulamanız gerekir; aksi hâlde `HashMap` anahtar aramaları hatalı davranır.
+> - **Birlikte Türetme Gereksinimleri:** Üst-trait (*supertrait*) ilişkileri
+>   nedeniyle `Copy` için `Clone`, `Eq` için `PartialEq`, `Ord` için ise
+>   `PartialEq`, `Eq` ve `PartialOrd` uygulamaları da gerekir. Bunları
+>   genellikle birlikte türetiriz (`#[derive(Clone, Copy)]` veya
+>   `#[derive(PartialEq, Eq, PartialOrd, Ord)]`); gerekli uygulamaları elle
+>   yazmak da mümkündür.
+> - **`Hash` ve `PartialEq` Uyum Kuralı:** Bir tür üzerinde `PartialEq`
+>   trait'ini elle uygularsanız (`impl PartialEq for ...`), `k1 == k2` olduğunda
+>   `hash(k1) == hash(k2)` eşitliğinin bozulmaması için `Hash` trait'ini
+>   `#[derive(Hash)]` ile otomatik türetmek yerine eşitlik tanımınızla uyumlu
+>   olacak şekilde uygulamanız gerekebilir. Örneğin eşitlik bazı alanları yok
+>   sayıyorsa, hash hesabının da bu alanları yok sayması gerekir. Elle yazılmış
+>   `PartialEq` ile türetilmiş `Hash` bu sözleşmeyi zaten koruyorsa ikisini
+>   birlikte kullanmak mümkündür; belirleyici olan eşit anahtarların aynı hash
+>   sonucunu üretmesidir.
 
 [creating-instances-from-other-instances-with-struct-update-syntax]: ch05-01-struct-tanimlama-ve-ornekleme.html#struct-güncelleme-sözdizimi-ile-örnekler-oluşturma
 [stack-only-data-copy]: ch04-01-sahiplik-nedir.html#yalnızca-yığındaki-veri-copy

@@ -189,7 +189,9 @@ Buradaki çözüm, referans yerine doğrudan `String` değerini döndürmektir:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-16-no-dangle/src/main.rs:here}}
 ```
 
-Bu kod hiçbir sorun olmadan çalışır. Sahiplik dışarı taşınır ve hiçbir bellek alanı serbest bırakılmaz.
+Bu kod çalışır: `String` değerinin sahipliği çağıran fonksiyona taşındığı için
+ona ait öbek belleği bu fonksiyondan dönülürken serbest bırakılmaz. Bellek,
+değerin yeni sahibi onu düşürdüğünde serbest bırakılır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="the-rules-of-references"></a>
@@ -201,6 +203,14 @@ Referanslar hakkında ele aldıklarımızı özetleyelim:
 - Herhangi bir anda, bir veriye ait _ya_ yalnızca bir tane değiştirilebilir referansa _ya da_ istediğiniz sayıda değiştirilemez referansa sahip olabilirsiniz.
 - Referanslar her zaman geçerli olmalıdır.
 
-> Not: İlk kuralı akılda tutmanın en sezgisel yolu onu **paylaşımlı okuma _veya_ tekelci yazma** ilkesi olarak düşünmektir: Bir veriyi aynı anda dilediğiniz kadar referans üzerinden güvenle okuyabilirsiniz (`&T`); ancak veriyi değiştirmek istediğinizde (`&mut T`), değişiklik süresince o veriye erişebilen tek etkin referans sizinki olmalıdır. Ayrıca bir değişkenden `&mut` ile değiştirilebilir referans alabilmek için, önce asıl değişkenin kendisinin `let mut` ile değiştirilebilir olarak tanımlanmış olması gerektiğini unutmayın.
+> Not: İlk kuralı akılda tutmanın en sezgisel yolu onu **paylaşımlı okuma _veya_
+> tekelci yazma** ilkesi olarak düşünmektir: Bir veriyi aynı anda dilediğiniz
+> kadar referans üzerinden güvenle okuyabilirsiniz (`&T`); ancak veriyi
+> değiştirmek istediğinizde (`&mut T`), değişiklik süresince o veriye erişebilen
+> tek etkin referans sizinki olmalıdır. Örneğimizde yerel `String` değişkenini
+> `&mut` ile ödünç alabilmek için bağlamayı `let mut` ile tanımladık. Elinizde
+> zaten bir `&mut T` varsa, referansı tutan bağlamanın kendisi `mut` olmasa da
+> işaret ettiği değeri değiştirebilirsiniz; bağlamayı yeniden atamak ile
+> referansın işaret ettiği veriyi değiştirmek farklı işlemlerdir.
 
 Sırada, farklı bir referans türüne bakacağız: dilimler.

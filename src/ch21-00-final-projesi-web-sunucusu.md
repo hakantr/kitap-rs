@@ -1,7 +1,9 @@
 <a id="final-project-building-a-multithreaded-web-server"></a>
 <a id="final-proje-çok-iş-parçacıklı-bir-web-sunucusu-geliştirmek"></a>
 
-# Final Projesi: Çok Kanallı (Multithreaded) Web Sunucusu Geliştirme
+<a id="final-projesi-çok-kanallı-multithreaded-web-sunucusu-geliştirme"></a>
+
+# Final Projesi: Çok İş Parçacıklı (Multithreaded) Web Sunucusu Geliştirme
 
 Uzun bir yolculuk oldu ama kitabın sonuna ulaştık. Bu bölümde, son bölümlerde öğrendiğimiz kavramların bir kısmını uygulamalı olarak göstermek ve daha önceki bazı dersleri pekiştirmek için birlikte son bir proje daha geliştireceğiz.
 

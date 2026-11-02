@@ -118,8 +118,9 @@ türün yerini tutar.
 > çağrılacak fonksiyonun işaretçisi ve `Ciz::ciz` gibi trait metotlarının
 > fonksiyon işaretçileri yer alır. Her `Box<dyn Ciz>` öğesi, gösterdiği somut
 > türden bağımsız olarak sabit boyutta (64-bit mimarilerde 16 bayt) olduğundan,
-> `Vec<Box<dyn Ciz>>` vektörü öbek üzerindeki boyutları birbirinden farklı
-> bileşenleri güvenle yan yana tutabilir.
+> `Vec<Box<dyn Ciz>>` vektörü bu sabit boyutlu işaretçileri yan yana tutabilir.
+> Farklı boyutlardaki bileşenlerin kendileri ise her bir `Box` için ayrılan
+> ayrı öbek alanlarında bulunur; vektörün içinde doğrudan yan yana yer almazlar.
 
 `Ekran` struct'ı üzerinde, Liste 18-5'te gösterildiği gibi `bilesenler`
 alanındaki her bir öğe üzerinde `ciz` metodunu çağıracak `calistir` adlı bir

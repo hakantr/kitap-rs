@@ -336,12 +336,17 @@ bilgiler sunar.
 > thread'li (*multithreaded*) eşleniklerini tek bakışta şöyle
 > eşleştirebilirsiniz:
 >
-> | Amaç | Tek Thread'li (`!Sync`) | Çok Thread'li (`Send` + `Sync`) | Temel Fark ve Davranış |
+> | Amaç | Tek Thread'de Kullanılan Araç | Thread'ler Arası Paylaşım İçin Araç | Temel Fark ve Davranış |
 > | --- | --- | --- | --- |
 > | **Çoklu sahiplik** | `Rc<T>` | `Arc<T>` | `Rc<T>` sıradan sayaç kullanır (daha hızlıdır); `Arc<T>` sayacı atomik işlemlerle günceller. |
 > | **İçsel değiştirilebilirlik** | `RefCell<T>` | `Mutex<T>` / `RwLock<T>` | `RefCell<T>` ödünç çakışmasında `panic!` üretir; `Mutex<T>` tek erişim için, `RwLock<T>` ise çoklu okuyucu (`read`) veya tek yazıcı (`write`) için bekleyen thread'i bloklar. |
 > | **İlkel/kopyalanabilir içsel değişim** | `Cell<T>` | `Atomic*` (`AtomicUsize`, `AtomicBool` vb.) | `Cell<T>` referans vermeden değeri kopyalar/değiştirir; `std::sync::atomic` türleri donanım düzeyinde kilitsiz (*lock-free*) atomik erişim sunar. |
 > | **Paylaşımlı değiştirilebilir durum** | `Rc<RefCell<T>>` | `Arc<Mutex<T>>` / `Arc<RwLock<T>>` | Tek thread'de paylaşımlı değişim için `Rc<RefCell<T>>`, thread'ler arasında paylaşımlı değişim için `Arc<Mutex<T>>` (okuma ağırlıklı iş yüklerinde `Arc<RwLock<T>>`) kullanılır. |
+>
+> Sağ sütundaki jenerik türlerin `Send` ve `Sync` olması, içerdikleri `T`
+> türüne bağlıdır. Örneğin `Arc<T>`, ancak `T: Send + Sync` iken bu iki
+> trait'i uygular; `Arc<RefCell<T>>` kullanmak, `RefCell<T>` türünü thread
+> güvenli hâle getirmez. `Arc<Mutex<T>>` için ise `T: Send` yeterlidir.
 
 Bu bölümü `Send` ve `Sync` trait'lerinden ve bunları özel türlerle nasıl
 kullanabileceğimizden bahsederek tamamlayacağız.

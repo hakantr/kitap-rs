@@ -119,7 +119,15 @@ Bu kod sorunsuz bir şekilde derlenecektir. Trait nesneleri hakkında daha fazla
 
 > Not: Çağrılabilir yapıları döndürürken veya saklarken bu üç yaklaşım arasındaki farkı bellek temsili üzerinden kolayca hatırlayabilirsiniz. **Çevresinden değişken yakalamayan kapanışlar** (örneğin `|x| x + 1`), tıpkı normal fonksiyonlar gibi yalnızca kod adresini tutan ince fonksiyon işaretçisine (`fn(i32) -> i32`) otomatik olarak zorlanabilir. Buna karşılık **çevresinden değer yakalayan kapanışlar** (örneğin `init` değerini taşıyan `move |x| x + init`), bellekte ek durum verisi barındırdığı için `fn` işaretçisine dönüştürülemez.
 >
-> Yakalama yapan bir kapanış döndürürken tek bir somut kapanış için öbek (*heap*) tahsisi yapmadan *statik gönderim (static dispatch)* elde etmek istediğinizde `impl Fn(...)` kullanabilirsiniz. Farklı kapanışları (hatta normal fonksiyonları) `handlers` vektöründe olduğu gibi aynı homojen koleksiyon içinde saklamanız gerektiğinde ise veriyi öbeğe taşıyıp *dinamik gönderim (dynamic dispatch)* sağlayan `Box<dyn Fn(...)>` trait nesnesine başvurmanız gerekir.
+> Yakalama yapan bir kapanış döndürürken tek bir somut kapanış için öbek
+> (*heap*) tahsisi yapmadan *statik gönderim (static dispatch)* elde etmek
+> istediğinizde `impl Fn(...)` kullanabilirsiniz. Farklı kapanışları (hatta
+> normal fonksiyonları) `handlers` vektöründe olduğu gibi aynı homojen
+> koleksiyon içinde saklamanız gerektiğinde için kullanabileceğiniz çözümlerden
+> biri, veriyi öbeğe taşıyıp *dinamik gönderim (dynamic dispatch)* sağlayan
+> `Box<dyn Fn(...)>` türüdür. Kapanışları yalnızca ödünç alarak saklamak
+> istiyorsanız uygun ömürlerle `&dyn Fn(...)` da kullanılabilir; olası türler
+> önceden belliyse bir enum başka bir seçenektir.
 
 Şimdi makrolara bakalım!
 

@@ -83,8 +83,11 @@ bölümünde ele alacağız.
 > birbirinden tamamen farklıdır! `const MAKS: i32 = 100;` şeklinde bir sabit
 > tanımladığınızda, `match` kolunda `Some(MAKS)` yazmak yeni bir değişken
 > oluşturmaz; doğrudan sabitin değeri olan `100` ile eşleşme arar. Buna karşılık
-> küçük harfli bir tanımlayıcı (`maks`) her zaman her şeyle eşleşen yeni bir
-> değişken bağlar ve dışarıdaki değişkeni gölgeler. Rust'ta sabitlerin büyük
+> dış kapsamda `let maks = 100;` ile oluşturulmuş bir değişken varken
+> `Some(maks)` yazmak, içteki değer için yeni bir bağlama oluşturur ve dıştaki
+> değişkeni gölgeler. Bu ayrımı harfin büyüklüğü değil, adın sabit ya da
+> değişken olarak çözülmesi belirler; adlandırma kuralları okunabilirlik
+> içindir. Rust'ta sabitlerin büyük
 > harflerle (`SCREAMING_SNAKE_CASE`), enum varyantlarının ise `PascalCase` ile
 > yazılması kuralı, bir desene baktığınızda neyin sabit bir değerle eşleştiğini,
 > neyin ise yeni bir değişken bağladığını ilk bakışta ayırt edebilmeniz

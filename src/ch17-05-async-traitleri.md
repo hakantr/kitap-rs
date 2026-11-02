@@ -456,10 +456,11 @@ Bu örnek artık derlenir ve çalışır; çalışma zamanında vektöre future 
 
 > Not: Derleyici hata mesajında hem `pin!` makrosunun hem de `Box::pin`
 > fonksiyonunun önerildiğine dikkat etmiş olabilirsiniz. `std::pin::pin!`
-> makrosu, ek bir öbek (*heap*) ayırması yapmadan değeri doğrudan tanımlandığı
-> kapsamın yığını (*stack*) üzerinde sabitler ve `Pin<&mut T>` üretir; Liste
-> 17-24'te olduğu gibi sabitlenen future yalnızca aynı fonksiyon veya blok
-> içinde kullanılacaksa en hafif ve sıfır maliyetli yöntem budur. Sabitlenmiş
+> makrosu, ek bir öbek (*heap*) tahsisi yapmadan değeri bulunduğu yerde
+> sabitler ve `Pin<&mut T>` üretir. Buna _yerel sabitleme_ demek daha doğrudur:
+> async kodda `.await` boyunca tutulan yerel değerler, dış future'ın
+> durumunun parçası olabilir; o future'ın saklandığı yer yığın da öbek de
+> olabilir. Liste 17-24'teki gibi yerel kullanım için `pin!` yeterlidir. Sabitlenmiş
 > bir future'ı mevcut kapsamın dışına döndürmeniz, bir struct alanında
 > saklamanız veya sahipliğini başka bir göreve taşımanız gerektiğinde ise değeri
 > öbekte sabitleyerek sahipliği taşınabilen `Pin<Box<T>>` üreten `Box::pin`

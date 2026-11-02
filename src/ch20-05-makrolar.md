@@ -246,7 +246,14 @@ Bu struct'ın alanları, ayrıştırdığımız Rust kodunun `ident` (_identifie
 
 Birazdan, eklemek istediğimiz yeni Rust kodunu üretecek olan `impl_merhaba_makro` fonksiyonunu tanımlayacağız. Ancak buna geçmeden önce, `derive` makromuzun çıktısının da bir `TokenStream` olduğuna dikkat edin. Döndürülen `TokenStream`, crate kullanıcılarımızın yazdığı koda eklenir; böylece kendi crate'lerini derlediklerinde, değiştirilmiş `TokenStream` içinde sağladığımız ek işlevselliği elde ederler.
 
-Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive` fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz. Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının `Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, prosedürel makromuzun hata durumunda paniklemesi gereklidir. Bu örneği `unwrap` kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
+Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive`
+fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz.
+Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının
+`Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, hata doğrudan bir
+`Err` dönüş değeri olarak iletilemez. Makro panikleyebilir veya açıklayıcı bir
+`compile_error!` çağrısı içeren bir `TokenStream` üretebilir. Bu örneği `unwrap`
+kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak
+neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
 
 Artık öznitelik eklenmiş Rust kodunu bir `TokenStream`'den `DeriveInput` örneğine dönüştüren koda sahip olduğumuza göre, Liste 20-42'de gösterildiği gibi öznitelik eklenmiş tür üzerinde `MerhabaMakro` trait'ini uygulayan kodu üretelim.
 
@@ -319,7 +326,16 @@ pub fn sql(input: TokenStream) -> TokenStream {
 
 Bu tanım, özel `derive` makrosunun imzasına benzer: Parantez içindeki belirteçleri alırız ve üretmek istediğimiz kodu döndürürüz.
 
-> Not: Rust makrolarını C/C++ dillerindeki `#define` ön işlemci makrolarından ayıran en kritik güvencelerden biri *makro hijyenidir (macro hygiene)*. C'deki `#define` ham metin kopyala-yapıştır işlemi yaptığı için beklenmedik operatör önceliği hatalarına veya yerel değişken adı çakışmalarına yol açabilir. Rust'ta ise `macro_rules!` makroları ham metin yerine belirteç ağacı (*token tree*) düzeyinde çalışır ve kendi içlerinde tanımladıkları değişkenleri ayrı bir sözdizimsel kapsamda yalıtır: Örneğin Liste 20-35'teki `vec!` tanımının içindeki `temp_vec` değişkeni, çağıran kodda `let temp_vec = 42; let v = vec![temp_vec];` yazsanız bile sizin `temp_vec` değişkeninizle asla çakışmaz veya onu gölgelemez.
+> Not: Rust makrolarını C/C++ dillerindeki `#define` ön işlemci makrolarından
+> ayıran en kritik güvencelerden biri *makro hijyenidir (macro hygiene)*. C'deki
+> `#define` Rust'ın sözdizimi ve kapsam kurallarını gözetmeden önişlemci
+> belirteçlerini genişlettiği için beklenmedik operatör önceliği hatalarına veya
+> yerel değişken adı çakışmalarına yol açabilir. Rust'ta ise `macro_rules!`
+> makroları ham metin yerine belirteç ağacı (*token tree*) düzeyinde çalışır ve
+> kendi içlerinde tanımladıkları değişkenleri ayrı bir sözdizimsel kapsamda
+> yalıtır: Örneğin Liste 20-35'teki `vec!` tanımının içindeki `temp_vec`
+> değişkeni, çağıran kodda `let temp_vec = 42; let v = vec![temp_vec];` yazsanız
+> bile sizin `temp_vec` değişkeninizle asla çakışmaz veya onu gölgelemez.
 >
 > Hem `macro_rules!` makrolarını hem de `#[derive(...)]` ve öznitelik makroları gibi prosedürel makroları geliştirirken veya hata ayıklarken, derleyicinin perde arkasında tam olarak hangi Rust kodunu ürettiğini görmek büyük kolaylık sağlar. Bunun için `cargo install cargo-expand` komutuyla kurabileceğiniz `cargo-expand` alt komutunu kullanabilirsiniz: Örneğin `krepler` proje dizininde `cargo expand` çalıştırdığınızda, `#[derive(MerhabaMakro)]` ve `println!` makrolarının derleme zamanında genişletilmiş tam Rust çıktısını doğrudan inceleyebilirsiniz.
 

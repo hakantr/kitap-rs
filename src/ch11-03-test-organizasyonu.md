@@ -37,7 +37,10 @@ Bu bölümün ilk kısmında yeni `toplayici` projesini oluşturduğumuzda Cargo
 
 Otomatik olarak üretilen `tests` modülü üzerindeki `cfg` özniteliği İngilizce _configuration_ (yapılandırma) kelimesinin kısaltmasıdır ve Rust'a takip eden öğenin yalnızca belirli bir yapılandırma seçeneği sağlandığında derlemeye dahil edilmesi gerektiğini bildirir. Bu örnekte yapılandırma seçeneği, testleri derlemek ve çalıştırmak amacıyla Rust tarafından sağlanan `test` seçeneğidir. Cargo, `cfg` özniteliği sayesinde test kodumuzu yalnızca testleri `cargo test` komutuyla açıkça çalıştırdığımızda derler. Bu kural yalnızca `#[test]` ile işaretlenmiş fonksiyonlar için değil, modülün içinde yer alabilecek tüm yardımcı fonksiyonlar için de geçerlidir.
 
-> Not: `#[cfg(test)]` özniteliğinin neden _src/lib.rs_ içinde zorunlu olduğu halde _tests/_ dizinindeki entegrasyon testlerinde gerekmediğini derleme hedefleri üzerinden kolayca anlayabiliriz:
+> Not: `#[cfg(test)]` özniteliğinin _src/lib.rs_ içindeki test modülünü normal
+> derlemelerden nasıl dışladığını ve _tests/_ dizinindeki entegrasyon
+> testlerinde neden gerekmediğini derleme hedefleri üzerinden kolayca
+> anlayabiliriz:
 >
 > - **_src/lib.rs_ (ve _src/_ altındaki diğer modüller)**: `cargo build` veya `cargo build --release` çalıştırdığınızda modül ağacının tamamı kütüphane çıktısının bir parçası olarak derlenir. `mod tests` üzerine `#[cfg(test)]` koymayı unutursanız `#[test]` fonksiyonları dışarıda kalsa bile modülün kendisi, içindeki yardımcı fonksiyonlar ve `use` bildirimleri normal derlemeye dahil edilir; bu durum gereksiz `dead_code` (kullanılmayan kod) uyarılarına, ikili dosya boyutunun büyümesine ve modül içinde yalnızca `[dev-dependencies]` altında tanımlı bir test crate'i kullanılıyorsa `cargo build` sırasında derleme hatasına yol açar.
 > - **_tests/_ dizini**: Cargo bu dizini özel bir test hedefi olarak tanır; içindeki dosyaları `cargo build` veya `cargo run` sırasında derleyiciye hiç göndermez, yalnızca `cargo test` çalıştırıldığında ayrı birer test crate'i olarak derler. Dolayısıyla _tests/_ altındaki dosyalarda `#[cfg(test)]` yazmak gereksizdir.
@@ -118,7 +121,11 @@ Her entegrasyon testi dosyasının çıktıda kendine ait bir bölümü vardır;
 
 > Not: Özetlemek gerekirse `cargo test` komutu testleri şu üç aşamalı sırayla yürütür:
 >
-> 1. **Birim testleri (`Running unittests src/lib.rs` ve varsa `src/main.rs`)**: Her modülü yalıtılmış olarak ve gizli (*private*) arayüzler dahil sınar.
+> 1. **Birim testleri (`Running unittests src/lib.rs` ve varsa `src/main.rs`)**:
+>    Modüllerde tanımlanan testleri, gizli (*private*) öğelere de
+>    erişebilecekleri bağlamda çalıştırır. Testler kendiliğinden yalıtılmaz;
+>    paylaşılan dosya ve küresel durum gibi kaynakları test kodunun yönetmesi
+>    gerekir.
 > 2. **Entegrasyon testleri (`Running tests/<dosya_adı>.rs`)**: _tests/_ dizininin kökündeki her `.rs` dosyasını ayrı bir harici crate olarak derleyip yalnızca açık (`pub`) API üzerinden sınar.
 > 3. **Belgelendirme testleri (`Doc-tests <crate_adı>`)**: API belgelendirme yorumlarındaki (`///`) kod örneklerini derleyip çalıştırarak belgelerin kodla uyumlu kaldığını doğrular.
 >

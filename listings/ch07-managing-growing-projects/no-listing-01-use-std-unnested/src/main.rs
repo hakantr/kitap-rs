@@ -24,6 +24,8 @@ fn main() {
 
     println!("Tahmininiz: {tahmin}");
 
+    let tahmin: u32 = tahmin.trim().parse().expect("Lütfen bir sayı girin!");
+
     match tahmin.cmp(&gizli_sayi) {
         Ordering::Less => println!("Çok küçük!"),
         Ordering::Greater => println!("Çok büyük!"),

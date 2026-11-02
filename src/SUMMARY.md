@@ -120,9 +120,10 @@
   - [Gelişmiş Fonksiyonlar ve Kapanışlar](ch20-04-gelismis-fonksiyonlar-ve-kapanislar.md)
   - [Makrolar](ch20-05-makrolar.md)
 
-- [Final Projesi: Çok Kanallı (Multithreaded) Web Sunucusu Geliştirme](ch21-00-final-projesi-web-sunucusu.md)
-  - [Tek Kanallı (Single-Threaded) Web Sunucusu Geliştirme](ch21-01-tek-kanalli-sunucu.md)
-  - [Tek Kanallıdan Çok Kanallı Sunucuya Geçiş](ch21-02-cok-kanalli-sunucu.md)
+- [Final Projesi: Çok İş Parçacıklı (Multithreaded) Web Sunucusu
+  Geliştirme](ch21-00-final-projesi-web-sunucusu.md)
+  - [Tek İş Parçacıklı (Single-Threaded) Web Sunucusu Geliştirme](ch21-01-tek-kanalli-sunucu.md)
+  - [Tek İş Parçacıklı Sunucudan Çok İş Parçacıklı Sunucuya Geçiş](ch21-02-cok-kanalli-sunucu.md)
   - [Zarif Kapanış (Graceful Shutdown) ve Temizlik](ch21-03-zarif-kapanis.md)
 
 - [Ekler](ekler-00.md)

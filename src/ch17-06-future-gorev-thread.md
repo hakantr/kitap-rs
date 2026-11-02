@@ -104,10 +104,11 @@ senaryolarında bu tür birleşimlerin sayısız örneği vardır.
 > Bölüm 16 ve Bölüm 17'de ele aldığımız üç temel yapı taşı, birbirinin rakibi
 > değil farklı soyutlama katmanlarıdır:
 >
-> - **Future (Derleyici düzeyinde durum makinesi):** En küçük eşzamanlılık
->   birimidir. Yalnızca `.await` noktaları arasında yaşayacak değişkenler kadar
->   bellek kaplar; kendi başına çalışmaz, içinde bulunduğu görev tarafından
->   yoklandıkça işbirlikli (*cooperative*) olarak ilerler.
+> - **Future (Tamamlanabilecek bir hesaplamayı temsil eden değer):** `async`
+>   koddan üretilen future, derleyicinin oluşturduğu bir durum makinesidir;
+>   `Future` trait'ini elle uygulayan türler de yazılabilir. Boyutu,
+>   yakalanan verileri ve bekleme noktalarında korunacak durumu içerir.
+>   Kendi başına çalışmaz; yoklandıkça işbirlikli (*cooperative*) ilerler.
 > - **Görev / Task (Çalışma zamanı yönetiminde birim):** Bir future ağacının
 >   yürütme sınırıdır. Yürütücü (*executor*) tarafından kullanıcı alanında
 >   çizelgelenir; bağlam değişimi işletim sistemi çekirdeğine inmeden çok düşük

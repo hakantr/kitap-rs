@@ -71,11 +71,12 @@ reddederse programcı biraz zahmete girer, ancak felaketle sonuçlanacak hiçbir
 uyduğundan emin olduğunuz, ancak derleyicinin bunu anlayıp garanti edemediği
 durumlarda kullanışlıdır.
 
-`Rc<T>` türüne benzer şekilde `RefCell<T>` de yalnızca tek thread'li
-(*single-threaded*) senaryolarda kullanım içindir ve onu çok thread'li
-(*multithreaded*) bir bağlamda kullanmaya çalışırsanız derleme zamanı hatası
-verir. Çok thread'li bir programda `RefCell<T>` işlevselliğini nasıl elde
-edeceğimizi Bölüm 16'da ele alacağız.
+`RefCell<T>` aynı anda birden fazla thread arasında paylaşılamaz; çünkü
+`Sync` trait'ini uygulamaz. Ancak `T: Send` olduğunda bir `RefCell<T>`
+değerinin sahipliği başka bir thread'e taşınabilir. Bu yönüyle ne `Send`
+ne de `Sync` olan `Rc<T>` türünden farklıdır. Thread'ler arasında paylaşılan
+veriyi değiştirmek için kullanabileceğimiz `Mutex<T>` gibi araçları
+Bölüm 16'da ele alacağız.
 
 `Box<T>`, `Rc<T>` veya `RefCell<T>` türlerinden birini seçme nedenlerinin özeti
 şöyledir:
@@ -96,8 +97,8 @@ bunun nasıl mümkün olduğunu inceleyelim.
 
 > Not: Bölüm boyunca incelediğimiz üç temel akıllı işaretçi türünü (ve sıkça
 > birlikte kullanılan `Rc<RefCell<T>>` bileşimini) tek bakışta şöyle
-> karşılaştırabilirsiniz. `Box<T>` ve `Rc<T>` veriyi her zaman öbekte (*heap*)
-> ayırırken, `RefCell<T>` ek bir öbek tahsisi yapmaz; içindeki `T` değerini ve
+> karşılaştırabilirsiniz. `Box<T>` ve `Rc<T>` öbekte sahip olunan veriye
+> erişim sağlarken, `RefCell<T>` tek başına ek bir öbek tahsisi yapmaz; içindeki `T` değerini ve
 > ödünç sayacını doğrudan bulunduğu yerde (örneğin yığında veya bir struct/enum
 > alanının içinde) sarmalar:
 >
@@ -112,7 +113,9 @@ bunun nasıl mümkün olduğunu inceleyelim.
 > `RefCell<T>` yerine daha hafif olan `Cell<T>` türünü de sunar: `Cell<T>`,
 > içteki değere referans vermek yerine `get` ile bir kopyasını döndürür ve `set`
 > ile değeri yenisiyle değiştirir; dolayısıyla çalışma zamanında ödünç takibi
-> yapmasına gerek kalmaz ve hiçbir zaman paniklemez.
+> yapmasına gerek kalmaz. Bu, `Cell<T>` üzerindeki bütün işlemlerin hiçbir
+> koşulda paniklemeyeceği anlamına gelmez; örneğin eski bir değerin
+> düşürülmesi o türün kendi `Drop` kodunu çalıştırabilir.
 
 <!-- Old headings. Do not remove or links may break. -->
 

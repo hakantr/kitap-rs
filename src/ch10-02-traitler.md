@@ -71,13 +71,38 @@ Kütüphanemiz `HaberMakalesi` ve `SosyalGonderi` üzerinde `Ozet` trait'ini uyg
 
 Bu kod ekrana `1 yeni gönderi: horse_ebooks: elbette, muhtemelen zaten bildiğiniz gibi, insanlar` yazdırır.
 
-> Not: Yukarıdaki `use toplayici::{Ozet, SosyalGonderi};` satırındaki `Ozet` kısmını silerseniz, `SosyalGonderi` türü kapsamda olduğu hâlde `gonderi.ozetle()` çağrısı derlenmez. Derleyici `` error[E0599]: no method named `ozetle` found `` hatasıyla birlikte `items from traits can only be used if the trait is in scope` (*trait'lerden gelen öğeler yalnızca trait kapsamdaysa kullanılabilir*) açıklamasını ve eklemeniz gereken `use` satırını önerir. Bir trait'in metotlarını çağırabilmek için trait'in de kapsamda olması kuralı, farklı crate'lerdeki iki trait'in aynı türe aynı adlı metotlar eklemesi durumunda hangi metodun kastedildiğinin belirsizleşmesini önler. Yalnızca standart kütüphanenin *prelude*'ünde yer alan `Clone`, `ToString` veya `Iterator` gibi trait'ler her kapsamda hazır olduğundan onlar için ek bir `use` satırına gerek yoktur.
+> Not: Yukarıdaki `use toplayici::{Ozet, SosyalGonderi};` satırındaki `Ozet`
+> kısmını silerseniz, `SosyalGonderi` türü kapsamda olduğu hâlde
+> `gonderi.ozetle()` çağrısı derlenmez. Derleyici `` error[E0599]: no method
+> named `ozetle` found `` hatasıyla birlikte `items from traits can only be used
+> if the trait is in scope` (*trait'lerden gelen öğeler yalnızca trait
+> kapsamdaysa kullanılabilir*) açıklamasını ve eklemeniz gereken `use` satırını
+> önerir. Trait'i kapsama almak, derleyicinin metot aramasına o trait'in
+> metotlarını da dahil eder. Aynı adlı metot sunan iki trait de kapsamdaysa
+> çağrı yine belirsiz olabilir; böyle durumlarda Bölüm 20'de göreceğimiz tam
+> nitelikli sözdizimiyle hangi trait'in kastedildiğini belirtiriz. Yalnızca
+> standart kütüphanenin *prelude*'ünde yer alan `Clone`, `ToString` veya
+> `Iterator` gibi trait'ler her kapsamda hazır olduğundan onlar için ek bir
+> `use` satırına gerek yoktur.
 
 `toplayici` crate'ine bağımlı olan diğer crate'ler de `Ozet` trait'ini kendi türleri üzerinde uygulamak üzere kapsama dahil edebilir. Burada dikkat edilmesi gereken önemli bir kısıtlama vardır: Bir trait'i bir tür üzerinde yalnızca trait'in kendisi, türün kendisi veya her ikisi birden kendi crate'imize yerel (*local*) ise uygulayabiliriz. Örneğin, `SosyalGonderi` türü `toplayici` crate'imize yerel olduğu için `toplayici` crate'imizin bir parçası olarak `SosyalGonderi` gibi özel bir tür üzerinde `Display` gibi standart kütüphane trait'lerini uygulayabiliriz. Benzer şekilde, `Ozet` trait'i `toplayici` crate'imize yerel olduğu için `toplayici` crate'i içinde `Vec<T>` üzerinde de `Ozet` trait'ini uygulayabiliriz.
 
 Ancak harici trait'leri harici türler üzerinde uygulayamayız. Örneğin, `toplayici` crate'imiz içinde `Vec<T>` üzerinde `Display` trait'ini uygulayamayız; çünkü hem `Display` hem de `Vec<T>` standart kütüphanede tanımlanmıştır ve `toplayici` crate'imize yerel değildir. Bu kısıtlama, _tutarlılık (coherence)_ adı verilen özelliğin ve daha özelinde —ebeveyn tür mevcut olmadığı için bu adı alan— _yetim kuralının (orphan rule)_ bir parçasıdır. Bu kural, başkalarının kodunun sizin kodunuzu, sizin kodunuzun da başkalarının kodunu bozamamasını güvence altına alır. Bu kural olmasaydı iki farklı crate aynı tür için aynı trait'i uygulayabilir ve Rust hangi uygulamayı kullanacağını bilemezdi.
 
-> Not: Yetim kuralının bağımlılık çakışmalarını nasıl önlediğini somut bir senaryoyla düşünelim: Projenize eklediğiniz iki harici bağımlılığın ikisi de standart kütüphanedeki `Vec<String>` türü için `Display` trait'ini kendince tanımlayabilseydi, bir `Vec<String>` değerini `{}` ile yazdırmak istediğinizde derleyici hangi crate'in uygulamasını çağıracağına karar veremezdi; üstelik bir bağımlılığın yeni sürümüne böyle bir `impl` eklendiğinde çalışan kodunuz bir anda derlenemez hâle gelirdi. Yine de `Vec<String>` gibi harici bir türe `Display` gibi harici bir trait kazandırmanız gereken durumlarda, bu türü `struct Sarmalayici(Vec<String>);` şeklinde tek alanlı yerel bir demet struct'ı içine alarak kendi yerel türünüzü oluşturabilirsiniz. Çalışma zamanında hiçbir ek bellek veya performans maliyeti getirmeyen bu tekniğe _newtype deseni_ denir; ayrıntılarını Bölüm 20'deki [“Dış Trait'leri Newtype Deseniyle Uygulamak”][newtype]<!-- ignore --> bölümünde inceleyeceğiz.
+> Not: Yetim kuralının bağımlılık çakışmalarını nasıl önlediğini somut bir
+> senaryoyla düşünelim: Projenize eklediğiniz iki harici bağımlılığın ikisi de
+> standart kütüphanedeki `Vec<String>` türü için `Display` trait'ini kendince
+> tanımlayabilseydi, bir `Vec<String>` değerini `{}` ile yazdırmak istediğinizde
+> derleyici hangi crate'in uygulamasını çağıracağına karar veremezdi; üstelik
+> bir bağımlılığın yeni sürümüne böyle bir `impl` eklendiğinde çalışan kodunuz
+> bir anda derlenemez hâle gelirdi. Yine de `Vec<String>` gibi harici bir türe
+> `Display` gibi harici bir trait kazandırmanız gereken durumlarda, bu türü
+> `struct Sarmalayici(Vec<String>);` şeklinde tek alanlı yerel bir demet
+> struct'ı içine alarak kendi yerel türünüzü oluşturabilirsiniz. Ek bir öbek
+> tahsisi gerektirmeyen ve genellikle derleyicinin ek çağrı maliyetini ortadan
+> kaldırabildiği bu tekniğe _newtype deseni_ denir; ayrıntılarını Bölüm 20'deki
+> [“Dış Trait'leri Newtype Deseniyle Uygulamak”][newtype]<!-- ignore -->
+> bölümünde inceleyeceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -255,7 +280,21 @@ Bununla birlikte, dönüş konumunda `impl Trait`'i yalnızca **tek bir somut t�
 
 `impl Trait` sözdiziminin derleyicide nasıl uygulandığına bağlı kısıtlamalar nedeniyle aynı fonksiyondan hem `HaberMakalesi` hem de `SosyalGonderi` döndürülmesine izin verilmez. Bu davranışa sahip bir fonksiyonun nasıl yazılacağını Bölüm 18'deki [“Ortak Davranışı Soyutlamak İçin Trait Nesnelerini Kullanma”][trait-objects]<!-- ignore --> bölümünde ele alacağız.
 
-> Not: Dönüş konumundaki `-> impl Ozet` ifadesi çalışma zamanında dinamik bir tür seçimi yapmaz; derleyici fonksiyonun gövdesini inceleyerek döndürülen **tek bir somut türü** derleme zamanında saptar ve çağıran tarafta yığın (*stack*) üzerinde tam olarak o türün boyutu kadar yer ayırır (*statik gönderim / static dispatch*). Yukarıdaki kodda `HaberMakalesi` ile `SosyalGonderi` bellekte farklı boyutlara ve yerleşimlere sahip iki ayrı somut tür olduğundan, derleyici `error[E0308]: 'if' and 'else' have incompatible types` (`if` ve `else` kolları uyumsuz türlere sahip) hatası verir. Çalışma zamanındaki bir koşula göre aynı trait'i uygulayan farklı somut türler döndürmeniz gerektiğinde —derleyicinin hata çıktısındaki ipucunda da önerdiği üzere— değerleri öbekte (*heap*) tutup dönüş türünü `Box<dyn Ozet>` şeklinde bir _trait nesnesi_ olarak tanımlayabilirsiniz (`Box::new(HaberMakalesi { ... })` ve `Box::new(SosyalGonderi { ... })`). Bu yaklaşımın nasıl çalıştığını ve dinamik gönderim (*dynamic dispatch*) ödünleşimlerini Bölüm 18'de ayrıntılarıyla göreceğiz.
+> Not: Dönüş konumundaki `-> impl Ozet` ifadesi çalışma zamanında dinamik bir
+> tür seçimi yapmaz; derleyici fonksiyonun gövdesini inceleyerek döndürülen
+> **tek bir somut türü** derleme zamanında saptar ve çağıran kodu bu somut türe
+> göre derler. Bu, değerin mutlaka yığında saklanacağı anlamına gelmez; yerleşim
+> ve optimizasyonlar kullanımına bağlıdır. Yukarıdaki kodda `HaberMakalesi` ile
+> `SosyalGonderi` iki ayrı somut tür olduğundan, boyutları aynı olsaydı bile
+> derleyici `error[E0308]: 'if' and 'else' have incompatible types` (`if` ve
+> `else` kolları uyumsuz türlere sahip) hatası verir. Çalışma zamanındaki bir
+> koşula göre aynı trait'i uygulayan farklı somut türler döndürmeniz
+> gerektiğinde —derleyicinin hata çıktısındaki ipucunda da önerdiği üzere—
+> değerleri öbekte (*heap*) tutup dönüş türünü `Box<dyn Ozet>` şeklinde bir
+> _trait nesnesi_ olarak tanımlayabilirsiniz (`Box::new(HaberMakalesi { ... })`
+> ve `Box::new(SosyalGonderi { ... })`). Bu yaklaşımın nasıl çalıştığını ve
+> dinamik gönderim (*dynamic dispatch*) ödünleşimlerini Bölüm 18'de
+> ayrıntılarıyla göreceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 

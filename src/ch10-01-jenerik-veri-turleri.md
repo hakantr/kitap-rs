@@ -166,7 +166,15 @@ Bir tür üzerinde metot tanımlarken jenerik türlere kısıtlamalar da getireb
 
 Bu kod, `Nokta<f32>` türünün `orijinden_uzaklik` adlı bir metoda sahip olacağı, `T`'nin `f32` olmadığı diğer `Nokta<T>` örneklerinde ise bu metodun tanımlı olmayacağı anlamına gelir. Metot, noktamızın `(0.0, 0.0)` koordinatlarındaki başlangıç noktasına olan uzaklığını hesaplar ve yalnızca kayan noktalı sayı türlerinde bulunan matematiksel işlemleri (`powi` ve `sqrt`) kullanır.
 
-> Not: `impl<T> Nokta<T>` ile `impl Nokta<f32>` sözdizimi arasındaki fark, açılı ayraçların iki farklı görev üstlenmesinden kaynaklanır: `impl` anahtar kelimesinin hemen ardından gelen `<T>`, yeni bir jenerik tür parametresini **kapsama bildirir**; `Nokta<T>` içindeki `<T>` ise bu bildirilen parametreyi **kullanır**. İlk `<T>`'yi unutup `impl Nokta<T>` yazarsanız derleyici `T`'yi tıpkı `f32` gibi somut bir tür sanır ve kapsamda `T` adında bir tür bulamadığı için (`E0412`) hata verir. Buna karşılık `impl Nokta<f32>` yazdığımızda `f32` zaten bilinen somut bir tür olduğundan `impl`'den sonra yeni bir tür parametresi bildirmeyiz.
+> Not: `impl<T> Nokta<T>` ile `impl Nokta<f32>` sözdizimi arasındaki fark, açılı
+> ayraçların iki farklı görev üstlenmesinden kaynaklanır: `impl` anahtar
+> kelimesinin hemen ardından gelen `<T>`, yeni bir jenerik tür parametresi
+> **bildirerek onu kapsama dahil eder**; `Nokta<T>` içindeki `<T>` ise bu
+> bildirilen parametreyi **kullanır**. İlk `<T>`'yi unutup `impl Nokta<T>`
+> yazarsanız derleyici `T`'yi tıpkı `f32` gibi somut bir tür sanır ve kapsamda
+> `T` adında bir tür bulamadığı için (`E0412`) hata verir. Buna karşılık `impl
+> Nokta<f32>` yazdığımızda `f32` zaten bilinen somut bir tür olduğundan
+> `impl`'den sonra yeni bir tür parametresi bildirmeyiz.
 
 Bir struct tanımındaki jenerik tür parametreleri, aynı struct'ın metot imzalarında kullandığınız jenerik tür parametreleriyle her zaman aynı olmak zorunda değildir. Liste 10-11, örneği daha anlaşılır kılmak amacıyla `Nokta` struct'ı için `X1` ve `Y1`, `karistir` metodunun imzası içinse `X2` ve `Y2` jenerik türlerini kullanır. Bu metot, `self` olan `Nokta` değerinden (`X1` türündeki) `x` alanını ve parametre olarak geçirilen `Nokta` değerinden (`Y2` türündeki) `y` alanını alarak yeni bir `Nokta` örneği oluşturur.
 
@@ -228,4 +236,15 @@ fn main() {
 
 Jenerik `Option<T>`, derleyicinin oluşturduğu türe özgü tanımlarla değiştirilir. Rust jenerik kodu her bir kullanımda somut türü belirten koda derlediği için jenerikleri kullanmanın çalışma zamanında hiçbir ek maliyeti yoktur. Kod çalıştığında, her bir tanımı elle tek tek çoğaltmışız gibi performans gösterir. Tek biçimlileştirme süreci, Rust'ın jeneriklerini çalışma zamanında son derece verimli kılar.
 
-> Not: Tek biçimlileştirme sayesinde derleyici hangi somut fonksiyon veya metodun çağrılacağını derleme zamanında kesin olarak bilir; buna *statik gönderim (static dispatch)* denir. Doğrudan çağrılar ve satır içi açma (*inlining*) gibi derleyici eniyilemeleri tam kapasiteyle uygulanabildiğinden çalışma zamanında hiçbir hız kaybı yaşanmaz. Bunun tek ödünleşimi, bir jenerik tanım çok sayıda farklı somut türle kullanıldığında her tür için ayrı makine kodu üretilmesi nedeniyle derleme süresinin ve üretilen ikili dosya (*binary*) boyutunun bir miktar artabilmesidir. Homojen olmayan koleksiyonlara veya daha küçük ikili dosya boyutuna ihtiyaç duyduğunuz durumlarda Rust, Bölüm 18'de inceleyeceğimiz *trait nesneleri (`dyn Trait`)* aracılığıyla çalışma zamanında çözümlenen *dinamik gönderim (dynamic dispatch)* seçeneğini de sunar.
+> Not: Tek biçimlileştirme sayesinde derleyici hangi somut fonksiyon veya
+> metodun çağrılacağını derleme zamanında kesin olarak bilir; buna *statik
+> gönderim (static dispatch)* denir. Bu bilgi, doğrudan çağrılar ve satır içi
+> açma (*inlining*) gibi optimizasyonlara olanak tanır; ancak belirli bir
+> optimizasyonun uygulanması veya kodun her durumda daha hızlı olması garanti
+> edilmez. Başlıca ödünleşimlerden biri, bir jenerik tanım çok sayıda farklı
+> somut türle kullanıldığında her tür için ayrı makine kodu üretilmesi nedeniyle
+> derleme süresinin ve üretilen ikili dosya (*binary*) boyutunun bir miktar
+> artabilmesidir. Homojen olmayan koleksiyonlara veya daha küçük ikili dosya
+> boyutuna ihtiyaç duyduğunuz durumlarda Rust, Bölüm 18'de inceleyeceğimiz
+> *trait nesneleri (`dyn Trait`)* aracılığıyla çalışma zamanında çözümlenen
+> *dinamik gönderim (dynamic dispatch)* seçeneğini de sunar.

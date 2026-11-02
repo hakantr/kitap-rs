@@ -324,11 +324,15 @@ Metin aramaktan sorumlu kodu _src/main.rs_ yerine _src/lib.rs_ içinde tanımlay
 
 <Listing number="12-13" file-name="src/lib.rs" caption="*src/lib.rs* içinde `ara` fonksiyonunu tanımlama">
 
-```rust,ignore,does_not_compile
+```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-13/src/lib.rs}}
 ```
 
 </Listing>
+
+Bu kod derlenir; ancak `ara` fonksiyonu çağrıldığında `unimplemented!` makrosu
+panik oluşturur. Bu makro, henüz uygulamadığımız fonksiyonun gövdesi için geçici
+bir yer tutucudur.
 
 `ara` fonksiyonunu kütüphane crate'imizin dışa açık API'sinin bir parçası olarak işaretlemek için fonksiyon tanımında `pub` anahtar kelimesini kullandık. Artık ikili crate'imizden kullanabileceğimiz ve doğrudan test edebileceğimiz bir kütüphane crate'imiz var!
 

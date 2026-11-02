@@ -12,7 +12,19 @@ Rust'ın standart kütüphanesi, _koleksiyonlar (collections)_ adı verilen oldu
 
 Standart kütüphane tarafından sağlanan diğer koleksiyon türleri hakkında bilgi edinmek için [standart kütüphane belgelendirmesine][collections] göz atabilirsiniz.
 
-> Not: Koleksiyonların asıl elemanları dinamik olarak büyüyüp küçülebilmek için **öbekte** tutulurken, koleksiyon değişkeninin kendisi (öbekteki verinin işaretçisi, mevcut uzunluk ve ayrılan kapasite bilgisi) **yığında (stack)** sabit boyutlu küçük bir yapı olarak yer alır. Değişken kapsam dışına çıktığında ise öbekteki bellek, sahiplik kuralları uyarınca otomatik olarak temizlenir. Ayrıca çok sık kullanıldıkları için `Vec<T>` ve `String` ön tanımlı kapsamda (*prelude*) doğrudan hazır gelirken, `HashMap` ve diğer özel amaçlı koleksiyonlar `std::collections` modülünden `use` ile kapsama dahil edilir. İhtiyacınıza göre başvurabileceğiniz başlıca diğer standart koleksiyonlar şunlardır:
+> Not: Koleksiyonların asıl elemanları dinamik olarak büyüyüp küçülebilmek için
+> **öbekte** tutulurken, `Vec<T>` veya `String` değerinin işaretçi, uzunluk ve
+> kapasite bilgileri sabit boyutlu bir yapı oluşturur. Örneklerimizde yerel
+> değişken olarak gösterilen bu yapı **yığında (stack)** düşünülebilir; ancak
+> başka bir struct'ın alanı olduğunda veya `Box` içinde tutulduğunda kendisi de
+> öbekte bulunabilir. Önemli ayrım, koleksiyonun yönetim bilgileri ile
+> elemanları için ayrılan belleğin farklı olmasıdır. Değişken kapsam dışına
+> çıktığında ise öbekteki bellek, sahiplik kuralları uyarınca otomatik olarak
+> temizlenir. Ayrıca çok sık kullanıldıkları için `Vec<T>` ve `String` ön
+> tanımlı kapsamda (*prelude*) doğrudan hazır gelirken, `HashMap` ve diğer özel
+> amaçlı koleksiyonlar `std::collections` modülünden `use` ile kapsama dahil
+> edilir. İhtiyacınıza göre başvurabileceğiniz başlıca diğer standart
+> koleksiyonlar şunlardır:
 >
 > - **`VecDeque<T>`**: Yalnızca sondan değil, hem baştan hem sondan hızlı ekleme ve çıkarma gerektiren çift uçlu kuyruk (*double-ended queue*) senaryoları için,
 > - **`BTreeMap<K, V>`**: Anahtarların her zaman sıralı tutulması ve belirli bir aralıktaki anahtarların verimli biçimde sorgulanması gerektiğinde `HashMap<K, V>` yerine,

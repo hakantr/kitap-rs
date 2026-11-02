@@ -22,7 +22,16 @@ Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretile
 
 Birden fazla testi çalıştırdığınızda bunlar varsayılan olarak thread'ler (*iş parçacıkları*) aracılığıyla paralel biçimde çalışır; bu sayede testler daha kısa sürede tamamlanır ve çok daha hızlı geri bildirim alırsınız. Testler aynı anda çalıştığı için testlerinizin birbirine ya da paylaşılan herhangi bir duruma bağımlı olmadığından emin olmalısınız; geçerli çalışma dizini veya çevre değişkenleri gibi ortak bir ortam da bu paylaşılan duruma dahildir.
 
-Örneğin testlerinizin her birinin diskte _test-ciktisi.txt_ adında bir dosya oluşturan ve bu dosyaya veri yazan bir kod çalıştırdığını düşünelim. Ardından her test bu dosyadaki veriyi okur ve dosyanın —her testte farklı olan— belirli bir değeri içerdiğini doğrular. Testler aynı anda çalıştığı için, bir test dosyaya yazma ile dosyayı okuma işlemleri arasındayken başka bir test aynı dosyanın üzerine yazabilir. Bu durumda ikinci test, kod hatalı olduğu için değil, paralel çalışan testler birbirinin işleyişine müdahale ettiği için başarısız olur. Çözümlerden biri her testin farklı bir dosyaya yazmasını sağlamaktır; diğer bir çözüm ise testleri teker teker çalıştırmaktır.
+Örneğin testlerinizin her birinin diskte _test-ciktisi.txt_ adında bir dosya
+oluşturan ve bu dosyaya veri yazan bir kod çalıştırdığını düşünelim. Ardından
+her test bu dosyadaki veriyi okur ve dosyanın —her testte farklı olan— belirli
+bir değeri içerdiğini doğrular. Testler aynı anda çalıştığı için, bir test
+dosyaya yazma ile dosyayı okuma işlemleri arasındayken başka bir test aynı
+dosyanın üzerine yazabilir. Bu durumda dosyayı ilk yazan test, kendi beklediği
+içerik değiştirilmiş olduğu için başarısız olabilir. Sorun, sınanan işlevden
+değil, paralel testlerin aynı dosyayı paylaşmasından kaynaklanır. Çözümlerden
+biri her testin farklı bir dosyaya yazmasını sağlamaktır; diğer bir çözüm ise
+testleri teker teker çalıştırmaktır.
 
 Testleri paralel çalıştırmak istemiyorsanız veya kullanılan thread sayısı üzerinde daha hassas bir denetim kurmak istiyorsanız, test ikili dosyasına `--test-threads` bayrağını ve kullanmak istediğiniz thread sayısını gönderebilirsiniz. Aşağıdaki örneğe göz atalım:
 

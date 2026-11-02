@@ -279,7 +279,14 @@ Bir karakterin baytlarının yalnızca bir kısmını `&merhaba[0..1]` gibi bir 
 {{#include ../listings/ch08-common-collections/output-only-01-not-char-boundary/output.txt}}
 ```
 
-Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir. Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız; aksi hâlde programınızın çökmesine yol açabilirsiniz. Vektörlerdeki `get` metodunda olduğu gibi, panik yapmayan bir alternatif olarak `merhaba.get(0..1)` çağrısını kullanabilirsiniz: Bu metot, aralığın uçları geçerli bir karakter sınırına denk gelmiyorsa `None`, geliyorsa dilimi içeren bir `Some(&str)` değeri döndürür.
+Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter
+sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir.
+Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız;
+aksi hâlde programınızın çökmesine yol açabilirsiniz. Vektörlerdeki `get`
+metodunda olduğu gibi, panik yapmayan bir alternatif olarak `merhaba.get(0..1)`
+çağrısını kullanabilirsiniz: Bu metot, aralık string sınırları içindeyse,
+başlangıcı bitişinden büyük değilse ve iki uç da UTF-8 karakter sınırına denk
+geliyorsa dilimi `Some` içinde döndürür; aksi hâlde `None` döndürür.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="methods-for-iterating-over-strings"></a>
@@ -324,7 +331,17 @@ Ancak geçerli Unicode skaler değerlerinin 1 bayttan daha fazlasından oluşabi
 
 Devanagari alfabesinde olduğu gibi string'lerden grafem kümeleri elde etmek karmaşık bir işlemdir; bu nedenle bu işlevsellik standart kütüphane tarafından sunulmaz. İhtiyacınız olan işlev buysa [crates.io](https://crates.io/)<!-- ignore --> üzerinde bu amaca yönelik crate'ler (örneğin `unicode-segmentation`) bulabilirsiniz.
 
-> Not: UTF-8 kodlamasında İngilizce ASCII harfler 1 bayt yer kaplarken Türkçeye özgü `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` ve `'İ'` harflerinin her biri (büyük harf biçimleri dahil) bellekte **2 bayt** yer kaplar. Örneğin 3 harfli `"çay"` metni için `"çay".chars().count()` çağrısı `3` (`'ç'`, `'a'`, `'y'`) döndürürken, `"çay".len()` çağrısı `[195, 167, 97, 121]` baytlarına karşılık gelen `4` değerini döndürür. Benzer biçimde 5 harfli `"göğüs"` bellekte `8` bayt, 8 harfli `"İstanbul"` ise `'İ'` harfi 2 bayt olduğu için `9` bayt uzunluğundadır. Dolayısıyla `&"İstanbul"[0..1]` ifadesi `'İ'` karakterinin iki baytını ortadan böldüğü için çalışma zamanında panik üretir; ilk harfi güvenle dilimlemek için geçerli karakter sınırı olan `&"İstanbul"[0..2]` aralığı kullanılmalıdır.
+> Not: UTF-8 kodlamasında ASCII harfler 1 bayt yer kaplarken Türkçeye özgü
+> `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` ve `'İ'` harflerinin her biri (büyük
+> harf biçimleri dahil) bellekte **2 bayt** yer kaplar. Örneğin 3 harfli `"çay"`
+> metni için `"çay".chars().count()` çağrısı `3` (`'ç'`, `'a'`, `'y'`)
+> döndürürken, `"çay".len()` çağrısı `[195, 167, 97, 121]` baytlarına karşılık
+> gelen `4` değerini döndürür. Benzer biçimde 5 harfli `"göğüs"` bellekte `8`
+> bayt, 8 harfli `"İstanbul"` ise `'İ'` harfi 2 bayt olduğu için `9` bayt
+> uzunluğundadır. Dolayısıyla `&"İstanbul"[0..1]` ifadesi `'İ'` karakterinin iki
+> baytını ortadan böldüğü için çalışma zamanında panik üretir; ilk harfi güvenle
+> dilimlemek için geçerli karakter sınırı olan `&"İstanbul"[0..2]` aralığı
+> kullanılmalıdır.
 >
 > Büyük-küçük harf dönüşümlerinde de dikkatli olun: Standart kütüphanedeki `to_lowercase` ve `to_uppercase` metotları dilden bağımsız Unicode kurallarını uygular. Örneğin `'İ'.to_lowercase()` çağrısı tek bir `char` değil, `'i'` ve birleştirici üst nokta `'\u{307}'` olmak üzere iki Unicode skaler değeri (tek bir grafem kümesi) üreten bir iteratör döndürür; `"I".to_lowercase()` ise Türkçede beklendiği gibi `"ı"` değil, `"i"` üretir. Türkçe dil kurallarına duyarlı (`'İ' -> 'i'`, `'I' -> 'ı'`) büyük-küçük harf dönüşümü gerektiğinde `icu_casemap` gibi yerelleştirme destekli crate'leri tercih edebilirsiniz.
 

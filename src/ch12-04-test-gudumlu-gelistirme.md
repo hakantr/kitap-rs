@@ -31,7 +31,7 @@ Dosya içeriğinde sorgu metnini fiilen arayacak ve sorguyla eşleşen satırlar
 
 <Listing number="12-15" file-name="src/lib.rs" caption="Sahip olmayı istediğimiz `ara` işlevselliği için başarısız bir test oluşturma">
 
-```rust,ignore,does_not_compile
+```rust,ignore,panics
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-15/src/lib.rs:here}}
 ```
 
@@ -39,7 +39,13 @@ Dosya içeriğinde sorgu metnini fiilen arayacak ve sorguyla eşleşen satırlar
 
 Bu test `"güven"` string'ini arar. Üzerinde arama yaptığımız metin üç satırdan oluşur ve büyük/küçük harf duyarlılığı nedeniyle bunlardan yalnızca ikincisi küçük harfli `"güven"` ifadesini barındırır (açılış çift tırnağından hemen sonra gelen ters eğik çizginin `\`, Rust'a bu çok satırlı string sabitinin başına yeni satır karakteri koymamasını söylediğine dikkat edin). Ardından `ara` fonksiyonundan dönen değerin yalnızca beklediğimiz satırı içerdiğini doğruluyoruz.
 
-Bu testi şimdiki hâliyle çalıştırırsak, `unimplemented!` makrosu `"not implemented"` (*uygulanmadı*) mesajıyla paniklediği için test başarısız olur. TDD ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi `ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece test derlenecek ve beklediğimiz asıl nedenden dolayı —boş bir vektör, `"güvenli, hızlı, üretken."` satırını barındıran vektörle eşleşmediği için— başarısız olacaktır.
+Bu test derlenir; ancak çalıştırıldığında `unimplemented!` makrosu `"not
+implemented"` (*uygulanmadı*) mesajıyla paniklediği için başarısız olur. TDD
+ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi
+`ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak
+fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece
+test, beklediğimiz asıl nedenden dolayı —boş bir vektör, `"güvenli, hızlı,
+üretken."` satırını barındıran vektörle eşleşmediği için— başarısız olacaktır.
 
 <Listing number="12-16" file-name="src/lib.rs" caption="`ara` fonksiyonunu çağrıldığında paniklemeyecek kadar tanımlama">
 
@@ -63,7 +69,20 @@ Rust, çıktı için iki parametreden hangisine ihtiyacımız olduğunu kendili�
 
 Diğer programlama dilleri fonksiyon imzasında argümanları dönüş değerlerine bağlamanızı gerektirmez, ancak bu pratik zamanla çok daha doğal gelecektir. Bu örneği Bölüm 10'daki [“Ömürlerle Referansları Doğrulama”][validating-references-with-lifetimes]<!-- ignore --> bölümünde yer alan örneklerle karşılaştırmak isteyebilirsiniz.
 
-> Not: Derleyicinin önerdiği `pub fn ara<'a>(sorgu: &'a str, icerik: &'a str) -> Vec<&'a str>` imzası teknik olarak derlense bile dönüş değerinin ömrünü gereksiz yere `sorgu` parametresinin ömrüne de kısıtlar. Örneğin uzun ömürlü bir `icerik` metni üzerinde, içteki kısa bir kapsamda oluşturulan geçici bir `sorgu: String` aradığınızı düşünün: Arama bittikten ve `sorgu` kapsam dışına çıkıp düşürüldükten sonra bile dönen satır dilimlerini kullanabilmelisiniz; çünkü bu dilimler öbekte yeni bellek tahsis etmeden (*zero-copy*) doğrudan `icerik` içindeki metin parçalarına işaret eder. İmzamızı `ara<'a>(sorgu: &str, icerik: &'a str) -> Vec<&'a str>` şeklinde yazdığımızda `sorgu`, Bölüm 10'da ele aldığımız ömür elizyon kuralları (*lifetime elision rules*) sayesinde `'a`'dan tamamen bağımsız kendi ömrünü alır; böylece `sorgu` yalnızca arama süresince ödünç alınır, sonuç vektörü ise `icerik` yaşadığı sürece geçerli kalır.
+> Not: Derleyicinin önerdiği `pub fn ara<'a>(sorgu: &'a str, icerik: &'a str) ->
+> Vec<&'a str>` imzası teknik olarak derlense bile dönüş değerinin ömrünü
+> gereksiz yere `sorgu` parametresinin ömrüne de kısıtlar. Örneğin uzun ömürlü
+> bir `icerik` metni üzerinde, içteki kısa bir kapsamda oluşturulan geçici bir
+> `sorgu: String` aradığınızı düşünün: Arama bittikten ve `sorgu` kapsam dışına
+> çıkıp düşürüldükten sonra bile dönen satır dilimlerini kullanabilmelisiniz;
+> çünkü bu dilimler metin baytlarını kopyalamadan (*zero-copy*) doğrudan
+> `icerik` içindeki parçalara işaret eder. Döndürülen `Vec` dilimleri saklamak
+> için bellek ayırabilir; kopyalamadığımız şey metnin kendisidir. İmzamızı
+> `ara<'a>(sorgu: &str, icerik: &'a str) -> Vec<&'a str>` şeklinde yazdığımızda
+> `sorgu`, Bölüm 10'da ele aldığımız ömür elizyon kuralları (*lifetime elision
+> rules*) sayesinde `'a`'dan tamamen bağımsız kendi ömrünü alır; böylece `sorgu`
+> yalnızca arama süresince ödünç alınır, sonuç vektörü ise `icerik` yaşadığı
+> sürece geçerli kalır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="writing-code-to-pass-the-test"></a>

@@ -11,7 +11,9 @@ Tüm programcılar kodlarını kolay anlaşılır kılmak için çaba gösterir;
 // merhaba, dünya
 ```
 
-Rust'ta idiyomatik yorum stilinde yorum iki eğik çizgiyle (`//`) başlar ve satır sonuna kadar devam eder. Tek bir satırı aşan yorumlarda her satırın başına şu şekilde `//` eklemeniz gerekir:
+Rust'ta yaygın yorum biçimi iki eğik çizgiyle (`//`) başlar ve satır sonuna
+kadar devam eder. Birden fazla satırı bu biçimde yorumlamak için her satırın
+başına `//` ekleriz:
 
 ```rust
 // Burada oldukça karmaşık bir işlem yapıyoruz; bunu açıklamak için birden

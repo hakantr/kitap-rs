@@ -32,7 +32,12 @@ Bölüm 4'teki [“Referanslar ve Ödünç Alma”][references-and-borrowing]<!-
 
 </Listing>
 
-> Not: Liste 10-16, 10-17 ve 10-23'teki örnekler değişkenleri ilk değer atamadan bildirir; böylece değişken adı dış kapsamda var olur. İlk bakışta bu durum, Rust'ta `null` (boş) değerlerin bulunmamasıyla çelişiyormuş gibi görünebilir. Ancak bir değişkene değer atamadan önce onu kullanmaya çalışırsak derleme zamanı hatası alırız; bu da Rust'ın gerçekten `null` değerlere izin vermediğini gösterir.
+> Not: Liste 10-16, 10-17 ve 10-23'teki örnekler değişkenleri ilk değer atamadan
+> bildirir. Bu, değişkenin `null` değerini tuttuğu anlamına gelmez; henüz
+> başlatılmamış olduğu anlamına gelir. Derleyici, kullanılmadan önce bütün olası
+> yürütme yollarında bir değer atanmış olmasını zorunlu tutar. Değerin
+> bulunmamasını çalışma zamanında temsil etmek istediğimizde ise `Option<T>`
+> kullanırız.
 
 Dış kapsam ilk değeri olmayan `r` adında bir değişken bildirir; iç kapsam ise ilk değeri `5` olan `x` adında bir değişken bildirir. İç kapsamın içinde `r`'nin değerini `x`'e bir referans olarak atamaya çalışırız. Ardından iç kapsam sona erer ve `r`'deki değeri yazdırmaya çalışırız. Bu kod derlenmez; çünkü biz `r`'yi kullanmaya çalışmadan önce `r`'nin başvurduğu değer kapsam dışına çıkmıştır. Aldığımız hata mesajı şöyledir:
 
@@ -168,7 +173,7 @@ Fonksiyon imzası artık Rust'a şunu söyler: Belirli bir `'a` ömrü için bu 
 Unutmayın: Bu fonksiyon imzasında ömür parametrelerini belirttiğimizde, fonksiyona geçirilen ya da fonksiyondan döndürülen hiçbir değerin kapsamını veya bellekte kalma süresini değiştirmiyoruz. Yalnızca ödünç alma denetleyicisinin bu ömür kısıtlamalarına uymayan referansları reddetmesi gerektiğini belirtiyoruz. `en_uzun` fonksiyonunun `x` ve `y`'nin tam olarak ne kadar yaşayacağını bilmesi gerekmez; bu imzayı karşılayacak bir kapsamın `'a` yerine konabilmesi yeterlidir.
 
 > Not: **Değerin Kapsamı ile Referansın Ömrü (`'a`) Arasındaki Ayrım** — Yeni başlayanların en sık düştüğü yanılgı, `'a` gibi bir ömür bildiriminin veriyi bellekte daha uzun süre hayatta tutacağını sanmaktır. Bir **değerin kapsamı (*scope*)**, o değerin bellekte ne zaman oluşturulup kapsam sonunda ne zaman temizleneceğini (`drop` edileceğini) belirler; bir **referansın ömrü (*lifetime*)** ise o referansın söz konusu değere güvenle başvurabildiği geçerlilik bölgesidir (ve bu ömür, değerin bellekte kaldığı süreyi asla aşamaz). Dolayısıyla açık bir `'a` bildirimi:
-> 1. **Değerlerin bellekte kalma süresini değiştirmez:** Değerler yine kendi kapsamlarının sonunda bellekten temizlenir (`drop` edilir).
+> 1. **Değerlerin bellekte kalma süresini değiştirmez:** Değerler kendi sahiplik ve düşürülme kurallarına göre temizlenir; bir ömür bildirimi bunların zamanını değiştirmez.
 > 2. **Referansların ömür ilişkisini tarif eder:** Ödünç alma denetleyicisine girdi referansları ile çıktı referansı arasındaki sözleşmeyi açıklar (örneğin `en_uzun<'a>` imzasında: *“Dönen referansı yalnızca `x` ve `y` referanslarının ikisinin birden geçerli olduğu ortak kesişim bölgesi içinde kullanabilirsin”*).
 > 3. **Sıfır çalışma zamanı maliyetlidir:** Tüm doğrulama derleme zamanında yapılır; derlenmiş ikili dosyaya hiçbir ek işlem eklenmez.
 
@@ -274,7 +279,15 @@ Bu struct, bir referans olan string dilimini barındıran `bolum` adlı tek bir 
 
 Buradaki `main` fonksiyonu, `roman` değişkeninin sahip olduğu `String` değerinin ilk cümlesine referans tutan bir `OnemliAlinti` örneği oluşturur. `roman` içindeki veri `OnemliAlinti` örneği oluşturulmadan önce zaten mevcuttur. Ayrıca `roman`, `OnemliAlinti` örneği kapsam dışına çıktıktan sonra kapsam dışına çıkar; dolayısıyla `OnemliAlinti` örneğindeki referans geçerlidir.
 
-> Not: Struct tanımındaki `'a` ömür parametresi, bu struct'ın bir veriyi *ödünç aldığını* türün adına kazır: `OnemliAlinti<'a>` değeri, en fazla `'a` ömrü boyunca geçerli olan bir referans taşır. Derleyici bu bilgiyle, struct örneğinin ödünç aldığı veriden daha uzun yaşamasını engeller. Örneğin `roman` değişkenini bir iç kapsamda oluşturup `OnemliAlinti` örneğini o kapsamın dışında kullanmaya çalışırsak, Liste 10-16'dakine benzer bir `` error[E0597]: `roman` does not live long enough `` hatası alırız:
+> Not: Struct tanımındaki `'a` ömür parametresi, bu struct'ın bir veriyi *ödünç
+> aldığını* türün adına kazır: `OnemliAlinti<'a>` değeri, işaret ettiği verinin
+> en az `'a` boyunca geçerli olması gereken bir referans taşır. Struct üzerinden
+> bu referansı kullanabildiğimiz süre, verinin geçerlilik süresini aşamaz.
+> Derleyici bu bilgiyle, struct örneğinin ödünç aldığı veriden daha uzun
+> yaşamasını engeller. Örneğin `roman` değişkenini bir iç kapsamda oluşturup
+> `OnemliAlinti` örneğini o kapsamın dışında kullanmaya çalışırsak, Liste
+> 10-16'dakine benzer bir `` error[E0597]: `roman` does not live long enough ``
+> hatası alırız:
 >
 > ```rust,ignore,does_not_compile
 > let alinti;

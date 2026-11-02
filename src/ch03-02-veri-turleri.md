@@ -47,7 +47,13 @@ _Tam sayı (integer)_, kesirli bileşeni olmayan bir sayıdır. Bölüm 2'de tam
 | 128 bit | `i128`   | `u128`    |
 | Mimariye bağlı | `isize`  | `usize`   |
 
-Her varyant işaretli veya işaretsiz olabilir ve açıkça belirlenmiş bir boyuta sahiptir. _İşaretli_ ve _işaretsiz_ terimleri sayının negatif olup olamayacağını ifade eder; başka bir deyişle, sayının bir işaretle birlikte yazılması mı gerektiğini (işaretli) yoksa her zaman pozitif olacağı için işaretsiz olarak temsil edilebileceğini mi (işaretsiz) belirtir. Bunu kâğıda sayı yazmaya benzetebilirsiniz: İşaret önemli olduğunda sayı artı veya eksi işaretiyle gösterilir; ancak sayının pozitif olduğunu varsaymak güvenliyse herhangi bir işaret konulmadan yazılır. İşaretli sayılar bellekte [ikiye tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili kullanılarak saklanır.
+Her tam sayı türünün belirli bir boyutu ve değer aralığı vardır. _İşaretli_
+türler negatif sayıları, sıfırı ve pozitif sayıları; _işaretsiz_ türler ise
+sıfırı ve pozitif sayıları temsil eder. Buradaki “işaret”, sayının kaynak kodda
+mutlaka `+` veya `-` ile yazılması gerektiğini değil, türün negatif değerleri
+temsil edip edemediğini belirtir. İşaretli sayılar bellekte [ikiye
+tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili
+kullanılarak saklanır.
 
 Her işaretli varyant, _n_ ilgili varyantın kullandığı bit sayısı olmak üzere, −(2<sup>n − 1</sup>) ile 2<sup>n − 1</sup> − 1 (sınırlar dahil) aralığındaki sayıları saklayabilir. Dolayısıyla bir `i8`, −(2<sup>7</sup>) ile 2<sup>7</sup> − 1 aralığındaki, yani −128 ile 127 arasındaki sayıları tutabilir. İşaretsiz varyantlar ise 0 ile 2<sup>n</sup> − 1 aralığındaki sayıları saklayabilir; örneğin bir `u8`, 0 ile 2<sup>8</sup> − 1 aralığındaki, yani 0 ile 255 arasındaki sayıları tutabilir.
 
@@ -73,9 +79,31 @@ Peki hangi tam sayı türünü kullanacağınızı nasıl bileceksiniz? Emin de�
 >
 > ##### Tam Sayı Taşması
 >
-> Diyelim ki 0 ile 255 arasında değerler tutabilen `u8` türünde bir değişkeniniz var. Bu değişkenin değerini bu aralığın dışına çıkaracak bir işlem yaparsanız (örneğin `255` olan değerini `1` artırarak `256` yapmaya çalışırsanız) _tam sayı taşması (integer overflow)_ meydana gelir ve bu durum derleme moduna göre iki farklı davranıştan biriyle sonuçlanır. (Doğrudan `let x: u8 = 256;` gibi aralık dışı bir sabit değer yazmak ise taşma sayılmaz; derleyici böyle bir satırı daha baştan `` literal out of range for `u8` `` hatasıyla reddeder.) Hata ayıklama (*debug*) modunda derleme yaptığınızda Rust, tam sayı taşmasını yakalayan kontroller ekler ve çalışma zamanında taşma gerçekleşirse programınızın _panik_ yapmasına neden olur. Rust, bir programın hata vererek sonlanması durumunu _panikleme (panicking)_ terimiyle ifade eder; panikleri Bölüm 9'daki ["`panic!` ile Kurtarılamayan Hatalar"][unrecoverable-errors-with-panic]<!-- ignore --> kısmında daha derinlemesine inceleyeceğiz.
+> Diyelim ki 0 ile 255 arasında değerler tutabilen `u8` türünde bir değişkeniniz
+> var. Bu değişkenin değerini bu aralığın dışına çıkaracak bir işlem yaparsanız
+> (örneğin `255` olan değerini `1` artırarak `256` yapmaya çalışırsanız) _tam
+> sayı taşması (integer overflow)_ meydana gelir ve bu durum derleme moduna göre
+> iki farklı davranıştan biriyle sonuçlanır. (Doğrudan `let x: u8 = 256;` gibi
+> aralık dışı bir sabit değer yazmak ise taşma sayılmaz; derleyici böyle bir
+> satırı daha baştan `` literal out of range for `u8` `` hatasıyla reddeder.)
+> Hata ayıklama (*debug*) modunda derleme yaptığınızda Rust, tam sayı taşmasını
+> yakalayan kontroller ekler ve çalışma zamanında taşma gerçekleşirse
+> programınızın _panik_ yapmasına neden olur. Panikleme (*panicking*), normal
+> kontrol akışını kesen bir hata mekanizmasıdır; her hata sonucu veya başarısız
+> çıkış bir panik değildir. Panikleri Bölüm 9'daki ["`panic!` ile Kurtarılamayan
+> Hatalar"][unrecoverable-errors-with-panic]<!-- ignore --> kısmında daha
+> derinlemesine inceleyeceğiz.
 >
-> `--release` bayrağıyla yayın (*release*) modunda derleme yaptığınızda ise Rust, paniğe yol açan tam sayı taşması kontrollerini _eklemez_. Bunun yerine taşma meydana gelirse Rust _ikiye tümleyen sarması (two's complement wrapping)_ uygular. Kısacası, türün tutabileceği en büyük değeri aşan sayılar başa dönerek türün alabileceği en küçük değere "sarılır". Bir `u8` için 256 değeri `0`, 257 değeri `1` olur ve bu şekilde devam eder. Program paniklemez ancak değişken büyük olasılıkla beklemediğiniz bir değer alır. Tam sayı taşmasının bu sarma davranışına güvenerek kod yazmak hata olarak kabul edilir.
+> `--release` bayrağıyla yayın (*release*) modunda derleme yaptığınızda ise
+> Rust, varsayılan olarak bu tam sayı taşması kontrollerini _eklemez_. Bu
+> davranış profildeki `overflow-checks` ayarıyla değiştirilebilir; burada
+> varsayılan profilleri karşılaştırıyoruz. Kontroller kapalıyken taşma
+> meydana gelirse Rust _ikiye tümleyen sarması (two's complement wrapping)_ uygular. Kısacası,
+> türün tutabileceği en büyük değeri aşan sayılar başa dönerek türün alabileceği
+> en küçük değere "sarılır". Bir `u8` için 256 değeri `0`, 257 değeri `1` olur
+> ve bu şekilde devam eder. Program paniklemez ancak değişken büyük olasılıkla
+> beklemediğiniz bir değer alır. Tam sayı taşmasının bu sarma davranışına
+> güvenerek kod yazmak hata olarak kabul edilir.
 >
 > Taşma olasılığını açıkça ele almak istediğinizde, standart kütüphanenin ilkel sayısal türler için sunduğu şu metot ailelerini kullanabilirsiniz:
 >
@@ -116,7 +144,19 @@ Rust, tüm sayı türleri için bekleyeceğiniz temel matematiksel işlemleri de
 
 Bu deyimlerdeki her bir ifade matematiksel bir operatör kullanır ve değerlendirilerek tek bir değer üretir; ardından bu değer ilgili değişkene bağlanır. [Ek B][appendix_b]<!-- ignore -->, Rust'ın sunduğu tüm operatörlerin tam bir listesini içerir.
 
-> Not: Rust, farklı sayısal türler arasında örtük (otomatik) dönüşüm yapmaz: `i32` türündeki bir değeri `i64` türündeki bir değerle doğrudan toplamaya çalışırsanız derleyici `` cannot add `i64` to `i32` `` hatası verir. Böyle durumlarda dönüşümü `as` anahtar kelimesiyle açıkça yazmanız gerekir (`x as i64 + y`); ancak `as`, hedef türe sığmayan değerleri sessizce kırptığı için dikkatli kullanılmalıdır. Kayıpsız dönüşümlerde `i64::from(x)` gibi `From` trait'i dönüşümleri tercih edilir. Ayrıca bir tam sayıyı sıfıra bölmek, hem hata ayıklama hem de yayın modunda `attempt to divide by zero` mesajıyla panik üretir; kayan noktalı sayılarda ise sıfıra bölme paniklemez, IEEE-754 kurallarına göre `inf` ya da `NaN` değerini döndürür.
+> Not: Rust, farklı sayısal türler arasında örtük (otomatik) dönüşüm yapmaz:
+> `i32` türündeki bir değeri `i64` türündeki bir değerle doğrudan toplamaya
+> çalışırsanız derleyici `` cannot add `i64` to `i32` `` hatası verir. Böyle
+> durumlarda değerleri açıkça ortak bir türe dönüştürmeniz gerekir. Örneğin
+> `i32` değerini `i64` türüne kayıpsız dönüştürmek için `i64::from(x) + y`
+> yazabilirsiniz. `as` ile dönüşüm de mümkündür (`x as i64 + y`); ancak
+> daraltıcı tam sayı dönüşümleri veri kaybına yol açabilir. Hedef türe sığmayan
+> bir değeri hata olarak ele almak istiyorsanız `TryFrom` veya `TryInto`
+> kullanabilirsiniz; bu trait'leri ilerleyen bölümlerde göreceğiz. Ayrıca bir
+> tam sayıyı çalışma zamanında sıfıra bölmek, hem hata ayıklama hem de yayın modunda `attempt to
+> divide by zero` mesajıyla panik üretir; kayan noktalı sayılarda ise sıfıra
+> bölme paniklemez, IEEE-754 kurallarına göre `inf` ya da `NaN` değerini
+> döndürür.
 
 <a id="the-boolean-type"></a>
 

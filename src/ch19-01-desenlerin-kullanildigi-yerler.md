@@ -203,8 +203,12 @@ aşağıdaki nota bakın.)
 >
 > Bu sözdiziminde `let` deseninin bağladığı yeni `yas` değişkeni hem `&&`
 > sonrasındaki koşulda hem de süslü parantez bloğunun içinde geçerlidir; böylece
-> Liste 19-3'teki `else if let Ok(yas) = yas && yas > 30 { ... }` kolu da iç içe
-> `if` bloğu açmaya gerek kalmadan doğrudan derlenip çalıştırılabilir.
+> yalnızca bu koşulun sağlandığı durumu ele almak için iç içe `if` gerekmez.
+> Ancak Liste 19-3'teki iç `if`/`else` yapısını tek bir zincirle değiştirmek
+> aynı davranışı korumaz: Ayrıştırılan yaş `30` veya daha küçükse özgün kod
+> turuncuyu seçerken zincir başarısız olur ve dıştaki sonraki kola geçilir.
+> Her iki yaş grubunu ayrı işlemek istiyorsanız özgün iç `if`/`else` yapısını
+> koruyun veya ikinci durumu ayrıca ele alın.
 
 `if let` ifadelerini kullanmanın dezavantajı, `match` ifadelerinin aksine
 derleyicinin kapsamlılık (*exhaustiveness*) denetimi yapmamasıdır. Son `else`

@@ -177,7 +177,16 @@ Bir kapanışın çevredeki değerleri yakalama ve işleme biçimi, kapanışın
 
 > Not: Standart kütüphanede bu üç trait birbirinin alt trait'i olarak tanımlanmıştır (`Fn: FnMut` ve `FnMut: FnOnce`). Dolayısıyla bu trait'leri uygulayan kapanış kümeleri arasında `FnOnce` ⊇ `FnMut` ⊇ `Fn` ilişkisi vardır: `Fn` uygulayan her kapanış aynı zamanda `FnMut` ve `FnOnce` beklentilerini, `FnMut` uygulayan her kapanış da `FnOnce` beklentisini otomatik olarak karşılar.
 >
-> Ayrıca `move` anahtar kelimesi ile `FnOnce` arasındaki ayrıma dikkat edin: `move`, kapanışın çevredeki değerleri **nasıl yakalayacağını** (sahipliği kapanışın *içine* taşıyarak) zorlar; kapanışın **hangi `Fn` trait'lerini uygulayacağını** ise kapanış gövdesinin yakalanan değerle **ne yaptığı** belirler. Dolayısıyla `move` kullanan bir kapanış, yakaladığı değeri gövdesinden dışarı taşımıyorsa veya değiştirmiyorsa `Fn` ve `FnMut` trait'lerini de uygular.
+> Ayrıca `move` anahtar kelimesi ile `FnOnce` arasındaki ayrıma dikkat edin:
+> `move`, kapanışın çevredeki değerleri **nasıl yakalayacağını** (sahipliği
+> kapanışın *içine* taşıyarak) zorlar; kapanışın **hangi `Fn` trait'lerini
+> uygulayacağını** ise kapanış gövdesinin yakalanan değerle **ne yaptığı**
+> belirler. Dolayısıyla `move` kullanan bir kapanış, yakaladığı değerleri
+> gövdesinden dışarı taşımıyor ve değiştirilebilir erişimle kullanmıyorsa `Fn`
+> ve `FnMut` trait'lerini de uygular. Yakalanan verilere değiştirilebilir
+> erişim gerekiyor ancak değerler dışarı taşınmıyorsa `FnMut` ve `FnOnce`
+> uygular. `Cell` gibi içsel değiştirilebilirlik türleriyle paylaşımlı erişim
+> üzerinden yapılan değişiklikler ise tek başına `Fn` uygulanmasını engellemez.
 
 Liste 13-1'de kullandığımız `Option<T>` üzerindeki `unwrap_or_else` metodunun tanımına bakalım:
 
@@ -219,7 +228,18 @@ Jenerik `F` türü üzerinde belirtilen trait sınırı `FnOnce() -> T` şeklind
 > }
 > ```
 >
-> Fonksiyon gövdesinde `f` iki kez çağrıldığı için trait sınırı olarak `FnOnce` kullanamazdık; kapanışın yakaladığı değerleri değiştirmesine de gerek olmadığından en kısıtlayıcı ve dolayısıyla en çok kapanışı kabul eden seçenek olan `Fn` tercih edildi. Hangi `Fn` trait'ini isteyeceğinize karar verirken kural basittir: Fonksiyonunuz kapanışı nasıl kullanacaksa (bir kez mi, birden çok kez mi, eşzamanlı mı?) en az onu gerektiren trait'i seçin. Bir kapanışı fonksiyondan _döndürmek_ ise ek incelikler barındırır; bunu Bölüm 20'de ele alacağız.
+> Fonksiyon gövdesinde `f` iki kez çağrıldığı için trait sınırı olarak `FnOnce`
+> kullanamazdık; bu örnekte kapanışı paylaşımlı erişimle çağırmak üzere `Fn`
+> sınırı tercih edildi. Ancak `Fn`, `FnMut`'tan daha kısıtlayıcıdır ve daha az
+> kapanışı kabul eder. Yakalanan durumu değiştiren kapanışlara da izin vermek
+> için parametreyi `mut f: impl FnMut(i32) -> i32` olarak tanımlayıp
+> gövdeyi `let ara_sonuc = f(x); f(ara_sonuc)` biçiminde yazabiliriz.
+> İç içe `f(f(x))` yazımı iki değiştirilebilir ödünç almayı çakıştıracağı
+> için çağrıları burada ayırırız. İki kez çağırmak için `FnMut` yeterlidir. Hangi `Fn` trait'ini isteyeceğinize
+> karar verirken kural basittir: Fonksiyonunuz kapanışı nasıl kullanacaksa (bir
+> kez mi, birden çok kez mi, eşzamanlı mı?) en az onu gerektiren trait'i seçin.
+> Bir kapanışı fonksiyondan _döndürmek_ ise ek incelikler barındırır; bunu Bölüm
+> 20'de ele alacağız.
 
 Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metodun aldığı kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir özelliğine göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
 

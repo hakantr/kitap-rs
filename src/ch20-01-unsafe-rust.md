@@ -31,7 +31,13 @@ Güvenli olmayan Rust'a geçmek için `unsafe` anahtar kelimesini kullanır ve a
 
 Buna ek olarak `unsafe`, blok içindeki kodun mutlaka tehlikeli olduğu ya da kesinlikle bellek güvenliği sorunları barındıracağı anlamına gelmez: Buradaki amaç, programcı olarak sizin `unsafe` bloğu içindeki kodun belleğe geçerli bir biçimde erişmesini güvence altına almanızdır.
 
-İnsanlar hata yapabilir ve hatalar kaçınılmaz olarak yaşanacaktır; ancak bu beş güvenli olmayan işlemin `unsafe` ile işaretlenmiş blokların içinde bulunmasını zorunlu kılarak, bellek güvenliğiyle ilgili her türlü hatanın mutlaka bir `unsafe` bloğu içinde yer aldığını bilirsiniz. `unsafe` bloklarını küçük tutun; ileride bellek hatalarını araştırırken bunun çok faydasını göreceksiniz.
+İnsanlar hata yapabilir ve hatalar kaçınılmaz olarak yaşanacaktır; ancak bu beş
+işlemi `unsafe` bloklarıyla işaretlemek, bellek güvenliğini elle doğrulamanız
+gereken noktaları görünür kılar. Bir ihlalin nedeni mutlaka bu blokta olmak
+zorunda değildir: Güvenli kodda değiştirilen bir alan da `unsafe` kodun
+dayandığı bir ön koşulu bozabilir. Bu nedenle güvenli sarmalayıcının koruduğu
+bütün değişmezleri birlikte değerlendirmelisiniz. `unsafe` bloklarını küçük
+tutun; ileride bellek hatalarını araştırırken bunun çok faydasını göreceksiniz.
 
 Güvenli olmayan kodu mümkün olduğunca yalıtmak için en iyi yaklaşım, bu kodu güvenli bir soyutlamanın içine alıp dışarıya güvenli bir API sunmaktır; bunu bölümün ilerleyen kısımlarında güvenli olmayan fonksiyon ve metotları incelerken ele alacağız. Standart kütüphanenin bazı bölümleri, denetlenmiş güvenli olmayan kodların üzerine inşa edilen güvenli soyutlamalar olarak uygulanmıştır. Güvenli olmayan kodu güvenli bir soyutlamayla sarmalamak, sizin veya kullanıcılarınızın `unsafe` kodla uygulanmış işlevselliği kullanmak istediği her yere `unsafe` kullanımının sızmasını önler; çünkü güvenli bir soyutlamayı kullanmak güvenlidir.
 
@@ -187,7 +193,10 @@ Buna karşılık, Liste 20-7'deki `slice::from_raw_parts_mut` kullanımı dilim 
 
 </Listing>
 
-Bu keyfi konumdaki belleğin sahibi değiliz ve bu kodun oluşturduğu dilimin geçerli `i32` değerleri içerdiğine dair hiçbir garanti yoktur. `values` değişkenini geçerli bir dilimmiş gibi kullanmaya çalışmak tanımsız davranışla sonuçlanır.
+Bu keyfi konumdaki belleğin sahibi değiliz ve bu kodun oluşturduğu dilimin
+geçerli `i32` değerleri içerdiğine dair hiçbir garanti yoktur. Geçerli bellek
+koşulları sağlanmıyorsa `slice::from_raw_parts_mut` çağrısının kendisi tanımsız
+davranıştır; dilimin elemanlarına sonradan erişmemek bu çağrıyı güvenli kılmaz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -272,11 +281,34 @@ Sabitler ile değiştirilemez statik değişkenler arasındaki ince bir fark, st
 
 </Listing>
 
-Sıradan değişkenlerde olduğu gibi değiştirilebilirliği `mut` anahtar kelimesiyle belirtiriz. `COUNTER` değişkeninden okuma veya ona yazma yapan her kod bir `unsafe` bloğu içinde yer almalıdır. Liste 20-11'deki kod tek thread'li olduğu için derlenir ve beklediğimiz gibi `COUNTER: 3` çıktısını verir. Birden fazla thread'in `COUNTER`'a erişmesi büyük olasılıkla veri yarışlarına yol açacağından tanımsız davranıştır. Bu nedenle, fonksiyonu çağıran herkesin güvenli bir şekilde neleri yapıp neleri yapamayacağını bilmesi için fonksiyonun tamamını `unsafe` olarak işaretlememiz ve güvenlik kısıtlamasını belgelememiz gerekir.
+Sıradan değişkenlerde olduğu gibi değiştirilebilirliği `mut` anahtar kelimesiyle
+belirtiriz. `COUNTER` değişkeninden okuma veya ona yazma yapan her kod bir
+`unsafe` bloğu içinde yer almalıdır. Liste 20-11'deki kod tek thread'li olduğu
+için derlenir ve beklediğimiz gibi `COUNTER: 3` çıktısını verir. `COUNTER`'a
+senkronizasyon olmadan eşzamanlı erişilir ve erişimlerden en az biri yazma
+yaparsa veri yarışı, dolayısıyla tanımsız davranış oluşur. Sadece birden fazla
+thread bulunması tek başına tanımsız davranış değildir. Bu nedenle, fonksiyonu
+çağıran herkesin güvenli bir şekilde neleri yapıp neleri yapamayacağını bilmesi
+için fonksiyonun tamamını `unsafe` olarak işaretlememiz ve güvenlik
+kısıtlamasını belgelememiz gerekir.
 
-Güvenli olmayan bir fonksiyon yazdığımız her durumda, `SAFETY` ile başlayan ve çağıran tarafın fonksiyonu güvenle çağırabilmek için ne yapması gerektiğini açıklayan bir yorum yazmak idiyomatiktir. Benzer şekilde, güvenli olmayan bir işlem gerçekleştirdiğimiz her yerde de güvenlik kurallarının nasıl korunduğunu açıklamak üzere `SAFETY` ile başlayan bir yorum yazmak idiyomatik bir alışkanlıktır.
+Güvenli olmayan bir fonksiyonun belgelendirmesinde `# Safety` başlığı altında,
+çağıran kodun sağlaması gereken ön koşulları açıklamak yaygın bir Rust kullanım
+biçimidir. `unsafe` bloğunun yanındaki `// SAFETY:` yorumu ise bu çağrı
+noktasında söz konusu koşulların nasıl sağlandığını açıklar. Böylece fonksiyonun
+sözleşmesi ile belirli bir kullanımın gerekçesi birbirinden ayrılır.
 
-Ayrıca derleyici, değiştirilebilir bir statik değişkene referans oluşturma girişimlerini bir derleyici denetimi (*lint*) aracılığıyla varsayılan olarak reddeder. Ya `#[allow(static_mut_refs)]` özniteliğini ekleyerek bu lint korumasından açıkça vazgeçmeniz ya da değiştirilebilir statik değişkene ham ödünç alma operatörlerinden biriyle oluşturulmuş bir ham işaretçi üzerinden erişmeniz gerekir. Bu kural, bu listedeki `println!` kullanımında olduğu gibi referansın görünmez biçimde oluşturulduğu durumları da kapsar. Değiştirilebilir statik değişkenlere referansların ham işaretçiler aracılığıyla oluşturulmasını zorunlu kılmak, bunları kullanmaya yönelik güvenlik gereksinimlerini daha belirgin hâle getirmeye yardımcı olur.
+Ayrıca derleyici, değiştirilebilir bir statik değişkene referans oluşturma
+girişimlerini bir derleyici denetimi (*lint*) aracılığıyla varsayılan olarak
+reddeder. Ya `#[allow(static_mut_refs)]` özniteliğini ekleyerek bu lint
+korumasından açıkça vazgeçmeniz ya da değiştirilebilir statik değişkene ham
+ödünç alma operatörlerinden biriyle oluşturulmuş bir ham işaretçi üzerinden
+erişmeniz gerekir. Bu kural, bu listedeki `println!` kullanımında olduğu gibi
+referansın görünmez biçimde oluşturulduğu durumları da kapsar. Ham işaretçi
+kullanmak, ara bir referans oluşturmadan erişim sağlamamıza ve güvenlik
+sorumluluğunu açıkça göstermemize yardımcı olur. Ham işaretçiden sonradan bir
+referans oluşturulursa o referansın bütün geçerlilik ve ödünç alma kuralları
+yine sağlanmalıdır; lint'i susturmak bu yükümlülüğü kaldırmaz.
 
 Küresel olarak erişilebilen değiştirilebilir verilerde veri yarışı olmadığından emin olmak zordur; Rust'ın değiştirilebilir statik değişkenleri güvenli olmayan kabul etmesinin nedeni budur. Mümkün olan her durumda, farklı thread'lerden yapılan veri erişiminin güvenli bir şekilde gerçekleştirildiğini derleyicinin denetleyebilmesi için Bölüm 16'da ele aldığımız eşzamanlılık tekniklerini ve thread güvenli akıllı işaretçileri kullanmak tercih edilmelidir.
 
@@ -319,7 +351,12 @@ Güvenli olmayan bir trait uygulamak için `unsafe` kullanabiliriz. Metotlarınd
 
 Yalnızca `unsafe` ile çalışan son işlem, bir *birleşimin* (`union`) alanlarına erişmektir. Bir `union`, `struct`'a benzer; ancak belirli bir örnekte herhangi bir anda bildirilen alanlardan yalnızca biri kullanılır. `union`'lar öncelikle C kodundaki `union`'larla etkileşim kurmak amacıyla kullanılır. Rust, `union` örneğinde o anda saklanan verinin türünü garanti edemediği için `union` alanlarına erişmek güvenli değildir. `union`'lar hakkında daha fazla bilgiyi [Rust Referansı'nda][unions] bulabilirsiniz.
 
-> Not: Bir `union`, tüm alanlarını bellekte aynı konumda tutar; dolayısıyla boyutu en büyük alanının boyutu kadardır. Hangi alana en son yazıldığını yalnızca siz bilirsiniz; Rust bunu takip etmez. Bu yüzden bir alana yazmak güvenliyken bir alanı okumak `unsafe` gerektirir:
+> Not: Bu örnekte `#[repr(C)]` kullanan bir `union`, bütün alanlarını aynı
+> başlangıç adresinde tutar. Boyutu, en büyük alanı barındıracak kadar büyük
+> olmalı ve hizalama koşulunu da sağlamalıdır; bu yüzden dolgu baytları
+> nedeniyle en büyük alanın boyutundan daha büyük olabilir. Hangi alana en son
+> yazıldığını yalnızca siz bilirsiniz; Rust bunu takip etmez. Bu yüzden bir
+> alana yazmak güvenliyken bir alanı okumak `unsafe` gerektirir:
 >
 > ```rust
 > #[repr(C)]

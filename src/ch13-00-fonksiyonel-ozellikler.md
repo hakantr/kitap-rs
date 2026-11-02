@@ -19,4 +19,16 @@ Bu bölümde fonksiyonel programlamanın ne olup olmadığı tartışmasına gir
 
 Desen eşleştirme ve enum'lar gibi fonksiyonel yaklaşımdan etkilenen diğer bazı Rust özelliklerini daha önce ele almıştık. Kapanışlara ve iteratörlere hâkim olmak, hızlı ve deyimsel Rust kodu yazmanın önemli bir parçası olduğundan bu bölümün tamamını bu iki konuya ayıracağız.
 
-> Not: Pek çok üst düzey dilde fonksiyonel programlama desenleri — kapanışlar, `map` ve `filter` gibi zincirleme *iteratör adaptörleri* ya da `Option` ve `Result` üzerindeki `unwrap_or_else`, `and_then` gibi *kombinatörler* — öbek tahsisleri, dinamik çağrılar veya ara koleksiyon kopyaları nedeniyle çalışma zamanında ek maliyet doğurabilir. Rust'ta ise bu yapılar **sıfır maliyetli soyutlama (*zero-cost abstraction*)** ilkesiyle tasarlanmıştır: Derleyici her kapanış için benzersiz bir somut tür üretir, tembel (*lazy*) iteratör zincirlerini ara bellek ayırmadan tek bir geçişte birleştirir ve çağrıları satır içine (*inlining*) açar. Sonuç olarak, okunabilirliği yüksek ve bildirimsel fonksiyonel Rust kodu çoğu durumda elle yazılmış alt düzey bir döngüyle aynı verimlilikte makine koduna derlenir; bu bölümün sonunda bunu bir ölçümle de göreceğiz.
+> Not: Pek çok üst düzey dilde fonksiyonel programlama desenleri — kapanışlar,
+> `map` ve `filter` gibi zincirleme *iteratör adaptörleri* ya da `Option` ve
+> `Result` üzerindeki `unwrap_or_else`, `and_then` gibi *kombinatörler* — öbek
+> tahsisleri, dinamik çağrılar veya ara koleksiyon kopyaları nedeniyle çalışma
+> zamanında ek maliyet doğurabilir. Rust'ta ise bu yapılar **sıfır maliyetli
+> soyutlama (*zero-cost abstraction*)** ilkesiyle tasarlanmıştır: Her kapanışın
+> benzersiz bir somut türü vardır; derleyici uygun optimizasyon ayarlarında
+> iteratör zincirlerini tek bir döngüye dönüştürebilir ve çağrıları satır içine
+> (*inlining*) açabilir. Bu optimizasyonların her durumda uygulanacağı veya
+> bütün adaptörlerin bellek tahsisinden kaçınacağı garanti edilmez. Sonuç
+> olarak, okunabilirliği yüksek ve bildirimsel fonksiyonel Rust kodu çoğu
+> durumda elle yazılmış alt düzey bir döngüyle aynı verimlilikte makine koduna
+> derlenir; bu bölümün sonunda bunu bir ölçümle de göreceğiz.

@@ -22,7 +22,23 @@ Bazen kodunuzda işler ters gider ve bu konuda yapabileceğiniz hiçbir şey yok
 > panic = 'abort'
 > ```
 
-> Not: `panic = 'unwind'` (varsayılan) ile `panic = 'abort'` arasındaki seçim yalnızca ikili dosya boyutunu değil, kaynak temizleme davranışını da doğrudan etkiler. *Geri sarma* modunda Rust, çağrı yığınındaki her çerçeveden çıkarken kapsamdaki yerel değişkenler için, Bölüm 15'te ayrıntılı olarak inceleyeceğimiz `Drop` trait'ine ait yıkıcı (*destructor*) kodları çalıştırır; böylece öbekte (*heap*) ayrılmış bellek alanları serbest bırakılır, tamponlanmış dosya yazıcıları içeriklerini diske aktarır ve tutulan kilitler serbest bırakılır. Ancak her fonksiyon için geri sarma tablolarını ve temizlik kodlarını üretmek ikili dosyayı büyütür. `panic = 'abort'` seçildiğinde ise bu temizlik kodları üretilmez (bu da özellikle gömülü sistemlerde ve WebAssembly hedeflerinde önemli ölçüde boyut tasarrufu sağlar), fakat panik anında `Drop` yıkıcıları **çalıştırılmaz**; süreç anında sonlandırılır ve yalnızca işletim sisteminin süreç bazında yaptığı bellek ve dosya tanıtıcısı temizliği gerçekleşir.
+> Not: `panic = 'unwind'` (varsayılan) ile `panic = 'abort'` arasındaki seçim
+> yalnızca ikili dosya boyutunu değil, kaynak temizleme davranışını da doğrudan
+> etkiler. *Geri sarma* modunda Rust, çağrı yığınındaki her çerçeveden çıkarken
+> kapsamdaki yerel değişkenler için, Bölüm 15'te ayrıntılı olarak
+> inceleyeceğimiz `Drop` trait'ine ait yıkıcı (*destructor*) kodları çalıştırır;
+> böylece öbekte (*heap*) ayrılmış bellek alanları serbest bırakılır, ilgili
+> kaynakların temizlik kodları çalışır ve tutulan kilitler serbest bırakılır.
+> Ancak tamponlanmış verinin başarıyla yazılması veya fiziksel diske
+> kaydedilmesi garanti değildir; yazma hatalarını ele almak için `flush`, kalıcı
+> saklamayı istemek için gerektiğinde `sync_all` gibi işlemler ayrıca
+> kullanılmalıdır. Geri sarma tabloları ve bu sırada gereken temizlik kodları
+> ikili dosyanın boyutunu artırabilir. `panic = 'abort'` seçildiğinde ise bu
+> temizlik kodları üretilmez (bu da özellikle gömülü sistemlerde ve WebAssembly
+> hedeflerinde önemli ölçüde boyut tasarrufu sağlar), fakat panik anında `Drop`
+> yıkıcıları **çalıştırılmaz**; süreç anında sonlandırılır ve yalnızca işletim
+> sisteminin süreç bazında yaptığı bellek ve dosya tanıtıcısı temizliği
+> gerçekleşir.
 
 Basit bir programda `panic!` makrosunu çağırmayı deneyelim:
 

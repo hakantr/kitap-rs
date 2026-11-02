@@ -70,11 +70,22 @@ Bu tanımda yeni bir sözdizimi kullanıldığına dikkat edin: `type Item` ve `
 
 Ayrıca `next` çağrılarından elde ettiğimiz değerlerin vektördeki değerlere değiştirilemez referanslar olduğuna dikkat edin. `iter` metodu, değiştirilemez referanslar üreten bir iteratör oluşturur. Eğer `v1`'in sahipliğini alan ve doğrudan sahip olunan değerler döndüren bir iteratör oluşturmak istersek `iter` yerine `into_iter` çağırabiliriz. Benzer şekilde, değiştirilebilir referanslar üzerinde ilerlemek istersek `iter` yerine `iter_mut` çağırabiliriz.
 
-> Not: Rust koleksiyonlarında (`Vec<T>`, `[T; N]`, `HashMap<K, V>` vb.) iteratör oluşturmanın bu üç yolu, sahiplik ve ödünç alma kurallarıyla birebir örtüşür ve `for` döngüsü sözdizimiyle doğrudan eşleşir:
+> Not: Bir `Vec<T>` üzerinde iteratör oluşturmanın bu üç yolu, sahiplik ve ödünç
+> alma kurallarıyla birebir örtüşür ve `for` döngüsü sözdizimiyle doğrudan
+> eşleşir:
 >
 > - **`v.iter()`** ↔ **`for x in &v`**: Öğeleri değiştirilemez olarak ödünç alır (`Item = &T`). Koleksiyon okunur; döngü bittikten sonra `v` olduğu gibi kullanılmaya devam edilebilir.
 > - **`v.iter_mut()`** ↔ **`for x in &mut v`**: Öğeleri değiştirilebilir olarak ödünç alır (`Item = &mut T`). Öğeler yerinde güncellenebilir (`*x += 1` gibi) ve döngü sonrasında `v` varlığını korur.
-> - **`v.into_iter()`** ↔ **`for x in v`**: Koleksiyonun sahipliğini alır ve onu tüketir (`Item = T`). Öğelerin sahipliği tek tek dışarı taşınır; döngüden sonra `v` artık kullanılamaz (`for` döngüsü arka planda `IntoIterator` trait'i üzerinden `into_iter` çağırır).
+> - **`v.into_iter()`** ↔ **`for x in v`**: Vektörün sahipliğini alır ve onu
+>   tüketir (`Item = T`). Öğelerin sahipliği tek tek dışarı taşınır; döngüden
+>   sonra `v` artık kullanılamaz (`for` döngüsü arka planda `IntoIterator`
+>   trait'i üzerinden `into_iter` çağırır).
+>
+> Diğer koleksiyonlarda aynı sahiplik ayrımı geçerlidir, ancak öğe türleri
+> değişebilir: `HashMap<K, V>` için `iter` metodu `(&K, &V)`, `iter_mut` metodu
+> `(&K, &mut V)`, `into_iter` ise `(K, V)` üretir. Ayrıca elemanları `Copy` olan
+> sabit boyutlu bir dizi de `Copy` olduğundan, değer üzerinden iterasyonda
+> dizinin kopyası tüketilebilir ve asıl dizi kullanılabilir durumda kalır.
 
 <!-- Old headings. Do not remove or links may break. -->
 

@@ -266,7 +266,15 @@ _Cargo.toml_ dosyasında bir başlıktan sonra gelen her satır, yeni bir bölü
 
 Cargo bu aralıktaki sürümlerin `0.10.1` sürümüyle uyumlu genel API'lere sahip olduğunu kabul eder; bu tanım sayesinde bu bölümdeki kodla sorunsuz derlenmeye devam edecek en güncel yama sürümünü (*patch release*) almanız sağlanır. `0.11.0` veya üzerindeki sürümlerin ise aşağıdaki örneklerin kullandığı API ile aynı kalacağı garanti edilmez.
 
-> Not: SemVer'de sürüm numarası `ANA.ALT.YAMA` (*major.minor.patch*) biçimindedir ve uyumluluğu bozan değişiklikler yalnızca ana sürüm numarasını artırır. Ana sürümü `0` olan crate'ler ise henüz kararlı sayılmaz; bu yüzden Cargo, `0.10.1` gibi bir belirteçte uyumluluk sınırı olarak alt sürüm numarasını (`10`) kullanır ve `0.11.0`'ı uyumsuz kabul eder. Ana sürümü `1` veya daha büyük olan bir crate için `"1.2.3"` yazmak ise `2.0.0`'ın altındaki tüm sürümlere izin verir.
+> Not: SemVer'de sürüm numarası `ANA.ALT.YAMA` (*major.minor.patch*)
+> biçimindedir. Ana sürümü `1` veya daha büyük olan kararlı API'lerde, geriye
+> dönük uyumsuz değişiklikler ana sürüm numarası artırılarak yayımlanır. Ana
+> sürümü `0` olan crate'lerde ise API henüz kararlı kabul edilmez. Cargo,
+> `0.10.1` gibi bir belirteçte uyumluluk sınırı olarak ilk sıfır olmayan
+> bileşeni (`10`) kullanır ve `0.11.0`'ı uyumsuz kabul eder. Ana sürümü `1` veya
+> daha büyük olan bir crate için `"1.2.3"` yazmak, `1.2.3` dahil bu sürümden
+> başlayıp `2.0.0` hariç bu sınıra kadar olan uyumlu sürümlere izin verir;
+> `1.2.2` gibi daha eski bir sürüme izin vermez.
 
 Şimdi kodda hiçbir değişiklik yapmadan Liste 2-2'de gösterildiği gibi projeyi derleyelim.
 

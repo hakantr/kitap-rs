@@ -185,9 +185,10 @@ perde arkasında paralellikten de yararlanabilir.
 > geliştiricilerin bilmesinde büyük fayda olan iki temel mimari karara dayanır:
 >
 > - **Çalışma zamanının (*async runtime*) ekosisteme bırakılması:** Rust
->   standart kütüphanesi yalnızca `std::future::Future` trait'ini ve
->   derleyicinin desteklediği `async`/`await` sözdizimini tanımlar; görevleri
->   çizelgeleyip yürüten bir asenkron çalışma zamanını bünyesinde barındırmaz.
+>   standart kütüphanesi `Future`, `Poll`, `Context` ve `Waker` gibi temel
+>   türleri sağlar; `async`/`await` sözdizimini ise derleyici destekler. Rust,
+>   görevleri çizelgeleyip yürüten bir asenkron çalışma zamanını bünyesinde
+>   barındırmaz.
 >   Çünkü yüksek trafikli bir web sunucusunun ihtiyaç duyduğu çok thread'li iş
 >   çalmalı (*work-stealing*) çalışma zamanı ile birkaç kilobayt belleğe sahip
 >   bir mikrodenetleyicinin gereksinimleri birbirinden tamamen farklıdır.
@@ -200,15 +201,18 @@ perde arkasında paralellikten de yararlanabilir.
 >   `futures` crate'lerini sarmalayan eğitim amaçlı `trpl` crate'ini
 >   kullanacağız.
 > - **Tembel (*lazy*) durum makineleri olarak future'lar:** JavaScript'teki
->   `Promise` veya C# dilindeki `Task` yapıları **heveslidir (*eager*)**; yani
->   oluşturuldukları anda arka planda çalışmaya başlarlar. Rust'ta ise bir
->   `async` fonksiyonu çağırmak tek başına hiçbir iş yürütmez; yalnızca
+>   `Promise` ve C# dilindeki `async` metotların döndürdüğü `Task` değerleriyle
+>   kullanılan yaygın modelde, işlem bir bekleme çağrısı olmadan da başlayabilir.
+>   Bu, işlemin mutlaka ayrı bir thread'de yürütüldüğü anlamına gelmez.
+>   Rust'ta ise bir `async` fonksiyonu çağırmak tek başına hiçbir iş yürütmez; yalnızca
 >   derleyicinin ürettiği **tembel bir durum makinesi** olan ve ek öbek (*heap*)
 >   ayırması gerektirmeden oluşturulabilen bir `Future` değeri döndürür. Bir
 >   future, yoklanmadıkça (*poll*) —yani üzerinde `.await` kullanılmadıkça ya da
 >   bir çalışma zamanına teslim edilmedikçe— hiçbir adım ilerlemez. Bu tasarım,
 >   future'ları çalıştırmadan önce birleştirmeyi ve henüz tamamlanmamış bir
->   future'ı yalnızca düşürerek (*drop*) iptal etmeyi mümkün kılar.
+>   future'ın yürütülmesini düşürerek (*drop*) bırakmayı mümkün kılar. Ancak
+>   başlatılmış bir ağ isteği veya ayrı bir göreve devredilmiş iş, o future'ın
+>   düşürülmesiyle mutlaka durmaz; iptal davranışı kullanılan API'ye bağlıdır.
 
 Şimdi, Rust'ta asenkron programlamanın gerçekte nasıl çalıştığına derinlemesine
 bakalım.
