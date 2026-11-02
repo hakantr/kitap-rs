@@ -212,7 +212,7 @@ Kuramsal olarak Rust derleyicisi bir nesne her taşındığında ona yönelik t�
 
 <figure>
 
-<img alt="Yan yana dizilmiş üç kutu. Birincisi “Pin”, ikincisi “b1” ve üçüncüsü “pinned” olarak etiketlenmiştir. “pinned” kutusunun içinde veri yapısının her bir parçası için hücreler barındıran bir future'ı temsil eden, tek sütunlu ve “fut” etiketli bir tablo yer alır. İlk hücresinde “0” değeri vardır; ikinci hücresinden çıkan bir ok, içinde “1” değeri bulunan dördüncü ve son hücreye işaret eder; üçüncü hücrede ise veri yapısının başka bölümleri olabileceğini gösteren kesikli çizgiler ve üç nokta bulunur. Bütünüyle “fut” tablosu kendine referanslı bir future'ı temsil eder. “Pin” kutusundan çıkan bir ok, “b1” kutusunun içinden geçerek “pinned” kutusunun içindeki “fut” tablosunda sonlanır." src="img/trpl17-06.svg" class="center" />
+<img alt="Yan yana dizilmiş üç kutu. Birincisi “Pin”, ikincisi “b1” ve üçüncüsü “sabitlenmiş” olarak etiketlenmiştir. “sabitlenmiş” kutusunun içinde veri yapısının her bir parçası için hücreler barındıran bir future'ı temsil eden, tek sütunlu ve “fut” etiketli bir tablo yer alır. İlk hücresinde “0” değeri vardır; ikinci hücresinden çıkan bir ok, içinde “1” değeri bulunan dördüncü ve son hücreye işaret eder; üçüncü hücrede ise veri yapısının başka bölümleri olabileceğini gösteren kesikli çizgiler ve üç nokta bulunur. Bütünüyle “fut” tablosu kendine referanslı bir future'ı temsil eder. “Pin” kutusundan çıkan bir ok, “b1” kutusunun içinden geçerek “sabitlenmiş” kutusunun içindeki “fut” tablosunda sonlanır." src="img/trpl17-06.svg" class="center" />
 
 <figcaption>Şekil 17-6: Kendine referanslı bir future türüne işaret eden bir `Box` değerini sabitleme</figcaption>
 
@@ -222,7 +222,7 @@ Aslına bakarsanız `Box` işaretçisi hâlâ serbestçe taşınabilir. Unutmay�
 
 <figure>
 
-<img alt="İkinci sütundaki bir değişiklik dışında önceki diyagramla aynı olan, kabaca üç sütun hâlinde dizilmiş dört kutu. Artık ikinci sütunda “b1” ve “b2” etiketli iki kutu vardır; “b1” grileştirilmiştir ve “Pin” kutusundan çıkan ok “b1” yerine “b2” üzerinden geçmektedir. Bu durum işaretçinin “b1”den “b2”ye taşındığını, ancak “pinned” içindeki verinin yerinden oynamadığını gösterir." src="img/trpl17-07.svg" class="center" />
+<img alt="İkinci sütundaki bir değişiklik dışında önceki diyagramla aynı olan, kabaca üç sütun hâlinde dizilmiş dört kutu. Artık ikinci sütunda “b1” ve “b2” etiketli iki kutu vardır; “b1” grileştirilmiştir ve “Pin” kutusundan çıkan ok “b1” yerine “b2” üzerinden geçmektedir. Bu durum işaretçinin “b1”den “b2”ye taşındığını, ancak “sabitlenmiş” içindeki verinin yerinden oynamadığını gösterir." src="img/trpl17-07.svg" class="center" />
 
 <figcaption>Şekil 17-7: Kendine referanslı bir future türüne işaret eden bir `Box` değerini taşıma</figcaption>
 

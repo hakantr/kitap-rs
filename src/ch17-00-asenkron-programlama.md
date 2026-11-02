@@ -52,9 +52,9 @@ Bir kişinin, elindeki görevlerden herhangi biri tamamlanmadan önce birkaç fa
 
 <figure>
 
-<img src="img/trpl17-01.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den B1'e, B1'den A2'ye, A2'den B2'ye, B2'den A3'e, A3'ten A4'e ve A4'ten B3'e işaret eder. Alt görevler arasındaki oklar, Task A ve Task B kutularının sınırlarını aşarak aralarında geçiş yapar." />
+<img src="img/trpl17-01.svg" class="center" alt="Üst üste yerleştirilmiş A Görevi ve B Görevi etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den B1'e, B1'den A2'ye, A2'den B2'ye, B2'den A3'e, A3'ten A4'e ve A4'ten B3'e işaret eder. Alt görevler arasındaki oklar, A Görevi ve B Görevi kutularının sınırlarını aşarak aralarında geçiş yapar." />
 
-<figcaption>Şekil 17-1: A Görevi (Task A) ve B Görevi (Task B) arasında geçiş yapılan eşzamanlı bir iş akışı</figcaption>
+<figcaption>Şekil 17-1: A Görevi ve B Görevi arasında geçiş yapılan eşzamanlı bir iş akışı</figcaption>
 
 </figure>
 
@@ -62,7 +62,7 @@ Ekip, bir grup görevi her üyenin tek bir görev alıp onun üzerinde tek baş�
 
 <figure>
 
-<img src="img/trpl17-02.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den A2'ye, A2'den A3'e, A3'ten A4'e, B1'den B2'ye ve B2'den B3'e işaret eder. Task A ve Task B kutuları arasında karşıya geçen hiçbir ok yoktur." />
+<img src="img/trpl17-02.svg" class="center" alt="Üst üste yerleştirilmiş A Görevi ve B Görevi etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Oklar A1'den A2'ye, A2'den A3'e, A3'ten A4'e, B1'den B2'ye ve B2'den B3'e işaret eder. A Görevi ve B Görevi kutuları arasında karşıya geçen hiçbir ok yoktur." />
 
 <figcaption>Şekil 17-2: A Görevi ve B Görevi üzerindeki çalışmaların birbirinden bağımsız gerçekleştiği paralel bir iş akışı</figcaption>
 
@@ -72,7 +72,7 @@ Bu iş akışlarının her ikisinde de farklı görevler arasında koordinasyon 
 
 <figure>
 
-<img src="img/trpl17-03.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Task A kutusunda oklar A1'den A2'ye, A2'den 'duraklat' simgesine benzeyen kalın dikey bir çift çizgiye ve bu simgeden A3'e işaret eder. Task B kutusunda ise oklar B1'den B2'ye, B2'den B3'e, B3'ten A3'e ve B3'ten B4'e işaret eder." />
+<img src="img/trpl17-03.svg" class="center" alt="Üst üste yerleştirilmiş A Görevi ve B Görevi etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. A Görevi kutusunda oklar A1'den A2'ye, A2'den 'duraklat' simgesine benzeyen kalın dikey bir çift çizgiye ve bu simgeden A3'e işaret eder. B Görevi kutusunda ise oklar B1'den B2'ye, B2'den B3'e, B3'ten A3'e ve B3'ten B4'e işaret eder." />
 
 <figcaption>Şekil 17-3: A3 görevi B3 görevinin sonuçlarını bekleyerek bloklanana kadar A Görevi ve B Görevi üzerindeki çalışmaların bağımsız gerçekleştiği kısmen paralel bir iş akışı</figcaption>
 
