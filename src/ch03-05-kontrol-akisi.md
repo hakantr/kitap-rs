@@ -202,7 +202,7 @@ Döngüden önce `sayac` adında değiştirilebilir bir değişken bildirip ilk 
 
 Bir döngünün içinden `return` de yapabilirsiniz. Ancak `break` yalnızca içinde bulunulan döngüden çıkarken, `return` her zaman içinde bulunulan fonksiyondan tamamen çıkar.
 
-> Not: `break deger;` ile döngüden değer döndürme özelliği yalnızca `loop` ifadelerinde geçerlidir; `while` ve `for` döngüleri ise değer üretmez (birim tür `()` üretir). Çünkü derleyici bir `loop` bloğundan yalnızca `break` ile çıkılabileceğini garanti edebilirken, `while` ve `for` döngülerinin koşulu daha ilk adımda `false` çıkıp hiç `break` çalıştırmadan da sonlanabilir.
+> Not: `break deger;` ile döngüden değer döndürme özelliği yalnızca `loop` ifadelerinde geçerlidir; `while` ve `for` döngülerinden bu yolla özel bir değer döndürülemez (bu döngüler her zaman birim tür `()` üretir). Çünkü derleyici bir `loop` bloğundan yalnızca `break` ile çıkılabileceğini garanti edebilirken, `while` ve `for` döngülerinin koşulu daha ilk adımda `false` çıkıp hiç `break` çalıştırmadan da sonlanabilir.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="loop-labels-to-disambiguate-between-multiple-loops"></a>
@@ -230,7 +230,7 @@ Dıştaki döngü `'yukari_sayma` etiketine sahiptir ve `ileri_sayim` değişken
 
 #### `while` ile Koşullu Döngüleri Sadeleştirmek
 
-Bir programın döngü içinde bir koşulu değerlendirmesi sıklıkla gerekir. Koşul `true` olduğu sürece döngü çalışmaya devam eder; koşul `true` olmaktan çıktığında ise program `break` çağırarak döngüyü durdurur. Böyle bir davranışı `loop`, `if`, `else` ve `break` yapılarını bir arada kullanarak gerçeklemek mümkündür; dilerseniz bunu şimdi bir programda deneyebilirsiniz. Ancak bu kullanım kalıbı o kadar yaygındır ki Rust bunun için `while` döngüsü adı verilen yerleşik bir dil yapısı sunar. Liste 3-3'te döngüyü üç kez çalıştırmak, her adımda geriye doğru saymak ve döngü bittikten sonra bir mesaj yazdırıp çıkmak için `while` kullanıyoruz.
+Bir programın döngü içinde bir koşulu değerlendirmesi sıklıkla gerekir. Koşul `true` olduğu sürece döngü çalışmaya devam eder; koşul `true` olmaktan çıktığında ise program `break` çağırarak döngüyü durdurur. Böyle bir davranışı `loop`, `if`, `else` ve `break` yapılarını bir arada kullanarak uygulamak mümkündür; dilerseniz bunu şimdi bir programda deneyebilirsiniz. Ancak bu kullanım kalıbı o kadar yaygındır ki Rust bunun için `while` döngüsü adı verilen yerleşik bir dil yapısı sunar. Liste 3-3'te döngüyü üç kez çalıştırmak, her adımda geriye doğru saymak ve döngü bittikten sonra bir mesaj yazdırıp çıkmak için `while` kullanıyoruz.
 
 <Listing number="3-3" file-name="src/main.rs" caption="Koşul `true` olduğu sürece kod çalıştırmak için `while` döngüsü kullanmak">
 

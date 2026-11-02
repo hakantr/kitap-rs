@@ -42,7 +42,7 @@ match x {
 Bu `match` ifadesindeki desenler, her okun sol tarafında yer alan `None` ve
 `Some(i)` kısımlarıdır.
 
-`match` ifadelerinin temel gereksinimlerinden biri _kapsamlı (exhaustive)_
+`match` ifadelerinin temel gereksinimlerinden biri _kapsamlı_ (*exhaustive*)
 olmalarıdır; yani `match` ifadesindeki değerin alabileceği tüm olasılıkların
 hesaba katılması gerekir. Her olasılığı kapsadığınızdan emin olmanın bir yolu,
 son kol için tümünü yakalayan (*catch-all*) bir desen kullanmaktır: Örneğin,
@@ -103,16 +103,16 @@ inceleyelim.
 
 </Listing>
 
-Burada bir demeti bir desene karşı eşleştiriyoruz. Rust `(1, 2, 3)` değerini
+Burada bir demeti bir desenle eşleştiriyoruz. Rust `(1, 2, 3)` değerini
 `(birinci, ikinci, ucuncu)` deseniyle karşılaştırır ve değerin desenle
 eşleştiğini — yani her ikisindeki öğe sayısının aynı olduğunu — görür; böylece
-`1` değerini `birinci`ye, `2` değerini `ikinci`ye ve `3` değerini `ucuncu`ye
-bağlar. Bu demet desenini, kendi içinde üç ayrı değişken desenini iç içe
-barındıran bir yapı olarak düşünebilirsiniz.
+`1` değerini `birinci`, `2` değerini `ikinci` ve `3` değerini `ucuncu`
+değişkenine bağlar. Bu demet desenini, kendi içinde üç ayrı değişken desenini iç
+içe barındıran bir yapı olarak düşünebilirsiniz.
 
-Desendeki öğe sayısı demetteki öğe sayısıyla eşleşmezse genel tür uyuşmaz ve bir
-derleyici hatası alırız. Örneğin Liste 19-2, üç öğeli bir demeti iki değişkene
-ayrıştırma girişimini gösterir ki bu çalışmayacaktır.
+Desendeki öğe sayısı demetteki öğe sayısıyla eşleşmezse demetin bütününde tür
+uyuşmaz ve bir derleyici hatası alırız. Örneğin Liste 19-2, üç öğeli bir demeti
+iki değişkene ayrıştırma girişimini gösterir; bu kod derlenmeyecektir.
 
 <Listing number="19-2" caption="Demetteki öğe sayısıyla eşleşmeyen değişkenlere sahip hatalı bir desen oluşturmak">
 
@@ -227,7 +227,7 @@ gösteriyoruz.
 </Listing>
 
 Bu örnek sırasıyla `1`, `2` ve ardından `3` yazdırır. `recv` metodu kanalın
-alıcı (*receiver*) tarafından ilk mesajı alır ve bir `Ok(deger)` döndürür. Bölüm
+alıcı (*receiver*) ucundan ilk mesajı alır ve bir `Ok(deger)` döndürür. Bölüm
 16'da `recv` metodunu ilk gördüğümüzde hatayı doğrudan `unwrap` ile açmış ya da
 bir `for` döngüsü kullanarak kanal ile bir iteratör olarak etkileşime geçmiştik.
 Ancak Liste 19-4'ün gösterdiği gibi `while let` de kullanabiliriz; çünkü `recv`
@@ -257,11 +257,11 @@ Liste 19-5'teki kod aşağıdaki çıktıyı yazdıracaktır:
 {{#include ../listings/ch19-patterns-and-matching/listing-19-05/output.txt}}
 ```
 
-Bir iteratörü `enumerate` metodunu kullanarak bir değer ve o değerin indeksini
-bir demet içine yerleştirilmiş şekilde üretecek biçimde uyarlıyoruz. Üretilen
-ilk değer `(0, 'a')` demetidir. Bu değer `(indeks, deger)` deseniyle
-eşleştirildiğinde `indeks` değişkeni `0`, `deger` değişkeni ise `'a'` olur ve
-çıktının ilk satırı yazdırılır.
+`enumerate` metodunu kullanarak bir iteratörü, her değeri ve o değerin indeksini
+bir demet içinde üretecek biçimde uyarlıyoruz. Üretilen ilk değer `(0, 'a')`
+demetidir. Bu değer `(indeks, deger)` deseniyle eşleştirildiğinde `indeks`
+değişkeni `0`, `deger` değişkeni ise `'a'` olur ve çıktının ilk satırı
+yazdırılır.
 
 <a id="function-parameters"></a>
 
@@ -291,7 +291,7 @@ bir demeti fonksiyona aktarırken içindeki değerleri birbirinden ayırır.
 
 </Listing>
 
-Bu kod ekrana `Güncel konum: (3, 5)` yazdırır. `&(3, 5)` değerleri `&(x, y)`
+Bu kod ekrana `Güncel konum: (3, 5)` yazdırır. `&(3, 5)` değeri `&(x, y)`
 deseniyle eşleşir; böylece `x` değişkeni `3`, `y` değişkeni ise `5` değerini
 alır.
 

@@ -6,7 +6,7 @@
 
 ## G/Ç (I/O) Projemizi İyileştirme
 
-İteratörler hakkındaki bu yeni bilgilerimizle, kodun çeşitli bölümlerini daha net ve özlü hale getirmek üzere iteratörleri kullanarak Bölüm 12'deki G/Ç projesini iyileştirebiliriz. İteratörlerin `Yapilandirma::olustur` ve `ara` fonksiyonlarının uygulamalarını nasıl iyileştirebileceğine bakalım.
+İteratörler hakkındaki bu yeni bilgilerimizle, kodun çeşitli bölümlerini daha net ve özlü hâle getirmek üzere iteratörleri kullanarak Bölüm 12'deki G/Ç projesini iyileştirebiliriz. İteratörlerin `Yapilandirma::olustur` ve `ara` fonksiyonlarının uygulamalarını nasıl iyileştirebileceğine bakalım.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -16,7 +16,7 @@
 
 ### Bir İteratör Kullanarak `clone` Çağrısını Kaldırma
 
-Liste 12-6'da, `String` değerlerinden oluşan bir dilim alan ve dilime indeksle erişip değerleri klonlayarak `Yapilandirma` struct'ının kendi değerlerine sahip olan bir örneğini oluşturan kodu eklemiştik. Liste 13-17'de, `Yapilandirma::olustur` fonksiyonunun Liste 12-23'teki uygulamasını yeniden gösteriyoruz.
+Liste 12-6'da, `String` değerlerinden oluşan bir dilim alıp dilime indeksle erişerek ve `Yapilandirma` struct'ının kendi değerlerine sahip olabilmesi için bu değerleri klonlayarak bir `Yapilandirma` örneği oluşturan kodu eklemiştik. Liste 13-17'de, `Yapilandirma::olustur` fonksiyonunun Liste 12-23'teki uygulamasını yeniden gösteriyoruz.
 
 <Listing number="13-17" file-name="src/main.rs" caption="Liste 12-23'teki `Yapilandirma::olustur` fonksiyonunun yeniden gösterimi">
 
@@ -30,7 +30,7 @@ O sırada, verimsiz `clone` çağrıları için endişelenmememiz gerektiğini, 
 
 Burada `clone` çağrısına ihtiyaç duymamızın nedeni, `argumanlar` parametresinde `String` öğelerinden oluşan bir dilim bulunması, ancak `olustur` fonksiyonunun `argumanlar` değerinin sahibi olmamasıydı. Bir `Yapilandirma` örneğinin sahipliğini döndürebilmek ve bu örneğin kendi verilerine sahip olmasını sağlamak için `Yapilandirma`'nın `sorgu` ve `dosya_yolu` alanlarına atanacak değerleri klonlamak zorunda kalmıştık.
 
-İteratörler hakkındaki yeni bilgilerimizle, `olustur` fonksiyonunu bir dilimi ödünç almak yerine argüman olarak bir iteratörün sahipliğini alacak şekilde değiştirebiliriz. Dilimin uzunluğunu denetleyen ve belirli konumlara indeksle erişen kod yerine iteratör işlevselliğini kullanacağız. Değerlere erişim işini iteratör üstleneceği için bu değişiklik `Yapilandirma::olustur` fonksiyonunun ne yaptığını çok daha net hale getirecektir.
+İteratörler hakkındaki yeni bilgilerimizle, `olustur` fonksiyonunu bir dilimi ödünç almak yerine argüman olarak bir iteratörün sahipliğini alacak şekilde değiştirebiliriz. Dilimin uzunluğunu denetleyen ve belirli konumlara indeksle erişen kod yerine iteratör işlevselliğini kullanacağız. Değerlere erişim işini iteratör üstleneceği için bu değişiklik `Yapilandirma::olustur` fonksiyonunun ne yaptığını çok daha net hâle getirecektir.
 
 `Yapilandirma::olustur` iteratörün sahipliğini aldığında ve ödünç alma yoluyla çalışan indeksleme işlemlerini bıraktığında, `clone` çağırıp öbekte yeni bir bellek tahsisi yapmak yerine `String` değerlerini doğrudan iteratörden `Yapilandirma` içine taşıyabiliriz.
 
@@ -72,11 +72,11 @@ Sırada `Yapilandirma::olustur` tanımını güncellemek var. `Yapilandirma::olu
 
 </Listing>
 
-`env::args` fonksiyonunun standart kütüphane dokümantasyonu, döndürdüğü iteratörün türünün `std::env::Args` olduğunu ve bu türün `String` değerleri üretecek şekilde `Iterator` trait'ini uyguladığını gösterir.
+`env::args` fonksiyonunun standart kütüphane belgeleri, döndürdüğü iteratörün türünün `std::env::Args` olduğunu ve bu türün `String` değerleri üretecek şekilde `Iterator` trait'ini uyguladığını gösterir.
 
 `Yapilandirma::olustur` fonksiyonunun imzasını, `argumanlar` parametresi `&[String]` yerine `impl Iterator<Item = String>` trait sınırına sahip jenerik bir tür olacak şekilde güncelledik. Bölüm 10'un ["Trait'leri Parametre Olarak Kullanma"][impl-trait]<!-- ignore --> kısmında ele aldığımız `impl Trait` sözdiziminin bu kullanımı, `argumanlar` parametresinin `Iterator` trait'ini uygulayan ve `String` öğeleri döndüren herhangi bir tür olabileceği anlamına gelir.
 
-`argumanlar` değerinin sahipliğini aldığımız ve üzerinde ilerleyerek iç durumunu değiştireceğimiz için, `argumanlar` parametresinin tanımına `mut` anahtar kelimesini ekleyerek onu değiştirilebilir hale getirebiliriz.
+`argumanlar` değerinin sahipliğini aldığımız ve üzerinde ilerleyerek iç durumunu değiştireceğimiz için, `argumanlar` parametresinin tanımına `mut` anahtar kelimesini ekleyerek onu değiştirilebilir hâle getirebiliriz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -97,7 +97,7 @@ Sırada `Yapilandirma::olustur` tanımını güncellemek var. `Yapilandirma::olu
 
 </Listing>
 
-`env::args` dönüş değerindeki ilk öğenin programın adı olduğunu hatırlayın. Bu değeri yoksayıp bir sonrakine geçmek istediğimiz için önce `next` metodunu çağırıyor ve dönüş değeriyle hiçbir şey yapmıyoruz. Ardından `Yapilandirma`'nın `sorgu` alanına yerleştirmek istediğimiz değeri almak için `next` metodunu tekrar çağırıyoruz. `next` çağrısı `Some` döndürürse değeri çıkarmak için `match` ifadesini kullanıyoruz; `None` döndürürse yeterli argüman verilmemiş demektir ve bir `Err` değeriyle fonksiyondan erken dönüyoruz. Aynı işlemi `dosya_yolu` değeri için de uyguluyoruz.
+`env::args` dönüş değerindeki ilk öğenin programın adı olduğunu hatırlayın. Bu değeri yok sayıp bir sonrakine geçmek istediğimiz için önce `next` metodunu çağırıyor ve dönüş değeriyle hiçbir şey yapmıyoruz. Ardından `Yapilandirma`'nın `sorgu` alanına yerleştirmek istediğimiz değeri almak için `next` metodunu tekrar çağırıyoruz. `next` çağrısı `Some` döndürürse değeri çıkarmak için `match` ifadesini kullanıyoruz; `None` döndürürse yeterli argüman verilmemiş demektir ve bir `Err` değeriyle fonksiyondan erken dönüyoruz. Aynı işlemi `dosya_yolu` değeri için de uyguluyoruz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -108,7 +108,7 @@ Sırada `Yapilandirma::olustur` tanımını güncellemek var. `Yapilandirma::olu
 
 ### İteratör Adaptörleriyle Kodu Netleştirme
 
-G/Ç projemizdeki `ara` fonksiyonunda da iteratörlerden yararlanabiliriz. Fonksiyonun Liste 12-19'daki hali, Liste 13-21'de yeniden gösterilmiştir.
+G/Ç projemizdeki `ara` fonksiyonunda da iteratörlerden yararlanabiliriz. Fonksiyonun Liste 12-19'daki hâli, Liste 13-21'de yeniden gösterilmiştir.
 
 <Listing number="13-21" file-name="src/lib.rs" caption="Liste 12-19'daki `ara` fonksiyonunun uygulaması">
 
@@ -118,7 +118,7 @@ G/Ç projemizdeki `ara` fonksiyonunda da iteratörlerden yararlanabiliriz. Fonks
 
 </Listing>
 
-İteratör adaptörü metotlarını kullanarak bu kodu çok daha özlü bir şekilde yazabiliriz. Üstelik bu yaklaşım, değiştirilebilir bir ara `sonuclar` vektörü tanımlama ihtiyacını da ortadan kaldırır. Fonksiyonel programlama stili, kodu daha anlaşılır kılmak adına değiştirilebilir durum (*mutable state*) miktarını en aza indirmeyi tercih eder. Değiştirilebilir durumu ortadan kaldırmak, `sonuclar` vektörüne eşzamanlı erişimi yönetmek zorunda kalmayacağımız için ileride arama işlemini paralel hale getirmemizi de kolaylaştırabilir. Liste 13-22 bu değişikliği göstermektedir.
+İteratör adaptörü metotlarını kullanarak bu kodu çok daha özlü bir şekilde yazabiliriz. Üstelik bu yaklaşım, değiştirilebilir bir ara `sonuclar` vektörü tanımlama ihtiyacını da ortadan kaldırır. Fonksiyonel programlama stili, kodu daha anlaşılır kılmak adına değiştirilebilir durum (*mutable state*) miktarını en aza indirmeyi tercih eder. Değiştirilebilir durumu ortadan kaldırmak, `sonuclar` vektörüne eşzamanlı erişimi yönetmek zorunda kalmayacağımız için ileride arama işlemini paralel hâle getirmemizi de kolaylaştırabilir. Liste 13-22 bu değişikliği göstermektedir.
 
 <Listing number="13-22" file-name="src/lib.rs" caption="`ara` fonksiyonunun uygulamasında iteratör adaptörü metotlarını kullanma">
 

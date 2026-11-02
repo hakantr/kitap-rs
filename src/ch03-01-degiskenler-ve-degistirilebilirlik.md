@@ -104,7 +104,7 @@ için kullanışlı kılar.
 
 Son fark ise sabitlere yalnızca bir *sabit ifadenin (constant expression)*, yani derleme
 zamanında değerlendirilebilen bir ifadenin atanabilmesidir; yalnızca çalışma zamanında (*runtime*)
-hesaplanabilecek bir değerin sonucu sabite atanamaz.
+hesaplanabilecek bir değer sabite atanamaz.
 
 İşte bir sabit bildirimi örneği:
 
@@ -204,7 +204,7 @@ Hata mesajı, bir değişkenin türünü değiştirmemize izin verilmediğini (`
 {{#include ../listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types/output.txt}}
 ```
 
-> Not: Buradaki temel ayrımı netleştirelim: `mut` mevcut değişkenin bellekteki değerini _aynı türde kalmak koşuluyla_ günceller; gölgeleme (`let`) ise aynı ismi kullanan _farklı türde yeni bir değişken_ oluşturur. Ayrıca örnekteki `.len()` metodunun metindeki karakter sayısını değil, UTF-8 bayt uzunluğunu (`usize`) döndürdüğüne dikkat edin: ASCII boşluk karakterlerinin (`' '`) her biri 1 bayt olduğundan `"   ".len()` ifadesi `3` döndürür; ancak `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi Türkçe harfler UTF-8 kodlamasında 2 bayt yer kapladığından örneğin `"şğü".len()` çağrısı `6` döndürür (bu konuyu Bölüm 8'de ayrıntılarıyla inceleyeceğiz).
+> Not: Buradaki temel ayrımı netleştirelim: `mut` mevcut değişkenin bellekteki değerini _aynı türde kalmak koşuluyla_ günceller; gölgeleme (`let`) ise aynı ismi kullanan ve _gerekirse farklı bir türde de olabilen yeni bir değişken_ oluşturur. Ayrıca örnekteki `.len()` metodunun metindeki karakter sayısını değil, UTF-8 bayt uzunluğunu (`usize`) döndürdüğüne dikkat edin: ASCII boşluk karakterlerinin (`' '`) her biri 1 bayt olduğundan `"   ".len()` ifadesi `3` döndürür; ancak `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi Türkçe harfler UTF-8 kodlamasında 2 bayt yer kapladığından örneğin `"şğü".len()` çağrısı `6` döndürür (bu konuyu Bölüm 8'de ayrıntılarıyla inceleyeceğiz).
 
 Artık değişkenlerin nasıl çalıştığını incelediğimize göre, değişkenlerin
 sahip olabileceği diğer veri türlerine göz atalım.

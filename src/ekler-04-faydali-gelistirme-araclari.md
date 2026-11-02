@@ -16,7 +16,7 @@ Bu ekte, Rust projesinin sunduğu bazı faydalı geliştirme araçlarını incel
 
 `rustfmt` aracı, kodunuzu topluluk kod stiline göre yeniden biçimlendirir. Pek çok ortak proje, Rust yazarken hangi biçimlendirme stilinin kullanılacağı konusundaki tartışmaları önlemek için `rustfmt` kullanır: Herkes kodunu bu araçla biçimlendirir.
 
-Rust kurulumları varsayılan olarak `rustfmt` içerir; dolayısıyla sisteminizde `rustfmt` ve `cargo-fmt` programları hâlihazırda kurulu olmalıdır. Bu iki komut, `rustfmt`'in daha ince ayarlı denetime izin vermesi ve `cargo-fmt`'in Cargo kullanan bir projenin kurallarını anlaması bakımından `rustc` ve `cargo` ikilisine benzer. Herhangi bir Cargo projesini biçimlendirmek için şu komutu çalıştırın:
+Rust kurulumları varsayılan olarak `rustfmt` içerir; dolayısıyla sisteminizde `rustfmt` ve `cargo-fmt` programları hâlihazırda kurulu olmalıdır. Bu iki komut, `rustfmt` aracının daha ince ayarlı denetime izin vermesi ve `cargo-fmt` aracının Cargo kullanan bir projenin kurallarını anlaması bakımından `rustc` ve `cargo` ikilisine benzer. Herhangi bir Cargo projesini biçimlendirmek için şu komutu çalıştırın:
 
 ```console
 $ cargo fmt

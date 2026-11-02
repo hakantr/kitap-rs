@@ -5,7 +5,7 @@
 
 ## A - Anahtar Kelimeler
 
-Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımlar için ayrılmış anahtar kelimeleri (*keywords*) içerir. Bu nedenle bu kelimeler tanımlayıcı (*identifier*) olarak kullanılamazlar (ancak [“Ham Tanımlayıcılar”][raw-identifiers]<!-- ignore --> bölümünde ele alacağımız ham tanımlayıcı sözdizimi bunun istisnasıdır). _Tanımlayıcılar_; fonksiyonların, değişkenlerin, parametrelerin, struct alanlarının, modüllerin, crate'lerin, sabitlerin, makroların, statik değerlerin, özniteliklerin (*attributes*), türlerin, trait'lerin veya ömürlerin adlarıdır.
+Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımlar için ayrılmış anahtar kelimeleri (*keywords*) içerir. Bu nedenle bu kelimeler tanımlayıcı (*identifier*) olarak kullanılamaz (ancak [“Ham Tanımlayıcılar”][raw-identifiers]<!-- ignore --> bölümünde ele alacağımız ham tanımlayıcı sözdizimi bunun istisnasıdır). _Tanımlayıcılar_; fonksiyonların, değişkenlerin, parametrelerin, struct alanlarının, modüllerin, crate'lerin, sabitlerin, makroların, statik değerlerin, özniteliklerin (*attributes*), türlerin, trait'lerin veya ömürlerin adlarıdır.
 
 [raw-identifiers]: #ham-tanımlayıcılar
 
@@ -42,13 +42,13 @@ Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımla
 - **`mod`**: Bir modül tanımlar.
 - **`move`**: Bir kapanışın (*closure*) yakaladığı tüm değerlerin sahipliğini almasını sağlar.
 - **`mut`**: Referanslarda, ham işaretçilerde veya desen bağlamalarında değiştirilebilirliği belirtir.
-- **`pub`**: Struct alanlarında, `impl` bloklarında veya modüllerde genel görünürlüğü belirtir.
+- **`pub`**: Struct alanlarında, `impl` bloklarında veya modüllerde açık (*public*) görünürlüğü belirtir.
 - **`ref`**: Değeri taşımak yerine referansla bağlar.
 - **`return`**: Bir fonksiyondan erken dönüş yapar.
 - **`Self`**: Tanımlamakta veya uygulamakta olduğumuz tür için tür takma adı.
 - **`self`**: Metot alıcısı (öznesi) veya mevcut modül.
-- **`static`**: Programın tüm yürütme süresi boyunca yaşayan genel değişken veya ömür.
-- **`struct`**: Bir yapı (*struct*) tanımlar.
+- **`static`**: Programın tüm yürütme süresi boyunca yaşayan global değişken veya ömür.
+- **`struct`**: Bir `struct` (yapı) tanımlar.
 - **`super`**: Mevcut modülün üst modülü.
 - **`trait`**: Bir trait tanımlar.
 - **`true`**: Mantıksal (`bool`) doğru hazır değeri.
@@ -133,6 +133,6 @@ Bu kod hiçbir hata vermeden derlenecektir. Hem fonksiyon tanımındaki hem de `
 
 Ham tanımlayıcılar, ayrılmış bir anahtar kelime olsa bile seçtiğiniz herhangi bir kelimeyi tanımlayıcı olarak kullanmanıza olanak tanır. Bu özellik, isim seçiminde daha fazla özgürlük sunmanın yanı sıra bu kelimelerin anahtar kelime olmadığı başka dillerde yazılmış programlarla (örneğin C kütüphaneleriyle FFI üzerinden) entegre olmamızı da kolaylaştırır. Buna ek olarak ham tanımlayıcılar, crate'inizin kullandığından farklı bir Rust sürümünde (*edition*) yazılmış kütüphaneleri kullanmanıza imkan verir. Örneğin `try`, 2015 sürümünde bir anahtar kelime değilken 2018, 2021 ve 2024 sürümlerinde ayrılmış bir anahtar kelimedir (benzer şekilde `gen` de Rust 2024 sürümüyle ayrılmış anahtar kelimeler arasına katılmıştır). 2015 sürümüyle yazılmış ve `try` adında bir fonksiyon barındıran bir kütüphaneye bağımlıysanız, daha yeni sürümlerdeki kodunuzdan bu fonksiyonu çağırmak için `r#try` ham tanımlayıcı sözdizimini kullanmanız gerekir. Sürümler hakkında daha fazla bilgi için [Ek E][ekler-e]<!-- ignore --> bölümüne bakın.
 
-> Not: **Bağlamsal Anahtar Kelimeler ve `r#` İstisnaları:** Rust'ta yukarıdaki katı anahtar kelimelere ek olarak yalnızca belirli dilbilgisi konumlarında özel anlam taşıyan *zayıf (bağlamsal) anahtar kelimeler* de vardır: `union` yanı sıra `macro_rules`, `'static`, `&raw const` / `&raw mut` ifadelerindeki `raw` ve Rust 2024'teki `unsafe extern` blokları içinde kullanılan `safe` bu gruba girer; bu kelimeleri normal değişken veya fonksiyon adı olarak doğrudan kullanabilirsiniz. Öte yandan yol ve modül çözümlemesinde özel rol oynayan dört anahtar kelime — **`crate`**, **`self`**, **`super`** ve **`Self`** — `r#crate` veya `r#self` biçiminde ham tanımlayıcı olarak **kullanılamaz**.
+> Not: **Bağlamsal Anahtar Kelimeler ve `r#` İstisnaları:** Rust'ta yukarıdaki katı anahtar kelimelere ek olarak yalnızca belirli dilbilgisi konumlarında özel anlam taşıyan *zayıf (bağlamsal) anahtar kelimeler* de vardır: `union`'ın yanı sıra `macro_rules`, `'static`, `&raw const` / `&raw mut` ifadelerindeki `raw` ve Rust 2024'teki `unsafe extern` blokları içinde kullanılan `safe` bu gruba girer; bu kelimeleri normal değişken veya fonksiyon adı olarak doğrudan kullanabilirsiniz. Öte yandan yol ve modül çözümlemesinde özel rol oynayan dört anahtar kelime — **`crate`**, **`self`**, **`super`** ve **`Self`** — `r#crate` veya `r#self` biçiminde ham tanımlayıcı olarak **kullanılamaz**.
 
 [ekler-e]: ekler-05-surumler.html

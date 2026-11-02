@@ -87,7 +87,7 @@ Struct'lar üzerinde türetildiğinde `PartialOrd`, her alandaki değerleri alan
 
 `Copy` trait'i, bir değeri yalnızca yığında (*stack*) saklanan bitleri kopyalayarak çoğaltmanıza olanak tanır; hiçbir ek özel kod çalıştırılmaz. `Copy` hakkında daha fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri: Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
 
-`Copy` trait'i, programcıların herhangi bir metodu aşırı yükleyerek “arka planda hiçbir özel kod çalıştırılmadığı” varsayımını ihlal etmesini önlemek amacıyla hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir `Copy` değerini kopyalamanın çok hızlı (yalnızca bit düzeyinde kopyalama) olacağını güvenle varsayabilir.
+`Copy` trait'i, programcıların herhangi bir metodu özel olarak uygulayıp “arka planda hiçbir özel kod çalıştırılmadığı” varsayımını ihlal etmesini önlemek amacıyla hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir `Copy` değerini kopyalamanın çok hızlı (yalnızca bit düzeyinde kopyalama) olacağını güvenle varsayabilir.
 
 Tüm parçaları `Copy` uygulayan herhangi bir tür üzerinde `Copy` türetebilirsiniz. `Copy` uygulayan bir tür aynı zamanda `Clone` da uygulamak zorundadır (`#[derive(Copy, Clone)]`); çünkü `Copy` uygulayan her tür, `Copy` ile birebir aynı işi yapan önemsiz (*trivial*) bir `Clone` uygulamasına sahiptir.
 
@@ -113,7 +113,7 @@ Tüm parçaları `Copy` uygulayan herhangi bir tür üzerinde `Copy` türetebili
 
 ### Varsayılan Değerler İçin `Default`
 
-`Default` trait'i, bir tür için varsayılan bir değer oluşturmanıza olanak tanır. `Default` türetmek `default` ilişkili fonksiyonunu uygular. `default` fonksiyonunun türetilen uygulaması, türün her bir parçası üzerinde `default` fonksiyonunu çağırır; bu da bir struct üzerinde `Default` türetebilmek için tüm alanların da `Default` uygulaması gerektiği anlamına gelir.
+`Default` trait'i, bir tür için varsayılan bir değer oluşturmanıza olanak tanır. `Default` türetmek `default` ilişkili fonksiyonunu uygular. `default` fonksiyonunun türetilen uygulaması, bir struct'ın her bir alanı üzerinde `default` fonksiyonunu çağırır; bu da bir struct üzerinde `Default` türetebilmek için tüm alanların da `Default` uygulaması gerektiği anlamına gelir (enum'lar için aşağıdaki nota bakın).
 
 `Default::default` fonksiyonu, sıklıkla Bölüm 5'teki [“Struct Güncelleme Sözdizimi ile Örnekler Oluşturma”][creating-instances-from-other-instances-with-struct-update-syntax]<!-- ignore --> bölümünde ele alınan struct güncelleme sözdizimiyle birlikte kullanılır. Bir struct'ın yalnızca birkaç alanını özelleştirip geri kalan tüm alanlara `..Default::default()` yazarak varsayılan değerlerini atayabilirsiniz.
 

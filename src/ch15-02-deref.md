@@ -54,7 +54,7 @@ eşit olduğunu doğrulayabiliriz. Ancak `referans` içindeki değer hakkında b
 doğrulama yapmak istiyorsak, derleyicinin gerçek değeri karşılaştırabilmesi için
 `*referans` yazarak referansı işaret ettiği değere kadar izlememiz (bu işleme
 _başvuru çözme_ denir) gerekir. `referans` üzerinde başvuru çözme yaptığımızda,
-`referans`'ın işaret ettiği tamsayı değerine erişir ve bu değeri `5` ile
+`referans`'ın işaret ettiği tam sayı değerine erişir ve bu değeri `5` ile
 karşılaştırabiliriz.
 
 Bunun yerine `assert_eq!(5, referans);` yazmayı deneseydik şu derleme hatasını
@@ -66,7 +66,7 @@ alırdık:
 
 Bir sayıyı ve bir sayıya referansı karşılaştırmaya izin verilmez; çünkü bunlar
 farklı türlerdir (`{integer}` ve `&{integer}`). Derleyicinin `E0277` hatasında
-belirttiği üzere tamsayı türü için `&{integer}` ile eşitlik karşılaştırması
+belirttiği üzere tam sayı türü için `&{integer}` ile eşitlik karşılaştırması
 (`PartialEq<&{integer}>`) tanımlı değildir. Referansın işaret ettiği değere
 ulaşmak için başvuru çözme operatörünü kullanmamız gerekir.
 
@@ -91,10 +91,10 @@ aynı şekilde çalışır.
 </Listing>
 
 Liste 15-7 ile Liste 15-6 arasındaki temel fark, burada `kutu` değişkenini
-`sayi` değerine işaret eden bir referans yerine, `sayi`'nın kopyalanmış değerine
-(öbek üzerinde) işaret eden bir kutu örneği olarak ayarlamamızdır. Son
-doğrulamada, `referans` bir referansken yaptığımızla aynı şekilde kutunun
-işaretçisini izlemek için başvuru çözme operatörünü (`*kutu`) kullanabiliriz.
+`sayi` değerine işaret eden bir referans yerine, `sayi` değerinin öbekteki bir
+kopyasına işaret eden bir kutu örneği olarak ayarlamamızdır. Son doğrulamada,
+Liste 15-6'da `referans` değişkeniyle yaptığımız gibi kutunun işaretçisini
+izlemek için başvuru çözme operatörünü (`*kutu`) kullanabiliriz.
 Şimdi kendi kutu türümüzü tanımlayarak, `Box<T>`'yi başvuru çözme operatörünü
 kullanmamıza olanak tanıyacak şekilde özel kılan şeyin ne olduğunu keşfedelim.
 
@@ -236,7 +236,7 @@ türünde veriyi elde ederiz.
 > başvuru çözmesinden dışarı taşıma yapılamaz*) hatasıyla akıllı işaretçinin
 > bütünlüğünü korur. Liste 15-9'da `*kutu` ifadesinin doğrudan çalışmasının
 > nedeni ise `i32` türünün `Copy` trait'ini uygulamasıdır; derleyici konumdan
-> değeri taşırken değil, bit düzeyinde kopyalayarak okur.
+> değeri taşımak yerine, bit düzeyinde kopyalayarak okur.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -332,8 +332,8 @@ zamanında çözümlenir; dolayısıyla deref zorlamasından yararlanmanın hiç
 ### Değiştirilebilir Referanslarla Deref Zorlamasını Ele Almak
 
 Değiştirilemez referanslar üzerinde `*` operatörünü geçersiz kılmak için `Deref`
-trait'ini kullandığınıza benzer şekilde, değiştirilebilir referanslar üzerinde
-`*` operatörünü geçersiz kılmak için `DerefMut` trait'ini kullanabilirsiniz.
+trait'ini kullandığınız gibi, değiştirilebilir referanslar üzerinde `*`
+operatörünü geçersiz kılmak için de `DerefMut` trait'ini kullanabilirsiniz.
 
 Rust, aşağıdaki üç durumda uygun türleri ve trait uygulamalarını bulduğunda deref
 zorlaması gerçekleştirir:
@@ -342,7 +342,7 @@ zorlaması gerçekleştirir:
 2. `T: DerefMut<Target=U>` olduğunda `&mut T`'den `&mut U`'ya
 3. `T: Deref<Target=U>` olduğunda `&mut T`'den `&U`'ya
 
-İlk iki durum, ikincisinin değiştirilebilirliği uygulaması dışında birbiriyle
+İlk iki durum, ikincisinin değiştirilebilirlik içermesi dışında birbiriyle
 aynıdır. İlk durum, elinizde bir `&T` varsa ve `T` türü bir `U` türüne `Deref`
 uyguluyorsa şeffaf biçimde bir `&U` elde edebileceğinizi belirtir. İkinci durum,
 aynı deref zorlamasının değiştirilebilir referanslar için de gerçekleştiğini

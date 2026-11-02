@@ -4,7 +4,7 @@
 
 ## Test Organizasyonu
 
-Bölümün başında belirttiğimiz gibi test yazmak karmaşık bir disiplindir ve farklı geliştiriciler farklı terminolojiler ile organizasyon biçimleri kullanır. Rust topluluğu testleri iki ana kategoride ele alır: *birim testleri (unit tests)* ve *entegrasyon testleri (integration tests)*. _Birim testleri_ daha küçük ve odaklıdır; her seferinde tek bir modülü yalıtılmış biçimde sınar ve gizli (*private*) arayüzleri de test edebilir. _Entegrasyon testleri_ ise tamamen kütüphanenizin dışındadır; kodunuzu tıpkı başka bir harici kodun kullanacağı biçimde, yalnızca açık (*public*) arayüz üzerinden kullanır ve tek bir testte birden fazla modülü bir arada çalıştırabilir.
+Bölümün başında belirttiğimiz gibi test yazmak karmaşık bir disiplindir ve farklı geliştiriciler farklı terminolojiler ile organizasyon biçimleri kullanır. Rust topluluğu testleri iki ana kategoride ele alır: _birim testleri_ (*unit tests*) ve _entegrasyon testleri_ (*integration tests*). _Birim testleri_ daha küçük ve odaklıdır; her seferinde tek bir modülü yalıtılmış biçimde sınar ve gizli (*private*) arayüzleri de test edebilir. _Entegrasyon testleri_ ise tamamen kütüphanenizin dışındadır; kodunuzu tıpkı başka bir harici kodun kullanacağı biçimde, yalnızca açık (*public*) arayüz üzerinden kullanır ve tek bir testte birden fazla modülü bir arada çalıştırabilir.
 
 Kütüphanenizi oluşturan parçaların hem tek başına hem de bir arada beklediğiniz gibi çalıştığından emin olmak için her iki test türünü de yazmak önemlidir.
 
@@ -122,7 +122,7 @@ Her entegrasyon testi dosyasının çıktıda kendine ait bir bölümü vardır;
 > 2. **Entegrasyon testleri (`Running tests/<dosya_adı>.rs`)**: _tests/_ dizininin kökündeki her `.rs` dosyasını ayrı bir harici crate olarak derleyip yalnızca açık (`pub`) API üzerinden sınar.
 > 3. **Belgelendirme testleri (`Doc-tests <crate_adı>`)**: API belgelendirme yorumlarındaki (`///`) kod örneklerini derleyip çalıştırarak belgelerin kodla uyumlu kaldığını doğrular.
 >
-> Cargo varsayılan olarak *erken durdurma (fail-fast)* davranışı uygular: Bir aşamada hata çıkarsa sonraki aşamaları çalıştırmaz. Birim testlerinde hata olsa bile tüm entegrasyon ve belgelendirme testlerinin de çalıştırılmasını isterseniz `cargo test --no-fail-fast` komutunu kullanabilirsiniz.
+> Cargo varsayılan olarak erken durdurma (*fail-fast*) davranışı uygular: Bir aşamada hata çıkarsa sonraki aşamaları çalıştırmaz. Birim testlerinde hata olsa bile tüm entegrasyon ve belgelendirme testlerinin de çalıştırılmasını isterseniz `cargo test --no-fail-fast` komutunu kullanabilirsiniz.
 
 Belirli bir entegrasyon testi fonksiyonunu, fonksiyonun adını `cargo test` komutuna argüman olarak geçirerek yine tek başına çalıştırabiliriz. Belirli bir entegrasyon testi dosyasındaki tüm testleri çalıştırmak içinse `cargo test` komutunun `--test` argümanını ve ardından (`.rs` uzantısı olmadan) dosyanın adını kullanabilirsiniz:
 

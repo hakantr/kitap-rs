@@ -24,10 +24,11 @@ yoktur.
 
 Asenkron model ise farklı —ve nihayetinde tamamlayıcı— bir ödünleşim kümesi
 sunar. Asenkron modelde eşzamanlı işlemler kendi thread'lerini gerektirmez.
-Bunun yerine, akışlar bölümünde senkron bir fonksiyondan iş başlatmak üzere
-`trpl::spawn_task` kullandığımızda olduğu gibi görevler üzerinde çalışabilirler.
-Bir görev bir thread'e benzer; ancak işletim sistemi tarafından yönetilmek
-yerine kütüphane düzeyindeki kod —yani çalışma zamanı— tarafından yönetilir.
+Bunun yerine, bu bölümün başlarında “`spawn_task` ile Yeni Bir Görev Oluşturma”
+alt bölümünde yeni bir iş başlatmak üzere `trpl::spawn_task` kullandığımızda
+olduğu gibi görevler üzerinde çalışabilirler. Bir görev bir thread'e benzer;
+ancak işletim sistemi tarafından yönetilmek yerine kütüphane düzeyindeki kod
+—yani çalışma zamanı— tarafından yönetilir.
 
 Thread başlatma API'leri ile görev başlatma API'lerinin birbirine bu kadar
 benzemesinin bir nedeni vardır. Thread'ler, senkron işlem kümeleri için bir
@@ -52,8 +53,8 @@ uğratılmadıkları sürece kesintisiz biçimde tamamlanana dek çalışırlar.
 
 Üstelik görevler (en azından bazı çalışma zamanlarında) thread'ler arasında
 taşınabildiği için, thread'ler ve görevler çoğu zaman birlikte çok iyi çalışır.
-Nitekim perde arkasında, `spawn_blocking` ve `spawn_task` fonksiyonları da dahil
-olmak üzere bu bölüm boyunca kullandığımız çalışma zamanı varsayılan olarak çok
+Nitekim perde arkasında —`spawn_blocking` ve `spawn_task` fonksiyonlarını da
+barındıran— bu bölüm boyunca kullandığımız çalışma zamanı varsayılan olarak çok
 thread'lidir! Pek çok çalışma zamanı, sistemin genel performansını artırmak
 amacıyla thread'lerin o anki kullanım durumuna bağlı olarak görevleri thread'ler
 arasında şeffaf biçimde taşıyan _iş çalma (work stealing)_ adlı bir yaklaşım

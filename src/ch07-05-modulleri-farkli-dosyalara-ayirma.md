@@ -29,7 +29,7 @@ Ardından, daha önce süslü parantezlerin içinde yer alan kodu Liste 7-22'de 
 
 </Listing>
 
-Modül ağacınızda bir dosyayı yüklemek için `mod` bildirimini yalnızca _bir kez_ kullanmanız gerektiğine dikkat edin. Derleyici, dosyanın projenin bir parçası olduğunu ve `mod` deyimini koyduğunuz yere göre kodun modül ağacının neresinde konumlandığını bir kez öğrendikten sonra, projenizdeki diğer dosyalar yüklenen bu dosyanın koduna ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths]<!-- ignore --> kısmında ele aldığımız gibi modülün bildirildiği konuma giden bir yol üzerinden başvurmalıdır. Başka bir deyişle `mod`, diğer programlama dillerinde görmüş olabileceğiniz C/C++ `#include` veya Python/JavaScript `import` benzeri bir dosya içe aktarma işlemi _değildir_.
+Modül ağacınızda bir dosyayı yüklemek için `mod` bildirimini yalnızca _bir kez_ kullanmanız gerektiğine dikkat edin. Derleyici, dosyanın projenin bir parçası olduğunu ve `mod` deyimini koyduğunuz yere göre kodun modül ağacının neresinde konumlandığını bu tek bildirimle öğrenir. Bundan sonra projenizdeki diğer dosyalar, yüklenen bu dosyanın koduna ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths]<!-- ignore --> kısmında ele aldığımız gibi modülün bildirildiği konuma giden bir yol üzerinden başvurmalıdır. Başka bir deyişle `mod`, diğer programlama dillerinde görmüş olabileceğiniz C/C++ `#include` veya Python/JavaScript `import` benzeri bir dosya içe aktarma işlemi _değildir_.
 
 > Not: Rust'a yeni başlayanların en sık yaptığı hatalardan biri `mod` ile `use` anahtar kelimelerini birbirine karıştırmaktır:
 > - **`mod restoran_on_kisim;`** derleyiciye *"Bu noktada yeni bir alt modül oluştur ve gövdesini ilgili `.rs` dosyasından derle"* der. Örneğin _src/lib.rs_ içinde zaten bildirdiğiniz `restoran_on_kisim` modülünü _src/musteri.rs_ adlı başka bir dosyada kullanmak isterken yanlışlıkla tekrar `mod restoran_on_kisim;` yazarsanız derleyici _src/musteri/restoran_on_kisim.rs_ adında yeni bir alt modül dosyası arar ve `error[E0583]: file not found for module 'restoran_on_kisim'` hatası verir (hatta hata mesajının altında modülü `use crate::...` ile içe aktarmanız gerektiğini hatırlatır).
@@ -94,7 +94,7 @@ _src/lib.rs_ içindeki `pub use crate::restoran_on_kisim::karsilama` deyiminin d
 
 ## Özet
 
-Rust, bir modülde tanımlanan öğelere başka bir modülden başvurabilmeniz için bir paketi birden fazla crate'e ve bir crate'i birden fazla modüle bölmenize olanak tanır. Bunu mutlak veya göreli yollar belirterek yapabilirsiniz. Bu yollar, aynı kapsamda bir öğeyi birden fazla kez kullanırken daha kısa bir isim yazabilmeniz için `use` deyimiyle kapsama dahil edilebilir. Modül kodu varsayılan olarak gizlidir; ancak `pub` anahtar kelimesini ekleyerek tanımları dışarıya açık hâle getirebilirsiniz.
+Rust, bir paketi birden fazla crate'e ve bir crate'i birden fazla modüle bölmenize, aynı zamanda bir modülde tanımlanan öğelere başka bir modülden başvurabilmenize olanak tanır. Bunu mutlak veya göreli yollar belirterek yapabilirsiniz. Bu yollar, aynı kapsamda bir öğeyi birden fazla kez kullanırken daha kısa bir isim yazabilmeniz için `use` deyimiyle kapsama dahil edilebilir. Modül kodu varsayılan olarak gizlidir; ancak `pub` anahtar kelimesini ekleyerek tanımları dışarıya açık hâle getirebilirsiniz.
 
 Bir sonraki bölümde, standart kütüphanede yer alan ve düzenli biçimde yapılandırdığınız kodunuzda kullanabileceğiniz bazı koleksiyon veri yapılarını inceleyeceğiz.
 

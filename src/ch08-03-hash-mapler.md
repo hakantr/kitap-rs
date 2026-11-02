@@ -27,7 +27,7 @@ Boş bir hash map oluşturmanın bir yolu `new` fonksiyonunu kullanmak ve ardın
 
 </Listing>
 
-Öncelikle standart kütüphanenin koleksiyonlar modülünden `HashMap` türünü `use` ile kapsama dâhil etmemiz gerektiğine dikkat edin. Üç yaygın koleksiyonumuz arasında en az sıklıkla kullanılanı bu olduğu için, ön tanımlı kapsamda (*prelude*) otomatik olarak kapsama dâhil edilen öğeler arasında yer almaz. Hash map'ler standart kütüphaneden daha az yerleşik destek alır; örneğin vektörlerdeki `vec!` gibi bunları oluşturmaya yarayan yerleşik bir makro yoktur.
+Öncelikle standart kütüphanenin koleksiyonlar modülünden `HashMap` türünü `use` ile kapsama dahil etmemiz gerektiğine dikkat edin. Üç yaygın koleksiyonumuz arasında en az sıklıkla kullanılanı bu olduğu için, ön tanımlı kapsamda (*prelude*) otomatik olarak kapsama dahil edilen öğeler arasında yer almaz. Hash map'ler standart kütüphaneden daha az yerleşik destek alır; örneğin vektörlerdeki `vec!` gibi bunları oluşturmaya yarayan yerleşik bir makro yoktur.
 
 Tıpkı vektörler gibi hash map'ler de asıl verilerini *öbekte (heap)* saklar (`HashMap` değişkeninin sabit boyutlu tablo işaretçisi ve kapasite bilgisi ise *yığında (stack)* tutulur). Bu örnekteki `HashMap`, `String` türünde anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi hash map'ler de türdeştir (homojendir): tüm anahtarlar kendi içinde aynı türde ve tüm değerler de kendi içinde aynı türde olmalıdır.
 
@@ -91,7 +91,7 @@ Hash map'e değerlerin kendisi yerine referanslarını eklersek değerler hash m
 
 Anahtar ve değer çiftlerinin sayısı dinamik olarak artabilse de her benzersiz anahtar aynı anda yalnızca tek bir değerle ilişkilendirilebilir (ancak tersi geçerli değildir: örneğin `skorlar` hash map'inde hem Mavi takım hem de Sarı takım `10` değerine sahip olabilir).
 
-Bir hash map'teki veriyi değiştirmek istediğinizde, bir anahtara halihazırda bir değer atanmışsa bu durumu nasıl ele alacağınıza karar vermeniz gerekir. Eski değeri tamamen göz ardı ederek yerine yeni değeri yazabilirsiniz. Eski değeri koruyup yeni değeri yok sayabilir ve yeni değeri yalnızca anahtarın henüz bir değeri _yoksa_ ekleyebilirsiniz. Ya da eski değer ile yeni değeri birleştirebilirsiniz. Gelin bu işlemlerin her birini nasıl yapacağımıza bakalım!
+Bir hash map'teki veriyi değiştirmek istediğinizde, bir anahtara hâlihazırda bir değer atanmışsa bu durumu nasıl ele alacağınıza karar vermeniz gerekir. Eski değeri tamamen göz ardı ederek yerine yeni değeri yazabilirsiniz. Eski değeri koruyup yeni değeri yok sayabilir ve yeni değeri yalnızca anahtarın henüz bir değeri _yoksa_ ekleyebilirsiniz. Ya da eski değer ile yeni değeri birleştirebilirsiniz. Gelin bu işlemlerin her birini nasıl yapacağımıza bakalım!
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="overwriting-a-value"></a>
@@ -118,7 +118,7 @@ Bu kod ekrana `{"Mavi": 25}` yazdıracaktır; başlangıçtaki `10` değerinin �
 
 #### Yalnızca Anahtar Mevcut Değilse Anahtar ve Değer Ekleme
 
-Belirli bir anahtarın hash map'te bir değerle birlikte halihazırda var olup olmadığını kontrol edip şu adımları uygulamak oldukça yaygın bir ihtiyaçtır: anahtar hash map'te zaten varsa mevcut değer olduğu gibi kalsın; anahtar yoksa anahtar ve onun için verilen değer eklensin.
+Belirli bir anahtarın hash map'te bir değerle birlikte hâlihazırda var olup olmadığını kontrol edip şu adımları uygulamak oldukça yaygın bir ihtiyaçtır: Anahtar hash map'te zaten varsa mevcut değer olduğu gibi kalsın; anahtar yoksa anahtar ve onun için verilen değer eklensin.
 
 Hash map'ler bu işlem için, kontrol etmek istediğiniz anahtarı parametre olarak alan `entry` adında özel bir API sunar. `entry` metodunun dönüş değeri, var olabilecek ya da olmayabilecek bir girdiyi temsil eden `Entry` adlı bir enum'dır. Diyelim ki Sarı takımın anahtarıyla ilişkili bir değer olup olmadığını kontrol etmek istiyoruz; eğer yoksa `50` değerini eklemek istiyoruz ve aynı işlemi Mavi takım için de uygulamak istiyoruz. `entry` API'sini kullandığımızda kod Liste 8-24'teki gibi görünür.
 
@@ -176,7 +176,7 @@ Vektörler, string'ler ve hash map'ler; programlarınızda veri saklamanız, ver
 
 1. Bir tam sayı listesi verildiğinde, bir vektör kullanarak listenin *medyanını* (ortancasını; liste sıralandığında tam ortadaki konumda bulunan değeri) ve *modunu* (tepe değerini; en sık tekrar eden değeri — burada bir hash map işinize yarayacaktır) döndürün.
 1. String'leri *Pig Latin* (Domuz Latincesi) biçimine dönüştürün. Ünsüz harfle başlayan her kelimenin ilk ünsüz harfi kelimenin sonuna taşınır ve sonuna _ay_ eklenir; böylece _first_ kelimesi _irst-fay_ (veya Türkçe bir örnekle _kitap_ kelimesi _itap-kay_) olur. Ünlü harfle başlayan kelimelerin sonuna ise bunun yerine doğrudan _hay_ eklenir (_apple_ kelimesi _apple-hay_ veya _elma_ kelimesi _elma-hay_ olur). UTF-8 kodlamasıyla ilgili ayrıntıları göz önünde bulundurmayı unutmayın!
-1. Bir hash map ve vektörler kullanarak, kullanıcının bir şirketteki bir departmana çalışan isimleri eklemesine olanak tanıyan metin tabanlı bir arayüz oluşturun; örneğin "Sally'yi Mühendislik'e ekle" veya "Amir'i Satış'a ekle" (`"Add Sally to Engineering"` veya `"Add Amir to Sales"`). Ardından kullanıcının bir departmandaki tüm kişilerin listesini ya da şirketteki tüm kişilerin departmanlara göre gruplanmış ve alfabetik olarak sıralanmış listesini alabilmesini sağlayın.
+1. Bir hash map ve vektörler kullanarak, kullanıcının bir şirketteki bir departmana çalışan isimleri eklemesine olanak tanıyan metin tabanlı bir arayüz oluşturun; örneğin "Sally'yi Mühendislik bölümüne ekle" veya "Amir'i Satış bölümüne ekle" (`"Add Sally to Engineering"` veya `"Add Amir to Sales"`). Ardından kullanıcının bir departmandaki tüm kişilerin listesini ya da şirketteki tüm kişilerin departmanlara göre gruplanmış ve alfabetik olarak sıralanmış listesini alabilmesini sağlayın.
 
 Standart kütüphane API belgelendirmesi; vektörlerin, string'lerin ve hash map'lerin bu alıştırmalar için çok yararlı olacak metotlarını açıklar!
 

@@ -82,7 +82,7 @@ gibi öncelikle tek thread'li bir bağlamda mutex kullanarak başlayalım.
 Pek çok türde olduğu gibi, bir `Mutex<T>` örneğini `new` ilişkili fonksiyonunu
 kullanarak oluştururuz. Mutex'in içindeki veriye erişmek için `lock` metodunu
 kullanarak kilidi ediniriz. Bu çağrı, kilidi alma sırası bize gelene kadar
-mevcut thread'i hiçbir iş yapamayacak şekilde bloke eder.
+mevcut thread'i hiçbir iş yapamayacak şekilde bloklar.
 
 Kilidi elinde tutan başka bir thread paniklediyse `lock` çağrısı başarısız olur.
 Böyle bir durumda kilidi bir daha hiç kimse alamayacağı için `unwrap` çağrısını
@@ -216,8 +216,8 @@ thread'lerle birlikte kullandığımız türlerin eşzamanlı durumlarda kullan�
 uygun olmasını sağlayan trait'lerden biridir.
 
 Ne yazık ki `Rc<T>`, thread'ler arasında paylaşılmak için güvenli değildir.
-`Rc<T>` referans sayısını yönetirken her `clone` çağrısında sayaca ekleme yapar
-ve her klon bellekten düşürüldüğünde sayaçtan çıkarma yapar. Ancak sayaca
+`Rc<T>` referans sayısını yönetirken her `clone` çağrısında sayaca ekleme, her
+klon bellekten düşürüldüğünde ise sayaçtan çıkarma yapar. Ancak sayaca
 yapılan değişikliklerin başka bir thread tarafından kesintiye
 uğratılamayacağından emin olmak için herhangi bir eşzamanlılık ilkeli kullanmaz.
 Bu durum yanlış sayımlara —bellek sızıntılarına veya bir değerin henüz onunla
@@ -313,10 +313,10 @@ stratejilerini araştırıp bunları Rust'ta uygulamaya çalışın. `Mutex<T>` 
 `MutexGuard` için hazırlanan standart kütüphane API belgeleri bu konuda faydalı
 bilgiler sunar.
 
-> Not: Bölüm 15'te gördüğünüz tek kanallı / tek thread'li (*single-threaded*)
-> akıllı işaretçi ve içsel değiştirilebilirlik araçları ile bu bölümde
-> tanıştığınız çok kanallı / çok thread'li (*multithreaded*) eşleniklerini tek
-> bakışta şöyle eşleştirebilirsiniz:
+> Not: Bölüm 15'te gördüğünüz tek thread'li (*single-threaded*) akıllı işaretçi
+> ve içsel değiştirilebilirlik araçları ile bu bölümde tanıştığınız çok
+> thread'li (*multithreaded*) eşleniklerini tek bakışta şöyle
+> eşleştirebilirsiniz:
 >
 > | Amaç | Tek Thread'li (`!Send` / `!Sync`) | Çok Thread'li (`Send` + `Sync`) | Temel Fark ve Davranış |
 > | --- | --- | --- | --- |

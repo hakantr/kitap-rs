@@ -287,7 +287,7 @@ Bu değişikliklerle sunucunuzu yeniden çalıştırın. _127.0.0.1:7878_ adresi
 
 ### Yeniden Düzenleme
 
-Şu anda `if` ve `else` bloklarında çok fazla tekrar var: Her ikisi de dosya okuyor ve dosyaların içeriğini akışa yazıyor. Tek fark durum satırı ve dosya adıdır. Bu farkları, durum satırı ve dosya adı değerlerini değişkenlere atayacak ayrı `if` ve `else` satırlarına çıkararak kodu daha özlü hâle getirelim; ardından dosyayı okumak ve yanıtı yazmak için bu değişkenleri kodda koşulsuz olarak kullanabiliriz. Liste 21-9, büyük `if` ve `else` bloklarının değiştirilmesinden sonra ortaya çıkan kodu göstermektedir.
+Şu anda `if` ve `else` bloklarında çok fazla tekrar var: Her ikisi de dosya okuyor ve dosyaların içeriğini akışa yazıyor. Tek fark durum satırı ve dosya adıdır. Bu farkları, durum satırı ve dosya adı değerlerini değişkenlere atayan ayrı bir `if` ve `else` ifadesine çekerek kodu daha özlü hâle getirelim; ardından dosyayı okumak ve yanıtı yazmak için bu değişkenleri kodda koşulsuz olarak kullanabiliriz. Liste 21-9, büyük `if` ve `else` bloklarının değiştirilmesinden sonra ortaya çıkan kodu göstermektedir.
 
 <Listing number="21-9" file-name="src/main.rs" caption="`if` ve `else` bloklarını yalnızca iki durum arasında farklılık gösteren kodu içerecek şekilde yeniden düzenleme">
 
@@ -297,7 +297,7 @@ Bu değişikliklerle sunucunuzu yeniden çalıştırın. _127.0.0.1:7878_ adresi
 
 </Listing>
 
-Artık `if` ve `else` blokları yalnızca durum satırı ve dosya adı için uygun değerleri bir demet (*tuple*) içinde döndürüyor; ardından Bölüm 19'da ele aldığımız gibi `let` deyiminde bir desen kullanarak yapı bozma (*destructuring*) yoluyla bu iki değeri `durum_satiri` ve `dosya_adi` değişkenlerine atıyoruz.
+Artık `if` ve `else` blokları yalnızca durum satırı ve dosya adı için uygun değerleri bir demet (*tuple*) içinde döndürüyor; ardından Bölüm 19'da ele aldığımız gibi `let` deyiminde bir desen kullanarak yapı sökümü (*destructuring*) yoluyla bu iki değeri `durum_satiri` ve `dosya_adi` değişkenlerine atıyoruz.
 
 Daha önce tekrarlanan kod artık `if` ve `else` bloklarının dışındadır ve `durum_satiri` ile `dosya_adi` değişkenlerini kullanır. Bu sayede iki durum arasındaki farkı görmek kolaylaşır; ayrıca dosya okuma ve yanıt yazma biçimini değiştirmek istersek kodu güncelleyeceğimiz tek bir yer olur. Liste 21-9'daki kodun davranışı Liste 21-7'dekiyle aynı olacaktır.
 

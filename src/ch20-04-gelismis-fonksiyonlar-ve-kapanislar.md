@@ -14,7 +14,7 @@ Bu bölümde fonksiyon işaretçileri ve kapanış döndürme dahil olmak üzere
 
 ### Fonksiyon İşaretçileri
 
-Kapanışları fonksiyonlara nasıl geçireceğimizi ele almıştık; normal fonksiyonları da başka fonksiyonlara geçirebilirsiniz! Bu teknik, yeni bir kapanış tanımlamak yerine önceden tanımladığınız bir fonksiyonu aktarmak istediğinizde kullanışlıdır. Fonksiyonlar, `Fn` kapanış trait'iyle karıştırılmaması gereken `fn` türüne (küçük _f_ harfiyle) zorlanır. `fn` türüne _fonksiyon işaretçisi (function pointer)_ denir. Fonksiyonları fonksiyon işaretçileri aracılığıyla aktarmak, onları başka fonksiyonlara argüman olarak kullanmanıza olanak tanır.
+Kapanışları fonksiyonlara nasıl geçireceğimizi ele almıştık; normal fonksiyonları da başka fonksiyonlara geçirebilirsiniz! Bu teknik, yeni bir kapanış tanımlamak yerine önceden tanımladığınız bir fonksiyonu aktarmak istediğinizde kullanışlıdır. Fonksiyonlar, `Fn` kapanış trait'iyle karıştırılmaması gereken `fn` türüne (küçük _f_ harfiyle) zorlanır. `fn` türüne _fonksiyon işaretçisi (function pointer)_ denir. Fonksiyonları fonksiyon işaretçileri aracılığıyla aktarmak, onları başka fonksiyonlarda argüman olarak kullanmanıza olanak tanır.
 
 Bir parametrenin fonksiyon işaretçisi olduğunu belirtmenin sözdizimi, Liste 20-28'de gösterildiği gibi kapanışlarınkine benzer. Burada parametresine 1 ekleyen `add_one` adlı bir fonksiyon tanımladık. `do_twice` fonksiyonu iki parametre alır: bir `i32` parametresi alıp `i32` döndüren herhangi bir fonksiyona işaret eden bir fonksiyon işaretçisi ve bir `i32` değeri. `do_twice` fonksiyonu, `f` fonksiyonunu kendisine `arg` değerini geçirerek iki kez çağırır ve ardından bu iki fonksiyon çağrısının sonuçlarını toplar. `main` fonksiyonu ise `do_twice` fonksiyonunu `add_one` ve `5` argümanlarıyla çağırır.
 
@@ -58,7 +58,7 @@ Burada `to_string` adında birden fazla kullanılabilir fonksiyon bulunduğu iç
 
 Bu örnekte, standart kütüphanenin `Display` trait'ini uygulayan her tür için uyguladığı `ToString` trait'inde tanımlı `to_string` fonksiyonunu kullanıyoruz.
 
-Bölüm 6'daki [“Enum Değerleri”][enum-values]<!-- ignore --> kısmından hatırlayacağınız üzere, tanımladığımız her bir enum varyantının adı aynı zamanda bir başlatıcı fonksiyon haline gelir. Bu başlatıcı fonksiyonları kapanış trait'lerini uygulayan fonksiyon işaretçileri olarak kullanabiliriz; bu da Liste 20-31'de görüldüğü gibi, kapanış alan metotlara argüman olarak doğrudan bu başlatıcı fonksiyonları verebileceğimiz anlamına gelir.
+Bölüm 6'daki [“Enum Değerleri”][enum-values]<!-- ignore --> kısmından hatırlayacağınız üzere, tanımladığımız her bir enum varyantının adı aynı zamanda bir başlatıcı fonksiyon hâline gelir. Bu başlatıcı fonksiyonları kapanış trait'lerini uygulayan fonksiyon işaretçileri olarak kullanabiliriz; bu da Liste 20-31'de görüldüğü gibi, kapanış alan metotlara argüman olarak doğrudan bu başlatıcı fonksiyonları verebileceğimiz anlamına gelir.
 
 <Listing number="20-31" caption="Sayılardan `Durum` örnekleri oluşturmak için `map` metoduyla bir enum başlatıcısı kullanmak">
 
@@ -105,7 +105,7 @@ Burada ikisi de `impl Fn(i32) -> i32` döndüren `returns_closure` ve `returns_i
 {{#include ../listings/ch20-advanced-features/listing-20-33/output.txt}}
 ```
 
-Hata mesajı bize, ne zaman bir `impl Trait` döndürsek Rust'ın benzersiz bir _opak tür (opaque type)_ oluşturduğunu söyler; yani Rust'ın bizim için inşa ettiği yapının iç ayrıntılarını göremediğimiz, ne de Rust'ın üreteceği türü tahmin edip kendimiz yazabildiğimiz bir tür üretilir. Dolayısıyla bu fonksiyonlar aynı trait'i (`Fn(i32) -> i32`) uygulayan kapanışlar döndürse bile, Rust'ın her biri için ürettiği opak türler birbirinden farklıdır. (Bu durum, Bölüm 17'deki [“`Pin` Türü ve `Unpin` Trait'i”][future-types]<!-- ignore --> kısmında gördüğümüz gibi, aynı çıktı türüne sahip olsalar bile Rust'ın farklı `async` blokları için farklı somut türler üretmesine benzer.) Bu sorunun çözümünü şimdiye dek birkaç kez gördük: Liste 20-34'te olduğu gibi bir trait nesnesi kullanabiliriz.
+Hata mesajı bize, ne zaman bir `impl Trait` döndürsek Rust'ın benzersiz bir _opak tür (opaque type)_ oluşturduğunu söyler; bu, hem Rust'ın bizim için inşa ettiği yapının ayrıntılarını içine bakıp göremediğimiz hem de Rust'ın üreteceği türü tahmin edip kendimiz yazamadığımız bir türdür. Dolayısıyla bu fonksiyonlar aynı trait'i (`Fn(i32) -> i32`) uygulayan kapanışlar döndürse bile, Rust'ın her biri için ürettiği opak türler birbirinden farklıdır. (Bu durum, Bölüm 17'deki [“`Pin` Türü ve `Unpin` Trait'i”][future-types]<!-- ignore --> kısmında gördüğümüz gibi, aynı çıktı türüne sahip olsalar bile Rust'ın farklı `async` blokları için farklı somut türler üretmesine benzer.) Bu sorunun çözümünü şimdiye dek birkaç kez gördük: Liste 20-34'te olduğu gibi bir trait nesnesi kullanabiliriz.
 
 <Listing number="20-34" caption="Aynı türe sahip olmaları için `Box<dyn Fn>` döndüren fonksiyonlarla tanımlanmış kapanışlardan bir `Vec<T>` oluşturmak">
 

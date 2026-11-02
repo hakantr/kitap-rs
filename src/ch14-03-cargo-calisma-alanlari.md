@@ -41,7 +41,7 @@ bölümüyle başlayacak. Ayrıca çalışma alanımızda Cargo'nun bağımlıl�
 algoritmasının en güncel ve gelişmiş sürümünü kullanmak için `resolver` değerini
 özellikle `"3"` olarak ayarlıyoruz:
 
-<span class="filename">Dosya Adı: Cargo.toml</span>
+<span class="filename">Dosya adı: Cargo.toml</span>
 
 ```toml
 {{#include ../listings/ch14-more-about-cargo/no-listing-01-workspace/topla/Cargo.toml}}
@@ -130,7 +130,7 @@ $ cargo new bir_ekle --lib
 Üst düzey _Cargo.toml_ dosyası artık `members` listesinde _bir_ekle_ yolunu da
 içerecektir:
 
-<span class="filename">Dosya Adı: Cargo.toml</span>
+<span class="filename">Dosya adı: Cargo.toml</span>
 
 ```toml
 {{#include ../listings/ch14-more-about-cargo/no-listing-02-workspace-with-two-crates/topla/Cargo.toml}}
@@ -154,7 +154,7 @@ _topla_ dizininizde artık şu dizin ve dosyalar bulunmalıdır:
 
 _bir_ekle/src/lib.rs_ dosyasına bir `bir_ekle` fonksiyonu ekleyelim:
 
-<span class="filename">Dosya Adı: bir_ekle/src/lib.rs</span>
+<span class="filename">Dosya adı: bir_ekle/src/lib.rs</span>
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch14-more-about-cargo/no-listing-02-workspace-with-two-crates/topla/bir_ekle/src/lib.rs}}
@@ -165,7 +165,7 @@ Artık ikili crate'imizi barındıran `toplayici` paketinin, kütüphanemizi iç
 _toplayici/Cargo.toml_ dosyasına `bir_ekle` için bir yol bağımlılığı (*path
 dependency*) eklememiz gerekecek.
 
-<span class="filename">Dosya Adı: toplayici/Cargo.toml</span>
+<span class="filename">Dosya adı: toplayici/Cargo.toml</span>
 
 ```toml
 {{#include ../listings/ch14-more-about-cargo/no-listing-02-workspace-with-two-crates/topla/toplayici/Cargo.toml:6:7}}
@@ -251,7 +251,7 @@ dosyasındaki `[dependencies]` bölümüne ekleyelim:
 * ch07-04-bringing-paths-into-scope-with-the-use-keyword.md
 -->
 
-<span class="filename">Dosya Adı: bir_ekle/Cargo.toml</span>
+<span class="filename">Dosya adı: bir_ekle/Cargo.toml</span>
 
 ```toml
 {{#include ../listings/ch14-more-about-cargo/no-listing-03-workspace-with-external-dependency/topla/bir_ekle/Cargo.toml:6:7}}
@@ -326,7 +326,7 @@ belirtirse Cargo bunların her birini ayrı ayrı çözümler, ancak yine de mü
 olan en az sayıda sürümü çözümlemeye çalışır.
 
 > Not: Çok sayıda paketten oluşan projelerde aynı bağımlılık sürümünü veya ortak
-> paket üst verilerini (`version`, `edition`, `license` vb.) her üye paketin
+> paket meta verilerini (`version`, `edition`, `license` vb.) her üye paketin
 > _Cargo.toml_ dosyasında tekrar tekrar yazmak ve güncel tutmak sürüm
 > uyuşmazlıklarına yol açabilir. Cargo, bunu tek merkezden yönetmek için
 > **çalışma alanı mirası (workspace inheritance)** özelliğini sunar. Üst düzey
@@ -377,7 +377,7 @@ olan en az sayıda sürümü çözümlemeye çalışır.
 Bir iyileştirme daha yapalım ve `bir_ekle` crate'i içinde `bir_ekle::bir_ekle`
 fonksiyonunun bir testini ekleyelim:
 
-<span class="filename">Dosya Adı: bir_ekle/src/lib.rs</span>
+<span class="filename">Dosya adı: bir_ekle/src/lib.rs</span>
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch14-more-about-cargo/no-listing-04-workspace-with-tests/topla/bir_ekle/src/lib.rs}}

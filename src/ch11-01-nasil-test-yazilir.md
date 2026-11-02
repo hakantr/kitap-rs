@@ -12,7 +12,7 @@ _Testler_, test dışı kodun beklenen şekilde çalışıp çalışmadığını
 - Test etmek istediğiniz kodu çalıştırmak.
 - Sonuçların beklediğiniz gibi olduğunu doğrulamak.
 
-Rust'ın bu adımları yerine getiren testler yazmak için özel olarak sunduğu `test` *özniteliği (attribute)*, birkaç doğrulama makrosu ve `should_panic` özniteliği gibi olanakları inceleyelim.
+Rust'ın bu adımları yerine getiren testler yazmak için özel olarak sunduğu `test` özniteliği (*attribute*), birkaç doğrulama makrosu ve `should_panic` özniteliği gibi olanakları inceleyelim.
 
 > Not: Yukarıdaki üç adım, yazılım mühendisliğinde **Hazırla–Çalıştır–Doğrula (*Arrange–Act–Assert*, kısaca AAA)** düzeni olarak bilinir. Birim testlerinizi bu üç aşamaya göre kurgulamak —ve Liste 11-6'da göreceğiniz gibi aşamaları gerektiğinde boş bir satırla ayırmak— her testin tek bir davranışa odaklanmasını sağlar; test başarısız olduğunda sorunun kurulumdan mı, çağrılan fonksiyondan mı yoksa beklenen sonuçtan mı kaynaklandığını bir bakışta görmenizi kolaylaştırır.
 
@@ -78,13 +78,13 @@ Dosya, test edecek bir kodumuz olması için örnek bir `topla` fonksiyonuyla ba
 
 Cargo testi derledi ve çalıştırdı. Çıktıda 1 testin çalıştırıldığını belirten `running 1 test` satırını görüyoruz. Bir sonraki satırda, üretilen test fonksiyonunun adı (`tests::calisiyor`) ve bu testi çalıştırma sonucunun başarılı olduğunu gösteren `ok` ifadesi yer alır. Genel özet satırındaki `test result: ok.` tüm testlerin geçtiği anlamına gelir; `1 passed; 0 failed` kısmı ise geçen ve başarısız olan testlerin toplam sayısını verir.
 
-Bir testi belirli bir çalıştırmada yürütülmemesi için yok sayılmış olarak işaretlemek mümkündür; bunu bu bölümün ilerleyen kısımlarındaki ["Açıkça İstenmedikçe Testleri Yok Saymak"][ignoring]<!-- ignore --> başlığında ele alacağız. Burada böyle bir işaretleme yapmadığımız için özette `0 ignored` (0 yok sayıldı) yazar. Ayrıca `cargo test` komutuna bir argüman geçirerek yalnızca adı belirli bir metinle eşleşen testleri çalıştırabiliriz; buna _filtreleme_ denir ve bu konuyu ["Testlerin Bir Alt Kümesini İsme Göre Çalıştırmak"][subset]<!-- ignore --> başlığında inceleyeceğiz. Çalıştırılan testleri filtrelemediğimiz için özetin sonunda `0 filtered out` (0 filtrelendi) ifadesi yer alır.
+Bir testi belirli bir çalıştırmada yürütülmemesi için yok sayılmış olarak işaretlemek mümkündür; bunu bu bölümün ilerleyen kısımlarındaki ["Açıkça İstenmedikçe Testleri Yok Sayma"][ignoring]<!-- ignore --> başlığında ele alacağız. Burada böyle bir işaretleme yapmadığımız için özette `0 ignored` (0 yok sayıldı) yazar. Ayrıca `cargo test` komutuna bir argüman geçirerek yalnızca adı belirli bir metinle eşleşen testleri çalıştırabiliriz; buna _filtreleme_ denir ve bu konuyu ["Testlerin Bir Alt Kümesini İsme Göre Çalıştırma"][subset]<!-- ignore --> başlığında inceleyeceğiz. Çalıştırılan testleri filtrelemediğimiz için özetin sonunda `0 filtered out` (0 filtrelendi) ifadesi yer alır.
 
 `0 measured` (0 ölçüldü) istatistiği, performansı ölçen kıyaslama (*benchmark*) testleri içindir. Kıyaslama testleri, bu satırların yazıldığı sırada yalnızca Rust'ın gecelik (*nightly*) sürümünde kullanılabilmektedir. Daha fazla bilgi edinmek için [kıyaslama testleri hakkındaki belgelere][bench] göz atabilirsiniz.
 
-Test çıktısının `Doc-tests toplayici` ile başlayan bir sonraki bölümü ise *belgelendirme testlerinin (`Doc-tests`)* sonuçlarına ayrılmıştır. Henüz herhangi bir belgelendirme testimiz yok; ancak Rust, API belgelendirmemizde yer alan kod örneklerini derleyip çalıştırabilir. Bu özellik, belgelerinizin kodunuzla her zaman uyumlu kalmasına yardımcı olur! Belgelendirme testlerinin nasıl yazılacağını Bölüm 14'teki ["Belgelendirme Yorumlarını Test Olarak Kullanmak"][doc-comments]<!-- ignore --> başlığında ele alacağız. Şimdilik `Doc-tests` çıktısını göz ardı edeceğiz.
+Test çıktısının `Doc-tests toplayici` ile başlayan bir sonraki bölümü ise _belgelendirme testlerinin_ (`Doc-tests`) sonuçlarına ayrılmıştır. Henüz herhangi bir belgelendirme testimiz yok; ancak Rust, API belgelendirmemizde yer alan kod örneklerini derleyip çalıştırabilir. Bu özellik, belgelerinizin kodunuzla her zaman uyumlu kalmasına yardımcı olur! Belgelendirme testlerinin nasıl yazılacağını Bölüm 14'teki ["Belgelendirme Yorumlarını Test Olarak Kullanma"][doc-comments]<!-- ignore --> başlığında ele alacağız. Şimdilik `Doc-tests` çıktısını göz ardı edeceğiz.
 
-Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak `calisiyor` fonksiyonunun adını farklı bir adla, örneğin aşağıdaki gibi `kesif` olarak değiştirin:
+Testi kendi ihtiyaçlarımıza göre özelleştirmeye başlayalım. İlk olarak `calisiyor` fonksiyonunun adını, örneğin aşağıdaki gibi `kesif` olacak şekilde değiştirin:
 
 <span class="filename">Dosya adı: src/lib.rs</span>
 
@@ -98,7 +98,7 @@ Ardından `cargo test` komutunu tekrar çalıştırın. Çıktı artık `calisiy
 {{#include ../listings/ch11-writing-automated-tests/no-listing-01-changing-test-name/output.txt}}
 ```
 
-Şimdi bir test daha ekleyeceğiz, ancak bu kez başarısız olan bir test yazacağız! Test fonksiyonunun içindeki bir kod paniklediğinde test başarısız olur. Her test ayrı bir thread'de (iş parçacığında) çalıştırılır ve ana thread bir test thread'inin çöktüğünü gördüğünde o testi başarısız olarak işaretler. Bölüm 9'da panik oluşturmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak ekleyin; _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünecektir.
+Şimdi bir test daha ekleyeceğiz, ancak bu kez başarısız olan bir test yazacağız! Test fonksiyonunun içindeki bir kod paniklediğinde test başarısız olur. Her test ayrı bir thread'de (*iş parçacığında*) çalıştırılır ve ana thread bir test thread'inin çöktüğünü gördüğünde o testi başarısız olarak işaretler. Bölüm 9'da panik oluşturmanın en basit yolunun `panic!` makrosunu çağırmak olduğundan bahsetmiştik. Yeni testi `baska_bir_test` adında bir fonksiyon olarak ekleyin; _src/lib.rs_ dosyanız Liste 11-3'teki gibi görünecektir.
 
 <Listing number="11-3" file-name="src/lib.rs" caption="`panic!` makrosunu çağırdığımız için başarısız olacak ikinci bir test ekleme">
 
@@ -245,7 +245,7 @@ Bazı programlama dillerinde ve test çerçevelerinde eşitlik doğrulama fonksi
 
 Perde arkasında `assert_eq!` ve `assert_ne!` makroları sırasıyla `==` ve `!=` operatörlerini kullanır. Doğrulamalar başarısız olduğunda bu makrolar argümanlarını hata ayıklama (*debug*) biçimlendirmesiyle yazdırır; bu da karşılaştırılan değerlerin hem `PartialEq` hem de `Debug` trait'lerini uygulaması gerektiği anlamına gelir. Tüm ilkel türler ve standart kütüphane türlerinin büyük çoğunluğu bu trait'leri halihazırda uygular. Kendi tanımladığınız struct ve enum'larda ise türlerin eşitliğini sınayabilmek için `PartialEq` trait'ini, doğrulama başarısız olduğunda değerleri yazdırabilmek için de `Debug` trait'ini uygulamanız gerekir. Bölüm 5'teki Liste 5-12'de değindiğimiz üzere her iki trait de türetilebilir (*derivable*) olduğundan, bu işlem genellikle struct veya enum tanımınıza `#[derive(PartialEq, Debug)]` özniteliğini eklemek kadar basittir. Bu ve diğer türetilebilir trait'ler hakkında daha fazla ayrıntı için Ek C, ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz.
 
-> Not: Testiniz başarılı olsa bile `assert_eq!(sol, sag)` ve `assert_ne!(sol, sag)` makroları derleme zamanında her iki trait sınırını da zorunlu tutar: Makro genişletildiğinde karşılaştırma için `PartialEq` (`==` / `!=`), başarısızlık kolundaki hata mesajı için ise `Debug` (`{:?}`) biçimlendirme kodu üretilir. Tam eşitlik (`Eq`) yerine kısmi eşitlik (`PartialEq`) istenmesinin nedeni, `NaN != NaN` kuralı yüzünden `Eq` uygulamayan `f32`/`f64` gibi kayan noktalı sayıların da testlerde karşılaştırılabilmesini sağlamaktır. Kendi struct veya enum türünüze `#[derive(PartialEq, Debug)]` eklediğinizde, o türün içindeki tüm alanların da bu iki trait'i uygulaması gerektiğini unutmayın.
+> Not: Testiniz başarılı olsa bile `assert_eq!(sol, sag)` ve `assert_ne!(sol, sag)` makroları her iki trait'in de uygulanmış olmasını derleme zamanında zorunlu tutar: Makro genişletildiğinde karşılaştırma için `PartialEq` (`==` / `!=`), başarısızlık kolundaki hata mesajı için ise `Debug` (`{:?}`) biçimlendirme kodu üretilir. Tam eşitlik (`Eq`) yerine kısmi eşitlik (`PartialEq`) istenmesinin nedeni, `NaN != NaN` kuralı yüzünden `Eq` uygulamayan `f32`/`f64` gibi kayan noktalı sayıların da testlerde karşılaştırılabilmesini sağlamaktır. Kendi struct veya enum türünüze `#[derive(PartialEq, Debug)]` eklediğinizde, o türün içindeki tüm alanların da bu iki trait'i uygulaması gerektiğini unutmayın.
 
 <!-- Old headings. Do not remove or links may break. -->
 

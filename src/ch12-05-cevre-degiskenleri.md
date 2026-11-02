@@ -6,7 +6,7 @@
 
 ## Çevre Değişkenleri ile Çalışma
 
-`minigrep` ikili dosyasına ek bir özellik kazandırarak programımızı geliştireceğiz: kullanıcının bir *çevre değişkeni (environment variable)* aracılığıyla etkinleştirebileceği büyük/küçük harf duyarsız arama seçeneği. Bu özelliği bir komut satırı seçeneği olarak da tasarlayabilir ve kullanıcıların ihtiyaç duydukları her seferinde bunu girmesini zorunlu tutabilirdik; ancak bunun yerine bir çevre değişkeni kullanarak kullanıcılarımızın değişkeni yalnızca bir kez tanımlamasını ve o terminal oturumu boyunca yapacakları tüm aramaların büyük/küçük harfe duyarsız çalışmasını sağlıyoruz.
+`minigrep` ikili dosyasına ek bir özellik kazandırarak programımızı geliştireceğiz: kullanıcının bir çevre değişkeni (*environment variable*) aracılığıyla etkinleştirebileceği büyük/küçük harf duyarsız arama seçeneği. Bu özelliği bir komut satırı seçeneği olarak da tasarlayabilir ve kullanıcıların ihtiyaç duydukları her seferinde bunu girmesini zorunlu tutabilirdik; ancak bunun yerine bir çevre değişkeni kullanarak kullanıcılarımızın değişkeni yalnızca bir kez tanımlamasını ve o terminal oturumu boyunca yapacakları tüm aramaların büyük/küçük harfe duyarsız çalışmasını sağlıyoruz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="writing-a-failing-test-for-the-case-insensitive-search-function"></a>
@@ -48,7 +48,7 @@ Liste 12-21'de gösterilen `buyuk_kucuk_harf_duyarsiz_ara` fonksiyonu, `ara` fon
 
 </Listing>
 
-İlk olarak `sorgu` string'ini küçük harfe dönüştürüyor ve orijinal `sorgu` değişkenini gölgeleyerek aynı adlı yeni bir değişkende saklıyoruz. Sorgu üzerinde `to_lowercase` metodunu çağırmamız gereklidir; böylece kullanıcının sorgusu `"güven"`, `"GÜVEN"`, `"Güven"` veya `"gÜvEn"` değerlerinden hangisi olursa olsun sorguyu sanki `"güven"` girilmiş gibi ele alır ve büyük/küçük harf farkını yoksayarız. `to_lowercase` temel Unicode dönüşümlerini işleyebilse de yüzde 100 isabetli değildir. Gerçek bir uygulama geliştiriyor olsaydık burada biraz daha kapsamlı bir işlem yapmamız gerekirdi; ancak bu bölümün konusu Unicode değil çevre değişkenleri olduğundan şimdilik bunu bu şekilde bırakacağız.
+İlk olarak `sorgu` string'ini küçük harfe dönüştürüyor ve orijinal `sorgu` değişkenini gölgeleyerek aynı adlı yeni bir değişkende saklıyoruz. Sorgu üzerinde `to_lowercase` metodunu çağırmamız gereklidir; böylece kullanıcının sorgusu `"güven"`, `"GÜVEN"`, `"Güven"` veya `"gÜvEn"` değerlerinden hangisi olursa olsun sorguyu sanki `"güven"` girilmiş gibi ele alır ve büyük/küçük harf farkını yok sayarız. `to_lowercase` temel Unicode dönüşümlerini işleyebilse de yüzde 100 isabetli değildir. Gerçek bir uygulama geliştiriyor olsaydık burada biraz daha kapsamlı bir işlem yapmamız gerekirdi; ancak bu bölümün konusu Unicode değil çevre değişkenleri olduğundan şimdilik bunu bu şekilde bırakacağız.
 
 `sorgu` değişkeninin artık bir string dilimi (`&str`) değil, bir `String` olduğuna dikkat edin; çünkü `to_lowercase` çağrısı mevcut veriye referans vermek yerine yeni veri oluşturur. Örneğin sorgunun `"gÜvEn"` olduğunu varsayalım: Bu string dilimi doğrudan ödünç alabileceğimiz küçük harfli bir `ü` veya `e` barındırmaz; bu nedenle öbekte `"güven"` metnini tutan yeni bir `String` tahsis etmemiz gerekir. Artık `sorgu` değişkenini `contains` metoduna argüman olarak aktarırken başına `&` işareti eklememiz gerekir, çünkü `contains` metodunun imzası bir string dilimi alacak şekilde tanımlanmıştır.
 
@@ -147,6 +147,6 @@ Gelme, artık neye yarar?
 
 Mükemmel, `Ne` içeren satırları da aldık! `minigrep` programımız artık bir çevre değişkeniyle kontrol edilen büyük/küçük harf duyarsız arama yapabiliyor. Böylece hem komut satırı argümanları hem de çevre değişkenleri kullanılarak belirlenen seçenekleri nasıl yöneteceğinizi öğrenmiş oldunuz.
 
-Bazı programlar aynı yapılandırma için hem argümanlara _hem de_ çevre değişkenlerine izin verir. Bu gibi durumlarda program, ikisinden birinin öncelikli olmasına karar verir. Kendi başınıza yapabileceğiniz ek bir alıştırma olarak, büyük/küçük harf duyarlılığını hem bir komut satırı argümanıyla hem de bir çevre değişkeniyle kontrol etmeyi deneyin. Program biri büyük/küçük harfe duyarlı, diğeri büyük/küçük harfi yoksayacak biçimde ayarlanarak çalıştırıldığında komut satırı argümanının mı yoksa çevre değişkeninin mi öncelikli olması gerektiğine karar verin.
+Bazı programlar aynı yapılandırma için hem argümanlara _hem de_ çevre değişkenlerine izin verir. Bu gibi durumlarda program, ikisinden birinin öncelikli olmasına karar verir. Kendi başınıza yapabileceğiniz ek bir alıştırma olarak, büyük/küçük harf duyarlılığını hem bir komut satırı argümanıyla hem de bir çevre değişkeniyle kontrol etmeyi deneyin. Program biri büyük/küçük harfe duyarlı, diğeri büyük/küçük harfi yok sayacak biçimde ayarlanarak çalıştırıldığında komut satırı argümanının mı yoksa çevre değişkeninin mi öncelikli olması gerektiğine karar verin.
 
 `std::env` modülü çevre değişkenleriyle çalışmak için daha pek çok kullanışlı özellik barındırır; nelerin mevcut olduğunu görmek için standart kütüphane belgelerine göz atabilirsiniz.

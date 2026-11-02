@@ -36,7 +36,7 @@ komutlar, `cargo --list` komutunu çalıştırdığınızda da listelenir. Uzant
 >   ağacını RustSec güvenlik veri tabanına karşı tarayarak bilinen güvenlik
 >   açıklarını (`cargo audit`), ayrıca lisans uyumluluğunu, yasaklı paketleri ve
 >   mükerrer bağımlılık sürümlerini (`cargo deny`) denetler.
-> - **`cargo-expand` (`cargo expand`):** `#[derive(...)]` niteliklerinin ve
+> - **`cargo-expand` (`cargo expand`):** `#[derive(...)]` özniteliklerinin ve
 >   makroların derleyici tarafından açılmış (genişletilmiş) Rust kaynak kodunu
 >   göstererek makroların perde arkasında ne ürettiğini incelemenizi sağlar.
 > - **`cargo-bloat` (`cargo bloat`):** Derlenen çalıştırılabilir ikili dosyada

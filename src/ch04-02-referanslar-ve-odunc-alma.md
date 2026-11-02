@@ -6,7 +6,7 @@
 
 Liste 4-5'teki demet kullanan kodun temel sorunu şudur: `String` değeri `uzunlugu_hesapla` fonksiyonuna taşındığı için, fonksiyon çağrısından sonra bu `String`'i hâlâ kullanabilmek adına onu çağıran fonksiyona geri döndürmek zorunda kalırız. Bunun yerine, `String` değerine bir referans verebiliriz. _Referans (reference)_, bellekteki bir adreste saklanan veriye ulaşmak için takip edebileceğimiz bir adres olması bakımından işaretçiye (*pointer*) benzer; ancak o adresteki verinin sahibi başka bir değişkendir. Sıradan bir işaretçiden farklı olarak referansın, kendi ömrü boyunca belirli bir türden geçerli bir değere işaret edeceği garanti edilir.
 
-Değerin sahipliğini devralmak yerine parametre olarak bir nesneye referans kabul eden `uzunlugu_hesapla` fonksiyonunu şu şekilde tanımlayıp kullanabilirsiniz:
+Değerin sahipliğini devralmak yerine parametre olarak bir değere referans kabul eden `uzunlugu_hesapla` fonksiyonunu şu şekilde tanımlayıp kullanabilirsiniz:
 
 <Listing file-name="src/main.rs">
 
@@ -94,9 +94,9 @@ Değiştirilebilir referansların çok önemli bir kısıtlaması vardır: Bir d
 {{#include ../listings/ch04-understanding-ownership/no-listing-10-multiple-mut-not-allowed/output.txt}}
 ```
 
-Bu hata mesajı, `metin` değişkenini aynı anda birden fazla kez değiştirilebilir olarak ödünç alamayacağımız (`cannot borrow 'metin' as mutable more than once at a time`) için kodun geçersiz olduğunu belirtir. İlk değiştirilebilir ödünç alma işlemi `r1` içindedir ve `println!` satırında kullanılana kadar geçerliliğini korumak zorundadır; ancak biz bu değiştirilebilir referansın oluşturulması ile kullanılması arasında, `r1` ile aynı veriyi ödünç alan `r2` içinde ikinci bir değiştirilebilir referans oluşturmaya çalıştık.
+Bu hata mesajı, `metin` değişkenini aynı anda birden fazla kez değiştirilebilir olarak ödünç alamayacağımız (`` cannot borrow `metin` as mutable more than once at a time ``) için kodun geçersiz olduğunu belirtir. İlk değiştirilebilir ödünç alma işlemi `r1` içindedir ve `println!` satırında kullanılana kadar geçerliliğini korumak zorundadır; ancak biz bu değiştirilebilir referansın oluşturulması ile kullanılması arasında, `r1` ile aynı veriyi ödünç alan `r2` içinde ikinci bir değiştirilebilir referans oluşturmaya çalıştık.
 
-Aynı veriye aynı anda birden fazla değiştirilebilir referans oluşturulmasını engelleyen bu kısıtlama, veri değiştirmeye izin verir ancak bunu son derece kontrollü bir biçimde yapar. Çoğu programlama dili verileri dilediğiniz zaman değiştirmenize izin verdiğinden, Rust'a yeni başlayan geliştiricilerin (*Rustaceans*) alışmakta zorlandığı konulardan biri budur. Bu kısıtlamanın en büyük getirisi ise Rust'ın derleme zamanında veri yarışlarını önleyebilmesidir. _Veri yarışı (data race)_, _yarış koşuluna (race condition)_ benzer ve şu üç davranış bir arada gerçekleştiğinde ortaya çıkar:
+Aynı veriye aynı anda birden fazla değiştirilebilir referans oluşturulmasını engelleyen bu kısıtlama, veri değiştirmeye izin verir ancak bunu son derece kontrollü bir biçimde yapar. Çoğu programlama dili verileri dilediğiniz zaman değiştirmenize izin verdiğinden, yeni Rust geliştiricilerinin (*Rustaceans*) alışmakta zorlandığı konulardan biri budur. Bu kısıtlamanın en büyük getirisi ise Rust'ın derleme zamanında veri yarışlarını önleyebilmesidir. _Veri yarışı (data race)_, _yarış koşuluna (race condition)_ benzer ve şu üç davranış bir arada gerçekleştiğinde ortaya çıkar:
 
 - İki veya daha fazla işaretçi aynı veriye aynı anda erişir.
 - İşaretçilerden en az biri veriye yazmak için kullanılır.
@@ -144,7 +144,7 @@ Değiştirilemez `r1` ve `r2` referanslarının kapsamları, son kez kullanıld�
 
 ### Sarkan Referanslar
 
-İşaretçilerin doğrudan kullanıldığı dillerde, bellekteki bir alanı serbest bırakırken o alana yönelen işaretçiyi korumaya devam ederek yanlışlıkla bir _sarkan işaretçi (dangling pointer)_ — yani artık bir başkasına tahsis edilmiş olabilecek geçersiz bir bellek konumunu gösteren işaretçi — oluşturmak oldukça kolaydır. Rust'ta ise derleyici, referansların hiçbir zaman _sarkan referans (dangling reference)_ haline gelmeyeceğini garanti eder: Bir veriye referansınız varsa derleyici, referansın kendisi kapsam dışına çıkmadan önce verinin kapsam dışına çıkmamasını sağlar.
+İşaretçilerin doğrudan kullanıldığı dillerde, bellekteki bir alanı serbest bırakırken o alana yönelen işaretçiyi korumaya devam ederek yanlışlıkla bir _sarkan işaretçi (dangling pointer)_ — yani artık bir başkasına tahsis edilmiş olabilecek geçersiz bir bellek konumunu gösteren işaretçi — oluşturmak oldukça kolaydır. Rust'ta ise derleyici, referansların hiçbir zaman _sarkan referans (dangling reference)_ hâline gelmeyeceğini garanti eder: Bir veriye referansınız varsa derleyici, referansın kendisi kapsam dışına çıkmadan önce verinin kapsam dışına çıkmamasını sağlar.
 
 Rust'ın bunları derleme zamanı hatasıyla nasıl engellediğini görmek için sarkan bir referans oluşturmayı deneyelim:
 

@@ -51,7 +51,7 @@ gerek duymadan nesnenin iç yapısını değiştirebilir ve yeniden düzenleyebi
 
 Kapsüllemeyi nasıl denetleyeceğimizi Bölüm 7'de ele almıştık: Kodumuzdaki hangi
 modüllerin, türlerin, fonksiyonların ve metotların dışarıya açık olacağına
-karar vermek için `pub` anahtar sözcüğünü kullanabiliriz; bunun dışındaki her
+karar vermek için `pub` anahtar kelimesini kullanabiliriz; bunun dışındaki her
 şey varsayılan olarak gizlidir. Örneğin, `i32` değerlerinden oluşan bir vektör
 tutan bir alana sahip `OrtalamaliKoleksiyon` adında bir struct tanımlayabiliriz.
 Bu struct ayrıca vektördeki değerlerin ortalamasını tutan bir alana da sahip
@@ -134,8 +134,8 @@ Bir dilin nesne yönelimli olabilmesi için kalıtıma sahip olması şartsa, Ru
 böyle bir dil değildir. Bir makro kullanmaksızın, üst struct'ın alanlarını ve
 metot uygulamalarını miras alan bir struct tanımlamanın yolu yoktur.
 
-Ancak programlama alet çantanızda kalıtımın bulunmasına alışkınsanız,
-başlangıçta kalıtıma neden başvurduğunuza bağlı olarak Rust'ta başka çözümler
+Ancak programlama alet çantanızda kalıtımın bulunmasına alışkınsanız, kalıtıma
+hangi amaçla başvurduğunuza bağlı olarak Rust'ta başka çözümler
 kullanabilirsiniz.
 
 Kalıtımı başlıca iki nedenden ötürü tercih edersiniz. Birincisi kodun yeniden
@@ -154,7 +154,7 @@ kılmasına benzer.
 
 Kalıtımı kullanmanın diğer nedeni tür sistemiyle ilgilidir: alt türün, üst
 türle aynı yerlerde kullanılabilmesini sağlamak. Buna _çok biçimlilik
-(polymorphism)_ de denir: Belirli karakteristikleri paylaşan birden fazla
+(polymorphism)_ de denir; belirli karakteristikleri paylaşan birden fazla
 nesneyi çalışma zamanında birbirinin yerine kullanabilmeniz anlamına gelir.
 
 > ### Çok Biçimlilik
@@ -172,7 +172,7 @@ Rust, kalıtım sunmayarak farklı bir ödünleşim kümesi seçmiştir. Kalıt�
 zaman gerekenden fazla kod paylaşma riski taşır. Alt sınıflar üst sınıflarının
 tüm karakteristiklerini her zaman paylaşmamalıdır, ancak kalıtım
 kullanıldığında bunu yaparlar. Bu durum bir programın tasarımını daha az esnek
-hâle getirebilir. Ayrıca alt sınıfa uymayan metotlar yüzünden, alt sınıflar
+hale getirebilir. Ayrıca alt sınıfa uymayan metotlar yüzünden, alt sınıflar
 üzerinde anlamsız olan veya hatalara yol açan metotların çağrılması olasılığı
 da doğar. Buna ek olarak bazı diller yalnızca _tekli kalıtıma (single
 inheritance)_ —yani bir alt sınıfın yalnızca tek bir sınıftan miras

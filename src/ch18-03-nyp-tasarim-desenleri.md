@@ -157,13 +157,13 @@ doğrudandır; gelin Liste 18-13'teki uygulamayı `impl Gonderi` bloğuna ekleye
 
 </Listing>
 
-`metin_ekle` metodu, üzerinde `metin_ekle` çağırdığımız `Gonderi` örneğini
-değiştirdiğimiz için `self`'e değiştirilebilir bir referans alır. Ardından
-`icerik` içindeki `String` üzerinde `push_str` metodunu çağırır ve kaydedilen
-`icerik` değerine eklemek üzere `metin` argümanını geçiririz. Bu davranış
-gönderinin içinde bulunduğu duruma bağlı değildir, dolayısıyla durum deseninin
-bir parçası değildir. `metin_ekle` metodu `durum` alanıyla hiç etkileşime
-girmez, ancak desteklemek istediğimiz davranışın bir parçasıdır.
+`metin_ekle` metodu, çağrıldığı `Gonderi` örneğini değiştirdiği için `self`'e
+değiştirilebilir bir referans alır. Ardından `icerik` içindeki `String` üzerinde
+`push_str` metodunu çağırır ve kaydedilen `icerik` değerine eklemek üzere `metin`
+argümanını geçiririz. Bu davranış gönderinin içinde bulunduğu duruma bağlı
+değildir, dolayısıyla durum deseninin bir parçası değildir. `metin_ekle` metodu
+`durum` alanıyla hiç etkileşime girmez, ancak desteklemek istediğimiz davranışın
+bir parçasıdır.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -179,10 +179,10 @@ bile, gönderi hâlâ taslak durumunda olduğu için —Liste 18-11'deki ilk
 `assert_eq!` çağrısının gösterdiği gibi— `icerik` metodunun boş bir string
 dilimi döndürmesini isteriz. Şimdilik `icerik` metodunu bu gereksinimi
 karşılayacak en basit şeyle uygulayalım: her zaman boş bir string dilimi
-döndürmek. Bir gönderinin yayınlanabilmesi için durumunu değiştirme yeteneğini
-uyguladığımızda bunu daha sonra değiştireceğiz. Şimdiye kadar gönderiler
-yalnızca taslak durumunda olabildiğinden, gönderi içeriği her zaman boş
-olmalıdır. Liste 18-14 bu yer tutucu uygulamayı göstermektedir.
+döndürmek. İleride bir gönderinin durumunu değiştirip yayınlanabilme yeteneğini
+eklediğimizde bu metodu güncelleyeceğiz. Şimdiye kadar gönderiler yalnızca
+taslak durumunda olabildiğinden, gönderi içeriği her zaman boş olmalıdır. Liste
+18-14 bu yer tutucu uygulamayı göstermektedir.
 
 <Listing number="18-14" file-name="src/lib.rs" caption="`Gonderi` üzerinde her zaman boş bir string dilimi döndüren `icerik` metodu için yer tutucu uygulama eklemek">
 
@@ -238,8 +238,8 @@ bırakmak üzere `take` metodunu çağırırız. Bu sayede `durum` değerini öd
 yerine `Gonderi` dışına taşıyabiliriz. Ardından gönderinin `durum` değerini bu
 işlemin sonucuna ayarlarız.
 
-`durum` değerinin sahipliğini elde etmek için onu
-`self.durum = self.durum.inceleme_iste();` gibi bir kodla doğrudan atamak yerine
+`self.durum = self.durum.inceleme_iste();` gibi doğrudan bir atama kodu `durum`
+değerinin sahipliğini alamayacağından, sahipliği elde etmek için `durum` alanını
 geçici olarak `None` değerine ayarlamamız gerekir. Bu sayede `Gonderi`'nin, yeni
 bir duruma dönüştürdükten sonra eski `durum` değerini kullanamaması güvence
 altına alınır.
@@ -310,7 +310,7 @@ sağlayacağız.
 Amaç tüm bu kuralları `Durum` trait'ini uygulayan struct'ların içinde tutmak
 olduğundan, `durum` içindeki değer üzerinde bir `icerik` metodu çağırır ve
 gönderi örneğini (yani `self`'i) argüman olarak geçiririz. Ardından `durum`
-değeri üzerinde `icerik` metodunu kullanmaktan dönen değeri döndürürüz.
+değeri üzerindeki bu `icerik` çağrısından dönen değeri döndürürüz.
 
 `Option` içindeki değerin sahipliğini değil, değere bir referans istediğimiz
 için `Option` üzerinde `as_ref` metodunu çağırırız. `durum` alanı bir
@@ -582,10 +582,10 @@ nedeniyle nesne yönelimli desenler Rust'ta her zaman en iyi çözüm olmayacakt
 > `Box<dyn Durum>` için öbek (*heap*) ayırması ve dinamik gönderim maliyeti
 > tamamen ortadan kalkar; tüm kurallar çalışma zamanına tek bir bayt veya işlem
 > yükü bırakmadan derleme zamanında doğrulanır. (Durumu bir struct alanında
-> yerinde güncellemeniz gereken senaryolarda ise alanı `Option` yapmadan eski
-> değeri çıkarıp yerine yenisini koymak için standart kütüphanedeki
-> `std::mem::replace` veya `std::mem::take` fonksiyonlarından da
-> yararlanabilirsiniz.)
+> yerinde güncellemeniz gereken ve geçici bir yer tutucu değerin bulunduğu
+> senaryolarda ise alanı `Option` yapmadan eski değeri çıkarıp yerine yenisini
+> koymak için standart kütüphanedeki `std::mem::replace` veya `Default`
+> uygulayan türlerde `std::mem::take` fonksiyonlarından da yararlanabilirsiniz.)
 >
 > Buna karşılık, örneğin bir veritabanından okunan ve durumları ancak çalışma
 > zamanında belli olan farklı aşamalardaki gönderileri tek bir `Vec` içinde bir

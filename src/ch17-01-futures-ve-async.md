@@ -9,7 +9,7 @@
 Rust'ta asenkron programlamanın temel unsurları _future_'lar ile Rust'ın `async`
 ve `await` anahtar kelimeleridir.
 
-Bir _future_, şu anda hazır olmayabilen ancak gelecekte bir noktada hazır hale
+Bir _future_, şu anda hazır olmayabilen ancak gelecekte bir noktada hazır hâle
 gelecek bir değerdir. (Aynı kavram pek çok dilde bazen _task_ veya _promise_
 gibi farklı adlarla da karşımıza çıkar.) Rust, farklı asenkron işlemlerin farklı
 veri yapılarıyla ancak ortak bir arayüz üzerinden uygulanabilmesi için yapı taşı
@@ -20,7 +20,7 @@ anlama geldiği hakkında kendi bilgisini barındırır.
 Kesintiye uğratılıp kaldıkları yerden devam ettirilebileceklerini belirtmek için
 bloklara ve fonksiyonlara `async` anahtar kelimesini uygulayabilirsiniz. Bir
 async blok veya async fonksiyon içinde ise bir _future'ı beklemek_ (yani hazır
-hale gelmesini beklemek) için `await` anahtar kelimesini kullanabilirsiniz. Bir
+hâle gelmesini beklemek) için `await` anahtar kelimesini kullanabilirsiniz. Bir
 async blok veya fonksiyon içinde bir future'ı beklediğiniz her nokta, o bloğun
 veya fonksiyonun duraklayıp yeniden devam edebileceği potansiyel bir noktadır.
 Bir future'ın değerinin henüz hazır olup olmadığını kontrol etme sürecine
@@ -158,10 +158,9 @@ Rust'ın `await` anahtar kelimesinin beklediğiniz ifadenin öncesine değil,
 _sonrasına_ geldiğine dikkat edin. Başka bir deyişle, bu bir _sonek (postfix)_
 anahtar kelimedir. Başka dillerde `async` kullandıysanız bu durum alışkın
 olduğunuzdan farklı gelebilir; ancak Rust'ta metot zincirleriyle çalışmayı çok
-daha keyifli hale getirir. Sonuç olarak, Liste 17-2'de gösterildiği gibi
-`sayfa_basligi` fonksiyonunun gövdesini `trpl::get` ve `text` fonksiyon
-çağrılarını aralarında `await` ile birbirine zincirleyecek şekilde
-değiştirebiliriz.
+daha keyifli hâle getirir. Sonuç olarak, Liste 17-2'de gösterildiği gibi
+`sayfa_basligi` fonksiyonunun gövdesini `trpl::get` ve `text` çağrılarını
+aralarında `await` ile birbirine zincirleyecek şekilde değiştirebiliriz.
 
 <Listing number="17-2" file-name="src/main.rs" caption="`await` anahtar kelimesiyle zincirleme çağrı yapma">
 
@@ -449,11 +448,12 @@ argümanların görünme sırasıyla eşleşir: ilk argüman ikinci argümanın
 solundadır.
 
 Ayrıca `sayfa_basligi` fonksiyonunu, kendisine geçirilen aynı URL'yi de
-döndürecek şekilde güncelliyoruz. Bu sayede, ilk dönen sayfanın çözebileceğimiz
-bir `<title>` öğesi olmasa bile anlamlı bir mesaj yazdırabiliriz. Bu bilgi de
-elimizde olduğuna göre, hem hangi URL'nin önce tamamlandığını hem de varsa o
-URL'deki web sayfasının `<title>` metninin ne olduğunu gösterecek şekilde
-`println!` çıktımızı güncelleyerek programı tamamlıyoruz.
+döndürecek şekilde güncelliyoruz. Bu sayede, ilk dönen sayfanın
+çözümleyebileceğimiz bir `<title>` öğesi olmasa bile anlamlı bir mesaj
+yazdırabiliriz. Bu bilgi de elimizde olduğuna göre, hem hangi URL'nin önce
+tamamlandığını hem de varsa o URL'deki web sayfasının `<title>` metninin ne
+olduğunu gösterecek şekilde `println!` çıktımızı güncelleyerek programı
+tamamlıyoruz.
 
 Artık çalışan küçük bir web kazıyıcı geliştirdiniz! Birkaç URL seçin ve komut
 satırı aracını çalıştırın. Bazı sitelerin diğerlerinden tutarlı biçimde daha

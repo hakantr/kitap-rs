@@ -58,14 +58,14 @@ olabileceği, ancak bu değerleri tüketen yalnızca tek bir _alma_ ucuna sahip
 olabileceği anlamına gelir. Birden çok derenin birleşerek tek bir büyük nehre
 aktığını hayal edin: derelerin herhangi birinden aşağı gönderilen her şey,
 sonunda tek bir nehirde toplanacaktır. Şimdilik tek bir üreticiyle başlayacağız,
-ancak bu örneği çalışır hale getirdiğimizde birden fazla üretici ekleyeceğiz.
+ancak bu örneği çalışır hâle getirdiğimizde birden fazla üretici ekleyeceğiz.
 
 `mpsc::channel` fonksiyonu bir _demet (tuple)_ döndürür; bu demetin ilk elemanı
 gönderme ucu —yani gönderici—, ikinci elemanı ise alma ucu —yani alıcı— olur.
 Pek çok alanda _transmitter_ (gönderici) ve _receiver_ (alıcı) terimleri için
-geleneksel olarak sırasıyla `tx` ve `rx` kısaltmaları kullanılır; biz de
+geleneksel olarak sırasıyla `tx` ve `rx` kısaltmaları kullanılır; biz ise
 kodumuzda her bir ucu açıkça belirtmek üzere değişkenlerimizi `gonderici` ve
-`alici` olarak adlandırıyoruz. Burada demetleri parçalara ayıran
+`alici` olarak adlandırıyoruz. Burada demeti parçalarına ayıran
 (_destructuring_) bir desenle birlikte bir `let` deyimi kullanıyoruz; `let`
 deyimlerinde desen kullanımını ve yapı sökümünü Bölüm 19'da ele alacağız.
 Şimdilik bir `let` deyimini bu şekilde kullanmanın, `mpsc::channel` tarafından
@@ -110,10 +110,10 @@ Liste 16-8'de, ana thread'de alıcıdan değeri alacağız. Bu, nehrin sonunda l
 
 </Listing>
 
-Alıcının iki kullanışlı metodu vardır: `recv` ve `try_recv`. Burada _receive_
-(almak) kelimesinin kısaltması olan ve ana thread'in yürütmesini bloklayıp
-kanaldan aşağı bir değer gönderilene kadar bekleyecek olan `recv` metodunu
-kullanıyoruz. Bir değer gönderildiğinde `recv`, onu bir `Result<T, E>` içinde
+Alıcının iki kullanışlı metodu vardır: `recv` ve `try_recv`. Burada, _receive_
+(almak) kelimesinin kısaltması olan `recv` metodunu kullanıyoruz; bu metot ana
+thread'in yürütmesini bloklar ve kanal üzerinden bir değer gönderilene kadar
+bekler. Bir değer gönderildiğinde `recv`, onu bir `Result<T, E>` içinde
 döndürür. Gönderici kapandığında ise `recv`, artık başka değer gelmeyeceğini
 bildirmek üzere bir hata döndürür.
 
@@ -152,7 +152,7 @@ Sahiplik kuralları mesaj gönderiminde hayati bir rol oynar; çünkü güvenli 
 eşzamanlı kod yazmanıza yardımcı olur. Eşzamanlı programlamada hataları önlemek,
 Rust programlarınız boyunca sahipliği hesaba katmanın sağladığı avantajdır.
 Kanalların ve sahipliğin sorunları önlemek üzere birlikte nasıl çalıştığını
-göstermek için bir deney yapalım: oluşturulan thread'de bir `deger` değerini
+göstermek için bir deney yapalım: oluşturulan thread'de `deger` değişkenini
 kanaldan gönderdikten _sonra_ kullanmaya çalışacağız. Bu koda neden izin
 verilmediğini görmek için Liste 16-9'daki kodu derlemeyi deneyin.
 
@@ -320,9 +320,9 @@ seferinde farklı bir çıktı üretecektir.
 >   `Sender<T>` klonlanabilirken `Receiver<T>` klonlanamaz. Birden fazla işçi
 >   (*worker*) thread'in aynı kuyruktan görev çekmesi gerektiğinde; bir sonraki
 >   bölümde göreceğimiz araçlarla alıcıyı `Arc<Mutex<mpsc::Receiver<T>>>` içine
->   sarabilir (Bölüm 21'deki çok kanallı web sunucusunda tam olarak bu deseni
+>   sarabilir (Bölüm 21'deki çok thread'li web sunucusunda tam olarak bu deseni
 >   kuracağız), ekosistemdeki **`crossbeam-channel`** veya **`flume`** gibi
->   çoklu üretici–çoklu tüketici (*MPMC*) crate'lerini kullanabilir ya da
+>   çoklu üretici–çoklu tüketici crate'lerini kullanabilir ya da
 >   standart kütüphanede geliştirilmekte olan deneysel `std::sync::mpmc` modülünü
 >   (Nightly Rust'ta) değerlendirebilirsiniz.
 

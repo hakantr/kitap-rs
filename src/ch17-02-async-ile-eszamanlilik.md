@@ -48,8 +48,8 @@ Başlangıç noktası olarak, en üst düzey fonksiyonumuzun asenkron olabilmesi
 
 > Not: Bölümün bu noktasından itibaren her örnek `main` içinde `trpl::block_on`
 > içeren bu sarmalayıcı kodun birebir aynısını barındıracaktır; bu nedenle tıpkı
-> `main` fonksiyonunda yaptığımız gibi bunu da çoğu zaman atlayacağız. Kendi
-> kodunuza eklemeyi unutmayın!
+> `main` fonksiyonunu çoğu örnekte göstermediğimiz gibi bunu da çoğu zaman
+> atlayacağız. Kendi kodunuza eklemeyi unutmayın!
 
 Ardından bu bloğun içinde, her biri bir sonraki mesajı yazdırmadan önce yarım
 saniye (500 milisaniye) bekleyen bir `trpl::sleep` çağrısı içeren iki döngü
@@ -186,16 +186,16 @@ Artık her seferinde birebir aynı sırayı görürsünüz; bu durum thread'lerl
 Liste 17-7'deki `trpl::spawn_task` ile gördüğümüzden çok farklıdır. Bunun nedeni
 `trpl::join` fonksiyonunun _adil (fair)_ olmasıdır; yani her bir future'ı eşit
 sıklıkta, aralarında sırayla geçiş yaparak kontrol eder ve diğeri hazırken
-birinin öne geçip yarışmasına asla izin vermez. Thread'lerde hangi thread'in
-kontrol edileceğine ve ne kadar süre çalışmasına izin verileceğine işletim
-sistemi karar verir. Async Rust'ta ise hangi görevin kontrol edileceğine çalışma
-zamanı karar verir. (Pratikte ayrıntılar karmaşıklaşır; çünkü bir asenkron
-çalışma zamanı eşzamanlılığı yönetme biçiminin bir parçası olarak perde
-arkasında işletim sistemi thread'lerini kullanabilir, dolayısıyla adilliği
-garanti etmek bir çalışma zamanı için daha fazla iş anlamına gelebilir — ama
-yine de mümkündür!) Çalışma zamanları herhangi bir işlem için adilliği garanti
-etmek zorunda değildir ve adillik isteyip istemediğinizi seçebilmeniz için çoğu
-zaman farklı API'ler sunarlar.
+birinin hızla öne geçip fark açmasına asla izin vermez. Thread'lerde hangi
+thread'in kontrol edileceğine ve ne kadar süre çalışmasına izin verileceğine
+işletim sistemi karar verir. Async Rust'ta ise hangi görevin kontrol
+edileceğine çalışma zamanı karar verir. (Pratikte ayrıntılar karmaşıklaşır;
+çünkü bir asenkron çalışma zamanı eşzamanlılığı yönetme biçiminin bir parçası
+olarak perde arkasında işletim sistemi thread'lerini kullanabilir, dolayısıyla
+adilliği garanti etmek bir çalışma zamanı için daha fazla iş anlamına gelebilir
+— ama yine de mümkündür!) Çalışma zamanları herhangi bir işlem için adilliği
+garanti etmek zorunda değildir ve adillik isteyip istemediğinizi seçebilmeniz
+için çoğu zaman farklı API'ler sunarlar.
 
 Future'ları beklemeye yönelik şu çeşitlemelerden bazılarını deneyip ne
 yaptıklarını görün:
@@ -244,7 +244,7 @@ değiştirilemez yerine değiştirilebilir bir `alici` (`mut alici`) kullanır v
 hatta ayrı bir görev başlatmamız gerekmediğine dikkat edin; yalnızca `alici.recv`
 çağrısını beklememiz yeterlidir.
 
-`std::mpsc::channel` içindeki senkron `Receiver::recv` metodu bir mesaj alana
+`std::sync::mpsc` modülündeki senkron `Receiver::recv` metodu bir mesaj alana
 kadar bloklar. `trpl::Receiver::recv` metodu ise asenkron olduğu için bloklamaz.
 Bloklamak yerine, bir mesaj alınana ya da kanalın gönderici tarafı kapanana
 kadar denetimi çalışma zamanına geri verir. Buna karşılık `send` çağrısını
@@ -300,7 +300,7 @@ future bunun yerine `None` olarak çözülecektir.
 `while let` döngüsü tüm bunları bir araya getirir. `alici.recv().await`
 çağrısının sonucu `Some(alinan)` ise mesaja erişim sağlarız ve tıpkı `if let`
 ile yapabildiğimiz gibi onu döngü gövdesinde kullanabiliriz. Sonuç `None` ise
-döngü sona erer. Döngü her tamamlandığında yeniden await noktasına ulaşır;
+döngü sona erer. Döngü her tamamlandığında yeniden bekleme noktasına ulaşır;
 böylece çalışma zamanı bir başka mesaj gelene kadar onu tekrar duraklatır.
 
 Kod artık tüm mesajları başarıyla gönderip alır. Ne yazık ki hâlâ birkaç sorun
@@ -326,8 +326,8 @@ sıra, aynı zamanda program çalışırken yürütüldükleri sıradır.
 Liste 17-10'da yalnızca tek bir async blok vardır; dolayısıyla içindeki her şey
 doğrusal olarak çalışır. Hâlâ eşzamanlılık yoktur. Tüm `gonderici.send`
 çağrıları, aralarına serpiştirilmiş tüm `trpl::sleep` çağrıları ve onlara bağlı
-await noktalarıyla birlikte sırayla gerçekleşir. `while let` döngüsü ancak ondan
-sonra `recv` çağrıları üzerindeki `await` noktalarından herhangi birinden
+bekleme noktalarıyla birlikte sırayla gerçekleşir. `while let` döngüsü ancak
+ondan sonra `recv` çağrıları üzerindeki bekleme noktalarından herhangi birinden
 geçebilir.
 
 Uyku gecikmesinin her mesaj arasında gerçekleştiği istediğimiz davranışı elde

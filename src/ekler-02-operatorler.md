@@ -32,8 +32,8 @@ Tablo B-1; Rust'taki operatörleri, her operatörün bağlam içinde nasıl gör
 | `&&`                      | `expr && expr`                                          | Kısa devre (*short-circuiting*) mantıksal VE                          |                |
 | `*`                       | `expr * expr`                                           | Aritmetik çarpma                                                      | `Mul`          |
 | `*=`                      | `var *= expr`                                           | Aritmetik çarpma ve atama                                             | `MulAssign`    |
-| `*`                       | `*expr`                                                 | Başvuru çözme (*dereference*)                                         | `Deref`        |
-| `*`                       | `*const type`, `*mut type`                              | Ham işaretçi (*raw pointer*)                                          |                |
+| `*`                       | `*expr`                                                 | Başvuru çözme (*dereference*)                                         | `Deref`, `DerefMut` |
+| `*`                       | `*const type`, `*mut type`                              | Ham işaretçi (*raw pointer*) türü                                     |                |
 | `+`                       | `trait + trait`, `'a + trait`                           | Bileşik tür kısıtlaması                                               |                |
 | `+`                       | `expr + expr`                                           | Aritmetik toplama                                                     | `Add`          |
 | `+=`                      | `var += expr`                                           | Aritmetik toplama ve atama                                            | `AddAssign`    |
@@ -105,7 +105,7 @@ Tablo B-2, kendi başına görünen ve çeşitli konumlarda geçerli olan sembol
 | `_`                                                                    | “Görmezden gelinen” desen bağlaması; ayrıca sayısal hazır değerleri okunaklı kılmak için basamak ayırıcısı olarak kullanılır (`1_000_000`) |
 
 > Not: **Modern Rust'ta Ham Adres Operatörleri ve C-String Sabitleri:** Tablo B-1 ve B-2'deki klasik sözdizimine ek olarak güncel Rust kodlarında iki ek yapıyla sıkça karşılaşırsınız:
-> - **`&raw const expr` ve `&raw mut expr`**: Bölüm 20'de gördüğümüz gibi ara bir referans oluşturmadan doğrudan ham işaretçi (`*const T` / `*mut T`) üreten güvenli ham ödünç alma operatörleridir.
+> - **`&raw const expr` ve `&raw mut expr`**: Bölüm 20'de gördüğümüz gibi ara bir referans oluşturmadan güvenli biçimde doğrudan ham işaretçi (`*const T` / `*mut T`) üreten ham ödünç alma (*raw borrow*) operatörleridir.
 > - **`c"..."` ve `cr"..."` / `cr#"..."#`**: C kütüphaneleriyle (FFI) çalışırken derleme zamanında sonuna otomatik `\0` baytı eklenmiş `&core::ffi::CStr` üreten C-string sabitleridir.
 > - Ayrıca `&&` ve `||` operatörlerinin neden aşırı yüklenemediğine dikkat edin: Trait metotlarında tüm argümanlar çağrıdan önce değerlendirilir; oysa kısa devre mantığında sol taraf sonucu belirlediğinde sağ tarafın **hiç çalıştırılmaması** garanti edilmelidir.
 

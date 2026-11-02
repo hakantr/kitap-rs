@@ -47,7 +47,7 @@ Bu kod, `trpl::sleep` yerine `std::thread::sleep` kullanır; böylece `slow`
 hem uzun süren hem de bloklayıcı işlemleri temsil etmesi için `slow`
 fonksiyonunu kullanabiliriz.
 
-Liste 17-15'te, bir çift future içinde bu türden CPU-bağımlı (*CPU-bound*) işler
+Liste 17-15'te, bir çift future içinde bu türden CPU bağımlı (*CPU-bound*) işler
 yapmayı taklit etmek için `slow` fonksiyonunu kullanıyoruz.
 
 <Listing number="17-15" caption="Yavaş işlemleri taklit etmek için `slow` fonksiyonunu çağırmak" file-name="src/main.rs">
@@ -147,15 +147,15 @@ Bunu `trpl::yield_now` fonksiyonunu kullanarak doğrudan yapabiliriz. Liste
 </Listing>
 
 Bu kod hem gerçek niyetimizi daha açık biçimde ortaya koyar hem de `sleep`
-kullanmaktan belirgin ölçüde daha hızlı olabilir; çünkü `sleep` tarafından
-kullanılanlar gibi zamanlayıcıların ne kadar hassas olabilecekleri konusunda
-çoğu zaman sınırları vardır. Örneğin kullandığımız `sleep` sürümü, ona bir
+kullanmaktan belirgin ölçüde daha hızlı olabilir; çünkü `sleep`'in kullandığı
+türden zamanlayıcıların ne kadar hassas olabileceği konusunda çoğu zaman
+sınırlar vardır. Örneğin kullandığımız `sleep` sürümü, ona bir
 nanosaniyelik `Duration` geçirsek bile her zaman en az bir milisaniye uyur. Yine
 hatırlatalım, modern bilgisayarlar _hızlıdır_: bir milisaniye içinde pek çok iş
 yapabilirler!
 
 Bu durum, programınızın başka neler yaptığına bağlı olarak `async`'in
-hesaplama-bağımlı (*compute-bound*) görevler için bile faydalı olabileceği
+hesaplama bağımlı (*compute-bound*) görevler için bile faydalı olabileceği
 anlamına gelir; çünkü programın farklı bölümleri arasındaki ilişkileri
 yapılandırmak için kullanışlı bir araç sunar (ancak bunun karşılığında async
 durum makinesinin getirdiği ek yük maliyeti vardır). Bu bir _işbirlikli çoklu
@@ -167,7 +167,7 @@ türüdür!
 
 Gerçek dünya kodlarında elbette genellikle her satırda fonksiyon çağrıları ile
 `await` noktalarını ardışık olarak sıralamazsınız. Denetimi bu şekilde devretmek
-nispeten ucuz olsa da bedelsiz değildir. Pek çok durumda, hesaplama-bağımlı bir
+nispeten ucuz olsa da bedelsiz değildir. Pek çok durumda, hesaplama bağımlı bir
 görevi parçalara bölmeye çalışmak onu belirgin biçimde yavaşlatabilir;
 dolayısıyla bazen _genel_ performans açısından bir işlemin kısa süreliğine
 bloklamasına izin vermek daha iyidir. Kodunuzun gerçek performans
@@ -180,7 +180,7 @@ _görüyorsanız_, arka plandaki bu dinamiği akılda tutmak son derece önemlid
 > yalnızca o future'ı değil, çalışma zamanının o anki yürütücü thread'inde sıra
 > bekleyen diğer görevleri de bekletir. Gerçek dünya projelerinde `yield_now`
 > ile parçalara bölmeye uygun olmayan bloklayıcı işlemleri çalıştırmak için
-> çalışma zamanlarının sunduğu `spawn_blocking` işlevinden ([Bölüm 17.6'da](ch17-06-future-gorev-thread.html)
+> çalışma zamanlarının sunduğu `spawn_blocking` fonksiyonundan ([Bölüm 17.6'da](ch17-06-future-gorev-thread.html)
 > değineceğiz) veya yoğun paralel veri işleme yükleri için `rayon` gibi özel
 > thread havuzlarından yararlanılır.
 
@@ -250,8 +250,8 @@ desen eşleştirerek `timeout` fonksiyonunu uyguluyoruz.
 
 </Listing>
 
-`trpl::select` gerçeklemesi adil (*fair*) değildir: argümanları her zaman
-geçirildikleri sırayla yoklar (diğer `select` gerçeklemeleri ilk olarak hangi
+`trpl::select` uygulaması adil (*fair*) değildir: argümanları her zaman
+geçirildikleri sırayla yoklar (diğer `select` uygulamaları ilk olarak hangi
 argümanı yoklayacağını rastgele seçer). Bu nedenle `select` fonksiyonuna ilk
 olarak `denenecek_future` argümanını geçiriyoruz; böylece `azami_sure` çok kısa
 bir süre olsa bile `denenecek_future` tamamlanma şansı elde eder.
@@ -260,9 +260,8 @@ bir süre olsa bile `denenecek_future` tamamlanma şansı elde eder.
 çıktısı olan `()` değerini içeren `Right` varyantını döndürür.
 
 `denenecek_future` başarılı olur ve bir `Left(cikti)` elde edersek `Ok(cikti)`
-döndürürüz. Bunun yerine uyku zamanlayıcısının süresi dolarsa ve bir `Right(())`
-elde edersek, `()` değerini `_` ile yok sayar ve bunun yerine `Err(azami_sure)`
-döndürürüz.
+döndürürüz. Uyku zamanlayıcısının süresi önce dolar ve bir `Right(())` elde
+edersek, `()` değerini `_` ile yok sayıp `Err(azami_sure)` döndürürüz.
 
 > Not: Rust'ta future'lar pasif durum makineleridir ve yalnızca yoklandıklarında
 > ilerlerler. `trpl::select` içinde yarışan iki future'dan biri tamamlandığında

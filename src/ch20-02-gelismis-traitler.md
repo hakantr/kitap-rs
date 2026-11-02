@@ -81,7 +81,7 @@ Rust kendi operatörlerinizi oluşturmanıza veya rastgele operatörleri aşır�
 
 </Listing>
 
-`add` metodu, yeni bir `Nokta` oluşturmak için iki `Nokta` örneğinin `x` değerlerini ve iki `Nokta` örneğinin `y` değerlerini toplar. `Add` trait'i, `add` metodundan döndürülecek türü belirleyen `Output` adında bir ilişkili türe sahiptir.
+`add` metodu, yeni bir `Nokta` oluşturmak için iki `Nokta` örneğinin `x` ve `y` değerlerini kendi aralarında toplar. `Add` trait'i, `add` metodundan döndürülecek türü belirleyen `Output` adında bir ilişkili türe sahiptir.
 
 Bu koddaki varsayılan jenerik tür, `Add` trait'inin içinde yer alır. Tanımı şöyledir:
 
@@ -171,7 +171,7 @@ Bu kodu çalıştırmak ekrana aşağıdakileri yazdırır:
 
 `fly` metodu bir `self` parametresi aldığından, tek bir _trait'i_ uygulayan iki farklı _türümüz_ olsaydı, Rust `self` parametresinin türüne bakarak trait'in hangi uygulamasını kullanacağını çıkarabilirdi.
 
-Ancak metot olmayan ilişkili fonksiyonların `self` parametresi yoktur. Aynı fonksiyon adına sahip metot olmayan fonksiyonlar tanımlayan birden fazla tür veya trait bulunduğunda, _tam nitelikli sözdizimi (fully qualified syntax)_ kullanmadığınız sürece Rust hangi türü kastettiğinizi her zaman bilemez. Örneğin Liste 20-20'de, tüm yavru köpeklere Karabaş adını vermek isteyen bir hayvan barınağı için bir trait oluşturuyoruz. Metot olmayan ilişkili bir `baby_name` fonksiyonuna sahip `Hayvan` adında bir trait tanımlıyoruz. `Hayvan` trait'i, üzerinde doğrudan metot olmayan ilişkili bir `baby_name` fonksiyonu da sunduğumuz `Kopek` struct'ı için uygulanıyor.
+Ancak metot olmayan ilişkili fonksiyonların `self` parametresi yoktur. Metot olmayan ve aynı adı taşıyan fonksiyonlar tanımlayan birden fazla tür veya trait bulunduğunda, _tam nitelikli sözdizimi (fully qualified syntax)_ kullanmadığınız sürece Rust hangi türü kastettiğinizi her zaman bilemez. Örneğin Liste 20-20'de, tüm yavru köpeklere Karabaş adını vermek isteyen bir hayvan barınağı için bir trait oluşturuyoruz. Metot olmayan ilişkili bir `baby_name` fonksiyonuna sahip `Hayvan` adında bir trait tanımlıyoruz. `Hayvan` trait'i, üzerinde doğrudan metot olmayan ilişkili bir `baby_name` fonksiyonu da sunduğumuz `Kopek` struct'ı için uygulanıyor.
 
 <Listing number="20-20" file-name="src/main.rs" caption="İlişkili fonksiyona sahip bir trait ile aynı adda ilişkili fonksiyona sahip olan ve aynı zamanda bu trait'i uygulayan bir tür">
 
@@ -183,7 +183,7 @@ Ancak metot olmayan ilişkili fonksiyonların `self` parametresi yoktur. Aynı f
 
 Tüm yavru köpeklere Karabaş adını verme kodunu, `Kopek` üzerinde tanımlanan `baby_name` ilişkili fonksiyonunda uyguluyoruz. `Kopek` türü ayrıca tüm hayvanların sahip olduğu özellikleri tanımlayan `Hayvan` trait'ini de uygular. Köpek yavrularına yavru köpek denir ve bu durum, `Kopek` üzerindeki `Hayvan` trait uygulamasında `Hayvan` trait'iyle ilişkili `baby_name` fonksiyonu içinde ifade edilmiştir.
 
-`main` içinde, doğrudan `Kopek` üzerinde tanımlanmış ilişkili fonksiyonu çağıran `Kopek::baby_name` fonksiyonunu çağırıyoruz. Bu kod ekrana şunu yazdırır:
+`main` içinde `Kopek::baby_name` ifadesini çağırıyoruz; bu çağrı doğrudan `Kopek` üzerinde tanımlanmış ilişkili fonksiyonu çalıştırır. Bu kod ekrana şunu yazdırır:
 
 ```console
 {{#include ../listings/ch20-advanced-features/listing-20-20/output.txt}}

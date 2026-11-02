@@ -19,7 +19,7 @@ Son olarak, referansların birbiriyle nasıl ilişkili olduğu konusunda derleyi
 >
 > - **Jenerik türler (`<T>`)**, bir fonksiyonun veya veri yapısının *hangi türlerle* çalışabileceğini soyutlar (*"Ne tür bir veri?"*).
 > - **Trait'ler (`T: PartialOrd` gibi sınırlarla)**, bu soyut türlerin sahip olması gereken *davranışları* tanımlar ve kısıtlar (*"Bu tür neler yapabilir?"*).
-> - **Ömürler (`'a`)**, ödünç alınan referansların bellekte *ne kadar süreyle geçerli kaldığını* birbiriyle ilişkilendirir (*"Bu referans ne zamana kadar yaşar?"*).
+> - **Ömürler (`'a`)**, ödünç alınan referansların *geçerlilik kapsamlarını* birbiriyle ilişkilendirir (*"Bu referans hangi kapsam boyunca geçerlidir?"*).
 >
 > En önemli nokta ise bu üç mekanizmanın tamamının **derleme zamanında** çözümlenmesidir. Derleyici, jenerik tanımları programda kullanılan her somut tür için özelleştirilmiş makine koduna dönüştürür, trait sınırlarını doğrular ve ömür kurallarını denetledikten sonra ömür bildirimlerini ikili dosyadan tamamen siler. Böylece çalışma zamanında hiçbir ek bellek veya hız maliyeti ödemeden (*sıfır maliyetli soyutlama*) hem esnek hem de tam tür ve bellek güvenliğine sahip kod yazabilirsiniz.
 
@@ -56,7 +56,7 @@ Bir listedeki en büyük sayıyı bulan Liste 10-1'deki kısa programla başlaya
 
 Bu kod çalışsa da kodu bu şekilde kopyalamak hem zahmetli hem de hataya açıktır. Üstelik mantıkta bir değişiklik yapmak istediğimizde kodu birden fazla yerde güncellemeyi unutmamamız gerekir.
 
-Bu tekrarı ortadan kaldırmak için, parametre olarak geçirilen herhangi bir tam sayı listesi üzerinde çalışan bir fonksiyon tanımlayarak bir soyutlama oluşturacağız. Bu çözüm kodumuzu daha anlaşılır hale getirir ve bir listedeki en büyük sayıyı bulma kavramını soyut bir biçimde ifade etmemizi sağlar.
+Bu tekrarı ortadan kaldırmak için, parametre olarak geçirilen herhangi bir tam sayı listesi üzerinde çalışan bir fonksiyon tanımlayarak bir soyutlama oluşturacağız. Bu çözüm kodumuzu daha anlaşılır hâle getirir ve bir listedeki en büyük sayıyı bulma kavramını soyut bir biçimde ifade etmemizi sağlar.
 
 Liste 10-3'te en büyük sayıyı bulan kodu `en_buyuk_bul` adlı bir fonksiyona çıkarıyoruz. Ardından Liste 10-2'deki iki listede yer alan en büyük sayıları bulmak için bu fonksiyonu çağırıyoruz. Gelecekte elimizde olabilecek başka herhangi bir `i32` değer listesi için de aynı fonksiyonu kullanabiliriz.
 
@@ -70,7 +70,7 @@ Liste 10-3'te en büyük sayıyı bulan kodu `en_buyuk_bul` adlı bir fonksiyona
 
 `en_buyuk_bul` fonksiyonu, fonksiyona geçirebileceğimiz herhangi bir somut `i32` dilimini (`&[i32]`) temsil eden `liste` adında bir parametreye sahiptir. Sonuç olarak fonksiyonu çağırdığımızda kod, o çağrıda geçirdiğimiz belirli değerler üzerinde çalışır.
 
-Özetle, Liste 10-2'deki kodu Liste 10-3'teki haline dönüştürürken izlediğimiz adımlar şunlardır:
+Özetle, Liste 10-2'deki kodu Liste 10-3'teki hâline dönüştürürken izlediğimiz adımlar şunlardır:
 
 1. Tekrarlanan kodu belirleyin.
 1. Tekrarlanan kodu bir fonksiyonun gövdesine çıkarın; bu kodun girdilerini ve dönüş değerini fonksiyon imzasında belirtin.

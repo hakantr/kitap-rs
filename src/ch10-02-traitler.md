@@ -21,7 +21,7 @@ Bir _trait_, belirli bir türün sahip olduğu ve diğer türlerle paylaşabilec
 
 Bir türün davranışı, o tür üzerinde çağırabileceğimiz metotlardan oluşur. Farklı türlerin hepsi üzerinde aynı metotları çağırabiliyorsak bu türler aynı davranışı paylaşıyor demektir. Trait tanımları, belirli bir amacı gerçekleştirmek için gereken davranış kümesini tanımlamak üzere metot imzalarını bir araya getirmenin yoludur.
 
-Örneğin, farklı tür ve uzunluklarda metinler tutan birden fazla struct'ımız olduğunu varsayalım: Belirli bir yerden geçilmiş bir haber metnini tutan `HaberMakalesi` struct'ı ve yeni bir gönderi mi, yeniden paylaşım mı yoksa başka bir gönderiye yanıt mı olduğunu gösteren üst verilerle birlikte en fazla 280 karakter barındırabilen `SosyalGonderi` struct'ı.
+Örneğin, farklı tür ve uzunluklarda metinler tutan birden fazla struct'ımız olduğunu varsayalım: Belirli bir konumdan geçilmiş bir haber metnini tutan `HaberMakalesi` struct'ı ve yeni bir gönderi mi, yeniden paylaşım mı yoksa başka bir gönderiye yanıt mı olduğunu gösteren üst verilerle birlikte en fazla 280 karakter barındırabilen `SosyalGonderi` struct'ı.
 
 Bir `HaberMakalesi` veya `SosyalGonderi` örneğinde saklanabilecek verilerin özetlerini görüntüleyebilen `toplayici` adında bir medya toplayıcı (*media aggregator*) kütüphane crate'i geliştirmek istiyoruz. Bunun için her türden bir özet almamız gerekiyor ve bu özeti bir örnek üzerinde `ozetle` metodunu çağırarak isteyeceğiz. Liste 10-12, bu davranışı ifade eden dışarıya açık (`pub`) bir `Ozet` trait'inin tanımını göstermektedir.
 
@@ -123,7 +123,7 @@ Varsayılan uygulamalar, aynı trait içindeki diğer metotları —o metotları
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-03-default-impl-calls-other-methods/src/lib.rs:impl}}
 ```
 
-`yazari_ozetle` metodunu tanımladıktan sonra `SosyalGonderi` struct'ının örnekleri üzerinde `ozetle` metodunu çağırabiliriz; `ozetle`'nin varsayılan uygulaması da bizim sağladığımız `yazari_ozetle` tanımını çağırır. `yazari_ozetle` uygulamasını gerçekleştirdiğimiz için `Ozet` trait'i, fazladan kod yazmamıza gerek bırakmadan `ozetle` metodunun davranışını bize kazandırmış olur. Kullanımı şöyle görünür:
+`yazari_ozetle` metodunu tanımladıktan sonra `SosyalGonderi` struct'ının örnekleri üzerinde `ozetle` metodunu çağırabiliriz; `ozetle`'nin varsayılan uygulaması da bizim sağladığımız `yazari_ozetle` tanımını çağırır. `yazari_ozetle` metodunu uyguladığımız için `Ozet` trait'i, fazladan kod yazmamıza gerek bırakmadan `ozetle` metodunun davranışını bize kazandırmış olur. Kullanımı şöyle görünür:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-03-default-impl-calls-other-methods/src/main.rs:here}}
@@ -167,7 +167,7 @@ pub fn bildir<T: Ozet>(oge: &T) {
 }
 ```
 
-Bu uzun biçim önceki bölümdeki örnekle tamamen eşdeğerdir ancak daha ayrıntılıdır. Trait sınırlarını, açılı parantezler içindeki jenerik tür parametresi bildiriminde iki nokta üst üsteden (`:`) hemen sonra yazarız.
+Bu uzun biçim önceki bölümdeki örnekle tamamen eşdeğerdir ancak daha ayrıntılıdır. Trait sınırlarını, açılı ayraçlar içindeki jenerik tür parametresi bildiriminde iki nokta üst üsteden (`:`) hemen sonra yazarız.
 
 `impl Trait` sözdizimi pratiktir ve basit durumlarda daha özlü kod yazmamızı sağlar; daha kapsamlı olan trait sınırı sözdizimi ise diğer durumlarda daha karmaşık kısıtlamaları ifade edebilir. Örneğin, `Ozet` trait'ini uygulayan iki parametre almak isteyebiliriz. Bunu `impl Trait` sözdizimiyle yazmak şöyle görünür:
 
@@ -286,7 +286,7 @@ impl<T: Display> ToString for T {
 }
 ```
 
-Standart kütüphanede bu örtü uygulaması bulunduğundan, `Display` trait'ini uygulayan herhangi bir tür üzerinde `ToString` trait'inin tanımladığı `to_string` metodunu çağırabiliriz. Örneğin tamsayılar `Display` trait'ini uyguladığı için bir tamsayıyı karşılık gelen `String` değerine şu şekilde dönüştürebiliriz:
+Standart kütüphanede bu örtü uygulaması bulunduğundan, `Display` trait'ini uygulayan herhangi bir tür üzerinde `ToString` trait'inin tanımladığı `to_string` metodunu çağırabiliriz. Örneğin tam sayılar `Display` trait'ini uyguladığı için bir tam sayıyı karşılık gelen `String` değerine şu şekilde dönüştürebiliriz:
 
 ```rust
 let s = 3.to_string();

@@ -12,7 +12,7 @@ Fonksiyon imzaları veya struct'lar gibi öğeler için daha sonra pek çok fark
 
 ### Fonksiyon Tanımlarında
 
-Jenerik kullanan bir fonksiyon tanımlarken, jenerikleri fonksiyon imzasında normalde parametrelerin ve dönüş değerinin veri türlerini belirttiğimiz yerlere yazarız. Bu yaklaşım kod tekrarını önlerken kodumuzu daha esnek hale getirir ve fonksiyonumuzu çağıranlara daha geniş bir işlevsellik sunar.
+Jenerik kullanan bir fonksiyon tanımlarken, jenerikleri fonksiyon imzasında normalde parametrelerin ve dönüş değerinin veri türlerini belirttiğimiz yerlere yazarız. Bu yaklaşım kod tekrarını önlerken kodumuzu daha esnek hâle getirir ve fonksiyonumuzu çağıranlara daha geniş bir işlevsellik sunar.
 
 `en_buyuk_bul` fonksiyonumuzdan devam edelim: Liste 10-4, her ikisi de bir dilimdeki en büyük değeri bulan iki fonksiyon göstermektedir. Ardından bunları jenerik kullanan tek bir fonksiyonda birleştireceğiz.
 
@@ -26,7 +26,7 @@ Jenerik kullanan bir fonksiyon tanımlarken, jenerikleri fonksiyon imzasında no
 
 `en_buyuk_i32` fonksiyonu, Liste 10-3'te ayrı bir fonksiyona çıkardığımız ve bir dilimdeki en büyük `i32` değerini bulan fonksiyondur. `en_buyuk_char` fonksiyonu ise bir dilimdeki en büyük `char` değerini bulur. Her iki fonksiyonun gövdesi birebir aynı koda sahip olduğundan, tek bir fonksiyonda jenerik bir tür parametresi tanımlayarak bu tekrarı ortadan kaldıralım.
 
-Yeni ve tek bir fonksiyonda türleri parametreleştirmek için, tıpkı bir fonksiyonun değer parametrelerine ad verdiğimiz gibi tür parametresine de bir ad vermemiz gerekir. Tür parametresi adı olarak geçerli herhangi bir tanımlayıcıyı kullanabilirsiniz. Ancak biz `T` kullanacağız; çünkü Rust'ta geleneksel olarak tür parametresi adları kısadır — çoğu zaman tek bir harften oluşur — ve Rust'ın tür adlandırma kuralı `UpperCamelCase` biçimindedir. İngilizce _type_ (tür) kelimesinin kısaltması olan `T`, çoğu Rust programcısının varsayılan tercihidir.
+Yeni ve tek bir fonksiyonda türleri parametreleştirmek için, tıpkı bir fonksiyonun değer parametrelerine ad verdiğimiz gibi tür parametresine de bir ad vermemiz gerekir. Tür parametresi adı olarak geçerli herhangi bir tanımlayıcıyı kullanabilirsiniz. Ancak biz `T` kullanacağız; çünkü Rust'ta geleneksel olarak tür parametresi adları kısadır —çoğu zaman tek bir harften oluşur— ve Rust'ın tür adlandırma kuralı `UpperCamelCase` biçimindedir. İngilizce _type_ (tür) kelimesinin kısaltması olan `T`, çoğu Rust programcısının varsayılan tercihidir.
 
 Fonksiyon gövdesinde bir parametre kullandığımızda, derleyicinin bu adın ne anlama geldiğini bilmesi için parametre adını imzada bildirmemiz gerekir. Benzer şekilde, bir fonksiyon imzasında bir tür parametresi adı kullanacağımızda da bu adı kullanmadan önce bildirmeliyiz. Jenerik `en_buyuk_bul` fonksiyonunu tanımlamak için tür adı bildirimlerini fonksiyon adı ile parametre listesi arasına, açılı ayraçlar (`<>`) içine yerleştiririz:
 
@@ -46,7 +46,7 @@ Liste 10-5, imzasında jenerik veri türünü kullanan birleştirilmiş `en_buyu
 
 </Listing>
 
-Bu kodu mevcut haliyle derlersek şu hatayı alırız:
+Bu kodu mevcut hâliyle derlersek şu hatayı alırız:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-05/output.txt}}
@@ -190,7 +190,7 @@ Bu örneğin amacı, bazı jenerik parametrelerin `impl` ile, bazılarının ise
 
 Jenerik tür parametreleri kullanmanın çalışma zamanında bir maliyeti olup olmadığını merak ediyor olabilirsiniz. İyi haber şu ki jenerik türler kullanmak, programınızın somut türler kullanan eşdeğer bir koda göre daha yavaş çalışmasına yol açmaz.
 
-Rust bunu, derleme zamanında jenerik kullanan kod üzerinde *tek biçimlileştirme (monomorphization)* — diğer adıyla *monomorfizasyon* — uygulayarak başarır. _Tek biçimlileştirme_, derleme sırasında kullanılan somut türleri yerlerine koyarak jenerik kodu türe özgü koda dönüştürme sürecidir. Bu süreçte derleyici, Liste 10-5'te jenerik fonksiyonu oluştururken izlediğimiz adımların tam tersini yapar: jenerik kodun çağrıldığı tüm yerlere bakar ve jenerik kodun birlikte çağrıldığı somut türler için özelleştirilmiş kod üretir.
+Rust bunu, derleme zamanında jenerik kullanan kod üzerinde *tek biçimlileştirme (monomorphization)* —diğer adıyla *monomorfizasyon*— uygulayarak başarır. _Tek biçimlileştirme_, derleme sırasında kullanılan somut türleri yerlerine koyarak jenerik kodu türe özgü koda dönüştürme sürecidir. Bu süreçte derleyici, Liste 10-5'te jenerik fonksiyonu oluştururken izlediğimiz adımların tam tersini yapar: jenerik kodun çağrıldığı tüm yerlere bakar ve jenerik kodun birlikte çağrıldığı somut türler için özelleştirilmiş kod üretir.
 
 Standart kütüphanenin jenerik `Option<T>` enum'ını kullanarak bunun nasıl çalıştığına bakalım:
 
@@ -201,7 +201,7 @@ let ondalikli = Some(5.0);
 
 Rust bu kodu derlediğinde tek biçimlileştirme uygular. Bu işlem sırasında derleyici, `Option<T>` örneklerinde kullanılan değerleri okur ve iki farklı `Option<T>` kullanımı tespit eder: biri `i32`, diğeri ise `f64` türündedir. Bunun sonucunda `Option<T>`'nin jenerik tanımını `i32` ve `f64` için özelleştirilmiş iki ayrı tanıma açar ve jenerik tanımı bu türe özgü tanımlarla değiştirir.
 
-Kodun tek biçimlileştirilmiş hali aşağıdakine benzer (derleyici burada açıklama amacıyla kullandıklarımızdan farklı iç adlar üretir):
+Kodun tek biçimlileştirilmiş hâli aşağıdakine benzer (derleyici burada açıklama amacıyla kullandıklarımızdan farklı iç adlar üretir):
 
 <Listing file-name="src/main.rs">
 
@@ -226,4 +226,4 @@ fn main() {
 
 Jenerik `Option<T>`, derleyicinin oluşturduğu türe özgü tanımlarla değiştirilir. Rust jenerik kodu her bir kullanımda somut türü belirten koda derlediği için jenerikleri kullanmanın çalışma zamanında hiçbir ek maliyeti yoktur. Kod çalıştığında, her bir tanımı elle tek tek çoğaltmışız gibi performans gösterir. Tek biçimlileştirme süreci, Rust'ın jeneriklerini çalışma zamanında son derece verimli kılar.
 
-> Not: Tek biçimlileştirme sayesinde derleyici hangi somut fonksiyon veya metodun çağrılacağını derleme zamanında kesin olarak bilir; buna *statik gönderim* (*statik dağıtım*, İng. *static dispatch*) denir. Doğrudan çağrılar ve satır içi açma (*inlining*) gibi derleyici eniyilemeleri tam kapasiteyle uygulanabildiğinden çalışma zamanında hiçbir hız kaybı yaşanmaz. Bunun tek ödünleşimi, bir jenerik tanım çok sayıda farklı somut türle kullanıldığında her tür için ayrı makine kodu üretilmesi nedeniyle derleme süresinin ve üretilen ikili dosya (*binary*) boyutunun bir miktar artabilmesidir. Homojen olmayan koleksiyonlara veya daha küçük ikili dosya boyutuna ihtiyaç duyduğunuz durumlarda Rust, Bölüm 18'de inceleyeceğimiz *trait nesneleri (`dyn Trait`)* aracılığıyla çalışma zamanında çözümlenen *dinamik gönderim* (*dinamik dağıtım*, İng. *dynamic dispatch*) seçeneğini de sunar.
+> Not: Tek biçimlileştirme sayesinde derleyici hangi somut fonksiyon veya metodun çağrılacağını derleme zamanında kesin olarak bilir; buna *statik gönderim (static dispatch)* denir. Doğrudan çağrılar ve satır içi açma (*inlining*) gibi derleyici eniyilemeleri tam kapasiteyle uygulanabildiğinden çalışma zamanında hiçbir hız kaybı yaşanmaz. Bunun tek ödünleşimi, bir jenerik tanım çok sayıda farklı somut türle kullanıldığında her tür için ayrı makine kodu üretilmesi nedeniyle derleme süresinin ve üretilen ikili dosya (*binary*) boyutunun bir miktar artabilmesidir. Homojen olmayan koleksiyonlara veya daha küçük ikili dosya boyutuna ihtiyaç duyduğunuz durumlarda Rust, Bölüm 18'de inceleyeceğimiz *trait nesneleri (`dyn Trait`)* aracılığıyla çalışma zamanında çözümlenen *dinamik gönderim (dynamic dispatch)* seçeneğini de sunar.

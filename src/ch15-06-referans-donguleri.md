@@ -48,7 +48,7 @@ ekliyoruz. Bu kod, `a` içinde bir liste ve `a` içindeki listeye işaret eden `
 içinde başka bir liste oluşturur. Ardından `a` içindeki listeyi `b`'ye işaret
 edecek şekilde değiştirerek bir referans döngüsü oluşturur. Bu sürecin çeşitli
 noktalarında referans sayılarının kaç olduğunu göstermek için yol boyunca
-`println!` ifadeleri yer almaktadır.
+`println!` deyimleri yer almaktadır.
 
 <Listing number="15-26" file-name="src/main.rs" caption="Birbirine işaret eden iki `Liste` değerinden oluşan bir referans döngüsü oluşturmak">
 
@@ -260,7 +260,7 @@ referans örneği oluştururuz.
 
 Bu noktada `upgrade` metodunu kullanarak `yaprak` düğümünün ebeveynine bir
 referans almaya çalıştığımızda `None` değeri elde ederiz. Bunu ilk `println!`
-ifadesinin çıktısında görürüz:
+deyiminin çıktısında görürüz:
 
 ```text
 yaprak ebeveyni = None
@@ -268,7 +268,7 @@ yaprak ebeveyni = None
 
 `dal` düğümünü oluşturduğumuzda, `dal` düğümünün bir ebeveyn düğümü olmadığı için
 onun `ebeveyn` alanında da yeni bir `Weak<Dugum>` referansı yer alacaktır.
-`yaprak` yine `dal` düğümünün çocuklarından biridir. `dal` içinde `Dugum`
+`yaprak` yine `dal` düğümünün çocuklarından biridir. `dal` içindeki `Dugum`
 örneğini elde ettikten sonra, `yaprak` düğümünü ebeveynine yönelik bir
 `Weak<Dugum>` referansı tutacak biçimde değiştirebiliriz. `yaprak` düğümünün
 `ebeveyn` alanındaki `RefCell<Weak<Dugum>>` üzerinde `borrow_mut` metodunu
@@ -373,7 +373,7 @@ Ayrıca akıllı işaretçilerin işlevselliğinin büyük bir kısmını mümk�
 referans döngülerini ve bunları `Weak<T>` kullanarak nasıl önleyebileceğimizi
 inceledik.
 
-Bu bölüm ilginizi çektiyse ve kendi akıllı işaretçilerinizi gerçeklemek
+Bu bölüm ilginizi çektiyse ve kendi akıllı işaretçilerinizi uygulamak
 istiyorsanız daha fazla yararlı bilgi için [“The Rustonomicon”][nomicon]
 kaynağına göz atabilirsiniz.
 

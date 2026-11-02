@@ -9,7 +9,7 @@
 
 Arama mantığını _src/lib.rs_ içine alıp `main` fonksiyonundan ayırdığımıza göre, artık kodumuzun çekirdek işlevselliği için test yazmak çok daha kolay. İkili dosyamızı komut satırından çalıştırmak zorunda kalmadan fonksiyonları çeşitli argümanlarla doğrudan çağırabilir ve dönüş değerlerini kontrol edebiliriz.
 
-Bu bölümde, aşağıdaki adımlardan oluşan *test güdümlü geliştirme (test-driven development — TDD)* sürecini kullanarak `minigrep` programına arama mantığını ekleyeceğiz:
+Bu bölümde, aşağıdaki adımlardan oluşan test güdümlü geliştirme (*test-driven development* — TDD) sürecini kullanarak `minigrep` programına arama mantığını ekleyeceğiz:
 
 1. Başarısız olan bir test yazın ve beklediğiniz nedenden dolayı başarısız olduğundan emin olmak için testi çalıştırın.
 2. Yeni testin geçmesini sağlayacak kadar kod yazın veya mevcut kodu değiştirin.
@@ -39,7 +39,7 @@ Dosya içeriğinde sorgu metnini fiilen arayacak ve sorguyla eşleşen satırlar
 
 Bu test `"güven"` string'ini arar. Üzerinde arama yaptığımız metin üç satırdan oluşur ve büyük/küçük harf duyarlılığı nedeniyle bunlardan yalnızca ikincisi küçük harfli `"güven"` ifadesini barındırır (açılış çift tırnağından hemen sonra gelen ters eğik çizginin `\`, Rust'a bu çok satırlı string sabitinin başına yeni satır karakteri koymamasını söylediğine dikkat edin). Ardından `ara` fonksiyonundan dönen değerin yalnızca beklediğimiz satırı içerdiğini doğruluyoruz.
 
-Bu testi şimdiki haliyle çalıştırırsak, `unimplemented!` makrosu `"not implemented"` (*uygulanmadı*) mesajıyla paniklediği için test başarısız olur. TDD ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi `ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece test derlenecek ve beklediğimiz asıl nedenden dolayı — boş bir vektör, `"güvenli, hızlı, üretken."` satırını barındıran vektörle eşleşmediği için — başarısız olacaktır.
+Bu testi şimdiki haliyle çalıştırırsak, `unimplemented!` makrosu `"not implemented"` (*uygulanmadı*) mesajıyla paniklediği için test başarısız olur. TDD ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi `ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece test derlenecek ve beklediğimiz asıl nedenden dolayı —boş bir vektör, `"güvenli, hızlı, üretken."` satırını barındıran vektörle eşleşmediği için— başarısız olacaktır.
 
 <Listing number="12-16" file-name="src/lib.rs" caption="`ara` fonksiyonunu çağrıldığında paniklemeyecek kadar tanımlama">
 
@@ -59,7 +59,7 @@ Başka bir deyişle Rust'a, `ara` fonksiyonu tarafından döndürülen verinin `
 {{#include ../listings/ch12-an-io-project/output-only-02-missing-lifetimes/output.txt}}
 ```
 
-Rust, çıktı için iki parametreden hangisine ihtiyacımız olduğunu kendiliğinden bilemez; bu yüzden bunu açıkça belirtmemiz gerekir. Derleyicinin yardım (`help`) metninin tüm parametreler ve çıktı türü için aynı ömür parametresini kullanmayı önerdiğine dikkat edin — ki bu bizim durumumuzda yanlıştır! Metnimizin tamamını barındıran parametre `icerik` olduğundan ve biz o metnin eşleşen bölümlerini döndürmek istediğimizden, ömür sözdizimiyle dönüş değerine bağlanması gereken tek parametrenin `icerik` olduğunu biliyoruz.
+Rust, çıktı için iki parametreden hangisine ihtiyacımız olduğunu kendiliğinden bilemez; bu yüzden bunu açıkça belirtmemiz gerekir. Derleyicinin yardım (`help`) metninin tüm parametreler ve çıktı türü için aynı ömür parametresini kullanmayı önerdiğine dikkat edin; oysa bu bizim durumumuzda yanlıştır! Metnimizin tamamını barındıran parametre `icerik` olduğundan ve biz o metnin eşleşen bölümlerini döndürmek istediğimizden, ömür sözdizimiyle dönüş değerine bağlanması gereken tek parametrenin `icerik` olduğunu biliyoruz.
 
 Diğer programlama dilleri fonksiyon imzasında argümanları dönüş değerlerine bağlamanızı gerektirmez, ancak bu pratik zamanla çok daha doğal gelecektir. Bu örneği Bölüm 10'daki [“Ömürlerle Referansları Doğrulama”][validating-references-with-lifetimes]<!-- ignore --> bölümünde yer alan örneklerle karşılaştırmak isteyebilirsiniz.
 
@@ -74,11 +74,11 @@ Diğer programlama dilleri fonksiyon imzasında argümanları dönüş değerler
 
 Şu anda testimiz her zaman boş bir vektör döndürdüğümüz için başarısız oluyor. Bunu düzeltmek ve `ara` fonksiyonunu uygulamak için programımızın şu adımları izlemesi gerekir:
 
-1. İçeriğin her satırı üzerinde yineleme yap.
-2. Satırın sorgu string'imizi barındırıp barındırmadığını kontrol et.
-3. Barındırıyorsa döndüreceğimiz değerler listesine ekle.
-4. Barındırmıyorsa hiçbir şey yapma.
-5. Eşleşen sonuçların listesini döndür.
+1. İçeriğin her satırı üzerinde yineleme yapmak.
+2. Satırın sorgu string'imizi barındırıp barındırmadığını kontrol etmek.
+3. Barındırıyorsa döndüreceğimiz değerler listesine eklemek.
+4. Barındırmıyorsa hiçbir şey yapmamak.
+5. Eşleşen sonuçların listesini döndürmek.
 
 Satırlar üzerinde yineleme yapmaktan başlayarak her adımı sırasıyla uygulayalım.
 
@@ -100,7 +100,7 @@ Rust, string'ler üzerinde satır satır gezinmeyi sağlamak için amacına uygu
 
 </Listing>
 
-`lines` metodu bir *iteratör (yineleyici)* döndürür. İteratörleri [Bölüm 13][ch13-iterators]<!-- ignore -->'te derinlemesine ele alacağız. Ancak iteratörü bu şekilde kullanmayı daha önce [Liste 3-5][ch3-iter]<!-- ignore -->'te gördüğünüzü hatırlayın: Orada bir koleksiyondaki her öğe üzerinde belirli bir kodu çalıştırmak için `for` döngüsünü bir iteratörle birlikte kullanmıştık.
+`lines` metodu bir iteratör döndürür. İteratörleri [Bölüm 13][ch13-iterators]<!-- ignore -->'te derinlemesine ele alacağız. Ancak iteratörü bu şekilde kullanmayı daha önce [Liste 3-5][ch3-iter]<!-- ignore -->'te gördüğünüzü hatırlayın: Orada bir koleksiyondaki her öğe üzerinde belirli bir kodu çalıştırmak için `for` döngüsünü bir iteratörle birlikte kullanmıştık.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="searching-each-line-for-the-query"></a>
@@ -163,7 +163,7 @@ Harika! Şimdi _bek_ gibi birden fazla satırla eşleşecek bir ifadeyi deneyeli
 {{#include ../listings/ch12-an-io-project/output-only-03-multiple-matches/output.txt}}
 ```
 
-Ve son olarak, şiirde hiçbir yerde geçmeyen bir kelimeyi — örneğin _monomorphization_ — aradığımızda hiçbir satır dönmediğinden emin olalım:
+Ve son olarak, şiirde hiçbir yerde geçmeyen bir kelimeyi —örneğin _monomorphization_— aradığımızda hiçbir satır dönmediğinden emin olalım:
 
 ```console
 {{#include ../listings/ch12-an-io-project/output-only-04-no-matches/output.txt}}
@@ -171,7 +171,7 @@ Ve son olarak, şiirde hiçbir yerde geçmeyen bir kelimeyi — örneğin _monom
 
 Mükemmel! Klasik bir aracın kendi mini sürümünü geliştirdik ve uygulamaların nasıl yapılandırılacağı konusunda pek çok şey öğrendik. Ayrıca dosya giriş ve çıkışı, ömürler, test yazımı ve komut satırı ayrıştırma konularında da deneyim kazandık.
 
-Bu projeyi tamamlamak için çevre değişkenleriyle nasıl çalışılacağını ve *standart hataya (standard error)* nasıl yazdırılacağını kısaca göstereceğiz; her ikisi de komut satırı programları yazarken oldukça faydalıdır.
+Bu projeyi tamamlamak için çevre değişkenleriyle nasıl çalışılacağını ve standart hataya (*standard error*) nasıl yazdırılacağını kısaca göstereceğiz; her ikisi de komut satırı programları yazarken oldukça faydalıdır.
 
 [validating-references-with-lifetimes]: ch10-03-omurler.html#ömürlerle-referansları-doğrulama
 [ch11-anatomy]: ch11-01-nasil-test-yazilir.html#test-fonksiyonlarını-yapılandırma

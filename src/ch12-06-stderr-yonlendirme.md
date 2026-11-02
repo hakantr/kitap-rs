@@ -78,7 +78,7 @@ Gelme, artık neye yarar?
 
 Bu sonuç, artık başarılı çıktılar için standart çıktıyı, hata mesajları içinse standart hatayı olması gerektiği gibi kullandığımızı gösterir.
 
-> Not: Unix türevi sistemlerde (Linux, macOS) ve modern Windows kabuklarında başlatılan her sürece otomatik olarak numaralandırılmış üç standart akış (*dosya tanıtıcısı / file descriptor*) atanır:
+> Not: Unix türevi sistemlerde (Linux, macOS) ve modern Windows kabuklarında başlatılan her sürece otomatik olarak numaralandırılmış üç standart akış (dosya tanıtıcısı, *file descriptor*) atanır:
 > - **`0` — `stdin` (standart girdi):** Klavyeden veya başka bir süreçten gelen veriyi okur (`std::io::stdin()`).
 > - **`1` — `stdout` (standart çıktı):** Programın ürettiği normal sonuçları taşır (`print!`, `println!`).
 > - **`2` — `stderr` (standart hata):** Hata, uyarı ve tanılama mesajlarını taşır (`eprint!`, `eprintln!`, `dbg!`).
@@ -93,6 +93,6 @@ Bu sonuç, artık başarılı çıktılar için standart çıktıyı, hata mesaj
 
 ## Özet
 
-Bu bölümde, şimdiye kadar öğrendiğiniz pek çok temel kavramı yeniden hatırladık ve Rust'ta yaygın G/Ç işlemlerinin nasıl gerçekleştirileceğini ele aldık. Komut satırı argümanlarını, dosyaları, çevre değişkenlerini ve hataları yazdırmak için `eprintln!` makrosunu kullanarak artık komut satırı uygulamaları geliştirmeye hazırsınız. Önceki bölümlerdeki kavramlarla bir araya getirdiğinizde kodunuz iyi organize edilmiş olacak, verileri uygun veri yapılarında verimli biçimde saklayacak, hataları zarifçe yönetecek ve iyi test edilmiş olacaktır.
+Bu bölümde, şimdiye kadar öğrendiğiniz pek çok temel kavramı yeniden hatırladık ve Rust'ta yaygın G/Ç işlemlerinin nasıl gerçekleştirileceğini ele aldık. Komut satırı argümanlarını, dosyaları, çevre değişkenlerini ve hata yazdırmaya yarayan `eprintln!` makrosunu kullanarak artık komut satırı uygulamaları geliştirmeye hazırsınız. Bunları önceki bölümlerdeki kavramlarla bir araya getirdiğinizde kodunuz iyi organize edilmiş ve iyi test edilmiş olacak; verileri uygun veri yapılarında verimli biçimde saklayıp hataları düzgünce yönetecektir.
 
 Bir sonraki bölümde fonksiyonel dillerden esinlenen bazı Rust özelliklerini inceleyeceğiz: kapanışlar ve iteratörler.

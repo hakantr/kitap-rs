@@ -54,8 +54,8 @@ kullanmaya çalıştığımızı belirterek hata verir:
 {{#include ../listings/ch19-patterns-and-matching/listing-19-08/output.txt}}
 ```
 
-`Some(x)` deseniyle her geçerli değeri kapsamadığımız (ve kapsayamazdık da!)
-için Rust haklı olarak bir derleyici hatası üretir.
+`Some(x)` deseniyle her geçerli değeri kapsamadığımız (ve zaten
+kapsayamayacağımız!) için Rust haklı olarak bir derleyici hatası üretir.
 
 Çürütülemez bir desenin gerektiği yerde elimizde çürütülebilir bir desen varsa,
 bunu deseni kullanan kodu değiştirerek düzeltebiliriz: `let` kullanmak yerine

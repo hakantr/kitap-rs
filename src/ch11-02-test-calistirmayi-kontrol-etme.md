@@ -11,7 +11,7 @@ Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretile
 > Not: Pratikte `--` ayırıcısının solundaki ve sağındaki seçenekler iki farklı katmanı kontrol eder:
 >
 > - **`--` öncesi (`cargo test` bayrakları)**: Cargo'nun _hangi test hedeflerini derleyip çalıştıracağını_ belirler. Örneğin `cargo test --lib` yalnızca kütüphane birim testlerini, `cargo test --test entegrasyon_testi` ise yalnızca belirtilen entegrasyon testi dosyasını derleyip çalıştırır (belgelendirme testlerini ve diğer hedefleri atlar).
-> - **`--` sonrası (test koşucusu bayrakları)**: Derlenen test ikilisinin _testleri yürütme ve çıktıyı raporlama biçimini_ değiştirir. Bu bölümde ele alacağımız `--test-threads`, `--show-output`, `--ignored` ve `--include-ignored` bayraklarının yanı sıra; standart çıktıyı hiç yakalamadan anlık olarak terminale yazdırmak için `--no-capture` (veya eski adıyla `--nocapture`) ya da alt dizgi araması yerine modül yolunu da içeren tam test adıyla eşleşme yapmak için `--exact` (`cargo test tests::yuz -- --exact` gibi) bayraklarını bu kısımda kullanabilirsiniz. İki katmanın bayraklarını aynı komutta birleştirmek de mümkündür: örneğin `cargo test --lib -- --show-output`.
+> - **`--` sonrası (test çalıştırıcısı bayrakları)**: Derlenen test ikilisinin _testleri yürütme ve çıktıyı raporlama biçimini_ değiştirir. Bu bölümde ele alacağımız `--test-threads`, `--show-output`, `--ignored` ve `--include-ignored` bayraklarının yanı sıra; standart çıktıyı hiç yakalamadan anlık olarak terminale yazdırmak için `--no-capture` (veya eski adıyla `--nocapture`) ya da alt dizgi araması yerine modül yolunu da içeren tam test adıyla eşleşme yapmak için `--exact` (`cargo test tests::yuz -- --exact` gibi) bayraklarını bu kısımda kullanabilirsiniz. İki katmanın bayraklarını aynı komutta birleştirmek de mümkündür: örneğin `cargo test --lib -- --show-output`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -20,7 +20,7 @@ Bazı komut satırı seçenekleri `cargo test` komutuna, bazıları ise üretile
 
 ### Testleri Paralel veya Ardışık Olarak Çalıştırma
 
-Birden fazla testi çalıştırdığınızda bunlar varsayılan olarak *thread'ler (iş parçacıkları)* aracılığıyla paralel biçimde çalışır; bu sayede testler daha kısa sürede tamamlanır ve çok daha hızlı geri bildirim alırsınız. Testler aynı anda çalıştığı için testlerinizin birbirine ya da paylaşılan herhangi bir duruma bağımlı olmadığından emin olmalısınız; geçerli çalışma dizini veya çevre değişkenleri gibi ortak bir ortam da bu paylaşılan duruma dahildir.
+Birden fazla testi çalıştırdığınızda bunlar varsayılan olarak thread'ler (*iş parçacıkları*) aracılığıyla paralel biçimde çalışır; bu sayede testler daha kısa sürede tamamlanır ve çok daha hızlı geri bildirim alırsınız. Testler aynı anda çalıştığı için testlerinizin birbirine ya da paylaşılan herhangi bir duruma bağımlı olmadığından emin olmalısınız; geçerli çalışma dizini veya çevre değişkenleri gibi ortak bir ortam da bu paylaşılan duruma dahildir.
 
 Örneğin testlerinizin her birinin diskte _test-ciktisi.txt_ adında bir dosya oluşturan ve bu dosyaya veri yazan bir kod çalıştırdığını düşünelim. Ardından her test bu dosyadaki veriyi okur ve dosyanın —her testte farklı olan— belirli bir değeri içerdiğini doğrular. Testler aynı anda çalıştığı için, bir test dosyaya yazma ile dosyayı okuma işlemleri arasındayken başka bir test aynı dosyanın üzerine yazabilir. Bu durumda ikinci test, kod hatalı olduğu için değil, paralel çalışan testler birbirinin işleyişine müdahale ettiği için başarısız olur. Çözümlerden biri her testin farklı bir dosyaya yazmasını sağlamaktır; diğer bir çözüm ise testleri teker teker çalıştırmaktır.
 
@@ -111,7 +111,7 @@ Yalnızca tek bir testi çalıştırmak için o test fonksiyonunun adını `carg
 
 Yalnızca `yuz` adlı test çalıştırıldı; diğer iki test bu isimle eşleşmedi. Test çıktısı, özet satırının sonunda `2 filtered out` (2 test filtrelendi) ifadesini göstererek çalıştırılmayan başka testlerimiz de olduğunu bize bildirir.
 
-Bu yöntemle birden fazla testin adını aynı anda belirleyemeyiz; `cargo test` komutuna verilen yalnızca ilk değer kullanılır. Ancak birden fazla testi çalıştırmanın bir yolu vardır.
+Bu yöntemle birden fazla testin adını aynı anda belirleyemeyiz; `cargo test` komutuna verilen değerlerden yalnızca ilki kullanılır. Ancak birden fazla testi çalıştırmanın bir yolu vardır.
 
 <!-- Old headings. Do not remove or links may break. -->
 

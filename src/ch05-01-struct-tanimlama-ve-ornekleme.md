@@ -4,7 +4,7 @@
 
 ## Struct Tanımlama ve Örnekleme
 
-Struct'lar, her ikisinin de birbiriyle ilişkili birden fazla değeri bir arada tutması bakımından ["Demet Türü"][tuples]<!-- ignore --> bölümünde ele aldığımız demetlere benzer. Tıpkı demetlerde olduğu gibi, bir struct'ın parçaları farklı türlerde olabilir. Ancak demetlerden farklı olarak struct içinde her bir veri parçasına bir ad verirsiniz; böylece değerlerin ne anlama geldiği açıkça anlaşılır. Bu isimlendirme sayesinde struct'lar demetlerden daha esnektir: Bir örneğin değerlerini belirtmek ya da onlara erişmek için verilerin sırasına bağımlı kalmazsınız.
+Struct'lar, birbiriyle ilişkili birden fazla değeri bir arada tutmaları bakımından ["Demet Türü"][tuples]<!-- ignore --> bölümünde ele aldığımız demetlere benzer. Tıpkı demetlerde olduğu gibi, bir struct'ın parçaları farklı türlerde olabilir. Ancak demetlerden farklı olarak struct içinde her bir veri parçasına bir ad verirsiniz; böylece değerlerin ne anlama geldiği açıkça anlaşılır. Bu isimlendirme sayesinde struct'lar demetlerden daha esnektir: Bir örneğin değerlerini belirtmek ya da onlara erişmek için verilerin sırasına bağımlı kalmazsınız.
 
 Bir struct tanımlamak için `struct` anahtar kelimesini yazar ve struct'ın tamamına bir ad veririz. Struct'ın adı, bir araya getirilen veri parçalarının ortak anlamını ifade etmelidir. Ardından süslü parantezler içinde, _alan (field)_ olarak adlandırdığımız veri parçalarının adlarını ve türlerini tanımlarız. Örneğin Liste 5-1, bir kullanıcı hesabına ait bilgileri tutan bir struct tanımını göstermektedir.
 
@@ -101,7 +101,7 @@ Struct güncelleme sözdizimini kullanarak, Liste 5-7'de gösterildiği gibi ayn
 
 </Listing>
 
-Liste 5-7'deki kod da `kullanici2` içinde `eposta` alanı farklı, ancak `kullanici_adi`, `aktif` ve `giris_sayisi` alanları `kullanici1` ile aynı değerlere sahip bir örnek oluşturur. Kalan tüm alanların değerlerini `kullanici1` içindeki karşılık gelen alanlardan alacağını belirtmek için `..kullanici1` ifadesi en sonda yer almalıdır; ancak struct tanımındaki alan sırasından bağımsız olarak istediğimiz sayıda alanı dilediğimiz sırada açıkça belirtebiliriz.
+Liste 5-7'deki kod da `kullanici2` içinde `eposta` alanı farklı, ancak `kullanici_adi`, `aktif` ve `giris_sayisi` alanları `kullanici1` ile aynı değerlere sahip bir örnek oluşturur. Kalan tüm alanların değerlerinin `kullanici1`'deki karşılık gelen alanlardan alınacağını belirtmek için `..kullanici1` en sonda yer almalıdır; ancak struct tanımındaki alan sırasından bağımsız olarak istediğimiz sayıda alana dilediğimiz sırada açıkça değer verebiliriz.
 
 Struct güncelleme sözdiziminin tıpkı bir atama işlemi gibi `=` kullandığına dikkat edin; bunun nedeni, verileri ["Değişkenlerin ve Verilerin Taşıma ile Etkileşimi"][move]<!-- ignore --> bölümünde gördüğümüz şekilde taşımasıdır. Bu örnekte `kullanici2` oluşturulduktan sonra artık `kullanici1` örneğini bir bütün olarak kullanamayız; çünkü `kullanici1`'in `kullanici_adi` alanındaki `String` değeri `kullanici2` içine taşınmıştır. Eğer `kullanici2`'ye hem `eposta` hem de `kullanici_adi` için yeni `String` değerleri verseydik ve böylece `kullanici1` içinden yalnızca `aktif` ile `giris_sayisi` alanlarını alsaydık, `kullanici2` oluşturulduktan sonra `kullanici1` tamamen geçerli kalmaya devam ederdi. Hem `aktif` hem de `giris_sayisi`, `Copy` trait'ini uygulayan türlerde olduğundan ["Yalnızca Yığındaki Veri: Copy"][copy]<!-- ignore --> bölümünde ele aldığımız kurallar devreye girerdi. Ayrıca mevcut örneğimizde `kullanici1.eposta` alanını hâlâ kullanabiliriz; çünkü bu alanın değeri `kullanici1` dışına taşınmamıştır.
 
@@ -114,7 +114,7 @@ Struct güncelleme sözdiziminin tıpkı bir atama işlemi gibi `=` kullandığ�
 
 ### Demet Struct'ları ile Farklı Türler Oluşturma
 
-Rust ayrıca demetlere benzeyen ve _demet struct'ları (tuple structs)_ olarak adlandırılan yapıları da destekler. Demet struct'ları, struct adının kazandırdığı ek anlama sahiptir; ancak alanlarının isimleri yoktur, yalnızca alan türleri belirtilir. Demet struct'ları, demetin tamamına bir ad vererek onu diğer demetlerden ayrı bir tür hâline getirmek istediğinizde ve her bir alanı normal bir struct'taki gibi isimlendirmenin gereksiz yere uzun ya da yinelemeli olacağı durumlarda kullanışlıdır.
+Rust ayrıca demetlere benzeyen ve _demet struct'ları (tuple structs)_ olarak adlandırılan struct'ları da destekler. Demet struct'ları, struct adının kazandırdığı ek anlama sahiptir; ancak alanlarının isimleri yoktur, yalnızca alan türleri belirtilir. Demet struct'ları, demetin tamamına bir ad vererek onu diğer demetlerden ayrı bir tür hâline getirmek istediğinizde ve her bir alanı normal bir struct'taki gibi isimlendirmenin gereksiz yere uzun ya da yinelemeli olacağı durumlarda kullanışlıdır.
 
 Bir demet struct'ı tanımlamak için `struct` anahtar kelimesiyle başlayıp struct adını yazar, ardından parantez içinde demetteki türleri belirtirsiniz. Örneğin aşağıda `Renk` ve `Nokta` adında iki demet struct'ı tanımlayıp kullanıyoruz:
 

@@ -50,7 +50,7 @@ Liste 5-9, programımızın demet kullanan yeni bir sürümünü göstermektedir
 
 Bir açıdan bu program daha iyidir. Demetler veriye biraz yapı kazandırmamızı sağlar ve artık fonksiyona yalnızca tek bir argüman geçiriyoruz. Ancak başka bir açıdan bu sürüm daha belirsizdir: Demetler elemanlarına ad vermez; bu yüzden demetin parçalarına indeks numarasıyla (`boyutlar.0`, `boyutlar.1`) erişmemiz gerekir, bu da yapılan hesaplamanın ne olduğunu ilk bakışta görmeyi zorlaştırır.
 
-Genişlik ile yüksekliği birbiriyle karıştırmak alan hesaplamasında sonucu değiştirmez, ancak dikdörtgeni ekrana çizmek isteseydik kesinlikle sorun yaratırdı! `genislik` değerinin `0` indeksinde, `yukseklik` değerinin ise `1` indeksinde tutulduğunu sürekli aklımızda tutmamız gerekirdi. Kodumuzu bir başkası kullanacak olsaydı bunu çözmesi ve aklında tutması daha da güçleşirdi. Verimizin anlamını koda yansıtmadığımız için hata yapmaya çok daha açık bir yapı ortaya çıkmıştır.
+Genişlik ile yüksekliği birbiriyle karıştırmak alan hesaplamasında sonucu değiştirmez, ancak dikdörtgeni ekrana çizmek isteseydik kesinlikle sorun yaratırdı! Genişlik değerinin `0` indeksinde, yükseklik değerinin ise `1` indeksinde yer aldığını sürekli aklımızda tutmamız gerekirdi. Kodumuzu bir başkası kullanacak olsaydı bunu çözmesi ve aklında tutması daha da güçleşirdi. Verimizin anlamını koda yansıtmadığımız için hata yapmaya çok daha açık bir yapı ortaya çıkmıştır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="refactoring-with-structs-adding-more-meaning"></a>
@@ -100,7 +100,7 @@ Bu kodu derlediğimizde şu temel mesajı içeren bir hata alırız (`Dikdortgen
 
 `println!` makrosu pek çok farklı biçimlendirme yapabilir ve süslü parantezler (`{}`) varsayılan olarak `println!` makrosuna, doğrudan son kullanıcıya yönelik çıktı üretmek için tasarlanmış `Display` adlı biçimlendirmeyi kullanmasını söyler. Şimdiye kadar gördüğümüz ilkel türler varsayılan olarak `Display` trait'ini uygular; çünkü `1` sayısını ya da başka herhangi bir ilkel türü kullanıcıya göstermenin tek bir doğal yolu vardır. Ancak struct'larda `println!` makrosunun çıktıyı nasıl biçimlendirmesi gerektiği net değildir, çünkü çok sayıda gösterim olasılığı bulunur: Alanlar arasında virgül olmalı mı, olmamalı mı? Süslü parantezler yazdırılmalı mı? Tüm alanlar gösterilmeli mi, yoksa bazıları gizlenmeli mi? Bu belirsizlik nedeniyle Rust ne istediğimizi tahmin etmeye çalışmaz ve struct'lar, `println!` ile `{}` yer tutucusuyla birlikte kullanılabilecek hazır bir `Display` uygulamasına sahip değildir.
 
-Hata çıktısını okumaya devam edersek derleyicinin şu yararlı yardım (`help`) ve not (`note`) satırlarını görürüz:
+Hata çıktısını okumaya devam edersek derleyicinin sunduğu şu yararlı yardım (`help`) ve not (`note`) mesajlarını görürüz:
 
 ```text
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-11/output.txt:9:14}}

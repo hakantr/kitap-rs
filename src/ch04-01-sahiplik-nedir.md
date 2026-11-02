@@ -122,7 +122,7 @@ Rust ise farklı bir yol izler: Bellek, kendisine sahip olan değişken kapsam d
 
 `String` değerimizin kullandığı belleği ayırıcıya iade edebileceğimiz doğal bir nokta vardır: `metin` değişkeni kapsam dışına çıktığı an. Bir değişken kapsam dışına çıktığında Rust bizim yerimize özel bir fonksiyon çağırır. `drop` adı verilen bu fonksiyon, `String` türünün yazarının belleği iade edecek kodu yerleştirdiği yerdir. Rust, kapanış süslü parantezinde `drop` fonksiyonunu otomatik olarak çağırır.
 
-> Not: C++ dilinde, bir öğenin yaşam süresinin sonunda kaynakları serbest bırakma kalıbına kimi zaman _Kaynak Edinimi İlklendirmedir (Resource Acquisition Is Initialization — RAII)_ adı verilir. Daha önce RAII kalıplarını kullandıysanız Rust'taki `drop` fonksiyonu size oldukça tanıdık gelecektir.
+> Not: C++ dilinde, bir öğenin ömrünün sonunda kaynakları serbest bırakma kalıbına kimi zaman _Kaynak Edinimi İlklendirmedir (Resource Acquisition Is Initialization — RAII)_ adı verilir. Daha önce RAII kalıplarını kullandıysanız Rust'taki `drop` fonksiyonu size oldukça tanıdık gelecektir.
 
 Bu kalıbın Rust kodunun yazılma biçimi üzerinde derin bir etkisi vardır. Şu an basit görünebilir; ancak öbekte ayırdığımız veriyi birden fazla değişkenin kullanmasını istediğimiz daha karmaşık durumlarda kodun davranışı beklenmedik gelebilir. Gelin şimdi bu durumları yakından inceleyelim.
 
@@ -192,7 +192,7 @@ Rust geçersiz kılınmış değişkeni kullanmanızı engellediği için şuna 
 {{#include ../listings/ch04-understanding-ownership/no-listing-04-cant-use-after-move/output.txt}}
 ```
 
-> Not: Derleyicinin ürettiği `error[E0382]: borrow of moved value: 'metin1'` (*taşınmış değerin ödünç alınması*) hatasını adım adım okumak oldukça öğreticidir: Derleyici önce `String` türünün `Copy` trait'ini uygulamadığını, bu yüzden `let metin2 = metin1;` satırında değerin `metin2`'ye taşındığını (`value moved here`) belirtir. Ardından `println!` makrosunun `metin1` değerini ekrana yazdırmak için ödünç almaya çalıştığı noktayı (`value borrowed here after move`) işaret eder. Ödünç alma (*borrowing*) kavramını bir sonraki bölümde ayrıntılı olarak inceleyeceğiz.
+> Not: Derleyicinin ürettiği `` error[E0382]: borrow of moved value: `metin1` `` (*taşınmış değerin ödünç alınması*) hatasını adım adım okumak oldukça öğreticidir: Derleyici önce `String` türünün `Copy` trait'ini uygulamadığını, bu yüzden `let metin2 = metin1;` satırında değerin `metin2`'ye taşındığını (`value moved here`) belirtir. Ardından `println!` makrosunun `metin1` değerini ekrana yazdırmak için ödünç almaya çalıştığı noktayı (`value borrowed here after move`) işaret eder. Ödünç alma (*borrowing*) kavramını bir sonraki bölümde ayrıntılı olarak inceleyeceğiz.
 
 Diğer programlama dilleriyle çalışırken _sığ kopya (shallow copy)_ ve _derin kopya (deep copy)_ terimlerini duyduysanız; öbekteki veriyi kopyalamadan yalnızca işaretçiyi, uzunluğu ve kapasiteyi kopyalama fikri kulağa sığ kopya yapmak gibi gelebilir. Ancak Rust aynı zamanda ilk değişkeni geçersiz kıldığı için bu işlem sığ kopya olarak değil, _taşıma (move)_ olarak adlandırılır. Bu örnekte `metin1`'in `metin2`'ye _taşındığını_ söyleriz. Dolayısıyla bellekte gerçekte olan durum Şekil 4-4'te gösterilmiştir.
 
@@ -256,13 +256,13 @@ Henüz değinmediğimiz bir ayrıntı daha var. Bir kısmını Liste 4-2'de gör
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-06-copy/src/main.rs:here}}
 ```
 
-Ancak bu kod az önce öğrendiklerimizle çelişiyor gibi görünmektedir: `clone` çağrısı yapmadığımız halde `x` hâlâ geçerlidir ve `y` içine taşınmamıştır.
+Ancak bu kod az önce öğrendiklerimizle çelişiyor gibi görünmektedir: `clone` çağrısı yapmadığımız hâlde `x` hâlâ geçerlidir ve `y` içine taşınmamıştır.
 
 Bunun nedeni, tam sayılar gibi derleme zamanında boyutu bilinen türlerin bütünüyle yığında saklanması ve dolayısıyla asıl değerlerin kopyasını oluşturmanın çok hızlı olmasıdır. Yani `y` değişkenini oluşturduktan sonra `x` değişkeninin geçerliliğini yitirmesini gerektirecek hiçbir neden yoktur. Başka bir deyişle, burada derin kopyalama ile sığ kopyalama arasında hiçbir fark bulunmaz; bu yüzden `clone` çağırmak olağan sığ kopyalamadan farklı bir iş yapmayacağı için ona gerek duymayız.
 
-Rust, tam sayılar gibi yığında saklanan türlere ekleyebileceğimiz `Copy` trait'i adında özel bir nitelik sunar (trait'leri [Bölüm 10][traits]<!-- ignore -->'da ayrıntılı olarak inceleyeceğiz). Bir tür `Copy` trait'ini uyguluyorsa onu kullanan değişkenler taşınmaz; bunun yerine önemsiz bir maliyetle kopyalanır ve başka bir değişkene atandıktan sonra da geçerli kalmaya devam eder.
+Rust, tam sayılar gibi yığında saklanan türlerin üzerine yerleştirebileceğimiz `Copy` adında özel bir trait sunar (trait'leri [Bölüm 10][traits]<!-- ignore -->'da ayrıntılı olarak inceleyeceğiz). Bir tür `Copy` trait'ini uyguluyorsa onu kullanan değişkenler taşınmaz; bunun yerine önemsiz bir maliyetle kopyalanır ve başka bir değişkene atandıktan sonra da geçerli kalmaya devam eder.
 
-Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` niteliği eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinize `Copy` trait'ini uygulamak için bu niteliği nasıl ekleyeceğinizi öğrenmek üzere Ek C'deki ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz.
+Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` trait'ini eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinizde bu trait'i uygulamak üzere ilgili türetme özniteliğini (`#[derive(Copy)]`) nasıl ekleyeceğinizi öğrenmek için Ek C'deki ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz.
 
 Peki hangi türler `Copy` trait'ini uygular? Emin olmak için ilgili türün dokümantasyonunu kontrol edebilirsiniz; ancak genel kural olarak basit skaler değerlerden oluşan her grup `Copy` uygulayabilirken, öbekte bellek ayırma gerektiren veya bir sistem kaynağını temsil eden hiçbir tür `Copy` uygulayamaz. `Copy` trait'ini uygulayan başlıca türler şunlardır:
 

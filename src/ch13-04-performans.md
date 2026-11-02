@@ -23,7 +23,7 @@ Daha kapsamlı bir kıyaslama için `icerik` olarak farklı boyutlarda çeşitli
 
 > Genel olarak C++ uygulamaları sıfır ek yük ilkesine uyar: Kullanmadığınız şeyin bedelini ödemezsiniz. Dahası, kullandığınız şeyi elle kodlayarak daha iyisini yazamazsınız.
 
-Pek çok durumda iteratör kullanan Rust kodu, elle yazacağınız assembly koduyla birebir aynı çıktıyı üretecek şekilde derlenir. *Döngü açma (loop unrolling)* ve dizi erişimlerindeki *sınır denetimini (bounds checking)* ortadan kaldırma gibi derleyici optimizasyonları devreye girerek ortaya çıkan kodu son derece verimli hale getirir. Artık bunu bildiğinize göre iteratörleri ve kapanışları hiçbir çekince duymadan kullanabilirsiniz! Kodu üst düzey ve okunaklı tutarken çalışma zamanında herhangi bir performans kaybına yol açmazlar.
+Pek çok durumda iteratör kullanan Rust kodu, elle yazacağınız assembly koduyla birebir aynı çıktıyı üretecek şekilde derlenir. *Döngü açma (loop unrolling)* ve dizi erişimlerindeki *sınır denetimini (bounds checking)* ortadan kaldırma gibi derleyici optimizasyonları devreye girerek ortaya çıkan kodu son derece verimli hâle getirir. Artık bunu bildiğinize göre iteratörleri ve kapanışları hiçbir çekince duymadan kullanabilirsiniz! Kodu üst düzey ve okunaklı tutarken çalışma zamanında herhangi bir performans kaybına yol açmazlar.
 
 > Not: Klasik indeksli `for i in 0..v.len() { ... v[i] ... }` döngülerine kıyasla iteratör zincirlerinin neden çoğu zaman en az onlar kadar hızlı — hatta bazen daha hızlı — çalıştığını ve performansı doğru ölçmenin inceliklerini şu iki noktada özetleyebiliriz:
 >
@@ -37,6 +37,6 @@ Pek çok durumda iteratör kullanan Rust kodu, elle yazacağınız assembly kodu
 
 ## Özet
 
-Kapanışlar ve iteratörler, fonksiyonel programlama dillerindeki fikirlerden esinlenen Rust özellikleridir. Bu özellikler, Rust'ın üst düzey fikirleri alt düzey kod performansıyla net bir biçimde ifade edebilme yeteneğine katkıda bulunur. Kapanışların ve iteratörlerin çalışma biçimi, çalışma zamanı performansını olumsuz etkilemeyecek şekilde tasarlanmıştır. Bu yaklaşım, Rust'ın sıfır maliyetli soyutlamalar sunma hedefinin önemli bir parçasıdır.
+Kapanışlar ve iteratörler, fonksiyonel programlama dillerindeki fikirlerden esinlenen Rust özellikleridir. Bu özellikler, Rust'ın üst düzey fikirleri alt düzey kod performansıyla net bir biçimde ifade edebilme yeteneğine katkıda bulunur. Kapanışların ve iteratörlerin uygulamaları, çalışma zamanı performansını olumsuz etkilemeyecek şekilde tasarlanmıştır. Bu yaklaşım, Rust'ın sıfır maliyetli soyutlamalar sunma hedefinin önemli bir parçasıdır.
 
 G/Ç projemizin ifade gücünü artırdığımıza göre, şimdi projeyi dünyayla paylaşmamıza yardımcı olacak bazı `cargo` özelliklerine bakalım.

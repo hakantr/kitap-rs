@@ -32,7 +32,7 @@ fn ilk_kelime(metin: &String) -> ?
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}
 ```
 
-Ardından `iter` metodunu kullanarak bu bayt dizisi üzerinde bir *iteratör (yineleyici)* oluştururuz:
+Ardından `iter` metodunu kullanarak bu bayt dizisi üzerinde bir *iteratör (iterator)* oluştururuz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:iter}}
@@ -136,7 +136,7 @@ Tüm bu bilgileri göz önünde bulundurarak `ilk_kelime` fonksiyonunu bir dilim
 
 </Listing>
 
-Kelimenin bitiş indeksini tıpkı Liste 4-7'de yaptığımız gibi ilk boşluk karakterini arayarak buluruz. Bir boşluk bulduğumuzda, başlangıç ve bitiş indeksleri olarak sırasıyla stringin başlangıcını ve boşluğun indeksini kullanarak bir string dilimi döndürürüz.
+Kelimenin bitiş indeksini tıpkı Liste 4-7'de yaptığımız gibi ilk boşluk karakterini arayarak buluruz. Bir boşluk bulduğumuzda, başlangıç ve bitiş indeksleri olarak sırasıyla stringin başlangıcını ve boşluğun indeksini kullanarak bir string dilimi döndürürüz; boşluk bulamazsak da `&metin[..]` ile stringin tamamını dilim olarak döndürürüz.
 
 Artık `ilk_kelime` fonksiyonunu çağırdığımızda, arka plandaki asıl veriye doğrudan bağlı tek bir değer elde ederiz. Bu değer, dilimin başlangıç noktasına yönelen bir referanstan ve dilimdeki eleman (bayt) sayısından oluşur.
 

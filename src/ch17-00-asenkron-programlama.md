@@ -19,12 +19,12 @@ noktaları ve nihai sonuçlar cinsinden ifade etmemizi sağlayan ve koordinasyon
 ayrıntılarını bizim yerimize üstlenen bir soyutlamadır.
 
 Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için _thread'leri (iş
-parçacıklarını)_ kullanarak öğrendiklerimizin üzerine kod yazmanın alternatif
-bir yolunu ekliyor: İşlemlerin nasıl asenkron olabileceğini ifade etmemizi
-sağlayan Rust'ın _future_'ları, _akışları (streams)_ ve `async` ile `await`
-sözdizimi; bunların yanı sıra _asenkron çalışma zamanlarını (asynchronous
-runtimes)_ —yani asenkron işlemlerin yürütülmesini yöneten ve koordine eden
-kodları— uygulayan üçüncü taraf crate'ler.
+parçacıklarını)_ kullanmamızın üzerine inşa edilerek kod yazmaya alternatif bir
+yaklaşım sunar: işlemlerin nasıl asenkron olabileceğini ifade etmemizi sağlayan
+Rust'ın _future_'ları, _akışları (streams)_, bunları destekleyen `async` ile
+`await` sözdizimi ve _asenkron çalışma zamanlarını (asynchronous runtimes)_
+—yani asenkron işlemlerin yürütülmesini yönetip koordine eden kodları— uygulayan
+üçüncü taraf crate'ler.
 
 Bir örnek ele alalım. Diyelim ki bir aile kutlamasından hazırladığınız videoyu
 dışa aktarıyorsunuz; bu işlem dakikalardan saatlere kadar uzayabilir. Video dışa
@@ -53,7 +53,7 @@ Video dışa aktarma, _CPU bağımlı (CPU-bound)_ veya _hesaplama bağımlı
 GPU içinde veri işleyebileceği azami hızla ve bu hızın ne kadarını söz konusu
 işleme ayırabildiğiyle sınırlıdır. Video indirme ise _G/Ç bağımlı (I/O-bound)_ bir
 işlem örneğidir; çünkü bilgisayarın _girdi ve çıktı_ hızıyla sınırlıdır ve
-yalnızca verinin ağ üzerinden gönderilebildiği hız kadar hızlı ilerleyebilir.
+yalnızca verinin ağ üzerinden gönderilebildiği hızda ilerleyebilir.
 
 Bu örneklerin her ikisinde de işletim sisteminin görünmez kesmeleri bir tür
 eşzamanlılık sağlar. Ne var ki bu eşzamanlılık yalnızca programın bütünü
@@ -78,7 +78,7 @@ ilerleyişini durdurur.
 
 Her dosyayı indirmek üzere ayrı bir thread başlatarak ana thread'imizi
 bloklamaktan kaçınabilirdik. Ancak bu thread'lerin tükettiği sistem
-kaynaklarının ek maliyeti bir noktadan sonra sorun haline gelirdi. Çağrının en
+kaynaklarının ek maliyeti bir noktadan sonra sorun hâline gelirdi. Çağrının en
 baştan hiç bloklamaması çok daha iyi olurdu: Bunun yerine programımızın
 tamamlamasını istediğimiz bir dizi _görev (task)_ tanımlayabilir, bunları
 çalıştırmak için en uygun sırayı ve yöntemi seçmeyi de çalışma zamanına
@@ -117,10 +117,9 @@ Bir kişinin, elindeki görevlerden herhangi biri tamamlanmadan önce birkaç fa
 görev üzerinde çalışması _eşzamanlılıktır_. Bu, bilgisayarınızda iki farklı
 projeyi hazır bulundurup bir projeden sıkıldığınızda ya da bir noktada
 takıldığınızda diğerine geçmenize benzer. Yalnızca tek bir kişisinizdir;
-dolayısıyla her iki görevde kelimenin tam
-anlamıyla aynı anda ilerleme kaydedemezsiniz, ancak aralarında geçiş yapıp her
-seferinde biri üzerinde ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil
-17-1).
+dolayısıyla her iki görevde kelimenin tam anlamıyla aynı anda ilerleme
+kaydedemezsiniz, ancak aralarında geçiş yapıp her seferinde biri üzerinde
+ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil 17-1).
 
 <figure>
 
@@ -154,19 +153,19 @@ gerçekleşebilir.
 
 <img src="img/trpl17-03.svg" class="center" alt="Üst üste yerleştirilmiş Task A (A Görevi) ve Task B (B Görevi) etiketli kutular ile içlerinde alt görevleri temsil eden eşkenar dörtgenlerin yer aldığı bir diyagram. Task A kutusunda oklar A1'den A2'ye, A2'den 'duraklat' simgesine benzeyen kalın dikey bir çift çizgiye ve bu simgeden A3'e işaret eder. Task B kutusunda ise oklar B1'den B2'ye, B2'den B3'e, B3'ten A3'e ve B3'ten B4'e işaret eder." />
 
-<figcaption>Şekil 17-3: A3 görevi B3 görevinin sonuçlarını bekleyerek bloklanana kadar A Görevi ve B Görevi üzerindeki çalışmaların bağımsız gerçekleştiği kısmen paralel bir iş akışı.</figcaption>
+<figcaption>Şekil 17-3: A3 görevi B3 görevinin sonuçlarını bekleyerek bloklanana kadar A Görevi ve B Görevi üzerindeki çalışmaların bağımsız gerçekleştiği kısmen paralel bir iş akışı</figcaption>
 
 </figure>
 
 Benzer şekilde, kendi görevlerinizden birinin yine kendi görevlerinizden bir
 diğerine bağımlı olduğunu fark edebilirsiniz. Artık sizin eşzamanlı çalışmanız
-da seri hale gelmiştir.
+da seri hâle gelmiştir.
 
 Paralellik ve eşzamanlılık birbiriyle kesişebilir de. Bir iş arkadaşınızın, siz
 görevlerinizden birini bitirene kadar takılıp kaldığını öğrenirseniz, muhtemelen
 iş arkadaşınızın “blokajını kaldırmak” (önünü açmak) için tüm çabanızı o göreve
 odaklarsınız. Artık iş arkadaşınızla paralel çalışamazsınız ve kendi
-görevleriniz üzerinde de eşzamanlı çalışamaz hale gelirsiniz.
+görevleriniz üzerinde de eşzamanlı çalışamaz hâle gelirsiniz.
 
 Aynı temel dinamikler yazılımda ve donanımda da devreye girer. Tek CPU
 çekirdekli bir makinede CPU her seferinde yalnızca tek bir işlem
@@ -183,8 +182,8 @@ işletim sistemine ve kullandığımız asenkron çalışma zamanına (asenkron 
 zamanlarına birazdan daha ayrıntılı değineceğiz) bağlı olarak, bu eşzamanlılık
 perde arkasında paralellikten de yararlanabilir.
 
-> Not: Rust'ın asenkron tasarım felsefesi, başka dillerden gelen geliştiriciler
-> için bilmekte büyük fayda olan iki temel mimari karara dayanır:
+> Not: Rust'ın asenkron tasarım felsefesi, başka dillerden gelen
+> geliştiricilerin bilmesinde büyük fayda olan iki temel mimari karara dayanır:
 >
 > - **Çalışma zamanının (*async runtime*) ekosisteme bırakılması:** Rust
 >   standart kütüphanesi yalnızca `std::future::Future` trait'ini ve
@@ -204,13 +203,12 @@ perde arkasında paralellikten de yararlanabilir.
 >   `Promise` veya C# dilindeki `Task` yapıları **heveslidir (*eager*)**; yani
 >   oluşturuldukları anda arka planda çalışmaya başlarlar. Rust'ta ise bir
 >   `async` fonksiyonu çağırmak tek başına hiçbir iş yürütmez; yalnızca
->   derleyicinin ürettiği **tembel (*lazy*) bir durum makinesi** olan ve ek öbek
->   (*heap*) ayırması gerektirmeden oluşturulabilen bir `Future` değeri
->   döndürür. Bir future, yoklanmadıkça (*poll*) —yani üzerinde `.await`
->   kullanılmadıkça ya da bir çalışma zamanına teslim edilmedikçe— hiçbir adım
->   ilerlemez. Bu tasarım, görevleri
->   başlatmadan önce birleştirmeyi ve bir future'ı düşürerek (*drop*) ek maliyet
->   olmaksızın anında iptal etmeyi mümkün kılar.
+>   derleyicinin ürettiği **tembel bir durum makinesi** olan ve ek öbek (*heap*)
+>   ayırması gerektirmeden oluşturulabilen bir `Future` değeri döndürür. Bir
+>   future, yoklanmadıkça (*poll*) —yani üzerinde `.await` kullanılmadıkça ya da
+>   bir çalışma zamanına teslim edilmedikçe— hiçbir adım ilerlemez. Bu tasarım,
+>   görevleri başlatmadan önce birleştirmeyi ve bir future'ı düşürerek (*drop*)
+>   ek maliyet olmaksızın anında iptal etmeyi mümkün kılar.
 
 Şimdi, Rust'ta asenkron programlamanın gerçekte nasıl çalıştığına derinlemesine
 bakalım.

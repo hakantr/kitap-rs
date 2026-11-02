@@ -77,9 +77,9 @@ Bu kod pek çok bilgi içeriyor; gelin satır satır üzerinden geçelim. Kullan
 {{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-01/src/main.rs:io}}
 ```
 
-Rust, varsayılan olarak standart kütüphanede tanımlanmış belirli bir öğe kümesini her programın kapsamına otomatik olarak dahil eder. Bu kümeye _prelude_ (ön tanımlı kapsam) adı verilir ve içindeki her şeyi [standart kütüphane dokümantasyonunda][prelude] görebilirsiniz.
+Rust, varsayılan olarak standart kütüphanede tanımlanmış belirli bir öğe kümesini her programın kapsamına otomatik olarak dahil eder. Bu kümeye _prelude_ (ön tanımlı kapsam) adı verilir ve içindeki her şeyi [standart kütüphane belgelerinde][prelude] görebilirsiniz.
 
-Kullanmak istediğiniz bir tür prelude içinde yer almıyorsa, o türü bir `use` deyimiyle açıkça kapsama dahil etmeniz gerekir. `std::io` kütüphanesini kullanmak, kullanıcı girdisini kabul etme olanağı da dahil olmak üzere pek çok yararlı özellik sunar.
+Kullanmak istediğiniz bir tür prelude içinde yer almıyorsa o türü bir `use` deyimiyle açıkça kapsama dahil etmeniz gerekir. `std::io` kütüphanesini kullanmak, kullanıcı girdisini kabul etme olanağı da dahil olmak üzere pek çok yararlı özellik sunar.
 
 Bölüm 1'de gördüğünüz gibi `main` fonksiyonu programın giriş noktasıdır:
 
@@ -122,9 +122,9 @@ let mut muzlar = 5; // değiştirilebilir
 
 > Not: `//` sözdizimi, satır sonuna kadar devam eden bir yorum başlatır. Rust yorumların içindeki her şeyi yok sayar. Yorumları [Bölüm 3][comments]<!-- ignore -->'te daha ayrıntılı olarak ele alacağız.
 
-Tahmin oyunu programına dönecek olursak, artık `let mut tahmin` ifadesinin `tahmin` adında değiştirilebilir bir değişken tanımlayacağını biliyorsunuz. Eşittir işareti (`=`), Rust'a değişkene şimdi bir değer bağlamak istediğimizi söyler. Eşittir işaretinin sağında `tahmin` değişkeninin bağlandığı değer yer alır; bu değer, yeni bir `String` örneği döndüren `String::new` fonksiyonunun çağrılmasıyla elde edilir. [`String`][string]<!-- ignore -->, standart kütüphane tarafından sağlanan, büyüyebilen ve UTF-8 kodlamalı bir metin türüdür.
+Tahmin oyunu programına dönecek olursak artık `let mut tahmin` kısmının `tahmin` adında değiştirilebilir bir değişken tanımlayacağını biliyorsunuz. Eşittir işareti (`=`), Rust'a değişkene şimdi bir değer bağlamak istediğimizi söyler. Eşittir işaretinin sağında `tahmin` değişkeninin bağlandığı değer yer alır; bu değer, yeni bir `String` örneği döndüren `String::new` fonksiyonunun çağrılmasıyla elde edilir. [`String`][string]<!-- ignore -->, standart kütüphane tarafından sağlanan, büyüyebilen ve UTF-8 kodlamalı bir metin türüdür.
 
-`::new` ifadesindeki `::` sözdizimi, `new` fonksiyonunun `String` türüne ait bir ilişkili fonksiyon olduğunu gösterir. Bir _ilişkili fonksiyon_, belirli bir tür (bu örnekte `String`) üzerinde tanımlanmış fonksiyondur. Bu `new` fonksiyonu yeni ve boş bir string oluşturur. Pek çok tür üzerinde bir `new` fonksiyonuyla karşılaşırsınız; çünkü `new`, herhangi bir türden yeni bir değer üreten fonksiyonlar için yaygın kullanılan standart bir isimdir.
+`::new` yazımındaki `::` sözdizimi, `new` fonksiyonunun `String` türüne ait bir ilişkili fonksiyon olduğunu gösterir. Bir _ilişkili fonksiyon_, belirli bir tür (bu örnekte `String`) üzerinde tanımlanmış fonksiyondur. Bu `new` fonksiyonu yeni ve boş bir string oluşturur. Pek çok tür üzerinde bir `new` fonksiyonuyla karşılaşırsınız; çünkü `new`, herhangi bir türden yeni bir değer üreten fonksiyonlar için yaygın bir isimdir.
 
 Özetle `let mut tahmin = String::new();` satırı, şu an yeni ve boş bir `String` örneğine bağlı olan değiştirilebilir bir değişken oluşturmuştur. Vay canına!
 
@@ -171,7 +171,7 @@ Daha önce belirttiğimiz gibi `read_line`, kullanıcının yazdığı metni ken
 
 `Result` türünün varyantları `Ok` ve `Err`'dir. `Ok` varyantı işlemin başarılı olduğunu belirtir ve başarıyla üretilen değeri içinde taşır. `Err` varyantı ise işlemin başarısız olduğu anlamına gelir ve işlemin nasıl ya da neden başarısız olduğuna dair bilgiyi barındırır.
 
-Her türdeki değer gibi `Result` türündeki değerlerin de üzerlerinde tanımlanmış metotları vardır. Bir `Result` örneği, çağırabileceğiniz bir [`expect` metoduna][expect]<!-- ignore --> sahiptir. Eğer bu `Result` örneği bir `Err` değeriyse, `expect` programın çökmesine (*panic*) neden olur ve `expect`'e argüman olarak verdiğiniz mesajı ekrana yazdırır. `read_line` metodunun bir `Err` döndürmesi büyük olasılıkla altta yatan işletim sisteminden kaynaklanan bir girdi/çıktı hatasının sonucu olacaktır. Öte yandan bu `Result` örneği bir `Ok` değeriyse, `expect` metodu `Ok` içinde tutulan dönüş değerini çıkarır ve doğrudan kullanabilmeniz için size döndürür. Bu örnekte söz konusu değer, kullanıcının girdisindeki bayt sayısıdır (UTF-8 kodlamasında ASCII karakterler ve satır sonu 1 bayt, `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi Türkçe harfler ise 2 bayt yer kaplar).
+Diğer türlerdeki değerler gibi `Result` türündeki değerlerin de üzerlerinde tanımlanmış metotları vardır. Bir `Result` örneği, çağırabileceğiniz bir [`expect` metoduna][expect]<!-- ignore --> sahiptir. Eğer bu `Result` örneği bir `Err` değeriyse `expect` programın çökmesine (*panic*) neden olur ve `expect`'e argüman olarak verdiğiniz mesajı ekrana yazdırır. `read_line` metodunun bir `Err` döndürmesi büyük olasılıkla altta yatan işletim sisteminden kaynaklanan bir girdi/çıktı hatasının sonucu olacaktır. Öte yandan bu `Result` örneği bir `Ok` değeriyse `expect` metodu `Ok` içinde tutulan dönüş değerini çıkarır ve doğrudan kullanabilmeniz için size döndürür. Bu örnekte söz konusu değer, kullanıcının girdisindeki bayt sayısıdır (UTF-8 kodlamasında her bir ASCII karakteri 1 bayt, `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi Türkçe harfler ise ikişer bayt yer kaplar).
 
 Eğer `expect` metodunu çağırmazsanız program yine derlenir, ancak derleyiciden bir uyarı alırsınız:
 
@@ -244,7 +244,7 @@ Sırada, kullanıcının tahmin etmeye çalışacağı gizli bir sayı üretmek 
 
 ### Bir Crate ile İşlevselliği Artırmak
 
-Bir crate'in, Rust kaynak kodu dosyalarından oluşan bir bütün olduğunu hatırlayın. Şimdiye kadar geliştirdiğimiz proje çalıştırılabilir bir dosya üreten bir *ikili crate (binary crate)*'tir. `rand` crate'i ise başka programlarda kullanılmak üzere tasarlanmış kodlar içeren ve tek başına çalıştırılamayan bir *kütüphane crate'i (library crate)*'dir.
+Bir crate'in, Rust kaynak kodu dosyalarından oluşan bir bütün olduğunu hatırlayın. Şimdiye kadar geliştirdiğimiz proje, çalıştırılabilir bir dosya üreten bir *ikili crate*'tir (*binary crate*). `rand` crate'i ise başka programlarda kullanılmak üzere tasarlanmış kodlar içeren ve tek başına çalıştırılamayan bir *kütüphane crate'idir* (*library crate*).
 
 Harici crate'lerin yönetimi, Cargo'nun gerçekten parladığı alandır. `rand` kullanan kodu yazmadan önce _Cargo.toml_ dosyasını düzenleyip `rand` crate'ini bir *bağımlılık (dependency)* olarak eklememiz gerekir. Şimdi _Cargo.toml_ dosyasını açın ve Cargo'nun sizin için oluşturduğu `[dependencies]` bölüm başlığının altına aşağıdaki satırı ekleyin. `rand` paketini burada verdiğimiz sürüm numarasıyla birebir aynı şekilde belirttiğinizden emin olun; aksi takdirde bu bölümdeki kod örnekleri çalışmayabilir:
 
@@ -266,7 +266,7 @@ _Cargo.toml_ dosyasında bir başlıktan sonra gelen her satır, yeni bir bölü
 
 Cargo bu aralıktaki sürümlerin `0.10.1` sürümüyle uyumlu genel API'lere sahip olduğunu kabul eder; bu tanım sayesinde bu bölümdeki kodla sorunsuz derlenmeye devam edecek en güncel yama sürümünü (*patch release*) almanız sağlanır. `0.11.0` veya üzerindeki sürümlerin ise aşağıdaki örneklerin kullandığı API ile aynı kalacağı garanti edilmez.
 
-Şimdi kodda hiçbir değişiklik yapmadan, Liste 2-2'de gösterildiği gibi projeyi derleyelim.
+Şimdi kodda hiçbir değişiklik yapmadan Liste 2-2'de gösterildiği gibi projeyi derleyelim.
 
 <!-- manual-regeneration
 cd listings/ch02-guessing-game-tutorial/listing-02-02/
@@ -296,7 +296,7 @@ $ cargo build
 
 </Listing>
 
-Sizde farklı sürüm numaraları (ancak SemVer sayesinde hepsi kodla uyumlu olacaktır!), işletim sisteminize bağlı olarak farklı paket satırları görebilirsiniz ve bu satırların sırası farklı olabilir.
+Kendi ekranınızda farklı sürüm numaraları (ancak SemVer sayesinde hepsi bu kodla uyumlu olacaktır!) ve işletim sisteminize bağlı olarak farklı satırlar görebilirsiniz; ayrıca bu satırların sırası da değişebilir.
 
 Harici bir bağımlılık eklediğimizde Cargo, o bağımlılığın ihtiyaç duyduğu tüm paketlerin uyumlu en son sürümlerini [Crates.io][cratesio] verilerinin bir kopyası olan *kayıt dizininden (registry)* çeker. Crates.io, Rust ekosistemindeki geliştiricilerin açık kaynaklı Rust projelerini başkalarının da kullanabilmesi için yayınladıkları merkezdir.
 
@@ -374,11 +374,11 @@ Bir sonraki `cargo build` çalıştırışınızda Cargo, mevcut crate kayıt di
 
 </Listing>
 
-İlk olarak `use rand::prelude::*;` satırını ekliyoruz. `prelude` modülü, `rand` crate'inin en sık kullanılan öğelerini içerir ve `use` deyimi bu öğeleri programımızın kapsamında doğrudan kullanılabilir hâle getirir.
+İlk olarak `use rand::prelude::*;` satırını ekliyoruz. `prelude` modülü, `rand` crate'inin en sık kullanılan öğelerini içerir; sondaki `*` işaretiyle birlikte bu `use` deyimi, modüldeki tüm öğeleri programımızın kapsamında doğrudan kullanılabilir hâle getirir.
 
-Ardından ortaya iki yeni satır ekliyoruz. İlk satırda, kullanacağımız rastgele sayı üretecini bize veren `rand::rng` fonksiyonunu çağırıyoruz: Bu üreteç, çalışmakta olan mevcut iş parçacığına (*thread*) özeldir ve işletim sistemi tarafından tohumlanır (*seeded*). Sonrasında bu rastgele sayı üreteci üzerinde `random_range` metodunu çağırıyoruz. Bu metot, `use rand::prelude::*;` deyimiyle kapsama dahil ettiğimiz `rand::prelude` modülünün bir parçası olan `RngExt` trait'i tarafından tanımlanmıştır (trait kavramını Bölüm 10'da ayrıntılı olarak inceleyeceğiz). `random_range` metodu argüman olarak bir aralık ifadesi (*range expression*) alır ve bu aralıkta rastgele bir sayı üretir. Burada kullandığımız aralık ifadesi `baslangic..=bitis` biçimindedir ve hem alt hem de üst sınırı aralığa dahil eder; dolayısıyla 1 ile 100 arasında bir sayı istemek için `1..=100` yazmamız gerekir.
+Ardından ortaya iki yeni satır ekliyoruz. İlk satırda, kullanacağımız rastgele sayı üretecini bize veren `rand::rng` fonksiyonunu çağırıyoruz: Bu üreteç, çalışmakta olan mevcut thread'e (*iş parçacığına*) özeldir ve işletim sistemi tarafından tohumlanır (*seeded*). Sonrasında bu rastgele sayı üreteci üzerinde `random_range` metodunu çağırıyoruz. Bu metot, `use rand::prelude::*;` deyimiyle kapsama dahil ettiğimiz `RngExt` trait'i tarafından tanımlanmıştır. `RngExt` trait'i rastgele sayı üreteçlerinin uyguladığı metotları tanımlar ve bu metotları çağırabilmemiz için söz konusu trait'in kapsamda bulunması gerekir. Trait kavramını Bölüm 10'da ayrıntılı olarak inceleyeceğiz. `random_range` metodu argüman olarak bir aralık ifadesi (*range expression*) alır ve bu aralıkta rastgele bir sayı üretir. Burada kullandığımız aralık ifadesi `baslangic..=bitis` biçimindedir ve hem alt hem de üst sınırı aralığa dahil eder; dolayısıyla 1 ile 100 arasında bir sayı istemek için `1..=100` yazmamız gerekir.
 
-> Not: Bir crate'ten neleri kapsama dahil edeceğinizi ve hangi metot ya da fonksiyonları çağıracağınızı ezbere bilemezsiniz; bu nedenle her crate nasıl kullanılacağını açıklayan kendi dokümantasyonuna sahiptir. Cargo'nun çok kullanışlı bir diğer özelliği de `cargo doc --open` komutudur: Bu komut, projenizdeki tüm bağımlılıkların dokümantasyonunu yerel olarak derler ve tarayıcınızda açar. Örneğin `rand` crate'indeki diğer işlevleri merak ediyorsanız `cargo doc --open` komutunu çalıştırıp sol kenar çubuğundan `rand`'a tıklayabilirsiniz.
+> Not: Bir crate'ten neleri kapsama dahil edeceğinizi ve hangi metot ya da fonksiyonları çağıracağınızı ezbere bilemezsiniz; bu nedenle her crate nasıl kullanılacağını açıklayan kendi belgelerine sahiptir. Cargo'nun çok kullanışlı bir diğer özelliği de `cargo doc --open` komutudur: Bu komut, projenizdeki tüm bağımlılıkların belgelerini yerel olarak derler ve tarayıcınızda açar. Örneğin `rand` crate'indeki diğer işlevleri merak ediyorsanız `cargo doc --open` komutunu çalıştırıp sol kenar çubuğundan `rand`'e tıklayabilirsiniz.
 
 Eklediğimiz ikinci satır gizli sayıyı ekrana yazdırır. Programı geliştirirken test edebilmek açısından bu oldukça faydalıdır, ancak son sürümde bu satırı sileceğiz. Program başlar başlamaz doğru cevabı söylerse pek de bir tahmin oyunu sayılmaz!
 
@@ -456,7 +456,7 @@ Hata mesajının özü *uyumsuz türler (`mismatched types`)* bulunduğunu bildi
 
 > Not: Derleyici çıktısındaki `expected &String, found &{integer}` (*`&String` referansı beklenirken `&{integer}` tam sayı referansı bulundu*) ifadesine dikkat edin. `cmp` metodunu `String` türündeki `tahmin` değişkeni üzerinde çağırdığımız için (`tahmin.cmp(&gizli_sayi)`), derleyici argümanın da aynı türden (`&String`) olmasını bekler ve `&gizli_sayi` tam sayı referansı geldiğinde tür uyuşmazlığı hatası verir.
 
-Sonuç olarak, programın girdi olarak okuduğu `String` değerini bir sayı türüne dönüştürmek istiyoruz ki gizli sayıyla sayısal olarak karşılaştırabilelim. Bunu `main` fonksiyonunun gövdesine şu satırı ekleyerek yapıyoruz:
+Sonuç olarak programın girdi olarak okuduğu `String` değerini bir sayı türüne dönüştürmek istiyoruz ki gizli sayıyla sayısal olarak karşılaştırabilelim. Bunu `main` fonksiyonunun gövdesine şu satırı ekleyerek yapıyoruz:
 
 <span class="filename">Dosya adı: src/main.rs</span>
 
@@ -470,15 +470,15 @@ Eklediğimiz satır şudur:
 let tahmin: u32 = tahmin.trim().parse().expect("Lütfen bir sayı yazın!");
 ```
 
-Burada yine `tahmin` adında bir değişken oluşturuyoruz. İyi ama programda zaten `tahmin` adında bir değişken yok muydu? Evet, var; ancak Rust önceki `tahmin` değerini yenisiyle *gölgelememize (shadowing)* olanak tanır. _Gölgeleme_, bizi `tahmin_str` ve `tahmin` gibi iki ayrı değişken adı uydurmaya zorlamak yerine aynı `tahmin` adını yeniden kullanmamızı sağlar. Bu özelliği [Bölüm 3][shadowing]<!-- ignore -->'te daha ayrıntılı ele alacağız; şimdilik gölgelemenin en sık bir değeri bir türden başka bir türe dönüştürürken kullanıldığını bilmeniz yeterlidir.
+Burada yine `tahmin` adında bir değişken oluşturuyoruz. İyi ama programda zaten `tahmin` adında bir değişken yok muydu? Evet, var; ancak Rust önceki `tahmin` değerini yenisiyle *gölgelememize (shadowing)* olanak tanır. _Gölgeleme_, bizi `tahmin_str` ve `tahmin` gibi iki ayrı değişken oluşturmaya zorlamak yerine aynı `tahmin` adını yeniden kullanmamızı sağlar. Bu özelliği [Bölüm 3][shadowing]<!-- ignore -->'te daha ayrıntılı ele alacağız; şimdilik gölgelemenin en sık bir değeri bir türden başka bir türe dönüştürürken kullanıldığını bilmeniz yeterlidir.
 
-Bu yeni değişkeni `tahmin.trim().parse()` ifadesine bağlıyoruz. Eşittirin sağındaki ifadede geçen `tahmin`, kullanıcı girdisini metin olarak tutan ilk `tahmin` değişkenini ifade eder. Bir `String` örneği üzerindeki `trim` metodu, metnin başındaki ve sonundaki tüm boşluk karakterlerini temizler. Yalnızca sayısal veri tutabilen `u32` türüne dönüştürme yapmadan önce bu adımı mutlaka uygulamamız gerekir; çünkü kullanıcının `read_line` çağrısını tamamlayıp tahminini göndermek için <kbd>enter</kbd> tuşuna basması gerekir ve bu da string'in sonuna bir satır sonu karakteri ekler. Örneğin kullanıcı <kbd>5</kbd> yazıp <kbd>enter</kbd>'a bastığında `tahmin` gerçekte şöyle görünür: `5\n`. Buradaki `\n` "yeni satır" (*newline*) karakterini temsil eder. (Windows'ta <kbd>enter</kbd> tuşuna basmak satır başı ve yeni satır anlamına gelen `\r\n` dizisini ekler.) `trim` metodu `\n` veya `\r\n` karakterlerini (ve varsa fazladan boşlukları) temizleyerek geriye yalnızca `5` kalmasını sağlar.
+Bu yeni değişkeni `tahmin.trim().parse()` ifadesine bağlıyoruz. Eşittirin sağındaki ifadede geçen `tahmin`, kullanıcı girdisini metin olarak tutan ilk `tahmin` değişkenini temsil eder. Bir `String` örneği üzerindeki `trim` metodu, metnin başındaki ve sonundaki tüm boşluk karakterlerini temizler. Yalnızca sayısal veri tutabilen `u32` türüne dönüştürme yapmadan önce bu adımı mutlaka uygulamamız gerekir; çünkü kullanıcının `read_line` çağrısını tamamlayıp tahminini göndermek için <kbd>enter</kbd> tuşuna basması gerekir ve bu da string'in sonuna bir satır sonu karakteri ekler. Örneğin kullanıcı <kbd>5</kbd> yazıp <kbd>enter</kbd>'a bastığında `tahmin` gerçekte şöyle görünür: `5\n`. Buradaki `\n` "yeni satır" (*newline*) karakterini temsil eder. (Windows'ta <kbd>enter</kbd> tuşuna basmak satır başı ve yeni satır anlamına gelen `\r\n` dizisini ekler.) `trim` metodu `\n` veya `\r\n` karakterlerini (ve varsa fazladan boşlukları) temizleyerek geriye yalnızca `5` kalmasını sağlar.
 
 String'ler üzerindeki [`parse` metodu][parse]<!-- ignore -->, bir metni başka bir türe dönüştürür. Burada onu bir metni sayıya çevirmek için kullanıyoruz. `parse` pek çok farklı sayı türü üretebildiğinden, `let tahmin: u32` yazarak Rust'a tam olarak hangi sayı türünü istediğimizi bildirmemiz gerekir. `tahmin` adından sonraki iki nokta üst üste (`:`), değişkenin türünü açıkça belirteceğimizi (*type annotation*) söyler. Rust'ta çeşitli yerleşik tam sayı türleri vardır; burada gördüğünüz `u32`, işaretsiz ve 32 bitlik bir tam sayıdır. Küçük pozitif sayılar için iyi bir varsayılan tercihtir. Diğer sayı türlerini [Bölüm 3][integers]<!-- ignore -->'te öğreneceksiniz.
 
 Üstelik bu programda `tahmin` için yaptığımız `u32` tür bildirimi ve aşağıda `gizli_sayi` ile yapılan karşılaştırma sayesinde Rust, `gizli_sayi` değişkeninin de bir `u32` olması gerektiği çıkarımını otomatik olarak yapar. Böylece karşılaştırma artık aynı türden iki değer arasında gerçekleşir!
 
-`parse` metodu yalnızca mantıksal olarak sayıya dönüştürülebilecek karakterler üzerinde çalışabilir ve bu yüzden kolayca hatayla karşılaşabilir. Örneğin string içinde `A👍%` yazıyor olsaydı bunu bir sayıya çevirmenin hiçbir yolu olmazdı. Başarısız olma ihtimali bulunduğundan `parse` metodu da tıpkı `read_line` metodu gibi (daha önce ["Potansiyel Bir Hatayı `Result` ile Ele Almak"](#potansiyel-bir-hatayı-result-ile-ele-almak)<!-- ignore --> kısmında incelediğimiz üzere) bir `Result` türü döndürür. Bu `Result` değerini de yine `expect` metodunu kullanarak aynı şekilde ele alacağız. Eğer `parse` metodu verilen metinden bir sayı üretemediği için `Err` varyantı döndürürse, `expect` çağrısı oyunu durdurup verdiğimiz hata mesajını ekrana yazdıracaktır. Eğer `parse` metni başarıyla sayıya dönüştürürse `Result`'ın `Ok` varyantını döndürür ve `expect` de `Ok` içindeki sayıyı çıkarıp bize verir.
+`parse` metodu yalnızca mantıksal olarak sayıya dönüştürülebilecek karakterler üzerinde çalışabilir ve bu yüzden kolayca hatayla karşılaşabilir. Örneğin string içinde `A👍%` yazıyor olsaydı bunu bir sayıya çevirmenin hiçbir yolu olmazdı. Başarısız olma ihtimali bulunduğundan `parse` metodu da tıpkı `read_line` metodu gibi (daha önce ["Potansiyel Bir Hatayı `Result` ile Ele Almak"](#potansiyel-bir-hatayı-result-ile-ele-almak)<!-- ignore --> kısmında incelediğimiz üzere) bir `Result` türü döndürür. Bu `Result` değerini de yine `expect` metodunu kullanarak aynı şekilde ele alacağız. Eğer `parse` metodu verilen metinden bir sayı üretemediği için `Err` varyantı döndürürse `expect` çağrısı oyunu durdurup verdiğimiz hata mesajını ekrana yazdıracaktır. Eğer `parse` metni başarıyla sayıya dönüştürürse `Result`'ın `Ok` varyantını döndürür ve `expect` de `Ok` içindeki sayıyı çıkarıp bize verir.
 
 Şimdi programı çalıştıralım:
 
@@ -591,9 +591,9 @@ Oyunun davranışını biraz daha iyileştirmek için, kullanıcı sayı olmayan
 
 Hata anında programı çökertmekten hatayı gerçekten ele almaya geçmek için `expect` çağrısını bir `match` ifadesiyle değiştiriyoruz. `parse` metodunun bir `Result` türü döndürdüğünü ve `Result`'ın `Ok` ile `Err` varyantlarına sahip bir enum olduğunu hatırlayın. Burada, tıpkı `cmp` metodunun döndürdüğü `Ordering` sonucunda yaptığımız gibi bir `match` ifadesi kullanıyoruz.
 
-Eğer `parse` metni başarıyla bir sayıya dönüştürebilirse, elde edilen sayıyı içeren bir `Ok` değeri döndürür. Bu `Ok` değeri ilk kolun `Ok(sayi)` deseniyle eşleşir ve `match` ifadesi `parse`'ın üretip `Ok` içine koyduğu `sayi` değerini dışarı döndürür. Bu sayı da oluşturduğumuz yeni `tahmin` değişkenine tam istediğimiz şekilde atanır.
+Eğer `parse` metni başarıyla bir sayıya dönüştürebilirse elde edilen sayıyı içeren bir `Ok` değeri döndürür. Bu `Ok` değeri ilk kolun `Ok(sayi)` deseniyle eşleşir ve `match` ifadesi `parse`'ın üretip `Ok` içine koyduğu `sayi` değerini dışarı döndürür. Bu sayı da oluşturduğumuz yeni `tahmin` değişkenine tam istediğimiz şekilde atanır.
 
-Eğer `parse` metni bir sayıya _dönüştüremezse_, hata hakkında ek bilgi taşıyan bir `Err` değeri döndürür. `Err` değeri ilk `match` kolundaki `Ok(sayi)` deseniyle eşleşmez, ancak ikinci koldaki `Err(_)` deseniyle eşleşir. Alt çizgi (`_`) her değeri yakalayan (*catch-all*) bir joker desendir; bu örnekte içinde hangi hata bilgisi bulunursa bulunsun tüm `Err` değerleriyle eşleşmek istediğimizi belirtiyoruz. Böylece program ikinci kolun kodu olan `continue` ifadesini çalıştırır; bu da programa `loop` döngüsünün bir sonraki adımına geçip kullanıcıdan yeniden tahmin istemesini söyler. Kısacası program, `parse` sırasında oluşabilecek tüm hataları zarifçe yok saymış olur!
+Eğer `parse` metni bir sayıya _dönüştüremezse_ hata hakkında ek bilgi taşıyan bir `Err` değeri döndürür. `Err` değeri ilk `match` kolundaki `Ok(sayi)` deseniyle eşleşmez, ancak ikinci koldaki `Err(_)` deseniyle eşleşir. Alt çizgi (`_`) her değeri yakalayan (*catch-all*) bir joker desendir; bu örnekte içinde hangi hata bilgisi bulunursa bulunsun tüm `Err` değerleriyle eşleşmek istediğimizi belirtiyoruz. Böylece program ikinci kolun kodu olan `continue` ifadesini çalıştırır; bu da programa `loop` döngüsünün bir sonraki adımına geçip kullanıcıdan yeniden tahmin istemesini söyler. Kısacası program, `parse` sırasında oluşabilecek tüm hataları zarifçe yok saymış olur!
 
 Artık programdaki her şey beklendiği gibi çalışmalıdır. Hemen deneyelim:
 
@@ -645,7 +645,7 @@ Bu noktada tahmin oyununu başarıyla geliştirdiniz. Tebrikler!
 
 ## Özet
 
-Bu proje sizi pek çok yeni Rust kavramıyla uygulamalı olarak tanıştırmanın keyifli bir yoluydu: `let`, `match`, fonksiyonlar, harici crate'lerin kullanımı ve daha fazlası. İzleyen bölümlerde bu kavramları çok daha ayrıntılı olarak öğreneceksiniz. Bölüm 3; değişkenler, veri türleri ve fonksiyonlar gibi çoğu programlama dilinde bulunan kavramları ele alır ve bunların Rust'ta nasıl kullanıldığını gösterir. Bölüm 4, Rust'ı diğer dillerden ayıran temel özellik olan *sahipliği (ownership)* inceler. Bölüm 5 struct'ları ve metot sözdizimini tartışırken, Bölüm 6 enum'ların nasıl çalıştığını açıklar.
+Bu proje sizi pek çok yeni Rust kavramıyla uygulamalı olarak tanıştırmanın keyifli bir yoluydu: `let`, `match`, fonksiyonlar, harici crate'lerin kullanımı ve daha fazlası. İzleyen bölümlerde bu kavramları çok daha ayrıntılı olarak öğreneceksiniz. Bölüm 3; değişkenler, veri türleri ve fonksiyonlar gibi çoğu programlama dilinde bulunan kavramları ele alır ve bunların Rust'ta nasıl kullanıldığını gösterir. Bölüm 4, Rust'ı diğer dillerden ayıran temel özellik olan *sahipliği (ownership)* inceler. Bölüm 5 struct'ları ve metot sözdizimini ele alırken Bölüm 6 enum'ların nasıl çalıştığını açıklar.
 
 [prelude]: ../std/prelude/index.html
 [variables-and-mutability]: ch03-01-degiskenler-ve-degistirilebilirlik.html#değişkenler-ve-değiştirilebilirlik-mutability

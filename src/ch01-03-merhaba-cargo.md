@@ -7,13 +7,13 @@ Cargo, Rust'ın derleme sistemi ve paket yöneticisidir. Rust geliştiricilerini
 
 Şimdiye kadar yazdığımız gibi en basit Rust programlarının herhangi bir bağımlılığı yoktur. "Merhaba, dünya!" projesini Cargo ile oluşturmuş olsaydık, Cargo'nun yalnızca kod derleme özelliğinden yararlanırdık. Daha karmaşık Rust programları yazdıkça projelerinize bağımlılıklar ekleyeceksiniz; projeye baştan Cargo ile başlarsanız sonradan bağımlılık eklemek çok daha kolay olacaktır.
 
-Rust projelerinin büyük çoğunluğu Cargo kullandığından, kitabın geri kalanında sizin de Cargo kullandığınız varsayılmaktadır. ["Kurulum"][installation]<!-- ignore --> bölümünde anlatılan resmi yükleyicileri kullandıysanız Cargo, Rust ile birlikte kurulu gelir. Rust'ı başka bir yöntemle kurduysanız terminalinize aşağıdaki komutu girerek Cargo'nun kurulu olup olmadığını kontrol edin:
+Rust projelerinin büyük çoğunluğu Cargo kullandığından, kitabın geri kalanında sizin de Cargo kullandığınız varsayılmaktadır. ["Kurulum"][installation]<!-- ignore --> bölümünde anlatılan resmî yükleyicileri kullandıysanız Cargo, Rust ile birlikte kurulu gelir. Rust'ı başka bir yöntemle kurduysanız terminalinize aşağıdaki komutu girerek Cargo'nun kurulu olup olmadığını kontrol edin:
 
 ```console
 $ cargo --version
 ```
 
-Bir sürüm numarası görüyorsanız Cargo kuruludur! `command not found` (komut bulunamadı) gibi bir hata alırsanız, Cargo'yu ayrıca nasıl kuracağınızı öğrenmek için kullandığınız kurulum yönteminin belgelerine bakın.
+Bir sürüm numarası görüyorsanız Cargo kuruludur! `command not found` (komut bulunamadı) gibi bir hata alırsanız Cargo'yu ayrıca nasıl kuracağınızı öğrenmek için kullandığınız kurulum yönteminin belgelerine bakın.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="creating-a-project-with-cargo"></a>
@@ -31,7 +31,7 @@ $ cd merhaba_cargo
 
 _merhaba_cargo_ dizinine girip dosyaları listeleyin. Cargo'nun bizim için iki dosya ve bir dizin oluşturduğunu göreceksiniz: bir _Cargo.toml_ dosyası ve içinde _main.rs_ dosyası bulunan bir _src_ dizini.
 
-Cargo ayrıca bir _.gitignore_ dosyasıyla birlikte yeni bir Git deposu da başlatmıştır. `cargo new` komutunu halihazırda var olan bir Git deposunun içinde çalıştırırsanız Git dosyaları oluşturulmaz; bu davranışı `cargo new --vcs=git` komutuyla geçersiz kılabilirsiniz.
+Cargo ayrıca bir _.gitignore_ dosyasıyla birlikte yeni bir Git deposu da başlatmıştır. `cargo new` komutunu hâlihazırda var olan bir Git deposunun içinde çalıştırırsanız Git dosyaları oluşturulmaz; bu davranışı `cargo new --vcs=git` komutuyla geçersiz kılabilirsiniz.
 
 > Not: Git yaygın bir *sürüm kontrol sistemidir (version control system)*. `--vcs` seçeneğini kullanarak `cargo new` komutunun farklı bir sürüm kontrol sistemi kullanmasını veya hiçbir sürüm kontrol sistemi başlatmamasını sağlayabilirsiniz. Kullanılabilir seçenekleri görmek için `cargo new --help` komutunu çalıştırın.
 
@@ -52,7 +52,7 @@ edition = "2024"
 
 Bu dosya, Cargo'nun yapılandırma biçimi olan [_TOML_][toml]<!-- ignore --> (*Tom's Obvious, Minimal Language*) biçimindedir.
 
-İlk satırdaki `[package]`, izleyen ifadelerin bir paketi yapılandırdığını belirten bir bölüm başlığıdır. Bu dosyaya daha fazla bilgi ekledikçe başka bölümler de ekleyeceğiz.
+İlk satırdaki `[package]`, izleyen deyimlerin bir paketi yapılandırdığını belirten bir bölüm başlığıdır. Bu dosyaya daha fazla bilgi ekledikçe başka bölümler de ekleyeceğiz.
 
 Sonraki üç satır, Cargo'nun programınızı derlemek için ihtiyaç duyduğu yapılandırma bilgilerini belirler: paket adı, paket sürümü ve kullanılacak Rust sürümü (*edition*). `edition` anahtarını [Ek E][appendix-e]<!-- ignore --> bölümünde ayrıntılı olarak ele alacağız.
 
@@ -129,7 +129,7 @@ $ cargo check
     Finished dev [unoptimized + debuginfo] target(s) in 0.32 secs
 ```
 
-Neden çalıştırılabilir bir dosya üretilmemesini isteyesiniz? Çoğu zaman `cargo check`, çalıştırılabilir ikili dosya üretme adımını atladığı için `cargo build` komutundan çok daha hızlıdır. Kod yazarken çalışmanızı sık sık kontrol ediyorsanız `cargo check` kullanmak, projenizin hâlâ geçerli olup olmadığını çok daha kısa sürede öğrenmenizi sağlar! Bu nedenle pek çok Rust geliştiricisi program yazarken kodun derlendiğinden emin olmak için düzenli aralıklarla `cargo check` çalıştırır; çalıştırılabilir dosyayı gerçekten kullanmaya hazır olduklarında ise `cargo build` (veya `cargo run`) komutuna başvurur.
+Neden çalıştırılabilir bir dosya üretilmemesini isteyesiniz? Çoğu zaman `cargo check`, çalıştırılabilir ikili dosya üretme adımını atladığı için `cargo build` komutundan çok daha hızlıdır. Kod yazarken çalışmanızı sık sık kontrol ediyorsanız `cargo check` kullanmak, projenizin hâlâ derlenip derlenmediğini çok daha kısa sürede öğrenmenizi sağlar! Bu nedenle pek çok Rust geliştiricisi program yazarken kodun derlendiğinden emin olmak için düzenli aralıklarla `cargo check` çalıştırır; çalıştırılabilir dosyayı gerçekten kullanmaya hazır olduklarında ise `cargo build` (veya `cargo run`) komutuna başvurur.
 
 Cargo hakkında şimdiye kadar öğrendiklerimizi özetleyelim:
 
@@ -160,7 +160,7 @@ Projeniz nihayet yayınlanmaya hazır olduğunda, optimizasyonlarla derlemek iç
 
 Çok basit projelerde Cargo, doğrudan `rustc` kullanmaya kıyasla büyük bir fark yaratmıyor gibi görünebilir; ancak programlarınız karmaşıklaştıkça değerini kanıtlayacaktır. Programlar birden fazla dosyaya yayıldığında veya bir bağımlılığa ihtiyaç duyduğunda, derleme sürecini Cargo'nun koordine etmesine izin vermek işinizi çok kolaylaştırır.
 
-`merhaba_cargo` projesi her ne kadar basit olsa da artık Rust kariyerinizin geri kalanında kullanacağınız gerçek araç takımının büyük bir kısmını kullanıyor. Nitekim mevcut herhangi bir Rust projesi üzerinde çalışmak için Git ile kodu indirip proje dizinine geçmek ve derlemek üzere şu komutları kullanmanız yeterlidir:
+`merhaba_cargo` projesi her ne kadar basit olsa da Rust kariyerinizin geri kalanında başvuracağınız gerçek araç takımının büyük bir kısmını şimdiden kullanıyor. Nitekim mevcut herhangi bir Rust projesi üzerinde çalışmak için Git ile kodu indirip proje dizinine geçmek ve derlemek üzere şu komutları kullanmanız yeterlidir:
 
 ```console
 $ git clone example.org/bir_proje

@@ -15,7 +15,7 @@ tanır. Yığında kalan şey ise öbekteki veriye işaret eden işaretçinin ke
 Yığın ile öbek arasındaki farkları yeniden gözden geçirmek için Bölüm 4'e
 bakabilirsiniz.
 
-Kutuların, verilerini yığın yerine öbekte saklamak dışında bir performans ek
+Kutuların, verilerini yığın yerine öbekte saklamak dışında ek bir performans
 maliyeti yoktur. Öte yandan çok fazla ekstra yetenek de sunmazlar. Kutuları en
 sık şu durumlarda kullanırsınız:
 
@@ -64,8 +64,8 @@ göstermektedir.
 Burada `k` değişkenini, öbekte ayrılmış `5` değerine işaret eden bir `Box`
 değerine sahip olacak şekilde tanımlıyoruz. Bu program ekrana `k = 5` yazdırır;
 bu örnekte kutudaki veriye, sanki bu veri yığındaymış gibi erişebiliriz. Sahip
-olunan herhangi bir değerde olduğu gibi, bir kutu da `main` fonksiyonunun
-sonunda `k` değişkeninin yaptığı gibi kapsam dışına çıktığında bellekten serbest
+olunan her değerde olduğu gibi, bir kutu da kapsam dışına çıktığında — tıpkı `k`
+değişkeninin `main` fonksiyonunun sonunda çıktığı gibi — bellekten serbest
 bırakılır. Bellekten serbest bırakma işlemi hem (yığında saklanan) kutunun
 kendisi hem de (öbekte saklanan) işaret ettiği veri için gerçekleşir.
 
@@ -149,8 +149,8 @@ göstereceğimiz üzere `Liste` türünün bilinen bir boyutu yoktur.
 </Listing>
 
 > Not: Bu örneğin amacı doğrultusunda yalnızca `i32` değerlerini tutan bir cons
-> listesi gerçekliyoruz. Bölüm 10'da ele aldığımız gibi jenerikleri kullanarak
-> her türden değeri saklayabilen bir cons listesi türü de tanımlayabilirdik.
+> listesi uyguluyoruz. Bölüm 10'da ele aldığımız gibi jenerikleri kullanarak her
+> türden değeri saklayabilen bir cons listesi türü de tanımlayabilirdik.
 
 `1, 2, 3` listesini saklamak için `Liste` türünü kullanmak, Liste 15-3'teki kod
 gibi görünürdü.
@@ -165,9 +165,9 @@ gibi görünürdü.
 
 İlk `Dugum` değeri `1` sayısını ve başka bir `Liste` değerini tutar. Bu `Liste`
 değeri, `2` sayısını ve bir başka `Liste` değerini tutan yeni bir `Dugum`
-değeridir. Bu `Liste` değeri ise `3` sayısını ve son olarak listenin bittiğini
-belirten özyineli olmayan `Bos` varyantına karşılık gelen bir `Liste` değerini
-tutan bir diğer `Dugum` değeridir.
+değeridir. Bu `Liste` değeri ise `3` sayısını ve bir `Liste` değeri daha tutan
+bir diğer `Dugum` değeridir; en içteki bu son `Liste` değeri de listenin
+bittiğini belirten, özyineli olmayan `Bos` varyantıdır.
 
 Liste 15-3'teki kodu derlemeye çalışırsak Liste 15-4'te gösterilen hatayı alırız.
 
@@ -256,7 +256,7 @@ miktarına bağlı olarak değişmez. Bu da `Dugum` varyantının içine doğrud
 bir `Liste` değeri koymak yerine bir `Box<T>` koyabileceğimiz anlamına gelir.
 `Box<T>`, `Dugum` varyantının içinde değil öbekte yer alacak bir sonraki `Liste`
 değerine işaret edecektir. Kavramsal olarak hâlâ diğer listeleri barındıran
-listelerden oluşturulmuş bir listemiz vardır; ancak bu gerçekleme artık öğeleri
+listelerden oluşturulmuş bir listemiz vardır; ancak bu uygulama artık öğeleri
 birbiri içine yerleştirmekten ziyade yan yana dizmeye benzer.
 
 Liste 15-2'deki `Liste` enum'ı tanımını ve Liste 15-3'teki `Liste` kullanımını,
@@ -289,7 +289,7 @@ göstermektedir.
 
 Kutular yalnızca bu dolaylılığı ve öbekte bellek ayırmayı sağlar; diğer akıllı
 işaretçi türlerinde göreceğimiz gibi başka özel yeteneklere sahip değildir.
-Ayrıca bu özel yeteneklerin getirdiği performans ek maliyetini de taşımazlar; bu
+Ayrıca bu özel yeteneklerin getirdiği ek performans maliyetini de taşımazlar; bu
 nedenle cons listesi gibi ihtiyaç duyduğumuz tek özelliğin dolaylılık olduğu
 durumlarda son derece kullanışlıdırlar. Kutuların diğer kullanım senaryolarını
 Bölüm 18'de inceleyeceğiz.

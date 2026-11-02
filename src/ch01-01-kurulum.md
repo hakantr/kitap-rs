@@ -3,15 +3,15 @@
 
 ## Kurulum
 
-İlk adım Rust'ı kurmaktır. Rust'ı, Rust sürümlerini ve ilişkili araçları yönetmek için kullanılan bir komut satırı aracı olan `rustup` aracılığıyla indireceğiz. İndirme işlemi için internet bağlantısına ihtiyacınız olacak.
+İlk adım Rust'ı kurmaktır. Rust sürümlerini ve ilişkili araçları yönetmek için kullanılan bir komut satırı aracı olan `rustup` aracılığıyla Rust'ı indireceğiz. İndirme işlemi için internet bağlantısına ihtiyacınız olacak.
 
-> Not: Herhangi bir nedenden ötürü `rustup` kullanmayı tercih etmezseniz, diğer seçenekler için lütfen [Diğer Rust Kurulum Yöntemleri sayfasına][otherinstall] göz atın.
+> Not: Herhangi bir nedenden ötürü `rustup` kullanmayı tercih etmezseniz diğer seçenekler için lütfen [Diğer Rust Kurulum Yöntemleri sayfasına][otherinstall] göz atın.
 
 Aşağıdaki adımlar, Rust derleyicisinin en son *kararlı (stable)* sürümünü kurar. Rust'ın kararlılık güvenceleri sayesinde, bu kitapta derlenen tüm örnekler daha yeni Rust sürümleriyle de sorunsuzca derlenmeye devam edecektir. Rust ekibi hata mesajlarını ve uyarıları düzenli olarak iyileştirdiği için çıktılar sürümler arasında küçük farklılıklar gösterebilir. Başka bir deyişle, bu adımları izleyerek kuracağınız daha yeni herhangi bir kararlı Rust sürümü, kitabın içeriğiyle beklendiği gibi çalışacaktır.
 
 > ### Komut Satırı Gösterimi
 >
-> Bu bölümde ve kitabın geri kalanında terminalde kullanılan bazı komutları göstereceğiz. Terminale girmeniz gereken satırların tümü `$` karakteriyle başlar. Komutu yazarken `$` karakterini girmenize gerek yoktur; bu sembol her komutun başlangıcını göstermek için kullanılan *komut istemini (prompt)* temsil eder. `$` ile başlamayan satırlar ise genellikle bir önceki komutun çıktısını gösterir. Ek olarak, PowerShell'e özgü örneklerde `$` yerine `>` karakteri kullanılacaktır.
+> Bu bölümde ve kitabın geri kalanında terminalde kullanılan bazı komutları göstereceğiz. Terminale girmeniz gereken satırların tümü `$` karakteriyle başlar. Komutu yazarken `$` karakterini girmenize gerek yoktur; bu sembol her komutun başlangıcını göstermek için kullanılan *komut istemini (prompt)* temsil eder. `$` ile başlamayan satırlar ise genellikle bir önceki komutun çıktısını gösterir. Ek olarak PowerShell'e özgü örneklerde `$` yerine `>` karakteri kullanılacaktır.
 
 ### Linux veya macOS Üzerinde `rustup` Kurulumu
 
@@ -27,7 +27,7 @@ Bu komut bir betik indirir ve en son kararlı Rust sürümünü kuran `rustup` a
 Rust is installed now. Great!
 ```
 
-Ayrıca Rust'ın derlenmiş çıktıları tek bir dosyada birleştirmek için kullandığı bir *bağlayıcıya (linker)* da ihtiyacınız olacaktır. Büyük olasılıkla sisteminizde zaten bir bağlayıcı kuruludur. Bağlayıcı hataları alırsanız, genellikle bir bağlayıcı da içeren bir C derleyicisi kurmalısınız. Bazı yaygın Rust paketleri C koduna bağımlı olduğundan ve bir C derleyicisine ihtiyaç duyacağından, sisteminizde C derleyicisi bulunması ileride de faydalı olacaktır.
+Ayrıca Rust'ın derlenmiş çıktıları tek bir dosyada birleştirmek için kullandığı bir *bağlayıcıya (linker)* da ihtiyacınız olacaktır. Büyük olasılıkla sisteminizde zaten bir bağlayıcı kuruludur. Bağlayıcı hataları alırsanız genellikle bir bağlayıcı da içeren bir C derleyicisi kurmalısınız. Bazı yaygın Rust paketleri C koduna bağımlı olduğundan ve bir C derleyicisine ihtiyaç duyacağından, sisteminizde C derleyicisi bulunması ileride de faydalı olacaktır.
 
 macOS üzerinde şu komutu çalıştırarak bir C derleyicisi edinebilirsiniz:
 
@@ -64,7 +64,7 @@ Yayınlanmış en son kararlı sürüme ait sürüm numarasını, commit hash'in
 rustc x.y.z (abcabcabc yyyy-mm-dd)
 ```
 
-Bu bilgiyi görüyorsanız Rust'ı başarıyla kurmuşsunuz demektir! Bu bilgiyi göremiyorsanız, Rust'ın sisteminizin `%PATH%` ortam değişkeninde yer alıp almadığını aşağıdaki şekilde kontrol edin.
+Bu bilgiyi görüyorsanız Rust'ı başarıyla kurmuşsunuz demektir! Bu bilgiyi göremiyorsanız Rust'ın sisteminizin `%PATH%` ortam değişkeninde yer alıp almadığını aşağıdaki şekilde kontrol edin.
 
 Windows CMD'de şunu kullanın:
 
@@ -136,7 +136,7 @@ $ cd get-dependencies
 $ cargo add rand@0.10.1 trpl@0.2.0
 ```
 
-Bu işlem, ilgili paketlerin indirmelerini önbelleğe alır; böylece bunları daha sonra tekrar indirmeniz gerekmez. Bu komutu çalıştırdıktan sonra `get-dependencies` klasörünü saklamanıza gerek yoktur. Bu komutu çalıştırdıysanız, ağa bağlanmaya çalışmak yerine önbelleğe alınmış bu sürümleri kullanmak için kitabın geri kalanındaki tüm `cargo` komutlarıyla birlikte `--offline` bayrağını kullanabilirsiniz.
+Bu işlem söz konusu paketleri indirip önbelleğe alır; böylece daha sonra tekrar indirmeniz gerekmez. İşlem tamamlandıktan sonra `get-dependencies` klasörünü saklamanıza gerek yoktur. Bağımlılıkları bu şekilde önceden indirdiyseniz ağa bağlanmaya çalışmak yerine önbelleğe alınmış sürümleri kullanmak için kitabın geri kalanındaki tüm `cargo` komutlarıyla birlikte `--offline` bayrağını kullanabilirsiniz.
 
 [otherinstall]: https://forge.rust-lang.org/infra/other-installation-methods.html
 [install]: https://www.rust-lang.org/tools/install

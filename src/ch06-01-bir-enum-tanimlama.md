@@ -32,7 +32,7 @@ Bu kavramı kodda bir `IpAdresTuru` numaralandırması tanımlayıp bir IP adres
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:instance}}
 ```
 
-Enum varyantlarının kendi tanımlayıcısının *isim alanı (namespace)* altında yer aldığına ve ikisini ayırmak için çift iki nokta üst üste (`::`) kullandığımıza dikkat edin. Bu oldukça kullanışlıdır; çünkü hem `IpAdresTuru::V4` hem de `IpAdresTuru::V6` değerleri artık aynı türdendir: `IpAdresTuru`. Böylece örneğin herhangi bir `IpAdresTuru` değeri alan bir fonksiyon tanımlayabiliriz:
+Enum varyantlarının, enum'ın tanımlayıcısının *ad alanı (namespace)* altında yer aldığına ve ikisini ayırmak için çift iki nokta üst üste (`::`) kullandığımıza dikkat edin. Bu oldukça kullanışlıdır; çünkü hem `IpAdresTuru::V4` hem de `IpAdresTuru::V6` değerleri artık aynı türdendir: `IpAdresTuru`. Böylece örneğin herhangi bir `IpAdresTuru` değeri alan bir fonksiyon tanımlayabiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:fn}}
@@ -44,7 +44,7 @@ Ardından bu fonksiyonu her iki varyantla da çağırabiliriz:
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:fn_call}}
 ```
 
-Enum kullanmanın başka avantajları da vardır. IP adresi türümüz üzerinde biraz daha düşündüğümüzde, şu anki haliyle asıl IP adresi _verisini_ saklamanın bir yolu olmadığını görürüz; yalnızca hangi _türde_ olduğunu biliyoruz. Bölüm 5'te struct'ları yeni öğrendiğiniz için, bu sorunu Liste 6-1'de gösterildiği gibi struct kullanarak çözmeye yönelmeniz oldukça doğaldır.
+Enum kullanmanın başka avantajları da vardır. IP adresi türümüz üzerinde biraz daha düşündüğümüzde, şu anki hâliyle asıl IP adresi _verisini_ saklamanın bir yolu olmadığını görürüz; yalnızca hangi _türde_ olduğunu biliyoruz. Bölüm 5'te struct'ları yeni öğrendiğiniz için, bu sorunu Liste 6-1'de gösterildiği gibi struct kullanarak çözmeye yönelmeniz oldukça doğaldır.
 
 <Listing number="6-1" caption="Bir IP adresinin verilerini ve `IpAdresTuru` varyantını `struct` kullanarak saklama">
 
@@ -62,7 +62,7 @@ Ancak aynı kavramı yalnızca bir enum kullanarak temsil etmek çok daha özlü
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-02-enum-with-data/src/main.rs:here}}
 ```
 
-Veriyi doğrudan enum'ın her bir varyantına eklediğimiz için fazladan bir struct tanımlamaya gerek kalmaz. Burada enum'ların çalışma biçimine dair önemli bir ayrıntıyı görmek de kolaylaşır: Tanımladığımız her enum varyantının adı, aynı zamanda o enum'ın bir örneğini oluşturan bir fonksiyon haline gelir. Yani `IpAdres::V4()`, bir `String` argümanı alan ve `IpAdres` türünde bir örnek döndüren bir fonksiyon çağrısıdır. Enum'ı tanımlamamızın bir sonucu olarak bu *kurucu (constructor)* fonksiyonlar bizim için otomatik olarak tanımlanır.
+Veriyi doğrudan enum'ın her bir varyantına eklediğimiz için fazladan bir struct tanımlamaya gerek kalmaz. Burada enum'ların çalışma biçimine dair önemli bir ayrıntıyı görmek de kolaylaşır: Tanımladığımız her enum varyantının adı, aynı zamanda o enum'ın bir örneğini oluşturan bir fonksiyon hâline gelir. Yani `IpAdres::V4()`, bir `String` argümanı alan ve `IpAdres` türünde bir örnek döndüren bir fonksiyon çağrısıdır. Enum'ı tanımlamamızın bir sonucu olarak bu *yapıcı (constructor)* fonksiyonlar bizim için otomatik olarak tanımlanır.
 
 Struct yerine enum kullanmanın bir avantajı daha vardır: Her varyant farklı türlerde ve farklı sayıda ilişkili veriye sahip olabilir. Sürüm dört IP adresleri her zaman 0 ile 255 arasında değerler alan dört sayısal bileşenden oluşur. `V4` adreslerini dört adet `u8` değeri olarak saklamak, `V6` adreslerini ise yine tek bir `String` değeri olarak ifade etmek isteseydik bunu tek bir struct ile yapamazdık. Enum'lar bu durumu kolaylıkla çözer:
 
@@ -160,7 +160,7 @@ enum Option<T> {
 
 `Option<T>` enum'ı o kadar kullanışlıdır ki Rust'ın *ön yükleme (prelude)* kapsamına bile dahil edilmiştir; yani onu `use` ile açıkça kapsama dahil etmenize gerek yoktur. Üstelik varyantları da ön yükleme kapsamındadır: `Some` ve `None` varyantlarını `Option::` öneki yazmadan doğrudan kullanabilirsiniz. Yine de `Option<T>` sıradan bir enum'dır; `Some(T)` ve `None` da hâlâ `Option<T>` türünün varyantlarıdır.
 
-`<T>` sözdizimi, Rust'ın henüz ele almadığımız bir özelliğidir. Bu, *jenerik (generic)* bir tür parametresidir; jenerik türleri Bölüm 10'da ayrıntılı olarak inceleyeceğiz. Şimdilik bilmeniz gereken tek şey şudur: `<T>`, `Option` enum'ının `Some` varyantının herhangi bir türden tek bir veri tutabileceği ve `T` yerine geçen her somut türün `Option<T>` türünün tamamını farklı bir tür haline getirdiği anlamına gelir. Sayı ve karakter (`char`) türlerini tutmak için `Option` değerlerinin kullanıldığı bazı örneklere bakalım:
+`<T>` sözdizimi, Rust'ın henüz ele almadığımız bir özelliğidir. Bu, *jenerik (generic)* bir tür parametresidir; jenerik türleri Bölüm 10'da ayrıntılı olarak inceleyeceğiz. Şimdilik bilmeniz gereken tek şey şudur: `<T>`, `Option` enum'ının `Some` varyantının herhangi bir türden tek bir veri tutabileceği ve `T` yerine geçen her somut türün `Option<T>` türünün tamamını farklı bir tür hâline getirdiği anlamına gelir. Sayı ve karakter (`char`) türlerini tutmak için `Option` değerlerinin kullanıldığı bazı örneklere bakalım:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-06-option-examples/src/main.rs:here}}
@@ -194,7 +194,7 @@ Peki `Option<T>` türünde bir değere sahip olduğunuzda, içindeki `T` değeri
 
 > Not: Günlük Rust kodlarında her seferinde uzun `match` ifadeleri yazmak yerine `Option<T>`'nin sunduğu hazır yardımcı metotlardan sıkça yararlanırsınız. Örneğin; değerin varlığını sorgulamak için `is_some()` ve `is_none()`, `None` durumunda varsayılan bir değer sağlamak için `unwrap_or(varsayilan)` (veya varsayılan değeri yalnızca gerektiğinde hesaplamak için Bölüm 13'te göreceğimiz `unwrap_or_else`), içteki değeri `Option` sarmalayıcısından çıkarmadan dönüştürmek için `map(...)`, değerin `None` olması durumunda programı hata mesajıyla durdurmak içinse Bölüm 9'da inceleyeceğimiz `expect("mesaj")` ve `unwrap()` metotları en sık karşılaşacağınız araçlardır.
 
-Genel olarak bir `Option<T>` değerini kullanmak için her bir varyantı ele alacak kodlara sahip olmak istersiniz: Yalnızca elinizde bir `Some(T)` değeri olduğunda çalışacak ve içteki `T` değerini kullanmasına izin verilen bir kod; bir de yalnızca `None` değeriniz olduğunda çalışacak ve elinde kullanılabilir bir `T` değeri bulunmayan başka bir kod. `match` ifadesi, enum'larla birlikte kullanıldığında tam olarak bu işi yapan bir kontrol akışı yapısıdır: Enum'ın hangi varyantına sahip olduğuna bağlı olarak farklı kod dallarını çalıştırır ve bu kodlar eşleşen değerin içindeki verileri doğrudan kullanabilir.
+Genel olarak bir `Option<T>` değerini kullanmak için her bir varyantı ele alacak kodlara sahip olmak istersiniz: Yalnızca elinizde bir `Some(T)` değeri olduğunda çalışacak ve içteki `T` değerini kullanmasına izin verilen bir kod; bir de yalnızca `None` değeriniz olduğunda çalışacak ve elinde kullanılabilir bir `T` değeri bulunmayan başka bir kod. `match` ifadesi, enum'larla birlikte kullanıldığında tam olarak bu işi yapan bir kontrol akışı yapısıdır: Değerin, enum'ın hangi varyantı olduğuna bağlı olarak farklı kod dallarını çalıştırır ve bu kodlar eşleşen değerin içindeki verileri doğrudan kullanabilir.
 
 [IpAddr]: ../std/net/enum.IpAddr.html
 [option]: ../std/option/enum.Option.html

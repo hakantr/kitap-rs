@@ -13,12 +13,12 @@ tarafını nasıl kullandığımızı hatırlayın. Asenkron `recv` metodu zaman
 bir örneğidir. Pek çok kavram doğal olarak akış şeklinde temsil edilir: bir
 kuyrukta öğelerin hazır hale gelmesi, tüm veri kümesi bilgisayarın belleğine
 sığmayacak kadar büyük olduğunda verilerin dosya sisteminden artımlı olarak
-parça parça çekilmesi veya zaman içinde ağ üzerinden veri gelmesi. Akışlar birer
-future olduğu için onları diğer her türlü future ile birlikte kullanabilir ve
-ilginç şekillerde birleştirebiliriz. Örneğin, çok fazla ağ çağrısı tetiklememek
-için olayları gruplayabilir, uzun süren işlem dizilerine zaman aşımı
-tanımlayabilir ya da gereksiz iş yapmamak için kullanıcı arayüzü olaylarının
-sıklığını sınırlandırabiliriz.
+parça parça çekilmesi veya zaman içinde ağ üzerinden veri gelmesi. Akışlar her
+adımda bir future ürettiği için onları diğer her türlü future ile birlikte
+kullanabilir ve ilginç şekillerde birleştirebiliriz. Örneğin, çok fazla ağ
+çağrısı tetiklememek için olayları gruplayabilir, uzun süren işlem dizilerine
+zaman aşımı tanımlayabilir ya da gereksiz iş yapmamak için kullanıcı arayüzü
+olaylarının sıklığını sınırlandırabiliriz.
 
 Bölüm 13'te, [“`Iterator` Trait'i ve `next` Metodu”][iterator-trait]<!-- ignore -->
 başlığında `Iterator` trait'ini incelerken de bir öğe dizisi görmüştük; ancak
@@ -50,7 +50,7 @@ gösterilmektedir.
 Bir sayı dizisiyle başlıyor, bunu bir iteratöre dönüştürüyor ve ardından tüm
 değerleri iki katına çıkarmak için üzerinde `map` çağırıyoruz. Daha sonra
 `trpl::stream_from_iter` fonksiyonunu kullanarak iteratörü bir akışa
-dönüştürüyoruz. Ardından `while let` döngüsüyle, akıştaki öğelerin üzerinde
+dönüştürüyoruz. Ardından bir `while let` döngüsüyle akıştaki öğeler üzerinde
 geldikçe dönüyoruz.
 
 Ne yazık ki kodu çalıştırmayı denediğimizde derlenmez ve bunun yerine
@@ -104,8 +104,8 @@ değildir, ancak ekosistemdeki çoğu crate benzer tanımları kullanır.
 > Not: **Neden `*Ext` (Uzantı Trait'i) Deseni Kullanılır?**
 >
 > Rust ekosisteminde `Stream` ve `StreamExt` (veya `futures::FutureExt`,
-> `itertools::Itertools`) gibi ikili yapılar iki temel nedenden dolayı çok
-> yaygındır:
+> `itertools::Itertools`) gibi ikili trait tasarımları iki temel nedenden dolayı
+> çok yaygındır:
 >
 > 1. **Uygulama sadeliği ve örtü uygulaması (*blanket implementation*):** Çekirdek
 >    `Stream` trait'i yalnızca tek bir düşük seviyeli yoklama metodu gerektirir

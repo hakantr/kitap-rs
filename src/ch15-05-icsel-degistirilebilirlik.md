@@ -71,10 +71,10 @@ reddederse programcı biraz zahmete girer, ancak felaketle sonuçlanacak hiçbir
 uyduğundan emin olduğunuz, ancak derleyicinin bunu anlayıp garanti edemediği
 durumlarda kullanışlıdır.
 
-`Rc<T>` türüne benzer şekilde `RefCell<T>` de yalnızca tek kanallı
-(*single-threaded*) senaryolarda kullanım içindir ve onu çok kanallı
+`Rc<T>` türüne benzer şekilde `RefCell<T>` de yalnızca tek thread'li
+(*single-threaded*) senaryolarda kullanım içindir ve onu çok thread'li
 (*multithreaded*) bir bağlamda kullanmaya çalışırsanız derleme zamanı hatası
-verir. Çok kanallı bir programda `RefCell<T>` işlevselliğini nasıl elde
+verir. Çok thread'li bir programda `RefCell<T>` işlevselliğini nasıl elde
 edeceğimizi Bölüm 16'da ele alacağız.
 
 `Box<T>`, `Rc<T>` veya `RefCell<T>` türlerinden birini seçme nedenlerinin özeti
@@ -152,7 +152,7 @@ bir örnek üzerinde çalışalım ve bunun neden yararlı olduğunu görelim.
 #### Taklit Nesnelerle Test Yazmak
 
 Test sırasında bir programcı bazen belirli bir davranışı gözlemlemek ve doğru
-gerçeklenip gerçeklenmediğini doğrulamak amacıyla bir türün yerine başka bir tür
+uygulanıp uygulanmadığını doğrulamak amacıyla bir türün yerine başka bir tür
 kullanır. Bu yer tutucu türe _test dublörü (test double)_ denir. Bunu film
 yapımcılığındaki dublör (*stunt double*) kavramı gibi düşünebilirsiniz: Özellikle
 zorlu bir sahneyi çekmek için bir kişinin oyuncunun yerine geçmesi gibi, test
@@ -205,10 +205,10 @@ ihtiyacımız var. Taklit nesnenin yeni bir örneğini oluşturabilir, bu taklit
 nesneyi kullanan bir `SinirIzleyici` yaratabilir, `SinirIzleyici` üzerinde
 `deger_ata` metodunu çağırabilir ve ardından taklit nesnenin beklediğimiz
 iletilere sahip olup olmadığını kontrol edebiliriz. Liste 15-21 tam olarak bunu
-yapacak bir taklit nesne gerçekleme girişimini göstermektedir, ancak ödünç alma
+yapacak bir taklit nesne uygulama girişimini göstermektedir, ancak ödünç alma
 denetleyicisi buna izin vermez.
 
-<Listing number="15-21" file-name="src/lib.rs" caption="Ödünç alma denetleyicisinin izin vermediği bir `SahteIletici` gerçeklemesi denemesi">
+<Listing number="15-21" file-name="src/lib.rs" caption="Ödünç alma denetleyicisinin izin vermediği bir `SahteIletici` uygulaması denemesi">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-21/src/lib.rs:here}}
@@ -307,8 +307,8 @@ Bu kuralları ihlal etmeye çalışırsak, referanslarda olacağı gibi bir derl
 hatası almak yerine `RefCell<T>` uygulaması çalışma zamanında panikleyecektir.
 Liste 15-23, Liste 15-22'deki `gonder` uygulamasının değiştirilmiş bir hâlini
 göstermektedir. `RefCell<T>` türünün çalışma zamanında bunu yapmamızı
-engellediğini göstermek amacıyla aynı kapsam için etkin iki değiştirilebilir
-ödünç almayı bilerek oluşturmaya çalışıyoruz.
+engellediğini göstermek amacıyla aynı kapsamda etkin iki değiştirilebilir ödünç
+almayı bilerek oluşturmaya çalışıyoruz.
 
 <Listing number="15-23" file-name="src/lib.rs" caption="`RefCell<T>` türünün panikleyeceğini görmek için aynı kapsamda iki değiştirilebilir referans oluşturmak">
 
@@ -341,7 +341,7 @@ yerine çalışma zamanında takip etmenin bir sonucu olarak kodunuz küçük bi
 çalışma zamanı performans maliyeti üstlenir. Bununla birlikte `RefCell<T>`
 kullanmak, yalnızca değiştirilemez değerlere izin verilen bir bağlamda
 kullanılırken bile gördüğü iletilerin kaydını tutmak üzere kendisini
-değiştirebilen bir taklit nesne yazmayı mümkün kılar. Ödünlerine rağmen, normal
+değiştirebilen bir taklit nesne yazmayı mümkün kılar. Bu ödünleşimlere rağmen, normal
 referansların sunduğundan daha fazla işlevsellik elde etmek için `RefCell<T>`
 kullanabilirsiniz.
 
@@ -402,9 +402,9 @@ erişebilmek için onu `deger` adlı bir değişkende saklıyoruz. Ardından `a`
 yerine hem `a`'nın hem de `deger`'in içteki `5` değerinin sahipliğine sahip
 olması için `deger`'i klonlamamız gerekir.
 
-`b` ve `c` listelerini oluşturduğumuzda her ikisinin de `a`'ya başvurabilmesi
-için `a` listesini bir `Rc<T>` içine sarıyoruz; bu da tıpkı Liste 15-18'de
-yaptığımız işlemdir.
+Sonrasında `b` ve `c` listelerini oluşturduğumuzda her ikisinin de `a`'ya
+başvurabilmesi için `a` listesini de bir `Rc<T>` içine sarıyoruz; bu, tıpkı
+Liste 15-18'de yaptığımız işlemdir.
 
 `a`, `b` ve `c` içindeki listeleri oluşturduktan sonra `deger` içindeki sayıya 10
 eklemek istiyoruz. Bunu `deger` üzerinde `borrow_mut` çağırarak yapıyoruz; bu
@@ -427,8 +427,8 @@ gerektiğinde içsel değiştirilebilirliğine erişim sağlayan `RefCell<T>`
 metotlarını kullanabiliriz. Ödünç alma kurallarının çalışma zamanı denetimleri
 bizi veri yarışlarından (*data race*) korur ve veri yapılarımızda bu esnekliği
 kazanmak için bazen bir miktar hızdan feragat etmeye değer. `RefCell<T>` türünün
-çok kanallı kodlarda çalışmadığını unutmayın! `Mutex<T>`, `RefCell<T>` türünün
-çok kanallı kullanıma güvenli (*thread-safe*) karşılığıdır ve `Mutex<T>` türünü
-Bölüm 16'da ele alacağız.
+çok thread'li kodlarda çalışmadığını unutmayın! `Mutex<T>`, `RefCell<T>` türünün
+thread güvenli (*thread-safe*) karşılığıdır ve `Mutex<T>` türünü Bölüm 16'da ele
+alacağız.
 
 [wheres-the---operator]: ch05-03-metotlar.html#wheres-the---operator

@@ -8,9 +8,9 @@
 
 Rust, bir değeri bir dizi *desenle (pattern)* karşılaştırmanıza ve hangi desenin eşleştiğine bağlı olarak ilgili kodu çalıştırmanıza olanak tanıyan `match` adında son derece güçlü bir kontrol akışı yapısına sahiptir. Desenler; sabit değerlerden, değişken adlarından, joker desenlerden (*wildcards*) ve daha pek çok bileşenden oluşabilir; [Bölüm 19][ch19-00-patterns]<!-- ignore --> tüm farklı desen türlerini ve ne işe yaradıklarını ayrıntılı olarak ele alır. `match` yapısının gücü, desenlerin yüksek ifade yeteneğinden ve derleyicinin olası tüm durumların eksiksiz biçimde ele alındığını doğrulamasından gelir.
 
-Bir `match` ifadesini bozuk para ayırma makinesi gibi düşünebilirsiniz: Madeni paralar, boyunca farklı boyutlarda delikler bulunan bir raydan aşağı kayar ve her para, karşısına çıkan ve içine sığabildiği ilk delikten aşağı düşer. Aynı şekilde değerler de bir `match` ifadesindeki her bir desenden sırayla geçer ve değerin "uyduğu" ilk desende, çalıştırılmak üzere o desenle ilişkili kod bloğuna düşer.
+Bir `match` ifadesini bozuk para ayırma makinesi gibi düşünebilirsiniz: Madeni paralar, üzerinde farklı boyutlarda delikler sıralanan bir raydan aşağı kayar ve her para, karşısına çıkıp içine sığabildiği ilk delikten aşağı düşer. Aynı şekilde değerler de bir `match` ifadesindeki her bir desenden sırayla geçer ve değerin "uyduğu" ilk desende, çalıştırılmak üzere o desenle ilişkili kod bloğuna düşer.
 
-Madeni paralardan söz etmişken gelin `match` kullanımı için onları örnek alalım! Liste 6-3'te gösterildiği gibi, belirsiz bir ABD madeni parasını alan ve tıpkı para sayma makinesi gibi hangi madeni para olduğunu belirleyip değerini kuruş (sent) cinsinden döndüren bir fonksiyon yazabiliriz.
+Madeni paralardan söz etmişken gelin `match` kullanımı için onları örnek alalım! Liste 6-3'te gösterildiği gibi, türü bilinmeyen bir ABD madeni parasını alan ve tıpkı para sayma makinesi gibi hangi madeni para olduğunu belirleyip değerini kuruş (sent) cinsinden döndüren bir fonksiyon yazabiliriz.
 
 <Listing number="6-3" caption="Bir enum ve bu enum'ın varyantlarını desen olarak kullanan bir `match` ifadesi">
 
@@ -34,7 +34,7 @@ Liste 6-3'te olduğu gibi her kolun yalnızca tek bir değer ürettiği kısa du
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-08-match-arm-multiple-lines/src/main.rs:here}}
 ```
 
-> Not: Tıpkı Bölüm 3'te gördüğümüz `if` gibi `match` de bir *ifadedir*. Dolayısıyla ürettiği sonucu doğrudan bir değişkene atayabilir (`let tutar = match para { ... };`) veya burada olduğu gibi fonksiyonun dönüş değeri olarak kullanabilirsiniz. Derleyicinin derleme zamanında tek ve kesin bir tür belirleyebilmesi için **tüm `match` kollarının aynı türü üretmesi** zorunludur; aksi halde `E0308` (`match arms have incompatible types` — *`match` kolları uyumsuz türlere sahip*) hatası alırsınız. Özellikle süslü parantezli kollarda son satırdaki `1` ifadesinin sonuna yanlışlıkla noktalı virgül (`;`) koymamaya dikkat edin: `1;` yazarsanız o kol birim türü (`()`) üretirken diğer kollar `u8` üreteceği için kod derlenmeyecektir.
+> Not: Tıpkı Bölüm 3'te gördüğümüz `if` gibi `match` de bir *ifadedir*. Dolayısıyla ürettiği sonucu doğrudan bir değişkene atayabilir (`let tutar = match para { ... };`) veya burada olduğu gibi fonksiyonun dönüş değeri olarak kullanabilirsiniz. Derleyicinin derleme zamanında tek ve kesin bir tür belirleyebilmesi için **tüm `match` kollarının aynı türü üretmesi** zorunludur; aksi hâlde `E0308` (`match arms have incompatible types` — *`match` kolları uyumsuz türlere sahip*) hatası alırsınız. Özellikle süslü parantezli kollarda son satırdaki `1` ifadesinin sonuna yanlışlıkla noktalı virgül (`;`) koymamaya dikkat edin: `1;` yazarsanız o kol birim türü (`()`) üretirken diğer kollar `u8` üreteceği için kod derlenmeyecektir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -102,7 +102,7 @@ Diyelim ki parametre olarak bir `Option<i32>` alan ve içinde bir değer varsa b
 
 `Some(5)` değeri `Some(i)` deseniyle eşleşir mi? Evet, eşleşir! İkisi de aynı varyanttır. `i` değişkeni `Some` içindeki değere bağlanır ve `5` değerini alır. Ardından bu `match` kolundaki kod çalıştırılır: `i` değerine `1` eklenir ve içinde toplam `6` değerini taşıyan yeni bir `Some` varyantı oluşturulup döndürülür.
 
-Şimdi Liste 6-5'te `x` parametresinin `None` olduğu ikinci `bir_ekle` çağrısına bakalım. `match` ifadesine girer ve ilk kolla karşılaştırırız:
+Şimdi Liste 6-5'te `x` parametresinin `None` olduğu ikinci `bir_ekle` çağrısına bakalım. `match` ifadesine girer ve `x` değerini ilk kolla karşılaştırırız:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
@@ -134,7 +134,7 @@ Burada `None` durumunu ele almadık; dolayısıyla bu kod hataya yol açacaktır
 
 > Not: Derleyicinin ürettiği `error[E0004]: non-exhaustive patterns: None not covered` mesajı, *"kapsamlı olmayan desenler: `None` durumu kapsanmadı"* anlamına gelir. Dikkat ederseniz `help:` satırında derleyici, eksik kalan kolu `None => todo!(),` şeklinde kodunuza nasıl ekleyebileceğinizi bile doğrudan gösterir.
 
-Rust, olası her durumu kapsamadığımızı bilir; üstelik hangi deseni unuttuğumuzu bile tam olarak söyler! Rust'ta eşleşmeler _kapsamlıdır (exhaustive)_: Kodun geçerli olabilmesi için olası her durumu sonuna kadar, eksiksiz biçimde ele almalıyız. Özellikle `Option<T>` söz konusu olduğunda, Rust `None` durumunu açıkça işlemeyi unutmamızı engelleyerek ortada bir değer yokken (`null` benzeri bir durumdayken) sanki geçerli bir değer varmış gibi varsayımda bulunmamızın önüne geçer; böylece önceki bölümde bahsettiğimiz milyar dolarlık hatayı derleme zamanında imkânsız hale getirir.
+Rust, olası her durumu kapsamadığımızı bilir; üstelik hangi deseni unuttuğumuzu bile tam olarak söyler! Rust'ta eşleşmeler _kapsamlıdır (exhaustive)_: Kodun geçerli olabilmesi için olası her durumu sonuna kadar, eksiksiz biçimde ele almalıyız. Özellikle `Option<T>` söz konusu olduğunda, Rust `None` durumunu açıkça işlemeyi unutmamızı engelleyerek ortada bir değer yokken (`null` benzeri bir durumdayken) sanki geçerli bir değer varmış gibi varsayımda bulunmamızın önüne geçer; böylece önceki bölümde bahsettiğimiz milyar dolarlık hatayı derleme zamanında imkânsız hâle getirir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -162,7 +162,7 @@ Gelin oyunun kurallarını değiştirelim: Artık `3` veya `7` dışında bir sa
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-16-underscore-catchall/src/main.rs:here}}
 ```
 
-Son kolda diğer tüm değerleri açıkça yoksaydığımız için bu örnek de kapsamlılık şartını eksiksiz karşılar; unuttuğumuz hiçbir durum yoktur.
+Son kolda diğer tüm değerleri açıkça yok saydığımız için bu örnek de kapsamlılık şartını eksiksiz karşılar; unuttuğumuz hiçbir durum yoktur.
 
 Son olarak oyunun kurallarını bir kez daha değiştirelim: `3` veya `7` dışında bir sayı attığınızda sıranızda başka hiçbir şey olmasın. Bunu, `_` kolunda çalıştırılacak kod olarak birim değerini (["Demet Türü"][tuples]<!-- ignore --> bölümünde bahsettiğimiz boş demet türü `()`) yazarak ifade edebiliriz:
 
@@ -172,7 +172,7 @@ Son olarak oyunun kurallarını bir kez daha değiştirelim: `3` veya `7` dış�
 
 Burada Rust'a önceki kolların desenleriyle eşleşmeyen hiçbir değeri kullanmayacağımızı ve bu durumda herhangi bir kod çalıştırmak istemediğimizi açıkça belirtmiş oluyoruz.
 
-Desenler ve eşleştirme hakkında [Bölüm 19][ch19-00-patterns]<!-- ignore -->'da ele alacağımız daha pek çok ayrıntı var. Şimdilik, `match` ifadesinin biraz ayrıntılı ve uzun kalabildiği durumlarda oldukça pratik bir alternatif sunan `if let` sözdizimine geçeceğiz.
+Desenler ve eşleştirme hakkında [Bölüm 19][ch19-00-patterns]<!-- ignore -->'da ele alacağımız daha pek çok ayrıntı var. Şimdilik, `match` ifadesinin biraz ayrıntılı ve uzun kalabildiği durumlarda oldukça pratik birer alternatif sunan `if let` ve `let...else` yapılarına geçeceğiz.
 
 [tuples]: ch03-02-veri-turleri.html#demet-türü
 [ch19-00-patterns]: ch19-00-desenler.html

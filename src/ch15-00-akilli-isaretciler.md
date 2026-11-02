@@ -9,7 +9,7 @@ _İşaretçi (pointer)_, bellekteki bir adresi barındıran değişkenler için 
 
 _Akıllı işaretçiler_ ise bir işaretçi gibi davranan, ancak bunun yanı sıra ek meta veriler ve yetenekler de barındıran veri yapılarıdır. Akıllı işaretçi kavramı yalnızca Rust'a özgü değildir; kökeni C++ diline dayanır ve başka dillerde de bulunur. Rust'ın standart kütüphanesinde, referansların sunduğu işlevselliğin ötesine geçen çeşitli akıllı işaretçiler tanımlanmıştır. Genel kavramı keşfetmek için aralarında _referans sayımlı (reference counting)_ bir akıllı işaretçi türünün de bulunduğu birkaç farklı örneği inceleyeceğiz. Bu işaretçi, sahiplerin sayısını takip ederek bir verinin birden fazla sahibi olmasına olanak tanır ve hiçbir sahip kalmadığında veriyi temizler.
 
-Sahiplik ve ödünç alma kavramlarına sahip olan Rust'ta, referanslar ile akıllı işaretçiler arasında ek bir fark daha vardır: Referanslar veriyi yalnızca ödünç alırken, akıllı işaretçiler çoğu durumda işaret ettikleri verinin _sahibidir_.
+Sahiplik ve ödünç alma kavramlarını barındıran Rust'ta, referanslar ile akıllı işaretçiler arasında bir fark daha vardır: Referanslar veriyi yalnızca ödünç alırken, akıllı işaretçiler çoğu durumda işaret ettikleri verinin _sahibidir_.
 
 Akıllı işaretçiler genellikle struct'lar kullanılarak oluşturulur. Sıradan bir struct'tan farklı olarak akıllı işaretçiler `Deref` ve `Drop` trait'lerini uygular. `Deref` trait'i, akıllı işaretçi struct'ının bir örneğinin referans gibi davranmasını sağlar; böylece hem referanslarla hem de akıllı işaretçilerle çalışabilen kodlar yazabilirsiniz. `Drop` trait'i ise bir akıllı işaretçi örneği kapsam dışına çıktığında çalıştırılacak kodu özelleştirmenize olanak tanır. Bu bölümde her iki trait'i de ele alacak ve akıllı işaretçiler için neden önemli olduklarını göstereceğiz.
 
@@ -25,8 +25,8 @@ Bunlara ek olarak, değiştirilemez bir türün kendi içindeki bir değeri değ
 >
 > - **`&T` ve `&mut T` (Normal referanslar):** Verinin sahibi olmadan yalnızca ödünç alır; ek bellek veya çalışma zamanı maliyeti yoktur.
 > - **`Box<T>`:** Veriyi yığın (*stack*) yerine öbekte tutar ve derleme zamanında denetlenen **tek sahiplik** sağlar.
-> - **`Rc<T>` (ve çok kanallı eşdeğeri `Arc<T>`):** Referans sayımıyla aynı veriye **çoklu sahiplik** olanağı tanır (`Arc<T>` türünü Bölüm 16'da göreceğiz).
-> - **`RefCell<T>` (ve çok kanallı eşdeğeri `Mutex<T>`):** *İçsel değiştirilebilirlik* sağlar ve ödünç alma kurallarını derleme zamanı yerine **çalışma zamanında** denetler.
-> - **`Deref` ve `Drop` trait'leri:** Bir struct'ı akıllı işaretçi yapan temel yapı taşlarıdır; `Deref` referans benzeri başvuru çözme (`*`) ve otomatik tür zorlaması sağlarken, `Drop` değer kapsam dışına çıktığında bellek ve kaynak temizliğini otomatikleştirir.
+> - **`Rc<T>` (ve çok thread'li — çok iş parçacıklı — eşdeğeri `Arc<T>`):** Referans sayımıyla aynı veriye **çoklu sahiplik** olanağı tanır (`Arc<T>` türünü Bölüm 16'da göreceğiz).
+> - **`RefCell<T>` (ve çok thread'li eşdeğeri `Mutex<T>`):** *İçsel değiştirilebilirlik* sağlar ve ödünç alma kurallarını derleme zamanı yerine **çalışma zamanında** denetler.
+> - **`Deref` ve `Drop` trait'leri:** Bir struct'ı akıllı işaretçi yapan temel yapı taşlarıdır; `Deref` referans benzeri başvuru çözme (`*`) ve deref zorlaması sağlarken, `Drop` değer kapsam dışına çıktığında bellek ve kaynak temizliğini otomatikleştirir.
 
 Haydi başlayalım!

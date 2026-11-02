@@ -25,7 +25,7 @@ Güvenli olmayan Rust'a geçmek için `unsafe` anahtar kelimesini kullanır ve a
 1. Güvenli olmayan bir fonksiyon veya metot çağırmak.
 1. Değiştirilebilir bir statik değişkene erişmek veya onu değiştirmek.
 1. Güvenli olmayan bir trait uygulamak.
-1. `union` türlerinin alanlarına erişmek.
+1. Birleşim (`union`) türlerinin alanlarına erişmek.
 
 `unsafe` anahtar kelimesinin ödünç alma denetleyicisini kapatmadığını veya Rust'ın diğer güvenlik denetimlerini devre dışı bırakmadığını anlamak çok önemlidir: Güvenli olmayan kod içinde bir referans kullanırsanız bu referans yine denetlenir. `unsafe` anahtar kelimesi yalnızca, derleyici tarafından bellek güvenliği açısından denetlenmeyen bu beş özelliğe erişmenizi sağlar. Yani güvenli olmayan bir bloğun içinde bile belirli ölçüde güvenlik elde etmeye devam edersiniz.
 
@@ -147,7 +147,7 @@ Bu fonksiyonu yalnızca güvenli Rust kullanarak uygulayamayız. Böyle bir dene
 
 </Listing>
 
-Bu fonksiyon önce dilimin toplam uzunluğunu alır. Ardından parametre olarak verilen indeksin uzunluğa küçük veya eşit olup olmadığını kontrol ederek dilim sınırları içinde kaldığını doğrular. Bu doğrulama, dilimi bölmek için uzunluktan daha büyük bir indeks geçirirsek fonksiyonun o indeksi kullanmaya çalışmadan önce panikleyeceği anlamına gelir.
+Bu fonksiyon önce dilimin toplam uzunluğunu alır. Ardından parametre olarak verilen indeksin uzunluktan küçük veya ona eşit olup olmadığını kontrol ederek dilim sınırları içinde kaldığını doğrular. Bu doğrulama, dilimi bölmek için uzunluktan daha büyük bir indeks geçirirsek fonksiyonun o indeksi kullanmaya çalışmadan önce panikleyeceği anlamına gelir.
 
 Daha sonra bir demet içinde iki değiştirilebilir dilim döndürürüz: biri orijinal dilimin başlangıcından `mid` indeksine kadar, diğeri ise `mid` indeksinden dilimin sonuna kadar.
 
@@ -283,7 +283,7 @@ Küresel olarak erişilebilen değiştirilebilir verilerde veri yarışı olmad�
 > Not: **Rust 2024 Sürümü ve Güvenli Olmayan Kod Sıkılaştırmaları:** Eski ders kaynaklarında veya Rust 2021 ve öncesi sürümlerle yazılmış crate'lerde farklı `unsafe` sözdizimleriyle karşılaşabilirsiniz. Rust 2024 Sürümü ([Ek E: Sürümler][editions]), güvenlik sorumluluklarını kod üzerinde çok daha açık ve görünür kılmak amacıyla önemli iyileştirmeler getirmiştir:
 >
 > - **Ham ödünç alma operatörleri (`&raw const` ve `&raw mut`):** Eski kodlarda ham işaretçi oluşturmak için kullanılan `&num as *const i32` veya `std::ptr::addr_of!(num)` yerine artık doğrudan `&raw const num` ve `&raw mut num` operatörleri kullanılır (bu operatörler Rust 1.82 ile kararlı hâle gelmiştir ve yalnızca 2024 Sürümü'ne özgü değildir). Bu operatörler ara aşamada geçici bir referans oluşturmadığı için hizalanmamış (*unaligned*) alanlara veya `static mut` değişkenlere tanımsız davranış riski olmadan işaretçi üretebilir.
-> - **`unsafe fn` gövdesinde açık `unsafe` bloğu:** Eskiden bir fonksiyon `unsafe fn` olarak işaretlendiğinde tüm gövdesi örtük bir `unsafe` bloğu sayılıyordu. Rust 2024 ile birlikte, Liste 20-11'deki `add_to_count` fonksiyonunda gördüğünüz gibi `unsafe fn` içinde dahi güvenli olmayan işlemleri dar kapsamlı `unsafe { ... }` blokları içine almanız beklenir.
+> - **`unsafe fn` gövdesinde açık `unsafe` bloğu:** Eskiden bir fonksiyon `unsafe fn` olarak işaretlendiğinde tüm gövdesi örtük bir `unsafe` bloğu sayılıyordu. Rust 2024 ile birlikte, Liste 20-11'deki `add_to_count` fonksiyonunda gördüğünüz gibi `unsafe fn` içinde dahi güvenli olmayan işlemleri dar kapsamlı `unsafe { ... }` blokları içine almanız gerekir (aksi hâlde derleyici uyarı verir).
 > - **`unsafe extern` ve `safe fn`:** Önceki sürümlerde yalnızca `extern "C" { ... }` şeklinde yazılan bloklar, Rust 2024'te dış imzaların doğruluğunu garanti etme sorumluluğunu vurgulamak için `unsafe extern "C" { ... }` olarak yazılır; buna karşılık her geçerli girdiyle çağrılması güvenli olan dış fonksiyonlar blok içinde `safe fn` ile işaretlenebilir.
 > - **Güvenli olmayan öznitelikler (`#[unsafe(...)]`):** Sembol çakışmalarına yol açabilecek `#[no_mangle]` gibi öznitelikler artık güvenlik sözleşmesini açıkça göstermek üzere `#[unsafe(no_mangle)]` biçiminde yazılır.
 > - **`static_mut_refs` lint engeli:** Değiştirilebilir statik değişkenlere doğrudan veya `println!("{COUNTER}")` gibi makrolar aracılığıyla örtük referans oluşturulması derleyici tarafından varsayılan olarak reddedilir; Liste 20-11'deki `*(&raw const COUNTER)` ifadesinde olduğu gibi ham işaretçi kullanılması gerekir.
@@ -317,7 +317,7 @@ Güvenli olmayan bir trait uygulamak için `unsafe` kullanabiliriz. Metotlarınd
 
 ### `union` Alanlarına Erişmek
 
-Yalnızca `unsafe` ile çalışan son işlem, bir *birliğin (`union`)* alanlarına erişmektir. Bir `union`, `struct`'a benzer; ancak belirli bir örnekte herhangi bir anda bildirilen alanlardan yalnızca biri kullanılır. `union`'lar öncelikle C kodundaki `union`'larla etkileşim kurmak amacıyla kullanılır. Rust, `union` örneğinde o anda saklanan verinin türünü garanti edemediği için `union` alanlarına erişmek güvenli değildir. `union`'lar hakkında daha fazla bilgiyi [Rust Referansı'nda][unions] bulabilirsiniz.
+Yalnızca `unsafe` ile çalışan son işlem, bir *birleşimin* (`union`) alanlarına erişmektir. Bir `union`, `struct`'a benzer; ancak belirli bir örnekte herhangi bir anda bildirilen alanlardan yalnızca biri kullanılır. `union`'lar öncelikle C kodundaki `union`'larla etkileşim kurmak amacıyla kullanılır. Rust, `union` örneğinde o anda saklanan verinin türünü garanti edemediği için `union` alanlarına erişmek güvenli değildir. `union`'lar hakkında daha fazla bilgiyi [Rust Referansı'nda][unions] bulabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -336,7 +336,7 @@ Bunun ne kadar faydalı olabileceğine bir örnek olarak, Miri'yi Liste 20-7 üz
 {{#include ../listings/ch20-advanced-features/listing-20-07/output.txt}}
 ```
 
-Miri haklı olarak bizi bir tamsayıyı işaretçiye dönüştürdüğümüz konusunda uyarır (`integer-to-pointer cast`); bu bir sorun olabilir, ancak Miri işaretçinin nasıl ortaya çıktığını (köken / *provenance* bilgisini) bilmediği için ortada bir sorun olup olmadığını belirleyemez. Ardından Miri, elimizde sarkan bir işaretçi bulunduğu (`encountered a dangling reference` — `0x1234` adresine ait bir bellek tahsisi ve köken bilgisi olmadığı) için Liste 20-7'nin tanımsız davranış içerdiği noktada bir hata döndürür. Miri sayesinde artık tanımsız davranış riski bulunduğunu biliyoruz ve kodu nasıl güvenli hâle getireceğimiz üzerine düşünebiliriz. Hatta bazı durumlarda Miri, hataların nasıl düzeltilebileceğine dair önerilerde bile bulunabilir.
+Miri haklı olarak bizi bir tam sayıyı işaretçiye dönüştürdüğümüz konusunda uyarır (`integer-to-pointer cast`); bu bir sorun olabilir, ancak Miri işaretçinin nasıl ortaya çıktığını (köken / *provenance* bilgisini) bilmediği için ortada bir sorun olup olmadığını belirleyemez. Ardından Miri, sarkan bir referansla karşılaşıldığı (`encountered a dangling reference` — `0x1234` adresine ait bir bellek tahsisi ve köken bilgisi olmadığı) için Liste 20-7'nin tanımsız davranış içerdiği noktada bir hata döndürür. Miri sayesinde artık tanımsız davranış riski bulunduğunu biliyoruz ve kodu nasıl güvenli hâle getireceğimiz üzerine düşünebiliriz. Hatta bazı durumlarda Miri, hataların nasıl düzeltilebileceğine dair önerilerde bile bulunabilir.
 
 Miri, güvenli olmayan kod yazarken yapabileceğiniz her hatayı yakalayamaz. Miri dinamik bir analiz aracı olduğundan yalnızca gerçekte çalıştırılan kodlardaki sorunları yakalar. Bu da yazdığınız güvenli olmayan koda duyduğunuz güveni artırmak için onu iyi test teknikleriyle birlikte kullanmanız gerektiği anlamına gelir. Ayrıca Miri, kodunuzun _sağlam olmayan (unsound)_ —yani güvenli koddan çağrıldığında bile tanımsız davranışa yol açabilen— her olası yolunu kapsamaz.
 

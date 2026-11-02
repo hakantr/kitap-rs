@@ -5,7 +5,7 @@ Buraya kadar Rust programlama dilinin en sık kullanılan kısımlarını öğre
 
 Bu bölümde şunları ele alacağız:
 
-- Güvenli olmayan (unsafe) Rust: Rust'ın bazı garantilerinden bilinçli olarak çıkma ve bu garantileri elle koruma sorumluluğunu üstlenme yolları
+- Güvenli olmayan (unsafe) Rust: Rust'ın bazı garantilerinden bilinçli olarak vazgeçme ve bu garantileri elle koruma sorumluluğunu üstlenme yolları
 - Gelişmiş trait'ler: İlişkili türler, varsayılan tür parametreleri, tam nitelikli sözdizimi, üst trait'ler (*supertraits*) ve trait'lerle ilişkili olarak *newtype* deseni
 - Gelişmiş türler: *Newtype* deseni hakkında daha fazlası, tür takma adları, *never* (`!`) türü ve dinamik boyutlu türler
 - Gelişmiş fonksiyonlar ve kapanışlar: Fonksiyon işaretçileri ve kapanış döndürme

@@ -68,8 +68,8 @@ Bu programı çalıştırdığımızda aşağıdaki çıktıyı görürüz:
 
 Örneklerimiz kapsam dışına çıktığında Rust bizim yerimize otomatik olarak `drop`
 metodunu çağırdı ve belirttiğimiz kodu çalıştırdı. Değişkenler, yığın (*stack*)
-üzerindeki son giren ilk çıkar düzenine uygun biçimde oluşturulma sıralarının
-tersi yönde düşürülür; bu yüzden `d` değişkeni `c`'den önce düşürülmüştür. Bu
+üzerindeki son giren ilk çıkar düzenine uygun biçimde oluşturuldukları sıranın
+tersine düşürülür; bu yüzden `d` değişkeni `c`'den önce düşürülmüştür. Bu
 örneğin amacı `drop` metodunun nasıl çalıştığına dair size görsel bir rehber
 sunmaktır; normalde bir yazdırma mesajı yerine türünüzün çalıştırması gereken
 temizlik kodunu belirtirsiniz.
@@ -179,7 +179,7 @@ bırakıldı` metinleri arasında yazdırılır; bu da `c` değerini düşürmek
 > kaynak üzerinde yıkıcı tekrar tekrar çalışarak çifte serbest bırakma hatasına
 > yol açardı.
 
-Temizlik işlemlerini kullanışlı ve güvenli hale getirmek için bir `Drop` trait'i
+Temizlik işlemlerini kullanışlı ve güvenli hâle getirmek için bir `Drop` trait'i
 uygulamasında belirttiğiniz kodu pek çok farklı biçimde kullanabilirsiniz:
 Örneğin bu sayede kendi bellek ayırıcınızı oluşturabilirsiniz! `Drop` trait'i ve
 Rust'ın sahiplik sistemi sayesinde temizlik yapmayı hatırlamak zorunda

@@ -131,7 +131,7 @@ Buradaki ifade:
 
 bu örnekte değerlendirilerek `4` değerini üreten bir bloktur. Bu değer, `let` deyiminin bir parçası olarak `y` değişkenine bağlanır. Şimdiye kadar gördüğünüz çoğu satırın aksine, `x + 1` satırının sonunda noktalı virgül (`;`) bulunmadığına dikkat edin. İfadelerin sonunda noktalı virgül yer almaz. Bir ifadenin sonuna noktalı virgül eklerseniz onu bir deyime dönüştürürsünüz ve artık bir değer döndürmez. Şimdi fonksiyonların dönüş değerlerini ve ifadeleri incelerken bu kuralı aklınızda bulundurun.
 
-> Not: Yukarıdaki `let y = { ... };` örneğinde noktalı virgüllerin konumuna dikkat edin: Bloğun içindeki `x + 1` satırının sonunda noktalı virgül **yoktur**; çünkü bu satır bloğun üreteceği değeri belirleyen sonuç ifadesidir. Kapanan süslü parantezin (`};`) hemen sonundaki noktalı virgül ise dıştaki `let y = ...;` atama **deyimini** sonlandırır. Kısacası Rust'ta `;` yalnızca görsel bir satır sonu işareti değil, bir ifadeyi değer döndürmeyen (birim tür `()` üreten) bir deyime dönüştüren sözdizimsel bir araçtır.
+> Not: Yukarıdaki `let y = { ... };` örneğinde noktalı virgüllerin konumuna dikkat edin: Bloğun içindeki `x + 1` satırının sonunda noktalı virgül **yoktur**; çünkü bu satır bloğun üreteceği değeri belirleyen sonuç ifadesidir. Kapanan süslü parantezin (`};`) hemen sonundaki noktalı virgül ise dıştaki `let y = ...;` atama **deyimini** sonlandırır. Kısacası Rust'ta `;` yalnızca görsel bir satır sonu işareti değil, bir ifadeyi değer döndürmeyen bir deyime dönüştüren (ve sonunda sonuç ifadesi kalmayan bloğun birim tür `()` üretmesine yol açan) sözdizimsel bir araçtır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="functions-with-return-values"></a>

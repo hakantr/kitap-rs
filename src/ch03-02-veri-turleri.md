@@ -60,7 +60,7 @@ Tam sayı sabit değerlerini (*integer literals*) Tablo 3-2'de gösterilen biçi
 | Sayı sabit değerleri | Örnek         |
 | -------------------- | ------------- |
 | Onluk                | `98_222`      |
-| Onaltılık            | `0xff`        |
+| On altılık           | `0xff`        |
 | Sekizlik             | `0o77`        |
 | İkilik               | `0b1111_0000` |
 | Bayt (yalnızca `u8`) | `b'A'`        |
@@ -100,7 +100,7 @@ Rust'ta ayrıca ondalık basamak içeren _kayan noktalı sayılar (floating-poin
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-06-floating-point/src/main.rs}}
 ```
 
-Kayan noktalı sayılar IEEE-754 standardına göre temsil edilir.
+Kayan noktalı sayılar IEEE-754 standardına göre temsil edilir. `f32` türü tek duyarlıklı (*single-precision*), `f64` türü ise çift duyarlıklı (*double-precision*) bir kayan noktalı sayıdır.
 
 <a id="numeric-operations"></a>
 

@@ -66,7 +66,7 @@ Bu tanımda yeni bir sözdizimi kullanıldığına dikkat edin: `type Item` ve `
 
 </Listing>
 
-`v1_iter` değişkenini değiştirilebilir (`mut`) olarak tanımlamamız gerektiğine dikkat edin: Bir iteratör üzerinde `next` metodunu çağırmak, iteratörün dizinin neresinde kaldığını takip etmek için tuttuğu iç durumu değiştirir. Başka bir deyişle bu kod iteratörü _tüketir_, yani sonuna dek harcar. Her `next` çağrısı iteratörden bir öğeyi alıp tüketir. `for` döngüsü kullandığımızda ise `v1_iter`'i `mut` yapmamıza gerek kalmamıştı; çünkü döngü `v1_iter`'in sahipliğini almış ve arka planda onu değiştirilebilir hale getirmişti.
+`v1_iter` değişkenini değiştirilebilir (`mut`) olarak tanımlamamız gerektiğine dikkat edin: Bir iteratör üzerinde `next` metodunu çağırmak, iteratörün dizinin neresinde kaldığını takip etmek için tuttuğu iç durumu değiştirir. Başka bir deyişle bu kod iteratörü _tüketir_, yani sonuna dek harcar. Her `next` çağrısı iteratörden bir öğeyi alıp tüketir. `for` döngüsü kullandığımızda ise `v1_iter`'i `mut` yapmamıza gerek kalmamıştı; çünkü döngü `v1_iter`'in sahipliğini almış ve arka planda onu değiştirilebilir hâle getirmişti.
 
 Ayrıca `next` çağrılarından elde ettiğimiz değerlerin vektördeki değerlere değiştirilemez referanslar olduğuna dikkat edin. `iter` metodu, değiştirilemez referanslar üreten bir iteratör oluşturur. Eğer `v1`'in sahipliğini alan ve doğrudan sahip olunan değerler döndüren bir iteratör oluşturmak istersek `iter` yerine `into_iter` çağırabiliriz. Benzer şekilde, değiştirilebilir referanslar üzerinde ilerlemek istersek `iter` yerine `iter_mut` çağırabiliriz.
 
@@ -106,7 +106,7 @@ Ayrıca `next` çağrılarından elde ettiğimiz değerlerin vektördeki değerl
 
 _İteratör adaptörleri (iterator adapters)_, `Iterator` trait'i üzerinde tanımlanan ve iteratörü tüketmeyen metotlardır. Bunun yerine orijinal iteratörün belirli bir yönünü değiştirerek yeni ve farklı iteratörler üretirler.
 
-Liste 13-14, öğeler üzerinde ilerlenirken her bir öğe için çağrılacak bir kapanış alan `map` iteratör adaptörünün kullanımını göstermektedir. `map` metodu, değiştirilmiş öğeleri üreten yeni bir iteratör döndürür. Buradaki kapanış sayesinde, vektördeki her öğenin 1 artırılmış halini üreten yeni bir iteratör elde ederiz.
+Liste 13-14, öğeler üzerinde ilerlenirken her bir öğe için çağrılacak bir kapanış alan `map` iteratör adaptörünün kullanımını göstermektedir. `map` metodu, değiştirilmiş öğeleri üreten yeni bir iteratör döndürür. Buradaki kapanış sayesinde, vektördeki her öğenin 1 artırılmış hâlini üreten yeni bir iteratör elde ederiz.
 
 <Listing number="13-14" file-name="src/main.rs" caption="Yeni bir iteratör oluşturmak için `map` iteratör adaptörünü çağırmak">
 
@@ -126,7 +126,7 @@ Liste 13-14'teki kod gerçekte hiçbir iş yapmaz; belirttiğimiz kapanış hiç
 
 Bu uyarıyı gidermek ve iteratörü tüketmek için, Liste 12-1'de `env::args` ile birlikte kullandığımız `collect` metodundan yararlanacağız. Bu metot iteratörü tüketir ve üretilen değerleri bir koleksiyon veri türünde toplar.
 
-Liste 13-15'te, `map` çağrısından dönen iteratör üzerindeki yineleme sonuçlarını bir vektörde topluyoruz. Elde edilen bu vektör, orijinal vektördeki her bir öğenin 1 artırılmış halini içerir.
+Liste 13-15'te, `map` çağrısından dönen iteratör üzerindeki yineleme sonuçlarını bir vektörde topluyoruz. Elde edilen bu vektör, orijinal vektördeki her bir öğenin 1 artırılmış hâlini içerir.
 
 <Listing number="13-15" file-name="src/main.rs" caption="Yeni bir iteratör oluşturmak için `map` metodunu, ardından yeni iteratörü tüketip bir vektör oluşturmak için `collect` metodunu çağırmak">
 
@@ -142,7 +142,7 @@ Karmaşık işlemleri okunabilir bir biçimde gerçekleştirmek için birden faz
 
 > Not: **İteratör Adaptörleri ile Tüketen Adaptörler Arasındaki Fark**: Bir iteratör hattını kurarken metotları iki gruba ayırmak zihinsel modeli çok netleştirir:
 >
-> - **İteratör adaptörleri** (`map`, `filter`, `take`, `skip`, `enumerate`, `zip` vb.) hattın *ara halkalarıdır*: Yalnızca yapılacak dönüşümün tarifini taşıyan yeni bir iteratör sarmalayıcısı (örneğin `Map` veya `Filter` struct'ı) döndürürler; tek başlarına `next` çağırmaz ve hiçbir öğeyi işlemezler. Standart kütüphanede bu türler `#[must_use]` niteliğiyle işaretlendiğinden, zinciri tüketmeyi unuttuğunuzda derleyici `unused_must_use` uyarısıyla sizi uyarır.
+> - **İteratör adaptörleri** (`map`, `filter`, `take`, `skip`, `enumerate`, `zip` vb.) hattın *ara halkalarıdır*: Yalnızca yapılacak dönüşümün tarifini taşıyan yeni bir iteratör sarmalayıcısı (örneğin `Map` veya `Filter` struct'ı) döndürürler; tek başlarına `next` çağırmaz ve hiçbir öğeyi işlemezler. Standart kütüphanede bu türler `#[must_use]` özniteliğiyle işaretlendiğinden, zinciri tüketmeyi unuttuğunuzda derleyici `unused_must_use` uyarısıyla sizi uyarır.
 > - **Tüketen adaptörler** (`collect`, `sum`, `count`, `for_each`, `any`, `all`, `find` vb.; bir `for` döngüsü de aynı rolü üstlenir) hattın *son halkasıdır*: Arka planda `next` metodunu tekrar tekrar çağırarak tüm zinciri harekete geçirir ve nihai sonucu üretir. Ayrıca `collect` yalnızca `Vec<T>` değil, `String` veya `HashMap<K, V>` gibi pek çok farklı koleksiyon üretebildiğinden, Liste 13-15'teki `let v2: Vec<_>` gibi bir tür açıklamasıyla hedef koleksiyonu belirtmek (öğe türünü `_` ile yine derleyiciye bırakarak) yaygın bir Rust deyimidir.
 
 <!-- Old headings. Do not remove or links may break. -->

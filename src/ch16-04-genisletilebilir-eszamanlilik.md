@@ -37,9 +37,9 @@ istemediğiniz tek thread'li durumlarda kullanılmak üzere uygulanmıştır.
 Dolayısıyla Rust'ın tür sistemi ve trait sınırları, bir `Rc<T>` değerini
 thread'ler arasında yanlışlıkla güvensiz bir biçimde göndermenizi kesin olarak
 engeller. Liste 16-14'te bunu yapmayı denediğimizde `` the trait `Send` is not
-implemented for `Rc<Mutex<i32>>` `` (`Send` trait'i `Rc<Mutex<i32>>` için
-uygulanmamıştır) hatasını almıştık. `Send` trait'ini uygulayan `Arc<T>` türüne
-geçtiğimizde ise kod derlenmişti.
+implemented for `Rc<std::sync::Mutex<i32>>` `` (`Send` trait'i `Rc<Mutex<i32>>`
+için uygulanmamıştır) hatasını almıştık. `Send` trait'ini uygulayan `Arc<T>`
+türüne geçtiğimizde ise kod derlenmişti.
 
 Tamamen `Send` türlerinden oluşan her tür de otomatik olarak `Send` olarak
 işaretlenir. Bölüm 20'de ele alacağımız _ham işaretçiler (raw pointers)_ dışında
@@ -58,14 +58,15 @@ neredeyse tüm ilkel türler `Send`'dir.
 referans verilmesinin güvenli olduğunu belirtir. Başka bir deyişle, herhangi bir
 `T` türü, `&T` (`T`'ye ait değiştirilemez referans) `Send` trait'ini
 uyguluyorsa —yani bu referans başka bir thread'e güvenle gönderilebiliyorsa—
-`Sync` uygular. `Send`'e benzer şekilde, ilkel türlerin tamamı `Sync` uygular ve
-tamamen `Sync` uygulayan türlerden oluşan türler de `Sync` uygular.
+`Sync` uygular. `Send`'e benzer şekilde, ham işaretçiler dışındaki tüm ilkel
+türler `Sync` uygular ve tamamen `Sync` uygulayan türlerden oluşan türler de
+`Sync` uygular.
 
 `Rc<T>` akıllı işaretçisi, `Send` trait'ini uygulamamasıyla aynı gerekçelerle
 `Sync` trait'ini de uygulamaz. Bölüm 15'te ele aldığımız `RefCell<T>` türü ve
 onunla ilişkili `Cell<T>` türleri ailesi de `Sync` uygulamaz. `RefCell<T>`'nin
-çalışma zamanında gerçekleştirdiği ödünç alma denetimi uygulaması thread güvenli
-değildir. Buna karşılık `Mutex<T>` akıllı işaretçisi `Sync` uygular ve
+çalışma zamanında yürüttüğü ödünç alma denetimi thread güvenli değildir. Buna
+karşılık `Mutex<T>` akıllı işaretçisi `Sync` uygular ve
 [“`Mutex<T>`'ye Paylaşımlı Erişim”][shared-access]<!-- ignore --> bölümünde
 gördüğünüz gibi erişimi birden fazla thread ile paylaşmak için kullanılabilir.
 
@@ -101,7 +102,7 @@ gördüğünüz gibi erişimi birden fazla thread ile paylaşmak için kullanıl
 >   sistemi düzeyindeki pek çok kilit mekanizması, kilidi edinen thread ile
 >   serbest bırakan thread'in **aynı thread** olmasını şart koşar. `MutexGuard`
 >   düşürüldüğünde (`Drop`) kilidi açtığı için başka bir thread'e taşınamaz
->   (`!Send`); aksi halde kilit yanlış thread üzerinde açılırdı. Buna karşılık
+>   (`!Send`); aksi hâlde kilit yanlış thread üzerinde açılırdı. Buna karşılık
 >   kilidi tutan thread'in `&MutexGuard<'_, T>` referansını (örneğin
 >   `std::thread::scope` ile) diğer thread'lere ödünç vermesi güvenlidir (`Sync`);
 >   çünkü diğer thread'ler yalnızca `&T` üzerinden okuma yapar ve kilidin
@@ -161,7 +162,7 @@ veri yarışlarına veya geçersiz referanslara yol açmamasını güvence altı
 Kodunuzu derlemeyi başardığınızda, diğer dillerde sıkça rastlanan ve izini
 sürmesi güç hatalarla karşılaşmadan birden fazla thread üzerinde sorunsuzca
 çalışacağından emin olabilirsiniz. Eşzamanlı programlama artık korkulacak bir
-kavram değil: İlerleyin ve programlarınızı korkusuzca eşzamanlı hale getirin!
+kavram değil: İlerleyin ve programlarınızı korkusuzca eşzamanlı hâle getirin!
 
 [shared-access]: ch16-03-paylasimli-durum.html#mutext-için-paylaşımlı-erişim
 [nomicon]: ../nomicon/index.html

@@ -5,7 +5,7 @@
 
 ## Kapanışlar (Closures)
 
-Rust'taki *kapanışlar (closures)*, bir değişkende saklayabileceğiniz veya başka fonksiyonlara argüman olarak aktarabileceğiniz anonim fonksiyonlardır. Kapanışı bir yerde oluşturup daha sonra farklı bir bağlamda çalıştırmak (değerlendirmek) üzere başka bir yerde çağırabilirsiniz. Normal fonksiyonların aksine kapanışlar, tanımlandıkları kapsamdaki değerleri *yakalayabilir (capture)*. Bu özelliklerin kodun yeniden kullanımına ve davranışların özelleştirilmesine nasıl olanak tanıdığını birlikte inceleyeceğiz.
+Rust'taki *kapanışlar (closures)*, bir değişkende saklayabileceğiniz veya başka fonksiyonlara argüman olarak aktarabileceğiniz anonim fonksiyonlardır. Kapanışı bir yerde oluşturup daha sonra farklı bir bağlamda çalıştırmak üzere başka bir yerde çağırabilirsiniz. Normal fonksiyonların aksine kapanışlar, tanımlandıkları kapsamdaki değerleri *yakalayabilir (capture)*. Bu özelliklerin kodun yeniden kullanımına ve davranışların özelleştirilmesine nasıl olanak tanıdığını birlikte inceleyeceğiz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -18,7 +18,7 @@ Rust'taki *kapanışlar (closures)*, bir değişkende saklayabileceğiniz veya b
 
 ### Çevreyi Yakalamak
 
-İlk olarak, tanımlandıkları çevredeki değerleri daha sonra kullanmak üzere yakalamak için kapanışlardan nasıl yararlanabileceğimizi inceleyeceğiz. Senaryomuz şöyle: Tişört şirketimiz zaman zaman promosyon olarak e-posta listesindeki bir kişiye özel, sınırlı sayıda üretilmiş bir gömlek hediye ediyor. E-posta listesindeki kişiler isteğe bağlı olarak profillerine favori renklerini ekleyebiliyor. Ücretsiz gömlek için seçilen kişi favori rengini belirtmişse o renkteki gömleği alıyor. Favori bir renk belirtmemişse şirketin stoklarında o an en fazla hangi renk varsa onu alıyor.
+İlk olarak, tanımlandıkları çevredeki değerleri daha sonra kullanmak üzere yakalamak için kapanışlardan nasıl yararlanabileceğimizi inceleyeceğiz. Senaryomuz şöyle: Gömlek şirketimiz zaman zaman promosyon olarak e-posta listesindeki bir kişiye özel, sınırlı sayıda üretilmiş bir gömlek hediye ediyor. E-posta listesindeki kişiler isteğe bağlı olarak profillerine favori renklerini ekleyebiliyor. Ücretsiz gömlek için seçilen kişi favori rengini belirtmişse o renkteki gömleği alıyor. Favori bir renk belirtmemişse şirketin stoklarında o an en fazla hangi renk varsa onu alıyor.
 
 Bunu uygulamanın pek çok yolu vardır. Bu örnekte, basitlik adına mevcut renk sayısını sınırlayarak `Kirmizi` ve `Mavi` varyantlarına sahip `GomlekRengi` adlı bir enum kullanacağız. Şirketin envanterini ise stokta bulunan gömlek renklerini tutan `Vec<GomlekRengi>` türünde `gomlekler` adlı bir alana sahip `Envanter` struct'ı ile temsil ediyoruz. `Envanter` üzerinde tanımlanan `hediye_et` metodu, ücretsiz gömlek kazanan kişinin isteğe bağlı renk tercihini alır ve alacağı gömlek rengini döndürür. Bu yapı Liste 13-1'de gösterilmiştir.
 
@@ -56,7 +56,7 @@ Fonksiyonlar ile kapanışlar arasında başka farklar da vardır. Kapanışlar 
 
 Kapanışlar genellikle kısadır ve her yerde geçerli genel senaryolardan ziyade yalnızca dar bir bağlamda anlam taşır. Bu sınırlı bağlamlar içinde derleyici, çoğu değişkenin türünü çıkarsayabildiği gibi kapanışların parametre türlerini ve dönüş türünü de çıkarsayabilir (derleyicinin kapanışlarda da tür açıklamasına ihtiyaç duyduğu nadir durumlar vardır).
 
-Değişkenlerde olduğu gibi, zorunlu olandan daha ayrıntılı yazma pahasına açıklığı ve okunabilirliği artırmak istersek kapanışlara da tür açıklamaları ekleyebiliriz. Tür açıklamaları eklenmiş bir kapanış, Liste 13-2'deki tanıma benzer. Bu örnekte kapanışı, Liste 13-1'de yaptığımız gibi argüman olarak aktardığımız yerde tanımlamak yerine tanımlayıp bir değişkende saklıyoruz.
+Değişkenlerde olduğu gibi, zorunlu olandan daha ayrıntılı yazma pahasına açıklığı ve okunabilirliği artırmak istersek kapanışlara da tür açıklamaları ekleyebiliriz. Tür açıklamaları eklenmiş bir kapanış, Liste 13-2'deki tanıma benzer. Bu örnekte kapanışı, Liste 13-1'de yaptığımız gibi argüman olarak aktardığımız noktada tanımlamak yerine ayrı tanımlayıp bir değişkende saklıyoruz.
 
 <Listing number="13-2" file-name="src/main.rs" caption="Kapanışta parametre ve dönüş değeri türleri için isteğe bağlı tür açıklamaları eklemek">
 
@@ -142,7 +142,7 @@ Bu kod derlenir, çalışır ve şunu yazdırır:
 
 Kapanış gövdesi aslında sahipliğe ihtiyaç duymasa bile kapanışın çevreden kullandığı değerlerin sahipliğini almasını zorlamak istiyorsanız parametre listesinden önce `move` anahtar kelimesini kullanabilirsiniz.
 
-Bu teknik en çok, bir kapanışı yeni bir *thread'e (iş parçacığına)* aktarırken verinin sahipliğinin yeni thread'e geçmesi için kullanılır. Bölüm 16'da eşzamanlılıktan bahsederken thread'leri ve onları neden kullanmak isteyeceğinizi ayrıntılı olarak ele alacağız; şimdilik `move` anahtar kelimesini gerektiren bir kapanışla yeni bir thread başlatmayı kısaca inceleyelim. Liste 13-6, vektörü ana thread yerine yeni bir thread içinde yazdırmak üzere Liste 13-4'ün uyarlanmış halini göstermektedir.
+Bu teknik en çok, bir kapanışı yeni bir *thread'e (iş parçacığına)* aktarırken verinin sahipliğinin yeni thread'e geçmesi için kullanılır. Bölüm 16'da eşzamanlılıktan bahsederken thread'leri ve onları neden kullanmak isteyeceğinizi ayrıntılı olarak ele alacağız; şimdilik `move` anahtar kelimesini gerektiren bir kapanışla yeni bir thread başlatmayı kısaca inceleyelim. Liste 13-6, vektörü ana thread yerine yeni bir thread içinde yazdırmak üzere Liste 13-4'ün uyarlanmış hâlini göstermektedir.
 
 <Listing number="13-6" file-name="src/main.rs" caption="Thread'e verilen kapanışı `liste`'nin sahipliğini almaya zorlamak için `move` kullanmak">
 
@@ -167,11 +167,11 @@ Yeni bir thread başlatıyor (`thread::spawn`) ve bu thread'e çalıştırması 
 
 Bir kapanış tanımlandığı çevreden bir değerin referansını veya sahipliğini yakaladığında (dolayısıyla varsa nelerin kapanışın _içine_ taşındığını belirlediğinde), kapanış gövdesindeki kod da kapanış daha sonra çalıştırıldığında bu referanslara veya değerlere ne olacağını tanımlar (dolayısıyla varsa nelerin kapanışın _dışına_ taşındığını belirler).
 
-Bir kapanış gövdesi aşağıdakilerden herhangi birini yapabilir: yakalanan bir değeri kapanışın dışına taşıyabilir, yakalanan değeri değiştirebilir, değeri ne taşıyıp ne değiştirebilir ya da baştan itibaren çevreden hiçbir şey yakalamayabilir.
+Bir kapanış gövdesi aşağıdakilerden herhangi birini yapabilir: yakalanan bir değeri kapanışın dışına taşıyabilir, yakalanan değeri değiştirebilir, değeri dışarı taşımayıp değiştirmeden kullanabilir ya da baştan itibaren çevreden hiçbir şey yakalamayabilir.
 
-Bir kapanışın çevredeki değerleri yakalama ve işleme biçimi, kapanışın hangi trait'leri uygulayacağını belirler; fonksiyonlar ve struct'lar da ne tür kapanışları kabul edebileceklerini bu trait'ler aracılığıyla ifade eder. Kapanışlar, gövdelerinin yakalanan değerleri nasıl işlediğine bağlı olarak bu üç `Fn` trait'inden birini, ikisini veya üçünü birden eklemeli (birikimli) bir biçimde otomatik olarak uygular:
+Bir kapanışın çevredeki değerleri yakalama ve işleme biçimi, kapanışın hangi trait'leri uygulayacağını belirler; fonksiyonlar ve struct'lar da ne tür kapanışları kabul edebileceklerini bu trait'ler aracılığıyla ifade eder. Kapanışlar, gövdelerinin yakalanan değerleri nasıl işlediğine bağlı olarak bu üç `Fn` trait'inden birini, ikisini veya üçünü birden birikimli bir biçimde otomatik olarak uygular:
 
-* `FnOnce`, en az bir kez çağrılabilen kapanışlar için geçerlidir. Tüm kapanışlar çağrılabildiği için en azından bu trait'i uygular. Yakaladığı değerleri gövdesinin dışına taşıyan bir kapanış yalnızca bir kez çağrılabileceğinden yalnızca `FnOnce` trait'ini uygular; diğer `Fn` trait'lerini uygulamaz.
+* `FnOnce`, bir kez çağrılabilen kapanışlar için geçerlidir. Tüm kapanışlar çağrılabildiği için en azından bu trait'i uygular. Yakaladığı değerleri gövdesinin dışına taşıyan bir kapanış yalnızca bir kez çağrılabileceğinden yalnızca `FnOnce` trait'ini uygular; diğer `Fn` trait'lerini uygulamaz.
 * `FnMut`, yakaladığı değerleri gövdesinin dışına taşımayan ancak bu değerleri değiştirebilen kapanışlar için geçerlidir. Bu kapanışlar birden fazla kez çağrılabilir.
 * `Fn`, yakaladığı değerleri gövdesinin dışına taşımayan ve bu değerleri değiştirmeyen kapanışların yanı sıra çevresinden hiçbir şey yakalamayan kapanışlar için geçerlidir. Bu kapanışlar çevrelerini değiştirmeden birden fazla kez çağrılabilir; bu özellik, bir kapanışın eşzamanlı olarak birden çok kez çağrıldığı durumlarda büyük önem taşır.
 
@@ -203,7 +203,7 @@ Jenerik `F` türü üzerinde belirtilen trait sınırı `FnOnce() -> T` şeklind
 
 > Not: Yapmak istediğimiz iş çevreden bir değer yakalamayı gerektirmiyorsa, `Fn` trait'lerinden birini uygulayan bir argüman beklenen yerlerde kapanış yerine doğrudan bir fonksiyonun adını da kullanabiliriz. Örneğin bir `Option<Vec<T>>` değeri üzerinde, değer `None` olduğunda yeni ve boş bir vektör elde etmek için `unwrap_or_else(Vec::new)` çağrısı yapabiliriz. Derleyici, bir fonksiyon tanımı için `Fn` trait'lerinden hangileri uygunsa onları otomatik olarak uygular.
 
-Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metodun aldığı kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir niteliğine (alanına) göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
+Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metodun aldığı kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir özelliğine göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
 
 <Listing number="13-7" file-name="src/main.rs" caption="Dikdörtgenleri genişliğe göre sıralamak için `sort_by_key` kullanmak">
 
@@ -247,6 +247,6 @@ Hata mesajı, kapanış gövdesinde `deger` değişkenini çevrenin dışına ta
 
 </Listing>
 
-Kapanışlardan yararlanan fonksiyonları veya türleri tanımlarken ya da kullanırken `Fn` trait'leri büyük önem taşır. Sıradaki kısımda *iteratörleri (yineleyicileri)* ele alacağız. Pek çok iteratör metodu argüman olarak kapanış alır; bu nedenle devam ederken kapanışlarla ilgili bu ayrıntıları aklınızda bulundurun!
+Kapanışlardan yararlanan fonksiyonları veya türleri tanımlarken ya da kullanırken `Fn` trait'leri büyük önem taşır. Sıradaki kısımda iteratörleri ele alacağız. Pek çok iteratör metodu argüman olarak kapanış alır; bu nedenle devam ederken kapanışlarla ilgili bu ayrıntıları aklınızda bulundurun!
 
 [unwrap-or-else]: ../std/option/enum.Option.html#method.unwrap_or_else

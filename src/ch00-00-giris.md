@@ -17,9 +17,9 @@ Rust, farklı düzeylerde sistem programlama bilgisine sahip geliştiricilerden 
 
 Rust ayrıca sistem programlama dünyasına çağdaş geliştirici araçları da kazandırır:
 
-- Rust ile birlikte gelen bağımlılık yöneticisi ve derleme aracı olan Cargo; bağımlılıkları eklemeyi, derlemeyi ve yönetmeyi tüm Rust ekosistemi genelinde zahmetsiz ve tutarlı hale getirir.
+- Rust ile birlikte gelen bağımlılık yöneticisi ve derleme aracı olan Cargo; bağımlılıkları eklemeyi, derlemeyi ve yönetmeyi tüm Rust ekosistemi genelinde zahmetsiz ve tutarlı hâle getirir.
 - `rustfmt` biçimlendirme aracı, geliştiriciler arasında tutarlı bir kodlama stili sağlar.
-- Rust Language Server (Rust Dil Sunucusu), kod tamamlama ve satır içi hata mesajları için tümleşik geliştirme ortamı (IDE) desteğine güç verir.
+- Rust Dil Sunucusu `rust-analyzer`, kod tamamlama ve satır içi hata mesajları için tümleşik geliştirme ortamı (IDE) entegrasyonuna güç verir.
 
 Geliştiriciler, Rust ekosistemindeki bu ve benzeri araçları kullanarak sistem düzeyinde kod yazarken yüksek üretkenliklerini koruyabilirler.
 
@@ -43,7 +43,7 @@ Rust dili, daha pek çok farklı kullanıcı kitlesini de desteklemeyi hedefler;
 
 ## Bu Kitap Kimler İçin?
 
-Bu kitap, daha önce başka bir programlama dilinde kod yazdığınızı varsayar; ancak bunun hangi dil olduğuna dair herhangi bir ön kabulde bulunmaz. İçeriği, çok çeşitli programlama geçmişlerinden gelen okuyucular için geniş ölçüde erişilebilir kılmaya özen gösterdik. Programlamanın _ne olduğu_ veya programlama mantığıyla nasıl düşünüleceği üzerine uzun uzadıya vakit harcamayacağız. Programlamaya tamamen yeniyseniz, öncelikle doğrudan programlamaya giriş niteliği taşıyan bir kitap okumanız sizin için çok daha faydalı olacaktır.
+Bu kitap, daha önce başka bir programlama dilinde kod yazdığınızı varsayar; ancak bunun hangi dil olduğuna dair herhangi bir ön kabulde bulunmaz. İçeriği, çok çeşitli programlama geçmişlerinden gelen okuyucular için geniş ölçüde erişilebilir kılmaya özen gösterdik. Programlamanın _ne olduğu_ veya programlama mantığıyla nasıl düşünüleceği üzerine uzun uzadıya vakit harcamayacağız. Programlamaya tamamen yeniyseniz öncelikle doğrudan programlamaya giriş niteliği taşıyan bir kitap okumanız sizin için çok daha faydalı olacaktır.
 
 ## Bu Kitap Nasıl Kullanılır?
 
@@ -51,9 +51,9 @@ Genel olarak bu kitap, bölümleri baştan sona sırasıyla okuduğunuzu varsaya
 
 Bu kitapta iki tür bölüm bulacaksınız: kavram bölümleri ve proje bölümleri. Kavram bölümlerinde Rust'ın belirli bir yönünü öğreneceksiniz. Proje bölümlerinde ise o ana dek öğrendiklerinizi uygulayarak birlikte küçük programlar geliştireceğiz. Bölüm 2, Bölüm 12 ve Bölüm 21 proje bölümleridir; geri kalanlar ise kavram bölümleridir.
 
-**Bölüm 1**, Rust'ın nasıl kurulacağını, “Merhaba, dünya!” programının nasıl yazılacağını ve Rust'ın paket yöneticisi ve derleme aracı olan Cargo'nun nasıl kullanılacağını açıklar. **Bölüm 2**, bir sayı tahmin oyunu geliştirmenizi sağlayarak Rust'ta program yazmaya uygulamalı bir giriş sunar. Burada kavramları genel hatlarıyla ele alırız; ek ayrıntıları ise ilerleyen bölümler sağlar. Hemen kolları sıvayıp pratik yapmak istiyorsanız, Bölüm 2 tam size göredir. Bir sonraki konuya geçmeden önce her ayrıntıyı öğrenmeyi tercih eden titiz bir okuyucuysanız, Bölüm 2'yi atlayıp doğrudan diğer programlama dillerindekilere benzer Rust özelliklerini ele alan **Bölüm 3**'e geçmek isteyebilirsiniz; daha sonra öğrendiğiniz ayrıntıları uygulayacağınız bir proje üzerinde çalışmak istediğinizde Bölüm 2'ye geri dönebilirsiniz.
+**Bölüm 1**, Rust'ın nasıl kurulacağını, "Merhaba, dünya!" programının nasıl yazılacağını ve Rust'ın paket yöneticisi ve derleme aracı olan Cargo'nun nasıl kullanılacağını açıklar. **Bölüm 2**, bir sayı tahmin oyunu geliştirmenizi sağlayarak Rust'ta program yazmaya uygulamalı bir giriş sunar. Burada kavramları genel hatlarıyla ele alırız; ek ayrıntıları ise ilerleyen bölümler sağlar. Hemen kolları sıvayıp pratik yapmak istiyorsanız Bölüm 2 tam size göredir. Bir sonraki konuya geçmeden önce her ayrıntıyı öğrenmeyi tercih eden titiz bir okuyucuysanız Bölüm 2'yi atlayıp doğrudan diğer programlama dillerindekilere benzer Rust özelliklerini ele alan **Bölüm 3**'e geçmek isteyebilirsiniz; daha sonra öğrendiğiniz ayrıntıları uygulayacağınız bir proje üzerinde çalışmak istediğinizde Bölüm 2'ye geri dönebilirsiniz.
 
-**Bölüm 4**'te Rust'ın *sahiplik (ownership)* sistemini öğreneceksiniz. **Bölüm 5**, struct'ları (yapıları) ve metotları ele alır. **Bölüm 6** ise enum'ları, `match` ifadelerini ve `if let` ile `let...else` kontrol akışı yapılarını kapsar. Kendi özel türlerinizi oluşturmak için struct'ları ve enum'ları kullanacaksınız.
+**Bölüm 4**'te Rust'ın *sahiplik (ownership)* sistemini öğreneceksiniz. **Bölüm 5**, struct'ları ve metotları ele alır. **Bölüm 6** ise enum'ları, `match` ifadelerini ve `if let` ile `let...else` kontrol akışı yapılarını kapsar. Kendi özel türlerinizi oluşturmak için struct'ları ve enum'ları kullanacaksınız.
 
 **Bölüm 7**'de Rust'ın modül sistemini ve kodunuz ile herkese açık uygulama programlama arayüzünüzü (API) düzenlemeye yönelik gizlilik kurallarını öğreneceksiniz. **Bölüm 8**, standart kütüphanenin sunduğu yaygın koleksiyon veri yapılarını ele alır: vektörler, string'ler ve hash map'ler. **Bölüm 9**, Rust'ın hata yönetimi felsefesini ve tekniklerini inceler.
 
@@ -73,7 +73,7 @@ Bu kitabı okumanın yanlış bir yolu yoktur: İlerideki bölümlere atlamak is
 
 <span id="ferris"></span>
 
-Rust öğrenme sürecinin önemli bir parçası, derleyicinin gösterdiği hata mesajlarını nasıl okuyacağınızı öğrenmektir: Bu mesajlar sizi çalışan koda doğru yönlendirecektir. Bu doğrultuda kitap boyunca derlenmeyen pek çok örneği, derleyicinin her durumda size göstereceği hata mesajıyla birlikte paylaşacağız. Rastgele bir kod örneğini yazıp çalıştırmayı denediğinizde derlenmeyebileceğini unutmayın! Çalıştırmak istediğiniz örneğin bilerek hata üretmek üzere yazılıp yazılmadığını görmek için çevresindeki metni mutlaka okuyun. Çoğu durumda, derlenmeyen her kodun doğru sürümüne sizi adım adım ulaştıracağız. Ferris de çalışması amaçlanmayan kodları ayırt etmenize yardımcı olacaktır:
+Rust öğrenme sürecinin önemli bir parçası, derleyicinin gösterdiği hata mesajlarını nasıl okuyacağınızı öğrenmektir: Bu mesajlar sizi çalışan koda doğru yönlendirecektir. Bu doğrultuda kitap boyunca derlenmeyen pek çok örneği, derleyicinin her durumda size göstereceği hata mesajıyla birlikte paylaşacağız. Rastgele bir kod örneğini yazıp çalıştırmayı denediğinizde derlenmeyebileceğini unutmayın! Çalıştırmak istediğiniz örneğin bilerek hata üretmek üzere yazılıp yazılmadığını görmek için çevresindeki metni mutlaka okuyun. Ferris de çalışması amaçlanmayan kodları ayırt etmenize yardımcı olacaktır:
 
 | Ferris                                                                                                                | Anlamı                             |
 | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -83,11 +83,11 @@ Rust öğrenme sürecinin önemli bir parçası, derleyicinin gösterdiği hata 
 
 Çoğu durumda, derlenmeyen her kodun doğru sürümüne sizi adım adım ulaştıracağız.
 
-> Not: Rust derleyicisi (`rustc`), hata ve uyarı mesajlarını İngilizce olarak üretir; ancak hata kodları (örneğin `E0382`), satır işaretçileri ve `help:` önerileri son derece açık ve yol göstericidir. Kendi terminalinizde göreceğiniz çıktılarla birebir eşleşmesi için kitap boyunca derleyici mesajlarını orijinal haliyle koruyup Türkçe açıklamalarla ayrıntılı biçimde ele alacağız. Ayrıca karşılaştığınız herhangi bir hata kodunun kapsamlı açıklamasına terminalde `rustc --explain E0382` gibi bir komutla dilediğiniz an ulaşabilirsiniz.
+> Not: Rust derleyicisi (`rustc`), hata ve uyarı mesajlarını İngilizce olarak üretir; ancak hata kodları (örneğin `E0382`), satır işaretçileri ve `help:` önerileri son derece açık ve yol göstericidir. Kendi terminalinizde göreceğiniz çıktılarla birebir eşleşmesi için kitap boyunca derleyici mesajlarını orijinal hâliyle koruyup Türkçe açıklamalarla ayrıntılı biçimde ele alacağız. Ayrıca karşılaştığınız herhangi bir hata kodunun kapsamlı açıklamasına terminalde `rustc --explain E0382` gibi bir komutla dilediğiniz an ulaşabilirsiniz.
 
 ## Kaynak Kod
 
-Bu kitabın oluşturulduğu orijinal İngilizce kaynak dosyalarına [GitHub üzerindeki resmi `rust-lang/book` deposundan][book], elinizdeki Türkçe çevirinin kaynak dosyalarına ise [`hakantr/kitap-rs` deposundan][kitap-rs] ulaşabilirsiniz.
+Bu kitabın oluşturulduğu orijinal İngilizce kaynak dosyalarına [GitHub üzerindeki resmî `rust-lang/book` deposundan][book], elinizdeki Türkçe çevirinin kaynak dosyalarına ise [`hakantr/kitap-rs` deposundan][kitap-rs] ulaşabilirsiniz.
 
 [book]: https://github.com/rust-lang/book/tree/main/src
 [kitap-rs]: https://github.com/hakantr/kitap-rs

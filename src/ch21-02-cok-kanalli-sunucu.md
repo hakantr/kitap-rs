@@ -49,7 +49,7 @@ Bizi hizmet reddi (*Denial of Service* — *DoS*) saldırılarından korumak iç
 
 Dolayısıyla sınırsız sayıda thread başlatmak yerine, havuzda bekleyen sabit sayıda thread bulunduracağız. Gelen istekler işlenmek üzere havuza gönderilir. Havuz, gelen isteklerden oluşan bir kuyruk tutar. Havuzdaki thread'lerin her biri bu kuyruktan bir istek çeker, isteği işler ve ardından kuyruktan başka bir istek ister. Bu tasarımla en fazla _`N`_ isteği eşzamanlı olarak işleyebiliriz; burada _`N`_ thread sayısıdır. Thread'lerin her biri uzun süren bir isteğe yanıt veriyorsa, sonradan gelen istekler yine kuyrukta birikebilir; ancak o noktaya ulaşmadan önce ele alabileceğimiz uzun süreli istek sayısını artırmış oluruz.
 
-Bu teknik, bir web sunucusunun işleme kapasitesini artırmanın pek çok yolundan yalnızca biridir. İnceleyebileceğiniz diğer seçenekler arasında *fork/join* modeli, tek kanallı asenkron G/Ç (*single-threaded async I/O*) modeli ve çok kanallı asenkron G/Ç (*multithreaded async I/O*) modeli yer alır. Bu konuya ilgi duyuyorsanız diğer çözümler hakkında daha fazla okuma yapabilir ve bunları uygulamayı deneyebilirsiniz; Rust gibi alt seviyeli bir dille bu seçeneklerin tamamı mümkündür.
+Bu teknik, bir web sunucusunun işleme kapasitesini artırmanın pek çok yolundan yalnızca biridir. İnceleyebileceğiniz diğer seçenekler arasında *fork/join* modeli, tek thread'li asenkron G/Ç (*single-threaded async I/O*) modeli ve çok thread'li asenkron G/Ç (*multithreaded async I/O*) modeli yer alır. Bu konuya ilgi duyuyorsanız diğer çözümler hakkında daha fazla okuma yapabilir ve bunları uygulamayı deneyebilirsiniz; Rust gibi alt seviyeli bir dille bu seçeneklerin tamamı mümkündür.
 
 Bir thread havuzu uygulamaya başlamadan önce, havuzu kullanmanın nasıl görünmesi gerektiği üzerine konuşalım. Kod tasarlamaya çalışırken önce istemci arayüzünü (*client interface*) yazmak tasarımınıza yön vermeye yardımcı olabilir. Kodun API'sini, onu çağırmak istediğiniz biçimde yapılandırarak yazın; işlevselliği uygulayıp ardından açık (*public*) API'yi tasarlamak yerine, önce bu yapıyı kurup işlevselliği onun içinde uygulayın.
 
@@ -63,7 +63,7 @@ Bölüm 12'deki projede test güdümlü geliştirmeyi (*test-driven development*
 
 #### Her İstek İçin Bir Thread Başlatmak
 
-İlk olarak, her bağlantı için gerçekten yeni bir thread oluştursaydı kodumuzun nasıl görüneceğini inceleyelim. Daha önce belirttiğimiz gibi, sınırsız sayıda thread başlatma olasılığının doğuracağı sorunlar nedeniyle nihai planımız bu değil; ancak önce çalışan çok kanallı bir sunucu elde etmek için iyi bir başlangıç noktasıdır. Ardından iyileştirme olarak thread havuzunu ekleyeceğiz ve iki çözümü karşılaştırmak daha kolay olacak.
+İlk olarak, her bağlantı için gerçekten yeni bir thread oluştursaydı kodumuzun nasıl görüneceğini inceleyelim. Daha önce belirttiğimiz gibi, sınırsız sayıda thread başlatma olasılığının doğuracağı sorunlar nedeniyle nihai planımız bu değil; ancak önce çalışan çok thread'li (*multithreaded*) bir sunucu elde etmek için iyi bir başlangıç noktasıdır. Ardından iyileştirme olarak thread havuzunu ekleyeceğiz ve iki çözümü karşılaştırmak daha kolay olacak.
 
 Liste 21-11, `for` döngüsü içinde her akışı ele almak üzere yeni bir thread başlatmak için `main` fonksiyonunda yapılacak değişiklikleri göstermektedir.
 
@@ -159,7 +159,7 @@ Kodu bir kez daha kontrol edelim:
 {{#include ../listings/ch21-web-server/no-listing-02-impl-threadpool-new/output.txt}}
 ```
 
-Şimdi hata, `IsParcacigiHavuzu` üzerinde bir `calistir` metodumuz olmadığı için ortaya çıkıyor. [“Sınırlı Sayıda Thread Oluşturmak”](#creating-a-similar-interface-for-a-finite-number-of-threads)<!-- ignore --> bölümünden hatırlayacağınız üzere, thread havuzumuzun `thread::spawn` fonksiyonuna benzer bir arayüze sahip olmasına karar vermiştik. Ek olarak `calistir` fonksiyonunu, kendisine verilen kapanışı alıp çalıştırması için havuzdaki boşta bekleyen bir thread'e verecek biçimde uygulayacağız.
+Şimdi hata, `IsParcacigiHavuzu` üzerinde bir `calistir` metodumuz olmadığı için ortaya çıkıyor. [“Sınırlı Sayıda Thread Oluşturmak”](#creating-a-similar-interface-for-a-finite-number-of-threads)<!-- ignore --> bölümünden hatırlayacağınız üzere, thread havuzumuzun `thread::spawn` fonksiyonuna benzer bir arayüze sahip olmasına karar vermiştik. Ek olarak `calistir` metodunu, kendisine verilen kapanışı alıp çalıştırması için havuzdaki boşta bekleyen bir thread'e verecek biçimde uygulayacağız.
 
 `IsParcacigiHavuzu` üzerindeki `calistir` metodunu parametre olarak bir kapanış alacak şekilde tanımlayacağız. Bölüm 13'teki [“Yakalanan Değerleri Kapanışların Dışına Taşımak”][moving-out-of-closures]<!-- ignore --> alt bölümünden hatırlayacağınız üzere, kapanışları üç farklı trait ile parametre olarak alabiliriz: `Fn`, `FnMut` ve `FnOnce`. Burada ne tür bir kapanış kullanacağımıza karar vermemiz gerekiyor. Sonunda standart kütüphanedeki `thread::spawn` uygulamasına benzer bir şey yapacağımızı bildiğimiz için `thread::spawn` imzasının parametresi üzerinde hangi sınırların (*bounds*) bulunduğuna bakabiliriz. Belgelendirme bize şunu gösterir:
 
@@ -311,7 +311,7 @@ Ele alacağımız bir sonraki sorun, `thread::spawn` fonksiyonuna verilen kapan�
 
 Az önce oluşturduğumuz `Calisan` struct'larının, çalıştırılacak kodu `IsParcacigiHavuzu` içinde tutulan bir kuyruktan almasını ve çalıştırılmak üzere kendi thread'ine göndermesini istiyoruz.
 
-Bölüm 16'da öğrendiğimiz kanallar —iki thread arasında iletişim kurmanın basit bir yolu— bu kullanım senaryosu için biçilmiş kaftandır. Görev kuyruğu işlevi görmesi için bir kanal kullanacağız ve `calistir` metodu `IsParcacigiHavuzu`'ndan `Calisan` örneklerine bir görev gönderecek; `Calisan` örnekleri de bu görevi kendi thread'ine iletecektir. Planımız şöyledir:
+Bölüm 16'da öğrendiğimiz mesajlaşma kanalları (`mpsc` kanalları) —iki thread arasında iletişim kurmanın basit bir yolu— bu kullanım senaryosu için biçilmiş kaftandır. Görev kuyruğu işlevi görmesi için bir kanal kullanacağız ve `calistir` metodu `IsParcacigiHavuzu`'ndan `Calisan` örneklerine bir görev gönderecek; `Calisan` örnekleri de bu görevi kendi thread'ine iletecektir. Planımız şöyledir:
 
 1. `IsParcacigiHavuzu` bir kanal oluşturacak ve gönderici ucunu (`gonderici`) elinde tutacak.
 2. Her `Calisan` alıcı ucunu (`alici`) elinde tutacak.
@@ -448,7 +448,7 @@ warning: `merhaba` (lib) generated 2 warnings
 Çalışan 2 bir görev aldı; çalıştırılıyor.
 ```
 
-Başardık! Artık bağlantıları eşzamansız olarak yürüten bir thread havuzumuz var. Hiçbir zaman dörtten fazla thread oluşturulmadığından, sunucu çok sayıda istek alsa bile sistemimiz aşırı yüklenmeyecektir. _/sleep_ yoluna bir istek yaparsak sunucu, diğer istekleri başka thread'lerde çalıştırarak yanıtlamaya devam edebilecektir.
+Başardık! Artık bağlantıları birbirini bekletmeden (eşzamansız olarak) yürüten bir thread havuzumuz var. Hiçbir zaman dörtten fazla thread oluşturulmadığından, sunucu çok sayıda istek alsa bile sistemimiz aşırı yüklenmeyecektir. _/sleep_ yoluna bir istek yaparsak sunucu, diğer istekleri başka thread'lerde çalıştırarak yanıtlamaya devam edebilecektir.
 
 > Not: Aynı anda birden fazla tarayıcı penceresinde _/sleep_ adresini açarsanız, sayfalar beşer saniyelik aralıklarla teker teker yüklenebilir. Bazı web tarayıcıları, önbellekleme (*caching*) nedenleriyle aynı isteğin birden fazla örneğini sırayla yürütür. Bu kısıtlama bizim web sunucumuzdan kaynaklanmamaktadır.
 

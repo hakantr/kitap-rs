@@ -59,8 +59,8 @@ ihtiyacımız vardır.
 Ardından trait nesnelerini tutan bir vektör tanımlayabiliriz. Bir _trait nesnesi
 (trait object)_, hem belirttiğimiz trait'i uygulayan bir türün örneğine hem de
 çalışma zamanında o tür üzerindeki trait metotlarını bulmak için kullanılan bir
-tabloya işaret eder. Bir referans veya `Box<T>` akıllı işaretçisi gibi bir tür
-işaretçi, ardından `dyn` anahtar kelimesi ve son olarak ilgili trait'i
+tabloya işaret eder. `&` referansı veya `Box<T>` akıllı işaretçisi gibi bir
+işaretçi türünü, ardından `dyn` anahtar kelimesini ve son olarak ilgili trait'i
 belirterek bir trait nesnesi oluştururuz. (Trait nesnelerinin neden bir işaretçi
 kullanmak zorunda olduğunu Bölüm 20'deki
 [“Dinamik Boyutlu Türler ve `Sized` Trait'i”][dynamically-sized]<!-- ignore -->
@@ -134,9 +134,9 @@ metot tanımlayacağız.
 </Listing>
 
 Bu yapı, trait sınırlarına sahip bir jenerik tür parametresi kullanan bir struct
-tanımlamaktan farklı çalışır. Bir jenerik tür parametresinin yerine her
+tanımlamaktan farklı çalışır. Jenerik bir tür parametresinin yerine her
 seferinde yalnızca tek bir somut tür geçirilebilirken, trait nesneleri çalışma
-zamanında birden fazla somut türün trait nesnesinin yerini almasına olanak
+zamanında kendilerinin yerine birden fazla somut türün geçebilmesine olanak
 tanır. Örneğin `Ekran` struct'ını Liste 18-6'daki gibi jenerik bir tür ve bir
 trait sınırı kullanarak tanımlayabilirdik.
 

@@ -35,7 +35,7 @@ API sunar. Rust standart kütüphanesi _1:1_ thread uygulama modelini kullanır;
 yani program, dil düzeyindeki her bir thread için bir işletim sistemi thread'i
 kullanır. 1:1 modeline kıyasla farklı ödünleşimler sunan başka thread
 modellerini uygulayan crate'ler de mevcuttur. (Bir sonraki bölümde göreceğimiz
-Rust'ın `async` sistemi de eşzamanlılığa farklı bir yaklaşım sunar.)
+üzere, Rust'ın `async` sistemi de eşzamanlılığa farklı bir yaklaşım sunar.)
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -192,7 +192,7 @@ anda çalışıp çalışmayacağını etkileyebilir.
 
 > Not: `JoinHandle<T>` türündeki `<T>` parametresi, `thread::spawn` içine
 > verdiğiniz kapanışın dönüş değerinin türünü temsil eder (yukarıdaki
-> örneklerde kapanış bir değer döndürmediği için bu tür `JoinHandle<()>`'dir).
+> örneklerde kapanış bir değer döndürmediği için bu tür `JoinHandle<()>` olur).
 > `join` metodu ise `std::thread::Result<T>` döndürür: oluşturulan thread
 > sorunsuz tamamlandığında kapanışın ürettiği değer `Ok(deger)` içinde döner;
 > ancak oluşturulan thread çalışırken paniklerse (`panic!`), bu panik ana
@@ -233,7 +233,7 @@ bu kod henüz çalışmayacaktır.
 </Listing>
 
 Kapanış `vektor` değişkenini kullandığı için `vektor`'ü yakalar ve kapanışın
-çevresinin bir parçası haline getirir. `thread::spawn` bu kapanışı yeni bir
+çevresinin bir parçası hâline getirir. `thread::spawn` bu kapanışı yeni bir
 thread içinde çalıştırdığından, yeni thread'in içinden `vektor` değerine
 erişebilmemiz gerekir. Ancak bu örneği derlediğimizde aşağıdaki hatayı alırız:
 
@@ -242,10 +242,10 @@ erişebilmemiz gerekir. Ancak bu örneği derlediğimizde aşağıdaki hatayı a
 ```
 
 Rust, `vektor` değişkenini nasıl yakalayacağını _çıkarsar (infer)_ ve `println!`
-yalnızca `vektor`'e bir referans duyduğu için kapanış `vektor`'ü ödünç almaya
-çalışır. Ancak ortada bir sorun vardır: Rust, oluşturulan thread'in ne kadar
-süre çalışacağını bilemez; dolayısıyla `vektor` referansının her zaman geçerli
-kalıp kalmayacağını da bilemez.
+yalnızca `vektor`'e ait bir referansa ihtiyaç duyduğu için kapanış `vektor`'ü
+ödünç almaya çalışır. Ancak ortada bir sorun vardır: Rust, oluşturulan thread'in
+ne kadar süre çalışacağını bilemez; dolayısıyla `vektor` referansının her zaman
+geçerli kalıp kalmayacağını da bilemez.
 
 Liste 16-4, `vektor` referansının geçersiz kalma olasılığının çok daha yüksek
 olduğu bir senaryoyu göstermektedir.
@@ -281,8 +281,9 @@ help: to force the closure to take ownership of `vektor` (and any other referenc
 
 Kapanıştan önce `move` anahtar kelimesini ekleyerek, Rust'ın değerleri ödünç
 alması gerektiğini çıkarsamasına izin vermek yerine kapanışı kullandığı
-değerlerin sahipliğini almaya zorlarız. Liste 16-3 üzerinde yapılan ve Liste
-16-5'te gösterilen bu değişiklik, amaçladığımız gibi derlenecek ve çalışacaktır.
+değerlerin sahipliğini almaya zorlarız. Liste 16-3'teki kodda Liste 16-5'te
+gösterilen değişikliği yaptığımızda, kod amaçladığımız gibi derlenecek ve
+çalışacaktır.
 
 <Listing number="16-5" file-name="src/main.rs" caption="Bir kapanışı kullandığı değerlerin sahipliğini almaya zorlamak için `move` anahtar kelimesini kullanma">
 

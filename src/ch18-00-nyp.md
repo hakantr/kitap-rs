@@ -17,7 +17,7 @@ değildir.
 Bu bölümde, yaygın olarak nesne yönelimli kabul edilen bazı karakteristikleri ve
 bu karakteristiklerin deyimsel Rust'ta nasıl karşılık bulduğunu inceleyeceğiz.
 Ardından nesne yönelimli bir tasarım desenini Rust'ta nasıl uygulayacağınızı
-gösterecek, bu yolun ödünleşimlerini de (*trade-offs*) Rust'ın güçlü
+gösterecek, bu yolun ödünleşimlerini (*trade-offs*) de Rust'ın güçlü
 yönlerinden yararlanan bir çözümle karşılaştırarak tartışacağız.
 
 > Not: Rust çok paradigmalı (*multi-paradigm*) bir dildir: veriyi `struct` ve

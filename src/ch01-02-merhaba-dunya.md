@@ -94,7 +94,7 @@ Bu satırlar `main` adında bir fonksiyon tanımlar. `main` fonksiyonu özeldir:
 
 Fonksiyon gövdesi `{}` içine alınmıştır. Rust, tüm fonksiyon gövdelerinin süslü parantez içine alınmasını zorunlu kılar. Açılış süslü parantezini fonksiyon bildirimiyle aynı satıra koymak ve araya bir boşluk bırakmak iyi bir kodlama stili kabul edilir.
 
-> Not: Rust projeleri genelinde standart bir kod stiline bağlı kalmak isterseniz kodunuzu belirli kurallara göre otomatik biçimlendiren `rustfmt` aracını kullanabilirsiniz (`rustfmt` hakkında daha fazla bilgi için [Ek D][devtools]<!-- ignore --> bölümüne bakın). Rust ekibi bu aracı tıpkı `rustc` gibi standart Rust dağıtımına dahil etmiştir; dolayısıyla bilgisayarınızda halihazırda kurulu olmalıdır!
+> Not: Rust projeleri genelinde standart bir kod stiline bağlı kalmak isterseniz kodunuzu belirli kurallara göre otomatik biçimlendiren `rustfmt` aracını kullanabilirsiniz (`rustfmt` hakkında daha fazla bilgi için [Ek D][devtools]<!-- ignore --> bölümüne bakın). Rust ekibi bu aracı tıpkı `rustc` gibi standart Rust dağıtımına dahil etmiştir; dolayısıyla bilgisayarınızda hâlihazırda kurulu olmalıdır!
 
 `main` fonksiyonunun gövdesi şu kodu barındırır:
 
@@ -154,7 +154,7 @@ Eğer _main.rs_ dosyanız "Merhaba, dünya!" programınızsa bu satır terminali
 
 > Not: Linux, macOS ve PowerShell güvenlik nedeniyle bulunduğunuz dizindeki çalıştırılabilir dosyaları doğrudan adıyla (`main` yazarak) aramaz; yalnızca sistemin `PATH` ortam değişkenindeki dizinlere bakar. Baştaki `./` (veya Windows'ta `.\`) öneki, kabuğa programı **içinde bulunduğunuz dizinden** çalıştırmak istediğinizi açıkça belirtir.
 
-Ruby, Python veya JavaScript gibi dinamik bir dile daha aşinaysanız bir programı derleme ve çalıştırma işlemlerini ayrı adımlar halinde yapmaya alışkın olmayabilirsiniz. Rust, *önceden derlenen (ahead-of-time compiled / AOT)* bir dildir; yani bir programı derleyip ürettiğiniz çalıştırılabilir dosyayı başka birine verebilirsiniz ve o kişi bilgisayarında Rust kurulu olmasa bile programı çalıştırabilir. Birine bir _.rb_, _.py_ veya _.js_ dosyası verirseniz karşı tarafın bilgisayarında sırasıyla bir Ruby, Python veya JavaScript uygulamasının kurulu olması gerekir. Buna karşılık o dillerde programınızı derleyip çalıştırmak için tek bir komut yeterlidir. Dil tasarımında her karar bir ödünleşimdir.
+Ruby, Python veya JavaScript gibi dinamik bir dile daha aşinaysanız bir programı derleme ve çalıştırma işlemlerini ayrı adımlar hâlinde yapmaya alışkın olmayabilirsiniz. Rust, *önceden derlenen (ahead-of-time compiled / AOT)* bir dildir; yani bir programı derleyip ürettiğiniz çalıştırılabilir dosyayı başka birine verebilirsiniz ve o kişi bilgisayarında Rust kurulu olmasa bile programı çalıştırabilir. Birine bir _.rb_, _.py_ veya _.js_ dosyası verirseniz karşı tarafın bilgisayarında sırasıyla bir Ruby, Python veya JavaScript dil uygulamasının (yorumlayıcısının veya çalışma ortamının) kurulu olması gerekir. Buna karşılık o dillerde programınızı derleyip çalıştırmak için tek bir komut yeterlidir. Dil tasarımında her karar bir ödünleşimdir.
 
 Basit programlar için doğrudan `rustc` ile derleme yapmak yeterlidir; ancak projeniz büyüdükçe tüm derleme seçeneklerini yönetmek ve kodunuzu paylaşmayı kolaylaştırmak isteyeceksiniz. Bir sonraki bölümde, gerçek dünya Rust programları yazmanıza yardımcı olacak Cargo aracını tanıtacağız.
 

@@ -5,7 +5,7 @@
 
 ## Zarif Kapanış (Graceful Shutdown) ve Temizlik
 
-Liste 21-20'deki kod, amaçladığımız gibi bir thread (iş parçacığı) havuzu kullanarak isteklere eşzamansız biçimde yanıt veriyor. Doğrudan kullanmadığımız `calisanlar`, `kimlik` ve `thread` alanları hakkında bazı uyarılar alıyoruz; bu uyarılar bize henüz hiçbir temizlik işlemi yapmadığımızı hatırlatıyor. Ana thread'i durdurmak için daha kaba olan <kbd>ctrl</kbd>-<kbd>C</kbd> yöntemini kullandığımızda, diğer tüm thread'ler bir isteğe yanıt vermenin tam ortasında olsalar bile anında durduruluyor.
+Liste 21-20'deki kod, amaçladığımız gibi bir thread (iş parçacığı) havuzu kullanarak isteklere birbirini bekletmeden (eşzamansız biçimde) yanıt veriyor. Doğrudan kullanmadığımız `calisanlar`, `kimlik` ve `thread` alanları hakkında bazı uyarılar alıyoruz; bu uyarılar bize henüz hiçbir temizlik işlemi yapmadığımızı hatırlatıyor. Ana thread'i durdurmak için daha kaba olan <kbd>ctrl</kbd>-<kbd>C</kbd> yöntemini kullandığımızda, diğer tüm thread'ler bir isteğe yanıt vermenin tam ortasında olsalar bile anında durduruluyor.
 
 Şimdi, havuzdaki her bir thread üzerinde `join` çağırmak için `Drop` trait'ini uygulayacağız; böylece thread'ler kapanmadan önce üzerinde çalıştıkları istekleri tamamlayabilecekler. Ardından, thread'lere yeni istek kabul etmeyi bırakıp kapanmaları gerektiğini bildirecek bir mekanizma kuracağız. Bu kodu çalışırken görmek için sunucumuzu, thread havuzunu zarif biçimde kapatmadan önce yalnızca iki isteği kabul edecek şekilde değiştireceğiz.
 
@@ -65,7 +65,7 @@ Yaptığımız tüm değişikliklerle kodumuz artık hiçbir uyarı vermeden der
 
 Bu sorunu düzeltmek için önce `IsParcacigiHavuzu` `drop` uygulamasında, ardından da `Calisan` döngüsünde değişiklik yapmamız gerekecek.
 
-İlk olarak `IsParcacigiHavuzu` `drop` uygulamasını, thread'lerin bitmesini beklemeden önce `gonderici` değerini açıkça düşürecek şekilde değiştireceğiz. Liste 21-23, `gonderici` değerini açıkça düşürmek için `IsParcacigiHavuzu` üzerinde yapılan değişiklikleri gösterir. Thread alanında olduğunun aksine, burada `gonderici` değerini `Option::take` ile `IsParcacigiHavuzu` dışına taşıyabilmek için gerçekten bir `Option` kullanmamız _gerekir_.
+İlk olarak `IsParcacigiHavuzu` `drop` uygulamasını, thread'lerin bitmesini beklemeden önce `gonderici` değerini açıkça düşürecek şekilde değiştireceğiz. Liste 21-23, `gonderici` değerini açıkça düşürmek için `IsParcacigiHavuzu` üzerinde yapılan değişiklikleri gösterir. `thread` alanında olduğunun aksine, burada `gonderici` değerini `Option::take` ile `IsParcacigiHavuzu` dışına taşıyabilmek için gerçekten bir `Option` kullanmamız _gerekir_.
 
 <Listing number="21-23" file-name="src/lib.rs" caption="`Calisan` thread'lerini birleştirmeden önce `gonderici` değerini açıkça düşürmek">
 
@@ -138,7 +138,7 @@ Bu özel çalıştırmanın ilginç bir yönüne dikkat edin: `IsParcacigiHavuzu
 
 > Not: **Gerçek Üretim Sunucularında İşletim Sistemi Sinyalleriyle Zarif Kapanış:** Gerçek dünyada bir sunucu `take(2)` ile değil, işletim sisteminden gelen sonlandırma sinyalleriyle (<kbd>Ctrl</kbd>+<kbd>C</kbd> ile gönderilen `SIGINT` veya konteyner/servis yöneticilerinin gönderdiği `SIGTERM`) zarif kapanışa geçer. Senkron Rust sunucularında `ctrlc` ya da `signal-hook` crate'leri kullanılarak bir kapatma bayrağı/kanalı tetiklenir ve dinleme döngüsü sonlandırılarak `IsParcacigiHavuzu`'nun doğal biçimde kapsam dışına çıkıp `Drop` çalıştırması sağlanır; `axum` ve `tokio` tabanlı asenkron sunucularda ise aynı desen `tokio::signal::ctrl_c()` ve `with_graceful_shutdown` ile kurulur. Ayrıca üretim kodunda `Drop` içinde `calisan.thread.join().unwrap()` yerine `if let Err(hata) = calisan.thread.join() { eprintln!(...); }` kullanmak, olası bir ikili paniğin (*double panic*) süreci anında sonlandırmasını önler.
 
-Tebrikler! Artık projemizi tamamladık; eşzamansız yanıt vermek için bir thread havuzu kullanan temel bir web sunucumuz var. Havuzdaki tüm thread'leri temizleyen zarif bir sunucu kapanışı gerçekleştirebiliyoruz.
+Tebrikler! Artık projemizi tamamladık; birbirini bekletmeden (eşzamansız) yanıt vermek için bir thread havuzu kullanan temel bir web sunucumuz var. Havuzdaki tüm thread'leri temizleyen zarif bir sunucu kapanışı gerçekleştirebiliyoruz.
 
 Referans olması için kodun tamamı aşağıda verilmiştir:
 
@@ -160,7 +160,7 @@ Referans olması için kodun tamamı aşağıda verilmiştir:
 
 Burada daha fazlasını da yapabiliriz! Bu projeyi geliştirmeye devam etmek isterseniz işte birkaç fikir:
 
-- `IsParcacigiHavuzu` türüne ve genel (`pub`) metotlarına daha fazla belgelendirme yorumu ekleyin.
+- `IsParcacigiHavuzu` türüne ve açık (`pub`) metotlarına daha fazla belgelendirme yorumu ekleyin.
 - Kütüphanenin işlevselliği için testler ekleyin.
 - `unwrap` çağrılarını daha sağlam bir hata yönetimiyle değiştirin.
 - Web isteklerine yanıt vermek dışında başka bir görevi yerine getirmek için `IsParcacigiHavuzu` kullanın.

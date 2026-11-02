@@ -94,7 +94,7 @@ deyişle, bir döngüye ihtiyacımız vardır:
 let mut sayfa_basligi_fut = sayfa_basligi(url);
 loop {
     match sayfa_basligi_fut.poll() {
-        Ready(deger) => match sayfa_basligi {
+        Ready(deger) => match deger {
             Some(title) => println!("{url} için başlık {title} idi"),
             None => println!("{url} için başlık yoktu"),
         }
@@ -196,8 +196,8 @@ note: required by a bound in `futures_util::future::join_all::JoinAll`
 Bu hata mesajındaki not, değerleri bellekte taşınmayacaklarını garanti
 eden `Pin` türünün içine koymak —yani değerleri _sabitlemek (pin)_— için `pin!`
 makrosunu kullanmamız gerektiğini söyler. Hata mesajı, `dyn Future<Output = ()>`
-türünün `Unpin` trait'ini uygulaması gerektiği ama şu anda uygulamadığı için
-sabitlemenin zorunlu olduğunu belirtir.
+türünün `Unpin` trait'ini uygulaması gerektiği halde şu anda uygulamadığını, bu
+yüzden de sabitlemenin zorunlu olduğunu belirtir.
 
 `trpl::join_all` fonksiyonu `JoinAll` adında bir struct döndürür. Bu struct,
 `Future` trait'ini uygulamakla sınırlandırılmış bir `F` türü üzerinden
@@ -207,10 +207,10 @@ kalmamamızın nedeni budur.
 
 Ancak burada bir future'ı doğrudan beklemiyoruz. Bunun yerine, `join_all`
 fonksiyonuna bir future koleksiyonu geçirerek yeni bir future olan `JoinAll`
-yapısını oluşturuyoruz. `join_all` fonksiyonunun imzası, koleksiyondaki öğelerin
-türlerinin tamamının `Future` trait'ini uygulamasını gerektirir ve `Box<T>`,
-yalnızca sarmaladığı `T` türü `Unpin` trait'ini uygulayan bir future olduğunda
-`Future` trait'ini uygular.
+struct'ını oluşturuyoruz. `join_all` fonksiyonunun imzası, koleksiyondaki
+öğelerin türlerinin tamamının `Future` trait'ini uygulamasını gerektirir ve
+`Box<T>`, yalnızca sarmaladığı `T` türü `Unpin` trait'ini uygulayan bir future
+olduğunda `Future` trait'ini uygular.
 
 Sindirmesi gereken epey bilgi var! Bunu gerçekten anlayabilmek için `Future`
 trait'inin özellikle sabitleme etrafında nasıl çalıştığına biraz daha derinden
@@ -240,8 +240,8 @@ parametrelerindeki tür bildirimleri gibi çalışır, ancak iki temel farkı va
 - Metodun çağrılabilmesi için `self` değerinin hangi türde olması gerektiğini
   Rust'a bildirir.
 - Herhangi bir tür olamaz. Metodun üzerinde uygulandığı türle, o türe yönelik
-  bir referans ya da akıllı işaretçiyle veya o türe yönelik bir referansı
-  sarmalayan bir `Pin` ile sınırlandırılmıştır.
+  bir referans ya da akıllı işaretçiyle veya o türe yönelik bir referansı (ya da
+  akıllı işaretçiyi) sarmalayan bir `Pin` ile sınırlandırılmıştır.
 
 Bu sözdizimi hakkında daha fazlasını [Bölüm 18][ch-18]<!-- ignore -->'de
 göreceğiz. Şimdilik bir future'ın `Pending` mi yoksa `Ready(Output)` mu olduğunu
@@ -280,7 +280,7 @@ fonksiyonuna geçirmek üzere bir `Vec` içine taşıdığımızda— işler bir
 çetrefilleşir.
 
 Bir future'ı taşıdığımızda —ister `join_all` ile iteratör olarak kullanmak üzere
-bir veri yapısına iterek ister bir fonksiyondan döndürerek olsun— bu aslında
+bir veri yapısına ekleyerek ister bir fonksiyondan döndürerek olsun— bu aslında
 Rust'ın bizim için oluşturduğu durum makinesini taşımak anlamına gelir. Ve
 Rust'taki diğer çoğu türün aksine, Rust'ın async bloklar için oluşturduğu
 future'lar, Şekil 17-4'teki basitleştirilmiş çizimde gösterildiği gibi herhangi
@@ -350,25 +350,26 @@ için taşınamamasıdır.
 
 </figure>
 
-Bununla birlikte çoğu tür, bir `Pin` işaretçisinin arkasında bulunsa bile
-taşınması tamamen güvenli türlerdir. Sabitlemeyi yalnızca öğeler içsel
-referanslar barındırdığında düşünmemiz gerekir. Sayılar ve mantıksal (`bool`)
-değerler gibi ilkel değerler açıktır ki hiçbir içsel referans barındırmadıkları
-için güvenlidir. Rust'ta normalde çalıştığınız çoğu türde de durum böyledir.
-Örneğin bir `Vec` değerini endişelenmeden taşıyabilirsiniz. Şimdiye dek
-gördüklerimize bakılırsa, elinizde bir `Pin<Vec<String>>` olsaydı, kendisine
-başka hiçbir referans olmadığı sürece bir `Vec<String>` değerini taşımak her
-zaman güvenli olmasına rağmen her işi `Pin` tarafından sunulan güvenli ama
-kısıtlayıcı API'ler üzerinden yapmak zorunda kalırdınız. Bu gibi durumlarda
-öğeleri taşımanın sorun olmadığını derleyiciye söylemenin bir yoluna ihtiyacımız
-vardır — işte `Unpin` tam burada devreye girer.
+Bununla birlikte çoğu türün, bir `Pin` işaretçisinin arkasında bulunsa bile
+taşınması tamamen güvenlidir. Sabitlemeyi yalnızca öğeler içsel referanslar
+barındırdığında düşünmemiz gerekir. Sayılar ve mantıksal (`bool`) değerler gibi
+ilkel değerler açıktır ki hiçbir içsel referans barındırmadıkları için
+güvenlidir. Rust'ta normalde çalıştığınız çoğu türde de durum böyledir. Örneğin
+bir `Vec` değerini endişelenmeden taşıyabilirsiniz. Şimdiye dek gördüklerimize
+bakılırsa, elinizde bir `Pin<Vec<String>>` olsaydı, kendisine başka hiçbir
+referans olmadığı sürece bir `Vec<String>` değerini taşımak her zaman güvenli
+olmasına rağmen her işi `Pin` tarafından sunulan güvenli ama kısıtlayıcı API'ler
+üzerinden yapmak zorunda kalırdınız. Bu gibi durumlarda öğeleri taşımanın sorun
+olmadığını derleyiciye söylemenin bir yoluna ihtiyacımız vardır — işte `Unpin`
+tam burada devreye girer.
 
 `Unpin`, Bölüm 16'da gördüğümüz `Send` ve `Sync` trait'lerine benzer bir
 _işaretleyici trait'tir (marker trait)_ ve dolayısıyla kendine ait hiçbir
 işlevselliği yoktur. İşaretleyici trait'ler yalnızca derleyiciye ilgili trait'i
 uygulayan türün belirli bir bağlamda kullanılmasının güvenli olduğunu bildirmek
-için vardır. `Unpin`, söz konusu değerin güvenle taşınıp taşınamayacağına ilişkin
-herhangi bir güvenceyi korumasına gerek _olmadığını_ derleyiciye bildirir.
+için vardır. `Unpin`, ilgili türün söz konusu değerin güvenle taşınıp
+taşınamayacağına ilişkin herhangi bir sabitleme güvencesini sürdürmesine gerek
+_olmadığını_ derleyiciye bildirir.
 
 <!--
   The inline `<code>` in the next block is to allow the inline `<em>` inside it,

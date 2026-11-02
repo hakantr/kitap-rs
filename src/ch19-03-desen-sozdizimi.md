@@ -33,8 +33,8 @@ kitapta onları pek çok kez kullandık. Ancak adlandırılmış değişkenleri 
 `if let` veya `while let` ifadelerinde kullandığınızda dikkat edilmesi gereken
 bir durum ortaya çıkar. Bu ifade türlerinin her biri yeni bir kapsam
 başlattığından, bu ifadelerin içindeki bir desenin parçası olarak bildirilen
-değişkenler — tıpkı diğer tüm değişkenlerde olduğu gibi — yapıların dışındaki
-aynı adlı değişkenleri gölgeler (*shadowing*). Liste 19-11'de `Some(5)`
+değişkenler — tıpkı diğer tüm değişkenlerde olduğu gibi — bu ifadelerin
+dışındaki aynı adlı değişkenleri gölgeler (*shadowing*). Liste 19-11'de `Some(5)`
 değerine sahip `x` adında bir değişken ve `10` değerine sahip `y` adında bir
 değişken bildiriyoruz. Ardından `x` değeri üzerinde bir `match` ifadesi
 oluşturuyoruz. Kodu çalıştırmadan veya okumaya devam etmeden önce `match`
@@ -96,9 +96,9 @@ bölümünde ele alacağız.
 
 ### Birden Fazla Deseni Eşleştirmek
 
-`match` ifadelerinde, desen _veya (or)_ operatörü olan `|` sözdizimini
+`match` ifadelerinde, desen _veya_ (*or*) operatörü olan `|` sözdizimini
 kullanarak birden fazla desenle eşleştirme yapabilirsiniz. Örneğin aşağıdaki
-kodda, `x` değerini `match` kollarına karşı eşleştiriyoruz; ilk kolda bir _veya_
+kodda, `x` değerini `match` kollarıyla eşleştiriyoruz; ilk kolda bir _veya_
 seçeneği bulunuyor, yani `x` değeri bu koldaki değerlerden herhangi biriyle
 eşleşirse o kolun kodu çalışacaktır:
 
@@ -194,8 +194,8 @@ struct'ındaki değerleri içerir.
 
 Tüm alanlar için değişken oluşturmak yerine struct deseninin bir parçası olarak
 hazır değerlerle de ayrıştırma yapabiliriz. Bunu yapmak, diğer alanları
-ayrıştırmak üzere değişkenler oluştururken bazı alanları belirli değerlere karşı
-sınamamıza olanak tanır.
+ayrıştırmak üzere değişkenler oluştururken bazı alanların belirli değerlerle
+eşleşip eşleşmediğini sınamamıza olanak tanır.
 
 Liste 19-14'te, `Nokta` değerlerini üç duruma ayıran bir `match` ifadesi yer
 almaktadır: doğrudan `x` ekseni üzerinde bulunan noktalar (`y = 0` olduğunda
@@ -442,7 +442,7 @@ değişkenini kullanmadığımız için uyarı almayız.
 Yalnızca `_` kullanmak ile alt çizgiyle başlayan bir ad kullanmak arasında ince
 ama önemli bir fark olduğuna dikkat edin: `_x` sözdizimi değeri yine de
 değişkene bağlar, oysa `_` hiçbir bağlama yapmaz. Bu ayrımın önemli olduğu bir
-durumu görmek için Liste 19-21 bize bir hata verecektir.
+durumu gösteren Liste 19-21 bize bir hata verecektir.
 
 <Listing number="19-21" caption="Alt çizgiyle başlayan kullanılmayan bir değişken yine de değeri bağlar ve değerin sahipliğini alabilir.">
 
@@ -585,8 +585,8 @@ kapsamlılık (*exhaustiveness*) denetimi yapmaya çalışmamasıdır.
 Liste 19-11'i tartışırken desen gölgeleme sorunumuzu çözmek için match
 guard'ları kullanabileceğimizden bahsetmiştik. `match` dışındaki değişkeni
 kullanmak yerine `match` ifadesindeki desenin içinde yeni bir değişken
-oluşturduğumuzu hatırlayın. Bu yeni değişken, dışarıdaki değişkenin değerine
-karşı sınama yapamadığımız anlamına geliyordu. Liste 19-27, bu sorunu düzeltmek
+oluşturduğumuzu hatırlayın. Bu yeni değişken, dışarıdaki değişkenin değeriyle
+karşılaştırma yapamadığımız anlamına geliyordu. Liste 19-27, bu sorunu düzeltmek
 için bir match guard'ın nasıl kullanılabileceğini göstermektedir.
 
 <Listing number="19-27" file-name="src/main.rs" caption="Dışarıdaki bir değişkenle eşitliği sınamak için match guard kullanmak">

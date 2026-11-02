@@ -147,7 +147,7 @@ görürüz!
 > Ayrıca kod bloğunun açılış satırına ekleyebileceğiniz `no_run` (kodu derler
 > ama ağ isteği veya dosya yazma gibi yan etkileri çalıştırmaz), `should_panic`
 > (örnek kodun paniklemesini bekler) ve `compile_fail` (hatalı kullanımın derleme
-> zamanında reddedildiğini doğrular) nitelikleriyle belge testlerinizi farklı
+> zamanında reddedildiğini doğrular) öznitelikleriyle belge testlerinizi farklı
 > senaryolara uyarlayabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
@@ -195,16 +195,16 @@ kullanabilirsiniz.
 <span class="caption">Şekil 14-2: Crate'i bir bütün olarak açıklayan yorumu da
 içeren `benim_crate` (`my_crate`) belgelendirmesi</span>
 
-> Not: Rust'taki iki belgelendirme yorumu biçimi arasındaki fark, nitelik
+> Not: Rust'taki iki belgelendirme yorumu biçimi arasındaki fark, öznitelik
 > (*attribute*) sözdizimiyle birebir aynı kuralı izler:
 >
 > - **`///` (Dış belgelendirme yorumu — *outer doc comment*):** Hemen *ardından
 >   gelen* öğeyi (fonksiyon, `struct`, `enum`, `trait` veya `mod` bildirimi)
->   belgeler ve derleyici tarafından `#[doc = "..."]` niteliğine dönüştürülür.
+>   belgeler ve derleyici tarafından `#[doc = "..."]` özniteliğine dönüştürülür.
 >   Ardında belgelenecek bir öğe bulunmazsa derleme hatası oluşur.
 > - **`//!` (İç belgelendirme yorumu — *inner doc comment*):** İçinde *bulunduğu*
 >   kapsayıcıyı (_src/lib.rs_ crate kökünü ya da bir `mod` bloğunu) belgeler ve
->   `#![doc = "..."]` niteliğine dönüştürülür. Bu yüzden dosyanın veya modülün
+>   `#![doc = "..."]` özniteliğine dönüştürülür. Bu yüzden dosyanın veya modülün
 >   en başında, diğer öğelerden önce yer almalıdır.
 >
 > Crates.io üzerinde yayınladığınız her açık kaynaklı kütüphanenin `//!` ve `///`
@@ -223,7 +223,7 @@ kullanan kişiler modül yapısına sizin kadar aşina değildir; dolayısıyla
 crate'iniz geniş bir modül hiyerarşisine sahipse kullanmak istedikleri parçaları
 bulmakta zorlanabilirler.
 
-Bölüm 7'de `pub` anahtar kelimesiyle öğeleri nasıl açık hale getireceğimizi ve
+Bölüm 7'de `pub` anahtar kelimesiyle öğeleri nasıl açık hâle getireceğimizi ve
 `use` anahtar kelimesiyle öğeleri nasıl kapsama dahil edeceğimizi ele almıştık.
 Ancak bir crate geliştirirken size mantıklı gelen iç yapı, kullanıcılarınız için
 pek kullanışlı olmayabilir. Struct'larınızı birden fazla katmandan oluşan bir
@@ -239,7 +239,7 @@ için _kullanışlı değilse_ iç organizasyonunuzu değiştirmek zorunda deği
 yerine `pub use` kullanarak öğeleri yeniden dışa aktarabilir ve gizli iç
 yapınızdan farklı bir açık API yapısı oluşturabilirsiniz. *Yeniden dışa aktarma
 (re-exporting)*, bir konumdaki açık bir öğeyi alır ve sanki diğer konumda
-tanımlanmış gibi başka bir konumda da açık hale getirir.
+tanımlanmış gibi başka bir konumda da açık hâle getirir.
 
 Örneğin sanatsal kavramları modellemek üzere `sanat` adında bir kütüphane
 oluşturduğumuzu varsayalım. Bu kütüphanenin içinde Liste 14-3'te gösterildiği
@@ -304,7 +304,7 @@ dışa aktaran `pub use` deyimleri ekleyebiliriz.
 `cargo doc` aracının bu crate için ürettiği API belgelendirmesi artık yeniden
 dışa aktarımları Şekil 14-4'te gösterildiği gibi ana sayfada listeleyecek ve
 bağlantılayacaktır; böylece `BirincilRenk` ve `IkincilRenk` türleri ile
-`karistir` fonksiyonunu bulmak çok daha kolay hale gelecektir.
+`karistir` fonksiyonunu bulmak çok daha kolay hâle gelecektir.
 
 <img alt="Yeniden dışa aktarımları ana sayfada gösteren `sanat` (`art`) crate'i belgelendirmesi" src="img/trpl14-04.png" class="center" />
 
@@ -328,7 +328,7 @@ edebilirler.
 düzeyde yeniden dışa aktarmak crate'i kullanan kişilerin deneyiminde büyük fark
 yaratabilir. `pub use` deyiminin bir diğer yaygın kullanım alanı ise bir
 bağımlılığın tanımlarını mevcut crate içinde yeniden dışa aktararak söz konusu
-crate'in tanımlarını kendi crate'inizin açık API'sinin bir parçası haline
+crate'in tanımlarını kendi crate'inizin açık API'sinin bir parçası hâline
 getirmektir.
 
 Kullanışlı bir açık API yapısı oluşturmak bilimden çok bir sanattır ve
@@ -555,7 +555,7 @@ durumlarda Cargo, bir crate sürümünü _geri çekmeyi (yanking)_ destekler.
 
 Bir sürümü _geri çekmek (`yank`)_, mevcut bağımlı projelerin çalışmaya devam
 etmesine izin verirken yeni projelerin o sürüme bağımlı olmasını engeller.
-Özünde geri çekme işlemi, halihazırda bir _Cargo.lock_ dosyasına sahip olan tüm
+Özünde geri çekme işlemi, hâlihazırda bir _Cargo.lock_ dosyasına sahip olan tüm
 projelerin bozulmayacağı, ancak gelecekte üretilecek yeni _Cargo.lock_
 dosyalarının geri çekilen bu sürümü kullanmayacağı anlamına gelir.
 

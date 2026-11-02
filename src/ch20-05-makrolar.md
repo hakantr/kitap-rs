@@ -60,7 +60,7 @@ Ardından makro tanımına `macro_rules!` ve tanımladığımız makronun ünlem
 
 Makro tanımlarındaki geçerli desen sözdizimi, Bölüm 19'da ele alınan desen sözdiziminden farklıdır; çünkü makro desenleri değerlerle değil, Rust kodunun yapısıyla eşleştirilir. Gelin Liste 20-35'teki desen parçalarının ne anlama geldiğini adım adım inceleyelim; makro desen sözdiziminin tamamı için [Rust Başvuru Kılavuzu'na (Rust Reference)][ref] göz atabilirsiniz.
 
-İlk olarak tüm deseni çevrelemek için bir çift parantez kullanırız. Desenle eşleşen Rust kodunu tutacak bir değişkeni makro sisteminde bildirmek için dolar işareti (`$`) kullanırız. Dolar işareti, bunun sıradan bir Rust değişkeni değil, bir makro değişkeni olduğunu açıkça gösterir. Ardından, yerine konacak kodda kullanılmak üzere parantez içindeki desenle eşleşen değerleri yakalayan bir çift parantez gelir. `$()` içinde herhangi bir Rust ifadesiyle eşleşen ve bu ifadeye `$x` adını veren `$x:expr` yer alır.
+İlk olarak tüm deseni çevrelemek için bir çift parantez kullanırız. Desenle eşleşen Rust kodunu tutacak bir değişkeni makro sisteminde bildirmek için dolar işareti (`$`) kullanırız. Dolar işareti, bunun sıradan bir Rust değişkeni değil, bir makro değişkeni olduğunu açıkça gösterir. Ardından, yerine geçecek kodda kullanılmak üzere parantez içindeki desenle eşleşen değerleri yakalayan bir çift parantez gelir. `$()` içinde herhangi bir Rust ifadesiyle eşleşen ve bu ifadeye `$x` adını veren `$x:expr` yer alır.
 
 `$()` sonrasındaki virgül, `$()` içindeki yapıyla eşleşen her kod örneği arasında ayırıcı olarak gerçek bir virgül karakterinin bulunması gerektiğini belirtir. `*` sembolü ise kendisinden önce gelen yapının sıfır veya daha fazla kez eşleşebileceğini ifade eder.
 
@@ -184,11 +184,11 @@ Prosedürel makroyu tanımlamaya başlamak için Liste 20-40'taki kodu `merhaba_
 
 </Listing>
 
-Kodu, `TokenStream`'i ayrıştırmaktan sorumlu `merhaba_makro_derive` fonksiyonu ve sözdizimi ağacını dönüştürmekten sorumlu `impl_merhaba_makro` fonksiyonu olarak ikiye ayırdığımıza dikkat edin: Bu ayrım prosedürel makro yazmayı daha kullanışlı hale getirir. Dış fonksiyondaki kod (bu örnekte `merhaba_makro_derive`), göreceğiniz veya oluşturacağınız neredeyse her prosedürel makro crate'inde aynı olacaktır. İç fonksiyonun gövdesinde belirttiğiniz kod (bu örnekte `impl_merhaba_makro`) ise prosedürel makronuzun amacına bağlı olarak değişecektir.
+Kodu, `TokenStream`'i ayrıştırmaktan sorumlu `merhaba_makro_derive` fonksiyonu ve sözdizimi ağacını dönüştürmekten sorumlu `impl_merhaba_makro` fonksiyonu olarak ikiye ayırdığımıza dikkat edin: Bu ayrım prosedürel makro yazmayı daha kullanışlı hâle getirir. Dış fonksiyondaki kod (bu örnekte `merhaba_makro_derive`), göreceğiniz veya oluşturacağınız neredeyse her prosedürel makro crate'inde aynı olacaktır. İç fonksiyonun gövdesinde belirttiğiniz kod (bu örnekte `impl_merhaba_makro`) ise prosedürel makronuzun amacına bağlı olarak değişecektir.
 
 Üç yeni crate tanıttık: `proc_macro`, [`syn`][syn]<!-- ignore --> ve [`quote`][quote]<!-- ignore -->. `proc_macro` crate'i Rust ile birlikte gelir, bu nedenle onu _Cargo.toml_ dosyasındaki bağımlılıklara eklememize gerek kalmadı. `proc_macro` crate'i, derleyicinin kendi kodumuz içinden Rust kodunu okumamıza ve işlememize olanak tanıyan API'sidir.
 
-`syn` crate'i, Rust kodunu bir metinden üzerinde işlem yapabileceğimiz bir veri yapısına ayrıştırır. `quote` crate'i ise `syn` veri yapılarını tekrar Rust koduna dönüştürür. Bu crate'ler, ele almak isteyebileceğimiz her türlü Rust kodunu ayrıştırmayı çok daha kolay hale getirir: Rust kodu için eksiksiz bir ayrıştırıcı (*parser*) yazmak hiç de basit bir iş değildir.
+`syn` crate'i, Rust kodunu bir metinden üzerinde işlem yapabileceğimiz bir veri yapısına ayrıştırır. `quote` crate'i ise `syn` veri yapılarını tekrar Rust koduna dönüştürür. Bu crate'ler, ele almak isteyebileceğimiz her türlü Rust kodunu ayrıştırmayı çok daha kolay hâle getirir: Rust kodu için eksiksiz bir ayrıştırıcı (*parser*) yazmak hiç de basit bir iş değildir.
 
 Kütüphanemizin bir kullanıcısı bir tür üzerinde `#[derive(MerhabaMakro)]` belirttiğinde `merhaba_makro_derive` fonksiyonu çağrılacaktır. Bunun mümkün olmasının nedeni, buradaki `merhaba_makro_derive` fonksiyonuna `proc_macro_derive` özniteliğini eklemiş ve trait adımızla eşleşen `MerhabaMakro` adını belirtmiş olmamızdır; çoğu prosedürel makro bu geleneği izler.
 
@@ -218,9 +218,9 @@ DeriveInput {
 
 </Listing>
 
-Bu struct'ın alanları, ayrıştırdığımız Rust kodunun `ident` (_identifier_, yani tanımlayıcı / ad) değeri `Krepler` olan bir birim struct olduğunu gösterir. Bu struct üzerinde her türlü Rust kodunu tanımlamaya yönelik daha pek çok alan bulunur; daha fazla bilgi için [`DeriveInput` hakkındaki `syn` belgelerine][syn-docs] göz atabilirsiniz.
+Bu struct'ın alanları, ayrıştırdığımız Rust kodunun `ident` (_identifier_, yani tanımlayıcı / ad) değeri `Krepler` olan bir birim struct'ı olduğunu gösterir. Bu struct üzerinde her türlü Rust kodunu tanımlamaya yönelik daha pek çok alan bulunur; daha fazla bilgi için [`DeriveInput` hakkındaki `syn` belgelerine][syn-docs] göz atabilirsiniz.
 
-Birazdan dahil etmek istediğimiz yeni Rust kodunu oluşturacağımız `impl_merhaba_makro` fonksiyonunu tanımlayacağız. Ancak buna geçmeden önce, `derive` makromuzun çıktısının da bir `TokenStream` olduğuna dikkat edin. Döndürülen `TokenStream`, crate kullanıcılarımızın yazdığı koda eklenir; böylece kendi crate'lerini derlediklerinde, değiştirilmiş `TokenStream` içinde sağladığımız ek işlevselliği elde ederler.
+Birazdan, eklemek istediğimiz yeni Rust kodunu üretecek olan `impl_merhaba_makro` fonksiyonunu tanımlayacağız. Ancak buna geçmeden önce, `derive` makromuzun çıktısının da bir `TokenStream` olduğuna dikkat edin. Döndürülen `TokenStream`, crate kullanıcılarımızın yazdığı koda eklenir; böylece kendi crate'lerini derlediklerinde, değiştirilmiş `TokenStream` içinde sağladığımız ek işlevselliği elde ederler.
 
 Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive` fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz. Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının `Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, prosedürel makromuzun hata durumunda paniklemesi gereklidir. Bu örneği `unwrap` kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
 
@@ -236,7 +236,7 @@ Artık öznitelik eklenmiş Rust kodunu bir `TokenStream`'den `DeriveInput` örn
 
 `ast.ident` kullanarak öznitelik eklenmiş türün adını (tanımlayıcısını) içeren bir `Ident` struct örneği elde ederiz. Liste 20-41'deki struct, `impl_merhaba_makro` fonksiyonunu Liste 20-37'deki kod üzerinde çalıştırdığımızda elde edeceğimiz `ident` değerinin `"Krepler"` değerine sahip bir `ident` alanı barındıracağını gösterir. Dolayısıyla Liste 20-42'deki `name` değişkeni, yazdırıldığında Liste 20-37'deki struct'ın adı olan `"Krepler"` metnini verecek bir `Ident` struct örneği içerir.
 
-`quote!` makrosu, döndürmek istediğimiz Rust kodunu tanımlamamıza olanak tanır. Derleyici, `quote!` makrosunun çalışmasının doğrudan sonucundan farklı bir tür beklediği için bunu bir `TokenStream`'e dönüştürmemiz gerekir. Bunu, bu ara temsili tüketen ve gerekli `TokenStream` türünde bir değer döndüren `into` metodunu çağırarak yaparız.
+`quote!` makrosu, döndürmek istediğimiz Rust kodunu tanımlamamıza olanak tanır. Derleyici, `quote!` makrosunun doğrudan ürettiği sonuçtan farklı bir tür beklediği için bunu bir `TokenStream`'e dönüştürmemiz gerekir. Bunu, bu ara temsili tüketen ve gerekli `TokenStream` türünde bir değer döndüren `into` metodunu çağırarak yaparız.
 
 `quote!` makrosu ayrıca oldukça etkileyici şablonlama mekanikleri sunar: `#name` yazabiliriz ve `quote!` bunu `name` değişkenindeki değerle değiştirir. Hatta normal makroların çalışma biçimine benzer tekrarlamalar bile yapabilirsiniz. Kapsamlı bir giriş için [`quote` crate'inin belgelerine][quote-docs] göz atabilirsiniz.
 
@@ -286,7 +286,7 @@ Fonksiyon benzeri makrolar, fonksiyon çağrılarına benzeyen makrolar tanımla
 let sql = sql!(SELECT * FROM posts WHERE id=1);
 ```
 
-Bu makro, içindeki SQL deyimini ayrıştırıp sözdizimsel olarak doğru olup olmadığını denetlerdi; bu da bir `macro_rules!` makrosunun yapabileceğinden çok daha karmaşık bir işlemedir. `sql!` makrosu şöyle tanımlanırdı:
+Bu makro, içindeki SQL deyimini ayrıştırıp sözdizimsel olarak doğru olup olmadığını denetlerdi; bu da bir `macro_rules!` makrosunun yapabileceğinden çok daha karmaşık bir işlemdir. `sql!` makrosu şöyle tanımlanırdı:
 
 ```rust,ignore
 #[proc_macro]
