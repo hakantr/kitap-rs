@@ -247,7 +247,7 @@ Burada dönüş türü için `'a` ömür parametresini belirtmiş olsak bile bu 
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-09-unrelated-lifetime/output.txt}}
 ```
 
-Sorun şudur: `sonuc` yerel değişkeni `en_uzun` fonksiyonunun sonunda kapsam dışına çıkar ve bellekten temizlenir; biz ise fonksiyondan `sonuc` değişkenine bir referans döndürmeye (`cannot return value referencing local variable \`sonuc\``) çalışıyoruz. Sarkan referansı ortadan kaldıracak hiçbir ömür parametresi bildirimi yoktur ve Rust sarkan referans oluşturmamıza izin vermez. Böyle bir durumda en doğru çözüm, referans yerine `String` gibi sahipli bir veri türü döndürmektir; böylece değerin sahipliği çağıran fonksiyona taşınır ve değeri temizleme sorumluluğu çağıran fonksiyona geçer.
+Sorun şudur: `sonuc` yerel değişkeni `en_uzun` fonksiyonunun sonunda kapsam dışına çıkar ve bellekten temizlenir; biz ise fonksiyondan `sonuc` değişkenine bir referans döndürmeye çalışıyoruz (hata mesajındaki `` cannot return value referencing local variable `sonuc` `` ifadesi tam olarak bunu söyler). Sarkan referansı ortadan kaldıracak hiçbir ömür parametresi bildirimi yoktur ve Rust sarkan referans oluşturmamıza izin vermez. Böyle bir durumda en doğru çözüm, referans yerine `String` gibi sahipli bir veri türü döndürmektir; böylece değerin sahipliği çağıran fonksiyona taşınır ve değeri temizleme sorumluluğu çağıran fonksiyona geçer.
 
 Özetle ömür sözdizimi, fonksiyonların çeşitli parametrelerinin ve dönüş değerlerinin ömürlerini birbirine bağlamakla ilgilidir. Bu bağlantılar kurulduktan sonra Rust, bellek açısından güvenli işlemlere izin vermek ve sarkan işaretçiler oluşturacak ya da bellek güvenliğini ihlal edecek işlemleri engellemek için yeterli bilgiye sahip olur.
 
@@ -274,6 +274,20 @@ Bu struct, bir referans olan string dilimini barındıran `bolum` adlı tek bir 
 
 Buradaki `main` fonksiyonu, `roman` değişkeninin sahip olduğu `String` değerinin ilk cümlesine referans tutan bir `OnemliAlinti` örneği oluşturur. `roman` içindeki veri `OnemliAlinti` örneği oluşturulmadan önce zaten mevcuttur. Ayrıca `roman`, `OnemliAlinti` örneği kapsam dışına çıktıktan sonra kapsam dışına çıkar; dolayısıyla `OnemliAlinti` örneğindeki referans geçerlidir.
 
+> Not: Struct tanımındaki `'a` ömür parametresi, bu struct'ın bir veriyi *ödünç aldığını* türün adına kazır: `OnemliAlinti<'a>` değeri, en fazla `'a` ömrü boyunca geçerli olan bir referans taşır. Derleyici bu bilgiyle, struct örneğinin ödünç aldığı veriden daha uzun yaşamasını engeller. Örneğin `roman` değişkenini bir iç kapsamda oluşturup `OnemliAlinti` örneğini o kapsamın dışında kullanmaya çalışırsak, Liste 10-16'dakine benzer bir `` error[E0597]: `roman` does not live long enough `` hatası alırız:
+>
+> ```rust,ignore,does_not_compile
+> let alinti;
+> {
+>     let roman = String::from("Bana İsmail deyin. Birkaç yıl önce...");
+>     let ilk_cumle = roman.split('.').next().unwrap();
+>     alinti = OnemliAlinti { bolum: ilk_cumle };
+> } // `roman` burada düşürülür; ancak `alinti` hâlâ ona başvuruyor
+> println!("{}", alinti.bolum);
+> ```
+>
+> Bir struct'ın referans yerine `String` gibi sahipli bir alan tutması bu kısıtlamayı ortadan kaldırır; ancak o zaman veri kopyalanır veya taşınır. Referans tutan struct'lar, büyük bir veriyi kopyalamadan onun bir parçasına "pencere" açmak istediğiniz durumlar için uygundur.
+
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="lifetime-elision"></a>
@@ -283,7 +297,7 @@ Buradaki `main` fonksiyonu, `roman` değişkeninin sahip olduğu `String` değer
 <a id="ömür-çıkarımı"></a>
 <a id="omur-cikarimi"></a>
 
-### Ömür Çıkarımı
+### Ömür Elizyonu
 
 Her referansın bir ömrü olduğunu ve referans kullanan fonksiyonlar ya da struct'lar için ömür parametreleri belirtmeniz gerektiğini öğrendiniz. Ancak Bölüm 4'teki Liste 4-9'da yazdığımız ve Liste 10-25'te yeniden gösterilen fonksiyon, hem parametresi hem de dönüş türü referans olmasına rağmen hiçbir ömür bildirimi olmadan derlenmişti.
 
@@ -305,9 +319,9 @@ fn ilk_kelime<'a>(s: &'a str) -> &'a str {
 
 Rust tarihinin bu parçası önemlidir; çünkü ileride yeni belirlenimci desenlerin ortaya çıkıp derleyiciye eklenmesi mümkündür. Gelecekte daha da az ömür bildirimi yazmamız gerekebilir.
 
-Rust'ın referans analizine kodlanmış olan bu desenlere _ömür elizyon kuralları_ veya _ömür çıkarımı kuralları_ (*lifetime elision rules* — açık ömür bildirimlerinin yazılmadan atlanabilmesi kuralları) denir. Bunlar programcıların uyması gereken kurallar değildir; derleyicinin göz önünde bulundurduğu bir dizi özel durumdur ve kodunuz bu durumlara uyuyorsa ömürleri açıkça yazmanız gerekmez.
+Rust'ın referans analizine kodlanmış olan bu desenlere _ömür elizyon kuralları (lifetime elision rules)_ denir. *Elizyon* sözcüğü "atlama, düşürme" anlamına gelir: Bu kurallar, belirli kalıplara uyan ömür bildirimlerinin yazılmadan atlanabilmesini sağlar. Bunlar programcıların uyması gereken kurallar değildir; derleyicinin göz önünde bulundurduğu bir dizi özel durumdur ve kodunuz bu durumlara uyuyorsa ömürleri açıkça yazmanız gerekmez.
 
-Elizyon kuralları tam bir çıkarım (*full inference*) sağlamaz. Rust bu kuralları uyguladıktan sonra referansların ömürleri konusunda hâlâ bir belirsizlik kalırsa, derleyici kalan referansların ömrünün ne olması gerektiğini tahmin etmeye çalışmaz. Tahmin yürütmek yerine size bir derleme hatası verir; siz de amaçladığınız ilişkiyi ifade eden ömür bildirimlerini ekleyerek hatayı çözersiniz.
+Elizyon kuralları, tür çıkarımındaki gibi eksiksiz bir çıkarım (*full inference*) sağlamaz. Rust bu kuralları uyguladıktan sonra referansların ömürleri konusunda hâlâ bir belirsizlik kalırsa, derleyici kalan referansların ömrünün ne olması gerektiğini tahmin etmeye çalışmaz. Tahmin yürütmek yerine size bir derleme hatası verir; siz de amaçladığınız ilişkiyi ifade eden ömür bildirimlerini ekleyerek hatayı çözersiniz.
 
 Fonksiyon veya metot parametrelerindeki ömürlere _girdi ömürleri (input lifetimes)_, dönüş değerlerindeki ömürlere ise _çıktı ömürleri (output lifetimes)_ denir.
 
@@ -349,7 +363,7 @@ Birinci kuralı uygulayalım: Her referans parametresi kendi ömrünü alır. Bu
 fn en_uzun<'a, 'b>(x: &'a str, y: &'b str) -> &str {
 ```
 
-Birden fazla girdi ömrü olduğu için ikinci kuralın uygulanamadığını görebilirsiniz. `en_uzun` bir metot değil serbest bir fonksiyon olduğundan ve parametrelerinden hiçbiri `self` olmadığından üçüncü kural da uygulanamaz. Üç kuralın tamamını işlettikten sonra dönüş türünün ömrünün ne olduğunu hâlâ belirleyemedik. Liste 10-20'deki kodu derlemeye çalışırken hata almamızın nedeni tam olarak budur: Derleyici ömür çıkarımı kurallarını sırasıyla uygulamış, ancak imzadaki referansların tüm ömürlerini yine de çözememiştir.
+Birden fazla girdi ömrü olduğu için ikinci kuralın uygulanamadığını görebilirsiniz. `en_uzun` bir metot değil serbest bir fonksiyon olduğundan ve parametrelerinden hiçbiri `self` olmadığından üçüncü kural da uygulanamaz. Üç kuralın tamamını işlettikten sonra dönüş türünün ömrünün ne olduğunu hâlâ belirleyemedik. Liste 10-20'deki kodu derlemeye çalışırken hata almamızın nedeni tam olarak budur: Derleyici ömür elizyon kurallarını sırasıyla uygulamış, ancak imzadaki referansların tüm ömürlerini yine de çözememiştir.
 
 Üçüncü kural yalnızca metot imzalarında devreye girdiğinden, şimdi metot bağlamındaki ömürleri inceleyelim ve bu kural sayesinde metot imzalarında neden çoğu zaman açık ömür bildirimi yazmak zorunda kalmadığımızı görelim.
 
@@ -366,7 +380,7 @@ Birden fazla girdi ömrü olduğu için ikinci kuralın uygulanamadığını gö
 
 Struct alanlarına ait ömür adlarının her zaman `impl` anahtar kelimesinden sonra bildirilmesi ve ardından struct adından sonra kullanılması gerekir; çünkü bu ömürler struct türünün ayrılmaz bir parçasıdır.
 
-`impl` bloğu içindeki metot imzalarında yer alan referanslar, struct alanlarındaki referansların ömrüne bağlı olabileceği gibi onlardan tamamen bağımsız da olabilir. Ayrıca ömür çıkarımı kuralları sayesinde metot imzalarında açık ömür bildirimlerine çoğu zaman gerek kalmaz. Liste 10-24'te tanımladığımız `OnemliAlinti` struct'ını kullanarak birkaç örneğe bakalım.
+`impl` bloğu içindeki metot imzalarında yer alan referanslar, struct alanlarındaki referansların ömrüne bağlı olabileceği gibi onlardan tamamen bağımsız da olabilir. Ayrıca ömür elizyon kuralları sayesinde metot imzalarında açık ömür bildirimlerine çoğu zaman gerek kalmaz. Liste 10-24'te tanımladığımız `OnemliAlinti` struct'ını kullanarak birkaç örneğe bakalım.
 
 İlk olarak tek parametresi `self` referansı olan ve dönüş değeri herhangi bir veriye referans olmayan (`i32` döndüren) `seviye` adlı bir metot tanımlayalım:
 
@@ -374,15 +388,17 @@ Struct alanlarına ait ömür adlarının her zaman `impl` anahtar kelimesinden 
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:1st}}
 ```
 
-`impl` sonrasındaki ömür parametresi bildirimi (`impl<'a>`) ve tür adından sonraki kullanımı (`OnemliAlinti<'a>`) zorunludur; ancak birinci çıkarım kuralı sayesinde `self` referansının ömrünü açıkça bildirmek zorunda değiliz.
+`impl` sonrasındaki ömür parametresi bildirimi (`impl<'a>`) ve tür adından sonraki kullanımı (`OnemliAlinti<'a>`) zorunludur; ancak birinci elizyon kuralı sayesinde `self` referansının ömrünü açıkça bildirmek zorunda değiliz.
 
-Şimdi de üçüncü ömür çıkarımı kuralının devreye girdiği bir örneğe bakalım:
+Şimdi de üçüncü ömür elizyon kuralının devreye girdiği bir örneğe bakalım:
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:3rd}}
 ```
 
-Burada iki girdi ömrü vardır; dolayısıyla Rust birinci ömür çıkarımı kuralını uygulayarak hem `&self` hem de `duyuru` parametrelerine kendi ömürlerini verir. Ardından parametrelerden biri `&self` olduğu için üçüncü kural uyarınca dönüş türü `&self`'in ömrünü alır ve böylece tüm ömürler belirlenmiş olur.
+Burada iki girdi ömrü vardır; dolayısıyla Rust birinci ömür elizyon kuralını uygulayarak hem `&self` hem de `duyuru` parametrelerine kendi ömürlerini verir. Ardından parametrelerden biri `&self` olduğu için üçüncü kural uyarınca dönüş türü `&self`'in ömrünü alır ve böylece tüm ömürler belirlenmiş olur.
+
+> Not: Üçüncü kuralın dönüş türüne `&self`'in ömrünü vermesi her zaman istediğiniz ilişki olmayabilir. Yukarıdaki metot `self.bolum` döndürdüğü için bu varsayılan doğrudur; ancak metot `duyuru` parametresine ait bir referans döndürseydi derleyici, `duyuru`'nun ömrü `&self`'in ömrüyle ilişkilendirilmediği için `lifetime may not live long enough` benzeri bir hata verirdi. Böyle durumlarda imzaya `fn ornek<'b>(&self, duyuru: &'b str) -> &'b str` gibi açık bir ömür bildirimi ekleyerek kastettiğiniz ilişkiyi belirtirsiniz. Rust'ta ayrıca, elizyon kurallarına bırakılan bir ömrü açıkça "atlanmış" olarak işaretleyen `'_` (*anonim ömür*) sözdizimi vardır. Örneğin `fn yazdir(a: OnemliAlinti<'_>)` imzası, `OnemliAlinti` türünün bir referans taşıdığını okuyucuya gösterir ama ömre ad vermeye gerek bırakmaz; derleyici `'_` yerine elizyon kurallarıyla belirlediği ömrü koyar. Başkalarının yazdığı Rust kodunda `impl Trait for Sarmalayici<'_>` ya da `fmt::Formatter<'_>` gibi kullanımlara sıkça rastlayacaksınız.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -439,4 +455,4 @@ Bu bölümde pek çok önemli konuyu ele aldık! Artık jenerik tür parametrele
 
 [references-and-borrowing]: ch04-02-referanslar-ve-odunc-alma.html#referanslar-ve-ödünç-alma
 [string-slices-as-parameters]: ch04-03-dilim-turu.html#parametre-olarak-string-dilimleri
-[reference]: ../reference/trait-bounds.html
+[reference]: https://doc.rust-lang.org/reference/trait-bounds.html

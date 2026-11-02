@@ -86,10 +86,11 @@ görünür:
 
 *DESEN* yuvasında bir değişken adının yer aldığı `let x = 5;` gibi deyimlerde,
 değişken adı yalnızca bir desenin son derece basit bir biçimidir. Rust ifadeyi
-desenle karşılaştırır ve bulduğu tüm adları atar. Dolayısıyla `let x = 5;`
-örneğinde `x`, “burada eşleşen şeyi `x` değişkenine bağla” anlamına gelen bir
-desendir. `x` adı desenin tamamını oluşturduğundan bu desen fiilen “değer ne
-olursa olsun her şeyi `x` değişkenine bağla” anlamına gelir.
+desenle karşılaştırır ve desende bulduğu her ada, o ada karşılık gelen değeri
+atar. Dolayısıyla `let x = 5;` örneğinde `x`, “burada eşleşen şeyi `x`
+değişkenine bağla” anlamına gelen bir desendir. `x` adı desenin tamamını
+oluşturduğundan bu desen fiilen “değer ne olursa olsun her şeyi `x` değişkenine
+bağla” anlamına gelir.
 
 `let` deyiminin desen eşleştirme yönünü daha net görmek için, bir demeti
 ayrıştırmak (*destructure*) üzere `let` ile desen kullanan Liste 19-1'i
@@ -179,13 +180,15 @@ kullandığımız sabitlenmiş değerlerle bu örnek ekrana
 `if let Ok(yas) = yas` satırı, `Ok` varyantının içindeki değeri tutan yeni bir
 `yas` değişkeni tanımlayarak mevcut `yas` değişkenini gölgeler. Bu da
 `if yas > 30` koşulunu o bloğun içine yerleştirmemiz gerektiği anlamına gelir:
-Bu iki koşulu `if let Ok(yas) = yas && yas > 30` şeklinde birleştiremeyiz. 30
-ile karşılaştırmak istediğimiz yeni `yas` değişkeni, süslü parantezle yeni
-kapsam başlayana kadar geçerli değildir.
+Rust 2021 ve daha eski sürümlerde bu iki koşulu
+`if let Ok(yas) = yas && yas > 30` şeklinde birleştiremeyiz; çünkü 30 ile
+karşılaştırmak istediğimiz yeni `yas` değişkeni, süslü parantezle yeni kapsam
+başlayana kadar geçerli değildir. (Rust 2024 Sürümü bu kısıtlamayı kaldırmıştır;
+aşağıdaki nota bakın.)
 
 > Not: Kitabın bu bölümündeki anlatım geleneksel kapsam kuralını gösterse de,
 > **Rust 1.88** (ve **Rust 2024 Sürümü** / `edition = "2024"`) itibarıyla
-> **zincirleme `if let` (*`let` chains*)** özelliği kararlı hale getirilmiştir!
+> **zincirleme `if let` (*`let` chains*)** özelliği kararlı hâle getirilmiştir!
 > Dolayısıyla `edition = "2024"` kullanan güncel Rust derleyicisinde `if let` ve
 > `while let` koşullarını `&&` operatörüyle normal mantıksal ifadelerle veya
 > başka `let` desenleriyle doğrudan birleştirebilirsiniz:
@@ -228,8 +231,9 @@ gösteriyoruz.
 
 Bu örnek sırasıyla `1`, `2` ve ardından `3` yazdırır. `recv` metodu kanalın
 alıcı (*receiver*) ucundan ilk mesajı alır ve bir `Ok(deger)` döndürür. Bölüm
-16'da `recv` metodunu ilk gördüğümüzde hatayı doğrudan `unwrap` ile açmış ya da
-bir `for` döngüsü kullanarak kanal ile bir iteratör olarak etkileşime geçmiştik.
+16'da `recv` metodunu ilk gördüğümüzde dönen `Result` değerini doğrudan `unwrap`
+ile açmış ya da bir `for` döngüsü kullanarak kanalla bir iteratör gibi
+etkileşime geçmiştik.
 Ancak Liste 19-4'ün gösterdiği gibi `while let` de kullanabiliriz; çünkü `recv`
 metodu gönderici var olduğu sürece her mesaj ulaştığında bir `Ok` döndürür,
 gönderici taraf bağlantıyı kestiğinde ise bir `Err` üretir.

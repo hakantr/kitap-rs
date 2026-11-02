@@ -25,9 +25,11 @@ komutlar, `cargo --list` komutunu çalıştırdığınızda da listelenir. Uzant
 >   yoğun ilgi üzerine Cargo'ya yerleşik olarak dahil edilirken, bağımlılıkları
 >   üst sürümlere yükselten `cargo upgrade` komutu bu paketle sunulmaya devam
 >   etmektedir.
-> - **`cargo-watch` (`cargo watch`):** Projenizdeki kaynak dosyaları izleyerek
->   her değişiklikte `cargo check`, `cargo test` veya `cargo run` gibi komutları
->   otomatik olarak yeniden çalıştırır.
+> - **`cargo-watch` (`cargo watch`) ve `bacon`:** Projenizdeki kaynak dosyaları
+>   izleyerek her değişiklikte `cargo check`, `cargo test` veya `cargo run` gibi
+>   komutları otomatik olarak yeniden çalıştırır. `cargo-watch` artık yalnızca
+>   bakım modunda olduğundan, bugün pek çok geliştirici aynı işi gören `bacon`
+>   aracını tercih etmektedir.
 > - **`cargo-nextest` (`cargo nextest`):** Her testi yalıtılmış ayrı bir süreçte
 >   paralel olarak yürüten yeni nesil test koşucusudur; özellikle büyük çalışma
 >   alanlarında standart `cargo test` komutuna kıyasla çok daha hızlı çalışma

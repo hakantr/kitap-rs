@@ -48,7 +48,7 @@ Liste 5-9, programımızın demet kullanan yeni bir sürümünü göstermektedir
 
 </Listing>
 
-Bir açıdan bu program daha iyidir. Demetler veriye biraz yapı kazandırmamızı sağlar ve artık fonksiyona yalnızca tek bir argüman geçiriyoruz. Ancak başka bir açıdan bu sürüm daha belirsizdir: Demetler elemanlarına ad vermez; bu yüzden demetin parçalarına indeks numarasıyla (`boyutlar.0`, `boyutlar.1`) erişmemiz gerekir, bu da yapılan hesaplamanın ne olduğunu ilk bakışta görmeyi zorlaştırır.
+Bir açıdan bu program daha iyidir. Demetler veriye biraz yapı kazandırmamızı sağlar ve artık fonksiyona yalnızca tek bir argüman geçiriyoruz. Ancak başka bir açıdan bu sürüm daha belirsizdir: Demetler elemanlarına ad vermez; bu yüzden demetin parçalarına indeks numarasıyla (`boyutlar.0`, `boyutlar.1`) erişmemiz gerekir; bu da yapılan hesaplamanın ne olduğunu ilk bakışta görmeyi zorlaştırır.
 
 Genişlik ile yüksekliği birbiriyle karıştırmak alan hesaplamasında sonucu değiştirmez, ancak dikdörtgeni ekrana çizmek isteseydik kesinlikle sorun yaratırdı! Genişlik değerinin `0` indeksinde, yükseklik değerinin ise `1` indeksinde yer aldığını sürekli aklımızda tutmamız gerekirdi. Kodumuzu bir başkası kullanacak olsaydı bunu çözmesi ve aklında tutması daha da güçleşirdi. Verimizin anlamını koda yansıtmadığımız için hata yapmaya çok daha açık bir yapı ortaya çıkmıştır.
 
@@ -136,14 +136,14 @@ Artık programı çalıştırdığımızda herhangi bir hata almayız ve aşağ�
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-12/output.txt}}
 ```
 
-Harika! En şık çıktı olmayabilir, ancak bu örneğin tüm alanlarının değerlerini açıkça gösteriyor; bu da hata ayıklama sırasında kesinlikle işimize yarayacaktır. Daha büyük struct'larla çalıştığımızda okuması daha kolay bir çıktı elde etmek isteriz; böyle durumlarda `println!` biçim dizgisinde `{:?}` yerine `{:#?}` kullanabiliriz. Bu örnekte `{:#?}` biçimini kullanmak aşağıdaki çıktıyı üretir:
+Harika! En şık çıktı olmayabilir, ancak bu örneğin tüm alanlarının değerlerini açıkça gösteriyor; bu da hata ayıklama sırasında kesinlikle işimize yarayacaktır. Daha büyük struct'larla çalıştığımızda okuması daha kolay bir çıktı elde etmek isteriz; böyle durumlarda `println!` biçimlendirme metninde `{:?}` yerine `{:#?}` kullanabiliriz. Bu örnekte `{:#?}` biçimini kullanmak aşağıdaki çıktıyı üretir:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/output-only-02-pretty-debug/output.txt}}
 ```
 
 > Not: `println!` ve `format!` gibi biçimlendirme makrolarındaki üç temel gösterimi kısaca şöyle özetleyebiliriz:
-> - `{}` (`std::fmt::Display`): Son kullanıcıya yönelik temiz metin çıktısı üretir. Özel türler için nasıl görüneceği belirsiz olduğundan `#[derive(Display)]` diye otomatik bir türetme yoktur; Bölüm 10'da göreceğimiz gibi `Display` trait'ini kendi türleriniz için elle uygulayabilirsiniz.
+> - `{}` (`std::fmt::Display`): Son kullanıcıya yönelik temiz metin çıktısı üretir. Özel türler için nasıl görüneceği belirsiz olduğundan `#[derive(Display)]` diye otomatik bir türetme yoktur; Bölüm 10'da trait'leri öğrendikten sonra `Display` trait'ini kendi türleriniz için elle uygulayabilirsiniz (bunun bir örneğini Bölüm 20'de göreceğiz).
 > - `{:?}` (`std::fmt::Debug`): Geliştiriciye yönelik tek satırlık hata ayıklama çıktısı üretir; `#[derive(Debug)]` özniteliğiyle otomatik olarak türetilebilir (türün tüm alanları da `Debug` uyguladığı sürece).
 > - `{:#?}` (*okunaklı `Debug`*): Çok alanlı veya iç içe geçmiş büyük veri yapılarını, her alanı girintili olarak ayrı bir satıra yerleştirip okunaklı biçimde yazdırır.
 
@@ -173,7 +173,7 @@ Aşağıda, hem `dikdortgen1` içindeki struct'ın tamamının değeriyle hem de
 
 [the-tuple-type]: ch03-02-veri-turleri.html#the-tuple-type
 [app-c]: ekler-03-turetilebilir-traitler.html
-[println]: ../std/macro.println.html
-[dbg]: ../std/macro.dbg.html
+[println]: https://doc.rust-lang.org/std/macro.println.html
+[dbg]: https://doc.rust-lang.org/std/macro.dbg.html
 [err]: ch12-06-stderr-yonlendirme.html
-[attributes]: ../reference/attributes.html
+[attributes]: https://doc.rust-lang.org/reference/attributes.html

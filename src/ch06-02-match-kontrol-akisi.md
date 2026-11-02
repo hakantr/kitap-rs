@@ -57,7 +57,7 @@ Liste 6-3'te olduğu gibi her kolun yalnızca tek bir değer ürettiği kısa du
 
 Bir arkadaşımızın 50 eyalet çeyrekliğinin tamamını biriktirmeye çalıştığını düşünelim. Bozuk paralarımızı türlerine göre ayırırken her çeyreklikle ilişkili eyaletin adını da yüksek sesle söyleyeceğiz; böylece arkadaşımızın koleksiyonunda henüz olmayan bir eyalet çıkarsa onu koleksiyonuna ekleyebilecek.
 
-Bu kodun `match` ifadesinde, `MadeniPara::YirmiBesKurus` varyantının değerleriyle eşleşen desene `eyalet` adında bir değişken ekliyoruz. Bir `MadeniPara::YirmiBesKurus` değeri eşleştiğinde `eyalet` değişkeni o çeyrekliğin eyalet değerine bağlanır. Ardından bu koldaki kod içinde `eyalet` değişkenini aşağıdaki gibi kullanabiliriz:
+Aşağıdaki kodun `match` ifadesinde, `MadeniPara::YirmiBesKurus` varyantının değerleriyle eşleşen desene `eyalet` adında bir değişken ekliyoruz. Bir `MadeniPara::YirmiBesKurus` değeri eşleştiğinde `eyalet` değişkeni o çeyrekliğin eyalet değerine bağlanır. Ardından bu koldaki kod içinde `eyalet` değişkenini aşağıdaki gibi kullanabiliriz:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-09-variable-in-pattern/src/main.rs:here}}
@@ -132,7 +132,7 @@ Burada `None` durumunu ele almadık; dolayısıyla bu kod hataya yol açacaktır
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/output.txt}}
 ```
 
-> Not: Derleyicinin ürettiği `error[E0004]: non-exhaustive patterns: None not covered` mesajı, *"kapsamlı olmayan desenler: `None` durumu kapsanmadı"* anlamına gelir. Dikkat ederseniz `help:` satırında derleyici, eksik kalan kolu `None => todo!(),` şeklinde kodunuza nasıl ekleyebileceğinizi bile doğrudan gösterir.
+> Not: Derleyicinin ürettiği `` error[E0004]: non-exhaustive patterns: `None` not covered `` mesajı, *"kapsamlı olmayan desenler: `None` durumu kapsanmadı"* anlamına gelir. Dikkat ederseniz `help:` satırında derleyici, eksik kalan kolu `None => todo!(),` şeklinde kodunuza nasıl ekleyebileceğinizi bile doğrudan gösterir.
 
 Rust, olası her durumu kapsamadığımızı bilir; üstelik hangi deseni unuttuğumuzu bile tam olarak söyler! Rust'ta eşleşmeler _kapsamlıdır (exhaustive)_: Kodun geçerli olabilmesi için olası her durumu sonuna kadar, eksiksiz biçimde ele almalıyız. Özellikle `Option<T>` söz konusu olduğunda, Rust `None` durumunu açıkça işlemeyi unutmamızı engelleyerek ortada bir değer yokken (`null` benzeri bir durumdayken) sanki geçerli bir değer varmış gibi varsayımda bulunmamızın önüne geçer; böylece önceki bölümde bahsettiğimiz milyar dolarlık hatayı derleme zamanında imkânsız hâle getirir.
 
@@ -174,5 +174,5 @@ Burada Rust'a önceki kolların desenleriyle eşleşmeyen hiçbir değeri kullan
 
 Desenler ve eşleştirme hakkında [Bölüm 19][ch19-00-patterns]<!-- ignore -->'da ele alacağımız daha pek çok ayrıntı var. Şimdilik, `match` ifadesinin biraz ayrıntılı ve uzun kalabildiği durumlarda oldukça pratik birer alternatif sunan `if let` ve `let...else` yapılarına geçeceğiz.
 
-[tuples]: ch03-02-veri-turleri.html#demet-türü
+[tuples]: ch03-02-veri-turleri.html#the-tuple-type
 [ch19-00-patterns]: ch19-00-desenler.html

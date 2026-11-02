@@ -38,7 +38,7 @@ Büyük/küçük harfe _duyarsız_ arama için yazdığımız yeni test ise sorg
 
 ### `buyuk_kucuk_harf_duyarsiz_ara` Fonksiyonunu Uygulama
 
-Liste 12-21'de gösterilen `buyuk_kucuk_harf_duyarsiz_ara` fonksiyonu, `ara` fonksiyonuyla neredeyse aynı olacaktır. Tek fark, girdi argümanlarının büyük/küçük harf dizilimi ne olursa olsun satırın sorguyu içerip içermediğini kontrol ederken her ikisinin de küçük harfte olması için `sorgu`yu ve her bir `satir`ı küçük harfe dönüştürecek olmamızdır.
+Liste 12-21'de gösterilen `buyuk_kucuk_harf_duyarsiz_ara` fonksiyonu, `ara` fonksiyonuyla neredeyse aynı olacaktır. Tek fark şudur: `sorgu`'yu ve her bir `satir`'ı küçük harfe dönüştüreceğiz; böylece girdi argümanları hangi büyük/küçük harf diziliminde olursa olsun, satırın sorguyu içerip içermediğini kontrol ettiğimiz anda her ikisi de küçük harfli olacaktır.
 
 <Listing number="12-21" file-name="src/lib.rs" caption="Karşılaştırmadan önce sorguyu ve satırı küçük harfe dönüştüren `buyuk_kucuk_harf_duyarsiz_ara` fonksiyonunu tanımlama">
 
@@ -83,7 +83,7 @@ Mantıksal (`bool`) bir değer tutan `buyuk_kucuk_harf_yoksay` alanını ekledik
 
 </Listing>
 
-Son olarak çevre değişkenini kontrol etmemiz gerekiyor. Çevre değişkenleriyle çalışmaya yönelik fonksiyonlar, standart kütüphanenin halihazırda _src/main.rs_ dosyasının en üstünde kapsama dahil ettiğimiz `env` modülünde yer alır. Liste 12-23'te gösterildiği gibi, `IGNORE_CASE` adlı çevre değişkenine herhangi bir değer atanıp atanmadığını öğrenmek için `env` modülündeki `var` fonksiyonunu kullanacağız.
+Son olarak çevre değişkenini kontrol etmemiz gerekiyor. Çevre değişkenleriyle çalışmaya yönelik fonksiyonlar, standart kütüphanenin hâlihazırda _src/main.rs_ dosyasının en üstünde kapsama dahil ettiğimiz `env` modülünde yer alır. Liste 12-23'te gösterildiği gibi, `IGNORE_CASE` adlı çevre değişkenine herhangi bir değer atanıp atanmadığını öğrenmek için `env` modülündeki `var` fonksiyonunu kullanacağız.
 
 <Listing number="12-23" file-name="src/main.rs" caption="`IGNORE_CASE` adlı çevre değişkeninde herhangi bir değer olup olmadığını kontrol etme">
 
@@ -111,7 +111,7 @@ Görünüşe göre bu kısım sorunsuz çalışmaya devam ediyor! Şimdi program
 $ IGNORE_CASE=1 cargo run -- ne siir.txt
 ```
 
-PowerShell kullanıyorsanız çevre değişkenini tanımlamayı ve programı çalıştırmayı ayrı komutlar halinde yazmanız gerekir:
+PowerShell kullanıyorsanız çevre değişkenini tanımlamayı ve programı çalıştırmayı ayrı komutlar hâlinde yazmanız gerekir:
 
 ```console
 PS> $Env:IGNORE_CASE=1; cargo run -- ne siir.txt

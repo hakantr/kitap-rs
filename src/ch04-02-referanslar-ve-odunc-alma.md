@@ -4,7 +4,7 @@
 
 ## Referanslar ve Ödünç Alma
 
-Liste 4-5'teki demet kullanan kodun temel sorunu şudur: `String` değeri `uzunlugu_hesapla` fonksiyonuna taşındığı için, fonksiyon çağrısından sonra bu `String`'i hâlâ kullanabilmek adına onu çağıran fonksiyona geri döndürmek zorunda kalırız. Bunun yerine, `String` değerine bir referans verebiliriz. _Referans (reference)_, bellekteki bir adreste saklanan veriye ulaşmak için takip edebileceğimiz bir adres olması bakımından işaretçiye (*pointer*) benzer; ancak o adresteki verinin sahibi başka bir değişkendir. Sıradan bir işaretçiden farklı olarak referansın, kendi ömrü boyunca belirli bir türden geçerli bir değere işaret edeceği garanti edilir.
+Liste 4-5'teki demet kullanan kodun temel sorunu şudur: `String` değeri `uzunlugu_hesapla` fonksiyonuna taşındığı için, fonksiyon çağrısından sonra bu `String`'i hâlâ kullanabilmek adına onu çağıran fonksiyona geri döndürmek zorunda kalırız. Bunun yerine, `String` değerine bir referans verebiliriz. _Referans (reference)_, bellekteki bir adreste saklanan veriye ulaşmak için takip edebileceğimiz bir adres olması bakımından işaretçiye (*pointer*) benzer; o adresteki verinin sahibi ise başka bir değişkendir. Sıradan bir işaretçiden farklı olarak referansın, kendi ömrü boyunca belirli bir türden geçerli bir değere işaret edeceği garanti edilir.
 
 Değerin sahipliğini devralmak yerine parametre olarak bir değere referans kabul eden `uzunlugu_hesapla` fonksiyonunu şu şekilde tanımlayıp kullanabilirsiniz:
 
@@ -58,7 +58,7 @@ Peki ödünç aldığımız bir şeyi değiştirmeye çalışırsak ne olur? Lis
 {{#include ../listings/ch04-understanding-ownership/listing-04-06/output.txt}}
 ```
 
-Değişkenler varsayılan olarak nasıl değiştirilemez ise referanslar da öyledir. Yalnızca sıradan bir referansına sahip olduğumuz değeri değiştirmemize izin verilmez (hata mesajındaki `*bir_metin` ifadesi `bir_metin` referansının işaret ettiği asıl değeri temsil eder; derleyici, bu değer bir `&` referansı arkasında olduğu için değiştirilebilir olarak ödünç alınamayacağını bildirir).
+Değişkenler varsayılan olarak nasıl değiştirilemez ise referanslar da öyledir. Bir değere yalnızca sıradan (değiştirilemez) bir referansımız varsa o değeri değiştirmemize izin verilmez (hata mesajındaki `*bir_metin` ifadesi `bir_metin` referansının işaret ettiği asıl değeri temsil eder; derleyici, bu değer bir `&` referansı arkasında olduğu için değiştirilebilir olarak ödünç alınamayacağını bildirir).
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="mutable-references"></a>

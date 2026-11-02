@@ -64,6 +64,30 @@ Makro tanımlarındaki geçerli desen sözdizimi, Bölüm 19'da ele alınan dese
 
 `$()` sonrasındaki virgül, `$()` içindeki yapıyla eşleşen her kod örneği arasında ayırıcı olarak gerçek bir virgül karakterinin bulunması gerektiğini belirtir. `*` sembolü ise kendisinden önce gelen yapının sıfır veya daha fazla kez eşleşebileceğini ifade eder.
 
+> Not: `expr` yalnızca _parça belirleyicilerden (fragment specifiers)_ biridir. Sık kullanılan diğerleri arasında bir tanımlayıcıyla eşleşen `ident`, bir türle eşleşen `ty`, bir hazır değerle eşleşen `literal`, bir desenle eşleşen `pat`, bir kod bloğuyla eşleşen `block` ve herhangi bir tek belirteç ağacıyla eşleşen `tt` sayılabilir. Tekrar operatörü olarak `*` (sıfır veya daha fazla) yanında `+` (bir veya daha fazla) ve `?` (sıfır veya bir) da kullanılabilir. Bir makro birden fazla kola sahip olabilir; kollar yukarıdan aşağıya sırayla denenir ve eşleşen ilk kol seçilir:
+>
+> ```rust
+> macro_rules! selamla {
+>     () => {
+>         println!("Merhaba!")
+>     };
+>     ($isim:expr) => {
+>         println!("Merhaba, {}!", $isim)
+>     };
+>     ($($isim:expr),+) => {
+>         $( println!("Merhaba, {}!", $isim); )+
+>     };
+> }
+>
+> fn main() {
+>     selamla!();
+>     selamla!("Ayşe");
+>     selamla!("Ali", "Veli");
+> }
+> ```
+>
+> `#[macro_export]` ile işaretlenmiş bir makro, tanımlandığı crate'in kök kapsamında yer alıyormuş gibi davranır; bu yüzden başka bir crate'ten `use makro_crate::selamla;` yazarak onu tıpkı bir fonksiyon gibi kapsama dahil edebilirsiniz.
+
 Bu makroyu `vec![1, 2, 3];` şeklinde çağırdığımızda `$x` deseni `1`, `2` ve `3` ifadeleriyle üç kez eşleşir.
 
 Şimdi bu kolla ilişkili kod gövdesindeki desene bakalım: `$()*` içindeki `temp_vec.push()` ifadesi, desenin kaç kez eşleştiğine bağlı olarak desendeki `$()` ile eşleşen her parça için sıfır veya daha fazla kez üretilir. `$x`, eşleşen her ifadeyle değiştirilir. Bu makroyu `vec![1, 2, 3];` ile çağırdığımızda, bu makro çağrısının yerini alacak üretilmiş kod şöyle olur:
@@ -80,7 +104,7 @@ Bu makroyu `vec![1, 2, 3];` şeklinde çağırdığımızda `$x` deseni `1`, `2`
 
 Böylece herhangi bir türden istenilen sayıda argüman alabilen ve belirtilen elemanları içeren bir vektör oluşturacak kodu üretebilen bir makro tanımlamış olduk.
 
-Makro yazımı hakkında daha fazla bilgi edinmek için çevrimiçi belgelere veya Daniel Keep tarafından başlatılıp Lukas Wirth tarafından sürdürülen [“The Little Book of Rust Macros”][tlborm] gibi diğer kaynaklara başvurabilirsiniz.
+Makro yazımı hakkında daha fazla bilgi edinmek için çevrim içi belgelere veya Daniel Keep tarafından başlatılıp Lukas Wirth tarafından sürdürülen [“The Little Book of Rust Macros”][tlborm] gibi diğer kaynaklara başvurabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -295,7 +319,7 @@ pub fn sql(input: TokenStream) -> TokenStream {
 
 Bu tanım, özel `derive` makrosunun imzasına benzer: Parantez içindeki belirteçleri alırız ve üretmek istediğimiz kodu döndürürüz.
 
-> Not: Rust makrolarını C/C++ dillerindeki `#define` ön işlemci makrolarından ayıran en kritik güvencelerden biri *makro hijyenidir (macro hygiene)*. C'deki `#define` ham metin kopyala-yapıştır işlemi yaptığı için beklenmedik operatör önceliği hatalarına veya yerel değişken adı çakışmalarına yol açabilir. Rust'ta ise `macro_rules!` makroları ham metin yerine sözdizimi ağacı (*AST*) düzeyinde çalışır ve kendi içlerinde tanımladıkları değişkenleri ayrı bir sözdizimsel kapsamda yalıtır: Örneğin Liste 20-35'teki `vec!` tanımının içindeki `temp_vec` değişkeni, çağıran kodda `let temp_vec = 42; let v = vec![temp_vec];` yazsanız bile sizin `temp_vec` değişkeninizle asla çakışmaz veya onu gölgelemez.
+> Not: Rust makrolarını C/C++ dillerindeki `#define` ön işlemci makrolarından ayıran en kritik güvencelerden biri *makro hijyenidir (macro hygiene)*. C'deki `#define` ham metin kopyala-yapıştır işlemi yaptığı için beklenmedik operatör önceliği hatalarına veya yerel değişken adı çakışmalarına yol açabilir. Rust'ta ise `macro_rules!` makroları ham metin yerine belirteç ağacı (*token tree*) düzeyinde çalışır ve kendi içlerinde tanımladıkları değişkenleri ayrı bir sözdizimsel kapsamda yalıtır: Örneğin Liste 20-35'teki `vec!` tanımının içindeki `temp_vec` değişkeni, çağıran kodda `let temp_vec = 42; let v = vec![temp_vec];` yazsanız bile sizin `temp_vec` değişkeninizle asla çakışmaz veya onu gölgelemez.
 >
 > Hem `macro_rules!` makrolarını hem de `#[derive(...)]` ve öznitelik makroları gibi prosedürel makroları geliştirirken veya hata ayıklarken, derleyicinin perde arkasında tam olarak hangi Rust kodunu ürettiğini görmek büyük kolaylık sağlar. Bunun için `cargo install cargo-expand` komutuyla kurabileceğiniz `cargo-expand` alt komutunu kullanabilirsiniz: Örneğin `krepler` proje dizininde `cargo expand` çalıştırdığınızda, `#[derive(MerhabaMakro)]` ve `println!` makrolarının derleme zamanında genişletilmiş tam Rust çıktısını doğrudan inceleyebilirsiniz.
 
@@ -306,7 +330,7 @@ Oh be! Artık alet çantanızda muhtemelen sık kullanmayacağınız, ancak çok
 
 Sırada, kitap boyunca ele aldığımız her şeyi pratiğe dökeceğimiz son bir proje daha var!
 
-[ref]: ../reference/macros-by-example.html
+[ref]: https://doc.rust-lang.org/reference/macros-by-example.html
 [tlborm]: https://veykril.github.io/tlborm/
 [syn]: https://crates.io/crates/syn
 [quote]: https://crates.io/crates/quote

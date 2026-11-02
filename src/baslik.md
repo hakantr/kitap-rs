@@ -4,7 +4,7 @@ _Steve Klabnik, Carol Nichols ve Chris Krycho tarafından, Rust Topluluğunun ka
 
 Kitabın bu sürümü, Rust 1.99.1 (yayın tarihi: 2026-10-15) veya üzerini kullandığınızı ve tüm projeleri Rust 2024 Sürümü (*Edition*) kurallarını kullanacak şekilde yapılandırmak üzere *Cargo.toml* dosyalarında `edition = "2024"` ayarının bulunduğunu varsayar. Rust'ı kurma veya güncelleme yönergeleri için [Bölüm 1'deki "Kurulum" başlığına][install]<!-- ignore -->, sürümler hakkında bilgi için ise [Ek E'ye][ekler-e]<!-- ignore --> bakabilirsiniz.
 
-Kitabın orijinal HTML sürümü çevrimiçi olarak [https://doc.rust-lang.org/stable/book/](https://doc.rust-lang.org/stable/book/) adresinde, `rustup` ile yapılan Rust kurulumlarında ise çevrimdışı olarak yer alır; yerel kopyayı açmak için terminalde `rustup doc --book` komutunu çalıştırabilirsiniz.
+Kitabın orijinal HTML sürümü çevrim içi olarak [https://doc.rust-lang.org/stable/book/](https://doc.rust-lang.org/stable/book/) adresinde, `rustup` ile yapılan Rust kurulumlarında ise çevrim dışı olarak yer alır; yerel kopyayı açmak için terminalde `rustup doc --book` komutunu çalıştırabilirsiniz.
 
 Topluluk tarafından hazırlanan çeşitli [çeviriler][translations] de mevcuttur.
 

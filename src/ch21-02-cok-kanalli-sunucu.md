@@ -26,11 +26,11 @@ Yavaş işlenen bir isteğin, mevcut sunucu uygulamamıza yapılan diğer istekl
 
 </Listing>
 
-Artık üç durumumuz olduğu için `if` yapısından `match` yapısına geçtik. String sabiti (*string literal*) değerleriyle desen eşleştirmesi yapabilmek için `istek_satiri` değişkeninin bir dilimi (`&istek_satiri[..]`) üzerinde açıkça eşleştirme yapmamız gerekir; çünkü `match`, eşitlik metodunun (`==`) yaptığı gibi otomatik referans alma ve başvuru çözme (*dereferencing*) işlemi yapmaz.
+Artık üç durumumuz olduğu için `if` yapısından `match` yapısına geçtik. String sabiti (*string literal*) değerleriyle desen eşleştirmesi yapabilmek için `istek_satiri` değişkeninin bir dilimi (`&istek_satiri[..]`) üzerinde açıkça eşleştirme yapmamız gerekir: `istek_satiri` bir `String`, desenlerdeki string sabitleri ise `&str` türündedir ve `match`, eşitlik operatörünün (`==`) yaptığı gibi otomatik referans alma ve başvuru çözme (*dereferencing*) işlemi yapmaz.
 
 İlk kol, Liste 21-9'daki `if` bloğuyla aynıdır. İkinci kol, _/sleep_ yoluna yapılan bir istekle eşleşir. Bu istek alındığında sunucu, başarılı HTML sayfasını oluşturup göndermeden önce beş saniye uyuyacaktır. Üçüncü kol ise Liste 21-9'daki `else` bloğuyla aynıdır.
 
-Sunucumuzun ne kadar ilkel olduğunu görebilirsiniz: Gerçek kütüphaneler birden fazla isteğin tanınmasını çok daha az ayrıntılı ve özlü bir biçimde ele alır!
+Sunucumuzun ne kadar ilkel olduğunu görebilirsiniz: Gerçek kütüphaneler farklı isteklerin tanınmasını çok daha özlü bir biçimde, çok daha az kodla ele alır!
 
 `cargo run` kullanarak sunucuyu başlatın. Ardından iki tarayıcı penceresi açın: biri _http://127.0.0.1:7878_, diğeri ise _http://127.0.0.1:7878/sleep_ için olsun. Daha önce yaptığınız gibi _/_ URI adresini birkaç kez girerseniz hızlıca yanıt verdiğini görürsünüz. Ancak önce _/sleep_ adresine girip hemen ardından _/_ sayfasını yüklerseniz, _/_ sayfasının yüklenmeden önce `sleep` çağrısının beş saniyelik uykusunu tamamen bitirmesini beklediğini görürsünüz.
 
@@ -365,6 +365,8 @@ Bölüm 16'da ele aldığımız thread açısından güvenli (*thread-safe*) ak�
 
 `IsParcacigiHavuzu::new` içinde alıcıyı bir `Arc` ve bir `Mutex` içine koyuyoruz. Her yeni `Calisan` için, `Calisan` örneklerinin alıcının sahipliğini paylaşabilmesi amacıyla referans sayısını artırmak üzere `Arc` değerini klonluyoruz (`Arc::clone(&alici)`).
 
+> Not: Burada `Mutex` kullanmamızın derleyici açısından kesin nedeni, Bölüm 16'daki [`Send` ve `Sync`][send-sync]<!-- ignore --> trait'leriyle ilgilidir. `mpsc::Receiver<T>` türü `Send` uygular ancak `Sync` uygulamaz; yani bir alıcı bir thread'den diğerine _taşınabilir_, fakat aynı anda birden fazla thread'den referans yoluyla _paylaşılamaz_. `Arc<T>` değerinin başka bir thread'e gönderilebilmesi için `T: Send + Sync` koşulu arandığından yalnızca `Arc<mpsc::Receiver<Gorev>>` kullanmak derlenmez. `Mutex<T>` ise `T: Send` olduğu sürece `Sync` uygular; çünkü kilit, içerideki değere aynı anda yalnızca tek bir thread'in erişmesini garanti eder. Dolayısıyla `Arc<Mutex<mpsc::Receiver<Gorev>>>` hem alıcının sahipliğini paylaşmamızı hem de ona thread'ler arasında güvenle erişmemizi sağlar.
+
 Bu değişikliklerle kod derleniyor! Hedefe yaklaşıyoruz!
 
 <!-- Old headings. Do not remove or links may break. -->
@@ -385,6 +387,8 @@ Sonunda `IsParcacigiHavuzu` üzerindeki `calistir` metodunu uygulayalım. Ayrıc
 
 `calistir` içinde aldığımız kapanışı kullanarak yeni bir `Gorev` örneği oluşturduktan sonra, bu görevi kanalın gönderici ucundan gönderiyoruz. Gönderme işleminin başarısız olma ihtimaline karşı `send` üzerinde `unwrap` çağırıyoruz. Bu durum, örneğin tüm thread'lerimizin çalışmasını durdurursak —yani alıcı uç yeni mesajlar almayı bırakırsa— meydana gelebilir. Şu an için thread'lerimizin çalışmasını durduramıyoruz: Havuz var olduğu sürece thread'lerimiz çalışmaya devam ediyor. `unwrap` kullanmamızın nedeni, hata durumunun gerçekleşmeyeceğini bizim bilmemiz, ancak derleyicinin bunu bilmemesidir.
 
+> Not: `Gorev` türünü neden `Box<dyn FnOnce() + Send + 'static>` olarak tanımladığımıza daha yakından bakalım. Bölüm 13'te gördüğümüz gibi her kapanışın derleyici tarafından üretilen, kendine özgü ve adlandırılamayan bir türü vardır; `calistir` metoduna her çağrıda farklı bir kapanış verilebilir. Oysa bir kanal yalnızca tek bir `T` türünde mesaj taşıyabilir ve bu türün boyutu derleme zamanında bilinmelidir. Kapanışı `Box` içine alıp `dyn FnOnce()` trait nesnesine dönüştürmek bu iki sorunu birden çözer: Farklı kapanışlar aynı `Gorev` türü altında toplanır ve öbekteki kapanışa işaret eden `Box` değerinin boyutu sabittir. `Send` sınırı, görevin ana thread'den bir `Calisan` thread'ine taşınabilmesi için; `'static` sınırı ise görevin, onu oluşturan `calistir` çağrısından daha uzun yaşayabilmesi için gereklidir; tıpkı `thread::spawn` imzasında olduğu gibi.
+
 Ancak işimiz henüz tam olarak bitmedi! `Calisan` içinde `thread::spawn` fonksiyonuna aktarılan kapanışımız hâlâ kanalın alıcı ucuna yalnızca _başvuruda bulunuyor_. Bunun yerine kapanışın sonsuza dek döngüde kalmasını, kanalın alıcı ucundan bir görev istemesini ve bir görev aldığında onu çalıştırmasını sağlamamız gerekiyor. `Calisan::new` üzerinde Liste 21-20'de gösterilen değişikliği yapalım.
 
 <Listing number="21-20" file-name="src/lib.rs" caption="`Calisan` örneğinin thread'inde görevleri almak ve çalıştırmak">
@@ -397,7 +401,7 @@ Ancak işimiz henüz tam olarak bitmedi! `Calisan` içinde `thread::spawn` fonks
 
 Burada önce mutex kilidini edinmek için `alici` üzerinde `lock` çağırıyor, ardından olası herhangi bir hatada paniklemek üzere `unwrap` çağırıyoruz. Mutex _zehirlenmiş (poisoned)_ bir durumdaysa kilit edinme işlemi başarısız olabilir; bu durum, başka bir thread kilidi serbest bırakmak yerine kilidi elinde tutarken paniklediyse gerçekleşebilir. Böyle bir durumda bu thread'in de paniklemesi için `unwrap` çağırmak yapılacak doğru eylemdir. Bu `unwrap` çağrısını sizin için anlamlı bir hata mesajı içeren bir `expect` çağrısıyla değiştirmekte özgürsünüz.
 
-Kilidi edinebilirsek kanaldan bir `Gorev` almak için `recv` çağırırız. Sondaki `unwrap` da buradaki olası hatalarda aynı şekilde programı durdurur; alıcı kapandığında `send` metodunun `Err` döndürmesine benzer biçimde, göndericiyi tutan thread kapandıysa burada da hata oluşabilir.
+Kilidi edinebilirsek kanaldan bir `Gorev` almak için `recv` çağırırız. Sondaki `unwrap` da buradaki olası hatalarda aynı şekilde programı durdurur; alıcı kapandığında `send` metodunun `Err` döndürmesine benzer biçimde, kanalın gönderici ucu düşürülmüşse (yani göndericiyi tutan taraf kapanmışsa) burada da hata oluşabilir.
 
 `recv` çağrısı engelleyicidir (*blocking*); yani henüz bir görev yoksa mevcut thread bir görev hazır olana kadar bekleyecektir. `Mutex<T>`, aynı anda yalnızca bir `Calisan` thread'inin görev istemeye çalışmasını güvence altına alır.
 
@@ -473,5 +477,6 @@ Liste 21-20'de `let gorev = alici.lock().unwrap().recv().unwrap();` kullanan kod
 [type-aliases]: ch20-03-gelismis-turler.html#type-synonyms-and-type-aliases
 [integer-types]: ch03-02-veri-turleri.html#tam-sayı-türleri-integer-types
 [moving-out-of-closures]: ch13-01-kapanislar.html#yakalanan-değerleri-kapanışların-dışına-taşımak-moving
-[builder]: ../std/thread/struct.Builder.html
-[builder-spawn]: ../std/thread/struct.Builder.html#method.spawn
+[send-sync]: ch16-04-genisletilebilir-eszamanlilik.html
+[builder]: https://doc.rust-lang.org/std/thread/struct.Builder.html
+[builder-spawn]: https://doc.rust-lang.org/std/thread/struct.Builder.html#method.spawn

@@ -21,7 +21,7 @@ Bir _trait_, belirli bir türün sahip olduğu ve diğer türlerle paylaşabilec
 
 Bir türün davranışı, o tür üzerinde çağırabileceğimiz metotlardan oluşur. Farklı türlerin hepsi üzerinde aynı metotları çağırabiliyorsak bu türler aynı davranışı paylaşıyor demektir. Trait tanımları, belirli bir amacı gerçekleştirmek için gereken davranış kümesini tanımlamak üzere metot imzalarını bir araya getirmenin yoludur.
 
-Örneğin, farklı tür ve uzunluklarda metinler tutan birden fazla struct'ımız olduğunu varsayalım: Belirli bir konumdan geçilmiş bir haber metnini tutan `HaberMakalesi` struct'ı ve yeni bir gönderi mi, yeniden paylaşım mı yoksa başka bir gönderiye yanıt mı olduğunu gösteren üst verilerle birlikte en fazla 280 karakter barındırabilen `SosyalGonderi` struct'ı.
+Örneğin, farklı tür ve uzunluklarda metinler tutan birden fazla struct'ımız olduğunu varsayalım: Belirli bir yerden bildirilen bir haber metnini tutan `HaberMakalesi` struct'ı ve en fazla 280 karakterlik bir metnin yanı sıra bu metnin yeni bir gönderi mi, yeniden paylaşım mı yoksa başka bir gönderiye yanıt mı olduğunu gösteren üst verileri barındıran `SosyalGonderi` struct'ı.
 
 Bir `HaberMakalesi` veya `SosyalGonderi` örneğinde saklanabilecek verilerin özetlerini görüntüleyebilen `toplayici` adında bir medya toplayıcı (*media aggregator*) kütüphane crate'i geliştirmek istiyoruz. Bunun için her türden bir özet almamız gerekiyor ve bu özeti bir örnek üzerinde `ozetle` metodunu çağırarak isteyeceğiz. Liste 10-12, bu davranışı ifade eden dışarıya açık (`pub`) bir `Ozet` trait'inin tanımını göstermektedir.
 
@@ -70,6 +70,8 @@ Kütüphanemiz `HaberMakalesi` ve `SosyalGonderi` üzerinde `Ozet` trait'ini uyg
 ```
 
 Bu kod ekrana `1 yeni gönderi: horse_ebooks: elbette, muhtemelen zaten bildiğiniz gibi, insanlar` yazdırır.
+
+> Not: Yukarıdaki `use toplayici::{Ozet, SosyalGonderi};` satırındaki `Ozet` kısmını silerseniz, `SosyalGonderi` türü kapsamda olduğu hâlde `gonderi.ozetle()` çağrısı derlenmez. Derleyici `` error[E0599]: no method named `ozetle` found `` hatasıyla birlikte `items from traits can only be used if the trait is in scope` (*trait'lerden gelen öğeler yalnızca trait kapsamdaysa kullanılabilir*) açıklamasını ve eklemeniz gereken `use` satırını önerir. Bir trait'in metotlarını çağırabilmek için trait'in de kapsamda olması kuralı, farklı crate'lerdeki iki trait'in aynı türe aynı adlı metotlar eklemesi durumunda hangi metodun kastedildiğinin belirsizleşmesini önler. Yalnızca standart kütüphanenin *prelude*'ünde yer alan `Clone`, `ToString` veya `Iterator` gibi trait'ler her kapsamda hazır olduğundan onlar için ek bir `use` satırına gerek yoktur.
 
 `toplayici` crate'ine bağımlı olan diğer crate'ler de `Ozet` trait'ini kendi türleri üzerinde uygulamak üzere kapsama dahil edebilir. Burada dikkat edilmesi gereken önemli bir kısıtlama vardır: Bir trait'i bir tür üzerinde yalnızca trait'in kendisi, türün kendisi veya her ikisi birden kendi crate'imize yerel (*local*) ise uygulayabiliriz. Örneğin, `SosyalGonderi` türü `toplayici` crate'imize yerel olduğu için `toplayici` crate'imizin bir parçası olarak `SosyalGonderi` gibi özel bir tür üzerinde `Display` gibi standart kütüphane trait'lerini uygulayabiliriz. Benzer şekilde, `Ozet` trait'i `toplayici` crate'imize yerel olduğu için `toplayici` crate'i içinde `Vec<T>` üzerinde de `Ozet` trait'ini uygulayabiliriz.
 

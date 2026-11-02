@@ -142,7 +142,7 @@ Programın başında `use std::io;` ile `io` modülünü kapsama dahil etmemiş 
 
 Ardından gelen `.read_line(&mut tahmin)` satırı, kullanıcıdan girdi almak üzere standart girdi tutamacı üzerinde [`read_line`][read_line]<!-- ignore --> metodunu çağırır. Kullanıcı girdisini hangi string içine kaydedeceğini belirtmek için `read_line` metoduna argüman olarak `&mut tahmin` değerini geçiriyoruz. `read_line` metodunun görevi, kullanıcının standart girdiye yazdığı metni alıp mevcut içeriğin üzerine yazmadan verilen string'in sonuna eklemektir; bu nedenle hedef string'i argüman olarak iletiriz. Metodun string içeriğini değiştirebilmesi için bu argümanın değiştirilebilir olması gerekir.
 
-`&` işareti bu argümanın bir *referans (reference)* olduğunu belirtir. Referanslar, veriyi bellekte defalarca kopyalamaya gerek kalmadan kodunuzun farklı bölümlerinin aynı veriye erişmesine olanak tanır. Referanslar kapsamlı bir özelliktir ve Rust'ın en büyük güçlü yönlerinden biri referansları hem son derece güvenli hem de kullanımı kolay biçimde sunmasıdır. Bu programı tamamlamak için tüm bu ayrıntıları şimdiden bilmenize gerek yok. Şimdilik bilmeniz gereken tek şey, tıpkı değişkenler gibi referansların da varsayılan olarak değiştirilemez olduğudur. Dolayısıyla referansı değiştirilebilir kılmak için `&tahmin` yerine `&mut tahmin` yazmanız gerekir. (Bölüm 4 referansları çok daha kapsamlı biçimde açıklayacaktır.)
+`&` işareti bu argümanın bir *referans (reference)* olduğunu belirtir. Referanslar, veriyi bellekte defalarca kopyalamaya gerek kalmadan kodunuzun farklı bölümlerinin aynı veriye erişmesine olanak tanır. Referanslar karmaşık bir özelliktir ve Rust'ın en büyük güçlü yönlerinden biri referansları hem son derece güvenli hem de kullanımı kolay biçimde sunmasıdır. Bu programı tamamlamak için tüm bu ayrıntıları şimdiden bilmenize gerek yok. Şimdilik bilmeniz gereken tek şey, tıpkı değişkenler gibi referansların da varsayılan olarak değiştirilemez olduğudur. Dolayısıyla referansı değiştirilebilir kılmak için `&tahmin` yerine `&mut tahmin` yazmanız gerekir. (Bölüm 4 referansları çok daha kapsamlı biçimde açıklayacaktır.)
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -167,7 +167,7 @@ Ancak tek bir uzun satırı okumak zordur; bu yüzden onu bölmek en doğrusudur
 
 Daha önce belirttiğimiz gibi `read_line`, kullanıcının yazdığı metni kendisine geçirdiğimiz string içine ekler; ancak bunun yanı sıra bir `Result` değeri de döndürür. [`Result`][result]<!-- ignore -->, genellikle kısaca _enum_ olarak adlandırılan bir [_numaralandırma (enumeration)_][enums]<!-- ignore --> türüdür; yani birden fazla olası durumdan birinde bulunabilen bir türdür. Bu olası durumların her birine *varyant (variant)* adını veririz.
 
-[Bölüm 6][enums]<!-- ignore --> enum'ları çok daha ayrıntılı biçimde ele alacaktır. `Result` türlerinin amacı hata yönetimi bilgilerini kodlamaktır.
+[Bölüm 6][enums]<!-- ignore --> enum'ları çok daha ayrıntılı biçimde ele alacaktır. `Result` türlerinin amacı, hata yönetimine ilişkin bilgiyi taşımaktır.
 
 `Result` türünün varyantları `Ok` ve `Err`'dir. `Ok` varyantı işlemin başarılı olduğunu belirtir ve başarıyla üretilen değeri içinde taşır. `Err` varyantı ise işlemin başarısız olduğu anlamına gelir ve işlemin nasıl ya da neden başarısız olduğuna dair bilgiyi barındırır.
 
@@ -265,6 +265,8 @@ Harici crate'lerin yönetimi, Cargo'nun gerçekten parladığı alandır. `rand`
 _Cargo.toml_ dosyasında bir başlıktan sonra gelen her satır, yeni bir bölüm başlayana kadar o bölümün parçası kabul edilir. `[dependencies]` bölümünde Cargo'ya, projenizin hangi harici crate'lere bağımlı olduğunu ve bu crate'lerin hangi sürümlerine ihtiyaç duyduğunuzu bildirirsiniz. Bu örnekte `rand` crate'ini semantik sürüm belirteci `0.10.1` ile belirtiyoruz. Cargo, sürüm numaralarını yazmaya yönelik bir standart olan [Semantik Sürümlemeyi][semver]<!-- ignore --> (kısaca _SemVer_) anlar. `0.10.1` belirteci aslında `^0.10.1` ifadesinin kısaltmasıdır; bu da en az `0.10.1` olan ancak `0.11.0`'ın altında kalan her sürümün kullanılabileceği anlamına gelir.
 
 Cargo bu aralıktaki sürümlerin `0.10.1` sürümüyle uyumlu genel API'lere sahip olduğunu kabul eder; bu tanım sayesinde bu bölümdeki kodla sorunsuz derlenmeye devam edecek en güncel yama sürümünü (*patch release*) almanız sağlanır. `0.11.0` veya üzerindeki sürümlerin ise aşağıdaki örneklerin kullandığı API ile aynı kalacağı garanti edilmez.
+
+> Not: SemVer'de sürüm numarası `ANA.ALT.YAMA` (*major.minor.patch*) biçimindedir ve uyumluluğu bozan değişiklikler yalnızca ana sürüm numarasını artırır. Ana sürümü `0` olan crate'ler ise henüz kararlı sayılmaz; bu yüzden Cargo, `0.10.1` gibi bir belirteçte uyumluluk sınırı olarak alt sürüm numarasını (`10`) kullanır ve `0.11.0`'ı uyumsuz kabul eder. Ana sürümü `1` veya daha büyük olan bir crate için `"1.2.3"` yazmak ise `2.0.0`'ın altındaki tüm sürümlere izin verir.
 
 Şimdi kodda hiçbir değişiklik yapmadan Liste 2-2'de gösterildiği gibi projeyi derleyelim.
 
@@ -415,7 +417,7 @@ Tahmininiz: 5
 
 Her çalıştırmada farklı rastgele sayılar görmelisiniz ve bunların tamamı 1 ile 100 arasında olmalıdır. Derleme sırasında uyarılar alırsanız bunları güvenle göz ardı edebilirsiniz. Hata alırsanız lütfen _Cargo.toml_ dosyanızda `rand = "0.10.1"` yazdığından emin olun; `rand`'in gelecekteki ana sürümleri farklı bir API sunabilir, ancak `0.10` serisindeki herhangi bir sürüm bu bölümdeki kodla çalışacaktır.
 
-> Not: İnternetteki daha eski Rust kaynaklarında veya kod örneklerinde `rand` crate'inin `0.8` sürümüne ait `use rand::Rng;` ve `rand::thread_rng().gen_range(1..=100)` kullanımlarıyla karşılaşabilirsiniz. `rand` `0.9` ve `0.10` sürümleriyle birlikte bu API sadeleştirilerek `rand::thread_rng()` yerine `rand::rng()`, `gen_range` yerine `random_range` (ve `rand::prelude::*` içindeki `RngExt` trait'i) kullanılmaya başlanmıştır.
+> Not: İnternetteki daha eski Rust kaynaklarında veya kod örneklerinde `rand` crate'inin `0.8` sürümüne ait `use rand::Rng;` ve `rand::thread_rng().gen_range(1..=100)` kullanımlarıyla karşılaşabilirsiniz. `rand` `0.9` sürümüyle `rand::thread_rng()` yerine `rand::rng()`, `gen_range` yerine `random_range` kullanılmaya başlanmış; `0.10` sürümünde ise `random_range` gibi metotları sağlayan trait `Rng` yerine `RngExt` adını almıştır; bu kitaptaki `use rand::prelude::*;` satırı bu trait'i kapsama dahil eder.
 
 <a id="comparing-the-guess-to-the-secret-number"></a>
 
@@ -647,15 +649,15 @@ Bu noktada tahmin oyununu başarıyla geliştirdiniz. Tebrikler!
 
 Bu proje sizi pek çok yeni Rust kavramıyla uygulamalı olarak tanıştırmanın keyifli bir yoluydu: `let`, `match`, fonksiyonlar, harici crate'lerin kullanımı ve daha fazlası. İzleyen bölümlerde bu kavramları çok daha ayrıntılı olarak öğreneceksiniz. Bölüm 3; değişkenler, veri türleri ve fonksiyonlar gibi çoğu programlama dilinde bulunan kavramları ele alır ve bunların Rust'ta nasıl kullanıldığını gösterir. Bölüm 4, Rust'ı diğer dillerden ayıran temel özellik olan *sahipliği (ownership)* inceler. Bölüm 5 struct'ları ve metot sözdizimini ele alırken Bölüm 6 enum'ların nasıl çalıştığını açıklar.
 
-[prelude]: ../std/prelude/index.html
+[prelude]: https://doc.rust-lang.org/std/prelude/index.html
 [variables-and-mutability]: ch03-01-degiskenler-ve-degistirilebilirlik.html#değişkenler-ve-değiştirilebilirlik-mutability
 [comments]: ch03-04-yorumlar.html
-[string]: ../std/string/struct.String.html
-[iostdin]: ../std/io/struct.Stdin.html
-[read_line]: ../std/io/struct.Stdin.html#method.read_line
-[result]: ../std/result/enum.Result.html
+[string]: https://doc.rust-lang.org/std/string/struct.String.html
+[iostdin]: https://doc.rust-lang.org/std/io/struct.Stdin.html
+[read_line]: https://doc.rust-lang.org/std/io/struct.Stdin.html#method.read_line
+[result]: https://doc.rust-lang.org/std/result/enum.Result.html
 [enums]: ch06-00-enumlar-ve-desen-eslestirme.html
-[expect]: ../std/result/enum.Result.html#method.expect
+[expect]: https://doc.rust-lang.org/std/result/enum.Result.html#method.expect
 [recover]: ch09-02-result-ile-kurtarilabilir-hatalar.html
 [randcrate]: https://crates.io/crates/rand
 [semver]: http://semver.org
@@ -664,5 +666,5 @@ Bu proje sizi pek çok yeni Rust kavramıyla uygulamalı olarak tanıştırmanı
 [doccratesio]: https://doc.rust-lang.org/cargo/reference/publishing.html
 [match]: ch06-02-match-kontrol-akisi.html
 [shadowing]: ch03-01-degiskenler-ve-degistirilebilirlik.html#gölgelendirme-shadowing
-[parse]: ../std/primitive.str.html#method.parse
+[parse]: https://doc.rust-lang.org/std/primitive.str.html#method.parse
 [integers]: ch03-02-veri-turleri.html#tam-sayı-türleri-integer-types

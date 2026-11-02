@@ -13,10 +13,10 @@ Bu bölümde fonksiyonel programlamanın ne olup olmadığı tartışmasına gir
 Özellikle şu konuları ele alacağız:
 
 - Bir değişkende saklayabileceğiniz, fonksiyon benzeri bir yapı olan *kapanışlar (closures)*
-- Bir dizi öğeyi sırayla işlemenin bir yolu olan *iteratörler (yineleyiciler / iterators)*
+- Bir dizi öğeyi sırayla işlemenin bir yolu olan *iteratörler (iterators)*
 - Bölüm 12'deki G/Ç projesini iyileştirmek için kapanışların ve iteratörlerin nasıl kullanılacağı
 - Kapanışların ve iteratörlerin performansı (sürprizi şimdiden bozalım: Düşündüğünüzden daha hızlıdırlar!)
 
 Desen eşleştirme ve enum'lar gibi fonksiyonel yaklaşımdan etkilenen diğer bazı Rust özelliklerini daha önce ele almıştık. Kapanışlara ve iteratörlere hâkim olmak, hızlı ve deyimsel Rust kodu yazmanın önemli bir parçası olduğundan bu bölümün tamamını bu iki konuya ayıracağız.
 
-> Not: Pek çok yüksek seviyeli dilde fonksiyonel programlama desenleri — kapanışlar, `map` ve `filter` gibi zincirleme *iteratör adaptörleri* ya da `Option` ve `Result` üzerindeki `unwrap_or_else`, `and_then` gibi *kombinatörler* — öbek tahsisleri, dinamik çağrılar veya ara koleksiyon kopyaları nedeniyle çalışma zamanında ek maliyet doğurabilir. Rust'ta ise bu yapıların tamamı **sıfır maliyetli soyutlama (*zero-cost abstraction*)** ilkesiyle tasarlanmıştır: Derleyici her kapanış için benzersiz bir somut tür üretir, tembel (*lazy*) iteratör zincirlerini ara bellek ayırmadan tek bir geçişte birleştirir ve çağrıları satır içine (*inlining*) açar. Sonuç olarak, okunabilirliği yüksek ve bildirimsel fonksiyonel Rust kodu, elle yazılmış alt seviye bir döngüyle aynı verimlilikte makine koduna derlenir.
+> Not: Pek çok üst düzey dilde fonksiyonel programlama desenleri — kapanışlar, `map` ve `filter` gibi zincirleme *iteratör adaptörleri* ya da `Option` ve `Result` üzerindeki `unwrap_or_else`, `and_then` gibi *kombinatörler* — öbek tahsisleri, dinamik çağrılar veya ara koleksiyon kopyaları nedeniyle çalışma zamanında ek maliyet doğurabilir. Rust'ta ise bu yapılar **sıfır maliyetli soyutlama (*zero-cost abstraction*)** ilkesiyle tasarlanmıştır: Derleyici her kapanış için benzersiz bir somut tür üretir, tembel (*lazy*) iteratör zincirlerini ara bellek ayırmadan tek bir geçişte birleştirir ve çağrıları satır içine (*inlining*) açar. Sonuç olarak, okunabilirliği yüksek ve bildirimsel fonksiyonel Rust kodu çoğu durumda elle yazılmış alt düzey bir döngüyle aynı verimlilikte makine koduna derlenir; bu bölümün sonunda bunu bir ölçümle de göreceğiz.

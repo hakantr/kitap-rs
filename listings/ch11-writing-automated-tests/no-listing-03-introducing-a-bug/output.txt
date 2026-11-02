@@ -4,20 +4,20 @@ $ cargo test
      Running unittests src/lib.rs (target/debug/deps/rectangle-6584c4561e48942e)
 
 running 2 tests
-test tests::buyuk_kucugu_tutabilir_mi ... FAILED
+test tests::buyuk_kucugu_kapsayabilir_mi ... FAILED
 test tests::kucuk_buyugu_tutamaz ... ok
 
 failures:
 
----- tests::buyuk_kucugu_tutabilir_mi stdout ----
+---- tests::buyuk_kucugu_kapsayabilir_mi stdout ----
 
-thread 'tests::buyuk_kucugu_tutabilir_mi' (6020788) panicked at src/lib.rs:28:9:
-assertion failed: buyuk.tutabilir_mi(&kucuk)
+thread 'tests::buyuk_kucugu_kapsayabilir_mi' (6020788) panicked at src/lib.rs:28:9:
+assertion failed: buyuk.kapsayabilir_mi(&kucuk)
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 
 failures:
-    tests::buyuk_kucugu_tutabilir_mi
+    tests::buyuk_kucugu_kapsayabilir_mi
 
 test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 

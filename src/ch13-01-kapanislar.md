@@ -203,6 +203,24 @@ Jenerik `F` türü üzerinde belirtilen trait sınırı `FnOnce() -> T` şeklind
 
 > Not: Yapmak istediğimiz iş çevreden bir değer yakalamayı gerektirmiyorsa, `Fn` trait'lerinden birini uygulayan bir argüman beklenen yerlerde kapanış yerine doğrudan bir fonksiyonun adını da kullanabiliriz. Örneğin bir `Option<Vec<T>>` değeri üzerinde, değer `None` olduğunda yeni ve boş bir vektör elde etmek için `unwrap_or_else(Vec::new)` çağrısı yapabiliriz. Derleyici, bir fonksiyon tanımı için `Fn` trait'lerinden hangileri uygunsa onları otomatik olarak uygular.
 
+> Not: Aynı trait sınırlarını kullanarak kapanış alan fonksiyonları kendiniz de yazabilirsiniz. Her kapanışın derleyici tarafından üretilen, adı olmayan ve kendine özgü bir türü vardır; bu yüzden bir kapanış parametresinin türünü doğrudan yazamazsınız. Bunun yerine, Bölüm 10'da gördüğümüz `impl Trait` sözdizimiyle ya da jenerik bir tür parametresiyle "şu imzaya sahip `Fn` trait'ini uygulayan herhangi bir tür" dersiniz. Örneğin aşağıdaki fonksiyon, `i32` alıp `i32` döndüren herhangi bir kapanışı (veya sıradan fonksiyonu) kabul eder ve onu iki kez uygular:
+>
+> ```rust
+> fn iki_kez_uygula(f: impl Fn(i32) -> i32, x: i32) -> i32 {
+>     f(f(x))
+> }
+>
+> fn main() {
+>     let carpan = 3;
+>     let uc_kati = |x| x * carpan; // çevresinden `carpan` değerini yakalar
+>
+>     assert_eq!(iki_kez_uygula(uc_kati, 2), 18);
+>     assert_eq!(iki_kez_uygula(|x| x + 1, 2), 4);
+> }
+> ```
+>
+> Fonksiyon gövdesinde `f` iki kez çağrıldığı için trait sınırı olarak `FnOnce` kullanamazdık; kapanışın yakaladığı değerleri değiştirmesine de gerek olmadığından en kısıtlayıcı ve dolayısıyla en çok kapanışı kabul eden seçenek olan `Fn` tercih edildi. Hangi `Fn` trait'ini isteyeceğinize karar verirken kural basittir: Fonksiyonunuz kapanışı nasıl kullanacaksa (bir kez mi, birden çok kez mi, eşzamanlı mı?) en az onu gerektiren trait'i seçin. Bir kapanışı fonksiyondan _döndürmek_ ise ek incelikler barındırır; bunu Bölüm 20'de ele alacağız.
+
 Şimdi dilimler üzerinde tanımlanan standart kütüphane metodu `sort_by_key`'e bakalım; böylece `unwrap_or_else` metodundan nasıl ayrıldığını ve `sort_by_key`'in trait sınırı için neden `FnOnce` yerine `FnMut` kullandığını görebiliriz. Bu metodun aldığı kapanış, dilimde o an incelenen öğeye bir referans şeklinde tek bir argüman alır ve sıralanabilen `K` türünde bir değer döndürür. Bu fonksiyon, bir dilimi her bir öğenin belirli bir özelliğine göre sıralamak istediğinizde kullanışlıdır. Liste 13-7'de `Dikdortgen` örneklerinden oluşan bir listemiz var ve bunları `genislik` alanlarına göre küçükten büyüğe sıralamak için `sort_by_key` kullanıyoruz.
 
 <Listing number="13-7" file-name="src/main.rs" caption="Dikdörtgenleri genişliğe göre sıralamak için `sort_by_key` kullanmak">
@@ -249,4 +267,4 @@ Hata mesajı, kapanış gövdesinde `deger` değişkenini çevrenin dışına ta
 
 Kapanışlardan yararlanan fonksiyonları veya türleri tanımlarken ya da kullanırken `Fn` trait'leri büyük önem taşır. Sıradaki kısımda iteratörleri ele alacağız. Pek çok iteratör metodu argüman olarak kapanış alır; bu nedenle devam ederken kapanışlarla ilgili bu ayrıntıları aklınızda bulundurun!
 
-[unwrap-or-else]: ../std/option/enum.Option.html#method.unwrap_or_else
+[unwrap-or-else]: https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else

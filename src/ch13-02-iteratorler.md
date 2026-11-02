@@ -5,7 +5,7 @@
 
 ## İteratörlerle Bir Dizi Öğeyi İşleme
 
-*İteratör (yineleyici / iterator)* deseni, bir dizi öğe üzerinde sırayla belirli bir işlemi gerçekleştirmenize olanak tanır. Bir iteratör, her bir öğe üzerinde ilerleme ve dizinin ne zaman sona erdiğini belirleme mantığından sorumludur. İteratörleri kullandığınızda bu mantığı her seferinde kendiniz yeniden uygulamak zorunda kalmazsınız.
+*İteratör (iterator)* deseni, bir dizi öğe üzerinde sırayla belirli bir işlemi gerçekleştirmenize olanak tanır. Bir iteratör, her bir öğe üzerinde ilerleme ve dizinin ne zaman sona erdiğini belirleme mantığından sorumludur. İteratörleri kullandığınızda bu mantığı her seferinde kendiniz yeniden uygulamak zorunda kalmazsınız.
 
 Rust'ta iteratörler _tembeldir (lazy)_; yani iteratörü tüketip sonuna kadar kullanan metotları çağırana kadar hiçbir etkileri olmaz. Örneğin Liste 13-10'daki kod, `Vec<T>` üzerinde tanımlı `iter` metodunu çağırarak `v1` vektöründeki öğeler üzerinde bir iteratör oluşturur. Bu kod tek başına yararlı bir iş yapmaz.
 
@@ -174,3 +174,38 @@ Liste 13-16'da, `Ayakkabi` struct örneklerinden oluşan bir koleksiyon üzerind
 Kapanış, çevreden `ayakkabi_numarasi` parametresini yakalar ve bu değeri her bir ayakkabının numarasıyla karşılaştırarak yalnızca belirtilen numaradaki ayakkabıları tutar. Son olarak `collect` çağrısı, uyarlanmış iteratörün ürettiği değerleri fonksiyon tarafından döndürülecek bir vektörde toplar.
 
 Test, `numaradaki_ayakkabilar` fonksiyonunu çağırdığımızda yalnızca belirttiğimiz değerle aynı numaraya sahip ayakkabıların geri döndüğünü göstermektedir.
+
+> Not: Bu bölümde yalnızca standart kütüphanenin sunduğu iteratörleri kullandık; ancak `Iterator` trait'ini kendi türleriniz için uygulamak da son derece kolaydır ve bunu yaptığınız anda `map`, `filter`, `zip`, `sum`, `collect` gibi tüm adaptör ve tüketici metotlar ile `for` döngüsü desteği kendiliğinden gelir. Tek yapmanız gereken `Item` türünü belirtip `next` metodunu yazmaktır. Örneğin 1'den 5'e kadar sayan basit bir iteratör:
+>
+> ```rust
+> struct Sayac {
+>     deger: u32,
+> }
+>
+> impl Iterator for Sayac {
+>     type Item = u32;
+>
+>     fn next(&mut self) -> Option<Self::Item> {
+>         if self.deger < 5 {
+>             self.deger += 1;
+>             Some(self.deger)
+>         } else {
+>             None
+>         }
+>     }
+> }
+>
+> fn main() {
+>     // Yalnızca `next` tanımladık; `sum`, `map`, `filter` ve `collect` hazır geliyor.
+>     let toplam: u32 = Sayac { deger: 0 }.sum();
+>     assert_eq!(toplam, 15);
+>
+>     let tek_kareler: Vec<u32> = Sayac { deger: 0 }
+>         .map(|x| x * x)
+>         .filter(|x| x % 2 == 1)
+>         .collect();
+>     assert_eq!(tek_kareler, vec![1, 9, 25]);
+> }
+> ```
+>
+> `next` metodunun `&mut self` almasına dikkat edin: İteratörün "nerede kaldığı" bilgisi (`deger` alanı) her çağrıda güncellenir; `None` döndürdükten sonra ise iterasyon biter. Bu küçük sözleşme, bir dosyanın satırlarından ağ bağlantısına gelen paketlere kadar her türlü veri dizisini aynı zincirleme metotlarla işleyebilmenizi sağlar.

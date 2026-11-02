@@ -140,9 +140,9 @@ Farklı senaryolarda test sonuçlarının nasıl göründüğünü incelediğimi
 
 Standart kütüphane tarafından sağlanan `assert!` makrosu, bir testteki belirli bir koşulun `true` olarak değerlendirildiğinden emin olmak istediğinizde kullanışlıdır. `assert!` makrosuna mantıksal (`bool`) bir değer üreten bir argüman veririz. Değer `true` ise hiçbir şey olmaz ve test geçer. Değer `false` ise `assert!` makrosu `panic!` çağırarak testin başarısız olmasına yol açar. `assert!` makrosunu kullanmak, kodumuzun amaçladığımız şekilde çalışıp çalışmadığını denetlememize yardımcı olur.
 
-Bölüm 5, Liste 5-15'te bir `Dikdortgen` struct'ı ve başka bir dikdörtgeni içine alıp alamayacağını kontrol eden bir metot (orada `kapsayabilir_mi`, burada ise Liste 11-5'te `tutabilir_mi` adıyla) kullanmıştık. Bu kodu _src/lib.rs_ dosyasına koyalım ve ardından `assert!` makrosunu kullanarak onun için birkaç test yazalım.
+Bölüm 5, Liste 5-15'te bir `Dikdortgen` struct'ı ve başka bir dikdörtgeni içine alıp alamayacağını kontrol eden bir metot (`kapsayabilir_mi`) kullanmıştık. Bu kodu _src/lib.rs_ dosyasına koyalım ve ardından `assert!` makrosunu kullanarak onun için birkaç test yazalım.
 
-<Listing number="11-5" file-name="src/lib.rs" caption="Bölüm 5'teki `Dikdortgen` struct'ı ve `tutabilir_mi` metodu">
+<Listing number="11-5" file-name="src/lib.rs" caption="Bölüm 5'teki `Dikdortgen` struct'ı ve `kapsayabilir_mi` metodu">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-05/src/lib.rs}}
@@ -150,9 +150,9 @@ Bölüm 5, Liste 5-15'te bir `Dikdortgen` struct'ı ve başka bir dikdörtgeni i
 
 </Listing>
 
-`tutabilir_mi` metodu bir `bool` döndürür; bu da onu `assert!` makrosu için biçilmiş kaftan yapar. Liste 11-6'da genişliği `8`, yüksekliği `7` olan bir `Dikdortgen` örneği oluşturup bunun genişliği `5`, yüksekliği `1` olan başka bir `Dikdortgen` örneğini tutabildiğini doğrulayarak `tutabilir_mi` metodunu sınayan bir test yazıyoruz.
+`kapsayabilir_mi` metodu bir `bool` döndürür; bu da onu `assert!` makrosu için biçilmiş kaftan yapar. Liste 11-6'da genişliği `8`, yüksekliği `7` olan bir `Dikdortgen` örneği oluşturup bunun genişliği `5`, yüksekliği `1` olan başka bir `Dikdortgen` örneğini tutabildiğini doğrulayarak `kapsayabilir_mi` metodunu sınayan bir test yazıyoruz.
 
-<Listing number="11-6" file-name="src/lib.rs" caption="Daha büyük bir dikdörtgenin daha küçük bir dikdörtgeni gerçekten içine alıp alamayacağını kontrol eden `tutabilir_mi` testi">
+<Listing number="11-6" file-name="src/lib.rs" caption="Daha büyük bir dikdörtgenin daha küçük bir dikdörtgeni gerçekten içine alıp alamayacağını kontrol eden `kapsayabilir_mi` testi">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-06/src/lib.rs:here}}
@@ -162,7 +162,7 @@ Bölüm 5, Liste 5-15'te bir `Dikdortgen` struct'ı ve başka bir dikdörtgeni i
 
 `tests` modülünün içindeki `use super::*;` satırına dikkat edin. `tests` modülü, Bölüm 7'deki ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths-for-referring-to-an-item-in-the-module-tree]<!-- ignore --> başlığında ele aldığımız olağan görünürlük kurallarına uyan sıradan bir modüldür. `tests` modülü bir iç modül olduğundan, dış modülde yer alan ve test edilen kodu iç modülün kapsamına dahil etmemiz gerekir. Burada bir *glob* (`*`) operatörü kullandığımız için dış modülde tanımladığımız her şey bu `tests` modülü içinde erişilebilir hale gelir.
 
-Testimizi `buyuk_kucugu_tutabilir_mi` olarak adlandırdık ve ihtiyacımız olan iki `Dikdortgen` örneğini oluşturduk. Ardından `assert!` makrosunu çağırıp ona `buyuk.tutabilir_mi(&kucuk)` ifadesinin sonucunu geçirdik. Bu ifadenin `true` döndürmesi gerekir, dolayısıyla testimiz geçmelidir. Haydi deneyip görelim!
+Testimizi `buyuk_kucugu_kapsayabilir_mi` olarak adlandırdık ve ihtiyacımız olan iki `Dikdortgen` örneğini oluşturduk. Ardından `assert!` makrosunu çağırıp ona `buyuk.kapsayabilir_mi(&kucuk)` ifadesinin sonucunu geçirdik. Bu ifadenin `true` döndürmesi gerekir, dolayısıyla testimiz geçmelidir. Haydi deneyip görelim!
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-06/output.txt}}
@@ -176,13 +176,13 @@ Test geçti! Şimdi bir test daha ekleyelim ve bu kez küçük bir dikdörtgenin
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/src/lib.rs:here}}
 ```
 
-Bu senaryoda `tutabilir_mi` metodunun doğru sonucu `false` olduğundan, sonucu `assert!` makrosuna geçirmeden önce `!` operatörüyle değillememiz gerekir. Böylece `tutabilir_mi` metodu `false` döndürdüğünde testimiz geçecektir:
+Bu senaryoda `kapsayabilir_mi` metodunun doğru sonucu `false` olduğundan, sonucu `assert!` makrosuna geçirmeden önce `!` operatörüyle değillememiz gerekir. Böylece `kapsayabilir_mi` metodu `false` döndürdüğünde testimiz geçecektir:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/output.txt}}
 ```
 
-İki test de geçti! Şimdi kodumuza bir hata yerleştirdiğimizde test sonuçlarımıza ne olacağını görelim. Genişlikleri karşılaştırırken büyüktür işaretini (`>`) küçüktür işaretiyle (`<`) değiştirerek `tutabilir_mi` metodunun uygulamasını bozalım:
+İki test de geçti! Şimdi kodumuza bir hata yerleştirdiğimizde test sonuçlarımıza ne olacağını görelim. Genişlikleri karşılaştırırken büyüktür işaretini (`>`) küçüktür işaretiyle (`<`) değiştirerek `kapsayabilir_mi` metodunun uygulamasını bozalım:
 
 ```rust,not_desired_behavior,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-03-introducing-a-bug/src/lib.rs:here}}
@@ -194,7 +194,7 @@ Testleri şimdi çalıştırmak şu çıktıyı üretir:
 {{#include ../listings/ch11-writing-automated-tests/no-listing-03-introducing-a-bug/output.txt}}
 ```
 
-Testlerimiz hatayı yakaladı! `buyuk.genislik` değeri `8` ve `kucuk.genislik` değeri `5` olduğundan, `tutabilir_mi` içindeki genişlik karşılaştırması artık `false` döndürür; çünkü `8`, `5`'ten küçük değildir.
+Testlerimiz hatayı yakaladı! `buyuk.genislik` değeri `8` ve `kucuk.genislik` değeri `5` olduğundan, `kapsayabilir_mi` içindeki genişlik karşılaştırması artık `false` döndürür; çünkü `8`, `5`'ten küçük değildir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -255,7 +255,7 @@ Perde arkasında `assert_eq!` ve `assert_ne!` makroları sırasıyla `==` ve `!=
 
 ### Özel Başarısızlık Mesajları Ekleme
 
-Başarısızlık mesajıyla birlikte yazdırılacak özel bir açıklamayı `assert!`, `assert_eq!` ve `assert_ne!` makrolarına isteğe bağlı argümanlar olarak da ekleyebilirsiniz. Zorunlu argümanlardan sonra belirtilen tüm ek argümanlar `format!` makrosuna (Bölüm 8'deki ["`+` veya `format!` ile Birleştirme"][concatenating]<!-- ignore --> başlığında ele alınmıştı) aktarılır; dolayısıyla `{}` yer tutucuları içeren bir biçimlendirme dizgisi ve bu yer tutuculara yerleşecek değerleri geçirebilirsiniz. Özel mesajlar bir doğrulamanın ne anlama geldiğini belgelemek açısından oldukça yararlıdır; test başarısız olduğunda koddaki sorunun ne olduğuna dair çok daha net bir fikir verir.
+Başarısızlık mesajıyla birlikte yazdırılacak özel bir açıklamayı `assert!`, `assert_eq!` ve `assert_ne!` makrolarına isteğe bağlı argümanlar olarak da ekleyebilirsiniz. Zorunlu argümanlardan sonra belirtilen tüm ek argümanlar `format!` makrosuna (Bölüm 8'deki ["`+` veya `format!` ile Birleştirme"][concatenating]<!-- ignore --> başlığında ele alınmıştı) aktarılır; dolayısıyla `{}` yer tutucuları içeren bir biçimlendirme metni ve bu yer tutuculara yerleşecek değerleri geçirebilirsiniz. Özel mesajlar bir doğrulamanın ne anlama geldiğini belgelemek açısından oldukça yararlıdır; test başarısız olduğunda koddaki sorunun ne olduğuna dair çok daha net bir fikir verir.
 
 Örneğin insanları ismen selamlayan bir fonksiyonumuz olduğunu ve fonksiyona geçirdiğimiz ismin çıktıda yer alıp almadığını test etmek istediğimizi varsayalım:
 
@@ -378,12 +378,14 @@ Hata mesajı, testin beklediğimiz gibi gerçekten paniklediğini ancak panik me
 
 Testleri `Result<T, E>` döndürecek şekilde yazmak, test gövdesinde soru işareti operatörünü (`?`) kullanmanıza olanak tanır; bu da içindeki herhangi bir adım `Err` varyantı döndürdüğünde başarısız olması gereken çok adımlı testleri yazmak için son derece pratik bir yoldur.
 
-`Result<T, E>` kullanan testlerde `#[should_panic]` özniteliğini kullanamazsınız. Bir işlemin `Err` varyantı döndürdüğünü doğrulamak için `Result<T, E>` değeri üzerinde soru işareti operatörünü (`?`) _kullanmayın_ (aksi halde `?` operatörü hatayı dışarı yayarak testi başarısız kılar). Bunun yerine `assert!(deger.is_err())` ifadesini kullanın.
+`Result<T, E>` kullanan testlerde `#[should_panic]` özniteliğini kullanamazsınız. Bir işlemin `Err` varyantı döndürdüğünü doğrulamak için `Result<T, E>` değeri üzerinde soru işareti operatörünü (`?`) _kullanmayın_ (aksi hâlde `?` operatörü hatayı dışarı yayarak testi başarısız kılar). Bunun yerine `assert!(deger.is_err())` ifadesini kullanın.
+
+> Not: Bir test birden fazla hata türü üretebilen adımlar içeriyorsa (örneğin önce bir dosya okuyup sonra içindeki metni sayıya çeviriyorsa) her adımın hatasını `String`'e dönüştürmek zahmetlidir. Bu gibi durumlarda testin dönüş türünü, Bölüm 9'da gördüğünüz `Box<dyn Error>` ile `Result<(), Box<dyn std::error::Error>>` olarak yazmak yaygın bir alışkanlıktır: `?` operatörü `Error` trait'ini uygulayan her hatayı kendiliğinden bu kutuya dönüştürür, test ise ilk `Err` döndüren adımda hata mesajıyla birlikte başarısız olur. Test başarısız olduğunda test çalıştırıcısı, `Err` içindeki değeri `Debug` biçimlendirmesiyle (`{:?}`) ekrana yazdırır; dolayısıyla `E` türünün `Debug` trait'ini uygulaması gerekir.
 
 Artık test yazmanın çeşitli yollarını öğrendiğinize göre, testlerimizi çalıştırdığımızda neler olup bittiğine bakalım ve `cargo test` ile kullanabileceğimiz farklı seçenekleri inceleyelim.
 
 [concatenating]: ch08-02-stringler.html#-veya-format-ile-birleştirmek
-[bench]: ../unstable-book/library-features/test.html
+[bench]: https://doc.rust-lang.org/unstable-book/library-features/test.html
 [ignoring]: ch11-02-test-calistirmayi-kontrol-etme.html#açıkça-istenmedikçe-testleri-yok-saymak
 [subset]: ch11-02-test-calistirmayi-kontrol-etme.html#testlerin-bir-alt-kümesini-isme-göre-çalıştırmak
 [controlling-how-tests-are-run]: ch11-02-test-calistirmayi-kontrol-etme.html#testlerin-nasıl-çalıştırılacağını-kontrol-etme

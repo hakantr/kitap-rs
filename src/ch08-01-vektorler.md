@@ -74,9 +74,9 @@ Liste 8-4, indeksleme sözdizimi ve `get` metodu ile bir vektördeki değere eri
 
 Buradaki birkaç ayrıntıya dikkat edin. Vektörler sıfırdan başlayarak sayılarla indekslendiği için üçüncü elemanı almak üzere `2` indeks değerini kullanırız. `&` ve `[]` kullanmak bize ilgili indeksteki elemana bir referans (`&i32`) verir. İndeksi argüman olarak geçirerek `get` metodunu kullandığımızda ise `match` ile işleyebileceğimiz bir `Option<&T>` elde ederiz.
 
-Rust, mevcut eleman aralığının dışındaki bir indeks değerini kullanmaya çalıştığınızda programın nasıl davranacağını seçebilmeniz için elemana erişmenin bu iki yolunu sunar. Örnek olarak, beş elemanlı bir vektörümüz olduğunda ve Liste 8-5'te gösterildiği gibi her iki yöntemle 100. indeksteki elemana erişmeye çalıştığımızda ne olacağına bakalım.
+Rust, mevcut eleman aralığının dışındaki bir indeks değerini kullanmaya çalıştığınızda programın nasıl davranacağını seçebilmeniz için elemana erişmenin bu iki yolunu sunar. Örnek olarak, beş elemanlı bir vektörümüz olduğunda ve Liste 8-5'te gösterildiği gibi her iki yöntemle indeksi 100 olan elemana erişmeye çalıştığımızda ne olacağına bakalım.
 
-<Listing number="8-5" caption="Beş eleman içeren bir vektörde 100. indeksteki elemana erişmeye çalışmak">
+<Listing number="8-5" caption="Beş eleman içeren bir vektörde indeksi 100 olan elemana erişmeye çalışmak">
 
 ```rust,should_panic,panics
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-05/src/main.rs:here}}
@@ -84,7 +84,7 @@ Rust, mevcut eleman aralığının dışındaki bir indeks değerini kullanmaya 
 
 </Listing>
 
-Bu kodu çalıştırdığımızda, ilk satırdaki `[]` yöntemi var olmayan bir elemana referans verdiği için programın panik yapmasına (`panic!`) neden olur. Bu yöntem, vektörün sonunu aşan bir elemana erişilmeye çalışıldığında programınızın anında durmasını istiyorsanız en uygun seçenektir.
+Bu kodu çalıştırdığımızda, ilk satırdaki `[]` yöntemi var olmayan bir elemana başvurduğu için programın panik yapmasına neden olur. Bu yöntem, vektörün sonunu aşan bir elemana erişilmeye çalışıldığında programınızın anında durmasını istiyorsanız en uygun seçenektir.
 
 `get` metoduna vektör sınırlarının dışında bir indeks geçirildiğinde ise metot panik yapmadan `None` döndürür. Normal çalışma koşullarında vektör aralığının dışındaki bir elemana erişme ihtimali varsa bu yöntemi tercih edersiniz. Bu durumda kodunuz, Bölüm 6'da ele aldığımız gibi `Some(&eleman)` veya `None` olasılıklarının her ikisini de yönetecek mantığa sahip olur. Örneğin indeks değeri kullanıcının klavyeden girdiği bir sayıdan geliyor olabilir. Kullanıcı yanlışlıkla çok büyük bir sayı girerse ve program `None` değeri alırsa, kullanıcıya mevcut vektörde kaç öğe bulunduğunu bildirip geçerli bir değer girmesi için yeni bir şans tanıyabilirsiniz. Bu yaklaşım, basit bir yazım hatası yüzünden programı çökertmekten çok daha kullanıcı dostudur!
 
@@ -164,6 +164,8 @@ Programınızın çalışma zamanında vektörde saklamak üzere karşılaşaca�
 
 Vektörleri kullanmanın en yaygın yollarından bazılarını ele aldığımıza göre, standart kütüphanenin `Vec<T>` üzerinde tanımladığı diğer pek çok kullanışlı metodu görmek için [API belgelendirmesini][vec-api]<!-- ignore --> mutlaka inceleyin. Örneğin `push` metoduna ek olarak `pop` metodu, vektörün son elemanını çıkarıp (`Option<T>` olarak) döndürür.
 
+> Not: Günlük kullanımda en sık başvuracağınız `Vec<T>` metotlarından bazıları şunlardır: `len` eleman sayısını, `is_empty` vektörün boş olup olmadığını döndürür. `insert(i, deger)` belirtilen indekse eleman ekler, `remove(i)` ise o indeksteki elemanı çıkarıp döndürür; her ikisi de sonraki elemanları kaydırmak zorunda olduğundan büyük vektörlerde maliyetli olabilir. `contains(&deger)` bir değerin vektörde bulunup bulunmadığını söyler; `first` ve `last` sırasıyla ilk ve son elemana `Option<&T>` olarak erişir; `extend` başka bir koleksiyonun elemanlarını sona ekler; `sort` elemanları sıralar. `iter`, `iter_mut` ve `into_iter` metotları ise Bölüm 13'te ayrıntılı inceleyeceğimiz iteratörleri üretir. Ayrıca bir vektörü, string dilimlerinde olduğu gibi `&v[1..3]` sözdizimiyle dilimleyebilir ve `&[T]` türünde bir dilim elde edebilirsiniz. Bölüm 4'teki ["Dilim (Slice) Türü"][slice]<!-- ignore --> başlığında gördüğümüz gibi, parametre olarak `&Vec<T>` yerine `&[T]` kabul eden bir fonksiyon hem vektörlerle hem de dizilerle çalışabildiğinden daha esnektir.
+
 <!-- Old headings. Do not remove or links may break. -->
 <a id="dropping-a-vector-drops-its-elements"></a>
 <a id="bir-vektörü-düşürmek-dropping-elemanlarını-da-düşürür"></a>
@@ -185,6 +187,7 @@ Vektör düşürüldüğünde tüm içeriği de düşürülür; yani barındırd
 Şimdi bir sonraki koleksiyon türüne geçelim: `String`!
 
 [data-types]: ch03-02-veri-turleri.html#veri-türleri
-[nomicon]: ../nomicon/vec/vec.html
-[vec-api]: ../std/vec/struct.Vec.html
+[slice]: ch04-03-dilim-turu.html
+[nomicon]: https://doc.rust-lang.org/nomicon/vec/vec.html
+[vec-api]: https://doc.rust-lang.org/std/vec/struct.Vec.html
 [deref]: ch15-02-deref.html#following-the-pointer-to-the-value-with-the-dereference-operator

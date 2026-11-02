@@ -69,7 +69,7 @@ Bu kodda `unsafe` anahtar kelimesini kullanmadığımıza dikkat edin. Güvenli 
 
 Ham işaretçileri _ham ödünç alma operatörlerini (raw borrow operators)_ kullanarak oluşturduk: `&raw const num` ifadesi `*const i32` türünde değiştirilemez bir ham işaretçi, `&raw mut num` ifadesi ise `*mut i32` türünde değiştirilebilir bir ham işaretçi oluşturur. Bunları doğrudan yerel bir değişkenden ürettiğimiz için bu ham işaretçilerin geçerli olduğunu biliyoruz; ancak herhangi bir ham işaretçi hakkında aynı varsayımda bulunamayız.
 
-Bunu göstermek için şimdi, ham ödünç alma operatörünü kullanmak yerine bir değeri `as` anahtar kelimesiyle dönüştürerek geçerliliğinden o kadar da emin olamayacağımız bir ham işaretçi oluşturacağız. Liste 20-2, bellekteki keyfi bir konuma işaret eden bir ham işaretçinin nasıl oluşturulacağını gösterir. Keyfi bir bellek alanını kullanmaya çalışmak tanımsız davranıştır: O adreste veri bulunabilir de bulunmayabilir de; derleyici kodu hiçbir bellek erişimi yapılmayacak şekilde optimize edebilir ya da program bir _parçalanma hatasıyla (segmentation fault)_ sonlanabilir. Özellikle bunun yerine ham ödünç alma operatörü kullanabildiğiniz durumlarda böyle bir kod yazmak için genellikle hiçbir geçerli neden yoktur; ancak bunu yapmak mümkündür.
+Bunu göstermek için şimdi, ham ödünç alma operatörünü kullanmak yerine bir değeri `as` anahtar kelimesiyle dönüştürerek geçerliliğinden o kadar da emin olamayacağımız bir ham işaretçi oluşturacağız. Liste 20-2, bellekteki keyfi bir konuma işaret eden bir ham işaretçinin nasıl oluşturulacağını gösterir. Keyfi bir bellek alanını kullanmaya çalışmak tanımsız davranıştır: O adreste veri bulunabilir de bulunmayabilir de; derleyici kodu hiçbir bellek erişimi yapılmayacak şekilde optimize edebilir ya da program bir _segmentasyon hatasıyla (segmentation fault)_ sonlanabilir. Özellikle bunun yerine ham ödünç alma operatörü kullanabildiğiniz durumlarda böyle bir kod yazmak için genellikle hiçbir geçerli neden yoktur; ancak bunu yapmak mümkündür.
 
 <Listing number="20-2" caption="Keyfi bir bellek adresine ham işaretçi oluşturmak">
 
@@ -196,7 +196,7 @@ Bu keyfi konumdaki belleğin sahibi değiliz ve bu kodun oluşturduğu dilimin g
 
 #### Dış Kodu Çağırmak İçin `extern` Fonksiyonlarını Kullanmak
 
-Bazen Rust kodunuzun başka bir dilde yazılmış kodlarla etkileşim kurması gerekebilir. Bunun için Rust, bir programlama dilinin fonksiyonlar tanımlamasına ve farklı (yabancı) bir programlama dilinin bu fonksiyonları çağırmasına olanak tanıyan _Yabancı Fonksiyon Arayüzü (Foreign Function Interface — FFI)_ oluşturmayı ve kullanmayı kolaylaştıran `extern` anahtar kelimesine sahiptir.
+Bazen Rust kodunuzun başka bir dilde yazılmış kodlarla etkileşim kurması gerekebilir. Bunun için Rust, bir _Yabancı Fonksiyon Arayüzü (Foreign Function Interface — FFI)_ oluşturmayı ve kullanmayı kolaylaştıran `extern` anahtar kelimesine sahiptir. FFI, bir programlama dilinin fonksiyonlar tanımlamasına ve farklı (yabancı) bir programlama dilinin bu fonksiyonları çağırmasına olanak tanıyan bir yöntemdir.
 
 Liste 20-8, C standart kütüphanesindeki `abs` fonksiyonuyla nasıl entegrasyon kurulacağını göstermektedir. `extern` blokları içinde bildirilen fonksiyonları Rust kodundan çağırmak genellikle güvenli değildir; bu nedenle `extern` blokları da `unsafe` olarak işaretlenmelidir. Bunun nedeni, diğer dillerin Rust'ın kurallarını ve garantilerini zorunlu kılmaması ve Rust'ın bunları denetleyememesidir; dolayısıyla güvenliği sağlama sorumluluğu programcıya düşer.
 
@@ -319,6 +319,28 @@ Güvenli olmayan bir trait uygulamak için `unsafe` kullanabiliriz. Metotlarınd
 
 Yalnızca `unsafe` ile çalışan son işlem, bir *birleşimin* (`union`) alanlarına erişmektir. Bir `union`, `struct`'a benzer; ancak belirli bir örnekte herhangi bir anda bildirilen alanlardan yalnızca biri kullanılır. `union`'lar öncelikle C kodundaki `union`'larla etkileşim kurmak amacıyla kullanılır. Rust, `union` örneğinde o anda saklanan verinin türünü garanti edemediği için `union` alanlarına erişmek güvenli değildir. `union`'lar hakkında daha fazla bilgiyi [Rust Referansı'nda][unions] bulabilirsiniz.
 
+> Not: Bir `union`, tüm alanlarını bellekte aynı konumda tutar; dolayısıyla boyutu en büyük alanının boyutu kadardır. Hangi alana en son yazıldığını yalnızca siz bilirsiniz; Rust bunu takip etmez. Bu yüzden bir alana yazmak güvenliyken bir alanı okumak `unsafe` gerektirir:
+>
+> ```rust
+> #[repr(C)]
+> union TamSayiVeyaKayan {
+>     tam: u32,
+>     kayan: f32,
+> }
+>
+> fn main() {
+>     let mut deger = TamSayiVeyaKayan { tam: 1 };
+>     deger.kayan = 1.0; // Yazmak güvenlidir; artık `kayan` alanı geçerlidir.
+>
+>     // SAFETY: En son `kayan` alanına yazdık; dolayısıyla okuduğumuz bitler
+>     // geçerli bir `f32` değeridir.
+>     let okunan = unsafe { deger.kayan };
+>     println!("{okunan}");
+> }
+> ```
+>
+> Bir `union`'ın alanları yalnızca `Copy` olan türlerden (ya da `ManuallyDrop<T>` ile sarmalanmış türlerden) oluşabilir; ayrıntılar için Rust Referansı'na bakın.
+
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-miri-to-check-unsafe-code"></a>
@@ -357,11 +379,11 @@ Az önce ele aldığımız beş süper güçten birini kullanmak amacıyla `unsa
 Güvenli olmayan Rust ile etkili bir şekilde nasıl çalışılacağını çok daha derinlemesine keşfetmek için Rust'ın resmî `unsafe` rehberi olan [The Rustonomicon][nomicon] kitabını okuyabilirsiniz.
 
 [dangling-references]: ch04-02-referanslar-ve-odunc-alma.html#sarkan-referanslar-dangling-references
-[ABI]: ../reference/items/external-blocks.html#abi
+[ABI]: https://doc.rust-lang.org/reference/items/external-blocks.html#abi
 [constants]: ch03-01-degiskenler-ve-degistirilebilirlik.html#sabitler-constants
 [send-and-sync]: ch16-04-genisletilebilir-eszamanlilik.html
 [the-slice-type]: ch04-03-dilim-turu.html#dilim-slice-türü
-[unions]: ../reference/items/unions.html
+[unions]: https://doc.rust-lang.org/reference/items/unions.html
 [miri]: https://github.com/rust-lang/miri
 [editions]: ekler-05-surumler.html
 [nightly]: ekler-07-nightly-rust.html

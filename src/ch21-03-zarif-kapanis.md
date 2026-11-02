@@ -18,9 +18,9 @@ Liste 21-20'deki kod, amaçladığımız gibi bir thread (iş parçacığı) hav
 
 ### `IsParcacigiHavuzu` Üzerinde `Drop` Trait'ini Uygulamak
 
-Thread havuzumuz üzerinde `Drop` uygulayarak başlayalım. Havuz düşürüldüğünde, yürüttükleri işleri tamamladıklarından emin olmak için tüm thread'lerimizin birleşmesi (`join`) gerekir. Liste 21-22, `Drop` uygulamasına yönelik ilk denemeyi gösterir; bu kod henüz tam olarak çalışmayacaktır.
+Thread havuzumuz üzerinde `Drop` uygulayarak başlayalım. Havuz düşürüldüğünde, yürüttükleri işleri tamamladıklarından emin olmak için tüm thread'lerimizi `join` ile beklememiz gerekir. Liste 21-22, `Drop` uygulamasına yönelik ilk denemeyi gösterir; bu kod henüz tam olarak çalışmayacaktır.
 
-<Listing number="21-22" file-name="src/lib.rs" caption="Thread havuzu kapsam dışına çıktığında her thread'i birleştirmek">
+<Listing number="21-22" file-name="src/lib.rs" caption="Thread havuzu kapsam dışına çıktığında her thread'i `join` ile beklemek">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch21-web-server/listing-21-22/src/lib.rs:here}}
@@ -36,11 +36,11 @@ Bu kodu derlediğimizde şu hatayı alırız:
 {{#include ../listings/ch21-web-server/listing-21-22/output.txt}}
 ```
 
-Hata bize, her `calisan` için yalnızca değiştirilebilir bir ödünç almaya sahip olduğumuz ve `join` metodu kendi argümanının sahipliğini aldığı için `join` çağıramayacağımızı söyler. Bu sorunu çözmek için, `join` metodunun thread'i tüketebilmesi amacıyla `thread` alanının sahibi olan `Calisan` örneğinin içinden thread'i dışarı taşımamız gerekir. Bunu yapmanın bir yolu, Liste 18-15'te izlediğimiz yaklaşımın aynısını uygulamaktır. `Calisan`, bir `Option<thread::JoinHandle<()>>` tutsaydı, değeri `Some` varyantının dışına taşıyıp yerinde `None` varyantı bırakmak için `Option` üzerinde `take` metodunu çağırabilirdik. Başka bir deyişle, çalışmakta olan bir `Calisan`, `thread` alanında bir `Some` varyantı bulundurur; bir `Calisan` örneğini temizlemek istediğimizde ise `Calisan`'ın çalıştıracak bir thread'i kalmaması için `Some` yerine `None` koyardık.
+Hata bize, her `calisan` için yalnızca değiştirilebilir bir ödünç almaya sahip olduğumuz ve `join` metodu üzerinde çağrıldığı `JoinHandle` değerinin sahipliğini aldığı (`self` parametresini tükettiği) için `join` çağıramayacağımızı söyler. Bu sorunu çözmek için, `join` metodunun thread'i tüketebilmesi amacıyla `thread` alanının sahibi olan `Calisan` örneğinin içinden thread'i dışarı taşımamız gerekir. Bunu yapmanın bir yolu, Liste 18-15'te izlediğimiz yaklaşımın aynısını uygulamaktır. `Calisan`, bir `Option<thread::JoinHandle<()>>` tutsaydı, değeri `Some` varyantının dışına taşıyıp yerinde `None` varyantı bırakmak için `Option` üzerinde `take` metodunu çağırabilirdik. Başka bir deyişle, çalışmakta olan bir `Calisan`, `thread` alanında bir `Some` varyantı bulundurur; bir `Calisan` örneğini temizlemek istediğimizde ise `Calisan`'ın çalıştıracak bir thread'i kalmaması için `Some` yerine `None` koyardık.
 
 Ancak bu durum _yalnızca_ `Calisan` düşürülürken karşımıza çıkardı. Buna karşılık, `calisan.thread` alanına eriştiğimiz her yerde bir `Option<thread::JoinHandle<()>>` ile uğraşmak zorunda kalırdık. İdiyomatik Rust'ta `Option` oldukça sık kullanılır; fakat her zaman var olacağını bildiğiniz bir değeri sırf geçici bir çözüm olarak `Option` içine sardığınızı fark ettiğinizde, kodunuzu daha temiz ve hataya daha az açık hâle getirecek alternatif yaklaşımlar aramak iyi bir fikirdir.
 
-Bu durumda daha iyi bir alternatif mevcuttur: `Vec::drain` metodu. Vektörden hangi öğelerin çıkarılacağını belirtmek için bir aralık (*range*) parametresi kabul eder ve bu öğeler üzerinde bir iteratör döndürür. `..` aralık sözdizimini geçirmek, vektördeki *her* değeri çıkaracaktır.
+Bu durumda daha iyi bir alternatif mevcuttur: `Vec::drain` metodu. Vektörden hangi öğelerin çıkarılacağını belirtmek için bir aralık (*range*) parametresi kabul eder ve bu öğeler üzerinde bir iteratör döndürür. `..` aralık sözdizimini geçirmek, vektördeki *her* değeri çıkaracaktır. Öğeler iteratörden sahipli değerler olarak çıktığı için her `calisan` üzerinde `join` çağırabiliriz; döngü bittiğinde `calisanlar` vektörü boşalmış olur.
 
 Dolayısıyla `IsParcacigiHavuzu` için `drop` uygulamasını şöyle güncellememiz gerekir:
 
@@ -75,7 +75,9 @@ Bu sorunu düzeltmek için önce `IsParcacigiHavuzu` `drop` uygulamasında, ard�
 
 </Listing>
 
-`gonderici` değerinin düşürülmesi kanalı kapatır; bu da artık başka mesaj gönderilmeyeceğini belirtir. Bu gerçekleştiğinde, `Calisan` örneklerinin sonsuz döngü içinde yaptığı tüm `recv` çağrıları bir hata döndürür. Liste 21-24'te, bu durumda döngüden zarif biçimde çıkacak şekilde `Calisan` döngüsünü değiştiriyoruz; bu da `IsParcacigiHavuzu` `drop` uygulaması üzerlerinde `join` çağırdığında thread'lerin tamamlanacağı anlamına gelir.
+`gonderici` değerinin düşürülmesi kanalı kapatır (bir kanal, tüm göndericileri düşürüldüğünde kapanır; bizim kanalımızın tek göndericisi budur); bu da artık başka mesaj gönderilmeyeceğini belirtir. Bu gerçekleştiğinde, `Calisan` örneklerinin sonsuz döngü içinde yaptığı tüm `recv` çağrıları bir hata döndürür. Liste 21-24'te, bu durumda döngüden zarif biçimde çıkacak şekilde `Calisan` döngüsünü değiştiriyoruz; bu da `IsParcacigiHavuzu` `drop` uygulaması üzerlerinde `join` çağırdığında thread'lerin tamamlanacağı anlamına gelir.
+
+> Not: `drop` metodu `&mut self` aldığı için `self.gonderici` alanını `drop(self.gonderici)` yazarak doğrudan taşıyamayız; bir referansın arkasındaki değerden alan taşımaya çalışmak, Liste 21-22'de gördüğümüz `E0507` hatasını üretir. `Option::take` bu sorunu, `Some` içindeki göndericiyi alıp yerine `None` bırakarak çözer; `IsParcacigiHavuzu` böylece her an geçerli bir durumda kalır. Adımların sırası da önemlidir: Gönderici _önce_ düşürülmeli, thread'ler _sonra_ `join` ile beklenmelidir. Sırayı tersine çevirirsek gönderici hâlâ hayatta olduğu için `recv` hiçbir zaman hata döndürmez ve ilk `join` çağrısı sonsuza dek bloklanır.
 
 <Listing number="21-24" file-name="src/lib.rs" caption="`recv` hata döndürdüğünde döngüden açıkça çıkmak">
 

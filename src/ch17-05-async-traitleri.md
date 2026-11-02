@@ -64,7 +64,7 @@ ve `T` değerinin kullanıma hazır olduğunu gösterir.
 
 > Not: Doğrudan `poll` çağırmanız nadiren gerekir; ancak çağırmanız gerekirse
 > çoğu future için, future `Ready` döndürdükten sonra çağıran kodun `poll`
-> metodunu tekrar çağırmaması gerektiğini unutmayın. Pek çok future, hazır hale
+> metodunu tekrar çağırmaması gerektiğini unutmayın. Pek çok future, hazır hâle
 > geldikten sonra yeniden yoklanırsa panikler. Tekrar yoklanması güvenli olan
 > future'lar bunu belgelendirmelerinde açıkça belirtir. Bu davranış,
 > `Iterator::next` metodunun davranışına benzer.
@@ -106,11 +106,12 @@ loop {
 ```
 
 Ancak Rust kodu tam olarak buna derleseydi, her `await` bloklayıcı olurdu — ki
-bu da ulaşmak istediğimiz hedefin tam tersidir! Bunun yerine Rust, döngünün
-denetimi bu future üzerindeki çalışmayı duraklatıp diğer future'lar üzerinde
-çalışabilecek ve daha sonra bu future'ı tekrar kontrol edebilecek bir yapıya
-devredebilmesini sağlar. Gördüğümüz üzere bu yapı bir asenkron çalışma zamanıdır
-ve bu zamanlama ile eşgüdüm işi onun temel görevlerinden biridir.
+bu da ulaşmak istediğimiz hedefin tam tersidir! Bunun yerine Rust, bu döngünün
+denetimi başka bir yapıya devredebilmesini sağlar: Bu yapı, söz konusu future
+üzerindeki çalışmayı duraklatıp diğer future'larla ilgilenebilir ve daha sonra
+bu future'ı yeniden kontrol edebilir. Gördüğümüz üzere bu yapı bir asenkron
+çalışma zamanıdır ve bu zamanlama ile eşgüdüm işi onun temel görevlerinden
+biridir.
 
 [“Mesaj İletimiyle İki Görev Arasında Veri Gönderme”][message-passing]<!-- ignore -->
 bölümünde `alici.recv` çağrısını beklemekten bahsetmiştik. `recv` çağrısı bir
@@ -127,6 +128,18 @@ Bir çalışma zamanının bunu tam olarak nasıl yaptığının ayrıntıları 
 kapsamı dışındadır; ancak asıl önemli olan future'ların temel mekaniğini
 görmektir: çalışma zamanı sorumlu olduğu her bir future'ı _yoklar_ ve henüz
 hazır olmadığında onu tekrar uykuya yatırır.
+
+> Not: Peki çalışma zamanı, uyuttuğu bir future'ı yeniden yoklamanın zamanının
+> geldiğini nasıl anlar? Bu sorunun yanıtı, `poll` metodunun ikinci parametresi
+> olan `cx: &mut Context<'_>` değerinde gizlidir. `Context`, özünde bir
+> `Waker` (*uyandırıcı*) taşır. Bir future `Pending` döndürdüğünde, ilerleme
+> kaydedebileceği an geldiğinde (örneğin ağdan veri ulaştığında ya da bir
+> zamanlayıcı dolduğunda) bu uyandırıcının `wake` metodunun çağrılmasını
+> ayarlamakla yükümlüdür; `trpl::sleep` veya kanal alıcısı gibi hazır
+> future'lar bu işi sizin yerinize yapar. Çalışma zamanı da future'ları
+> körlemesine ve sürekli yoklamak yerine yalnızca uyandırıldıklarında yeniden
+> yoklar. Bu sözleşme sayesinde binlerce uyuyan future, işlemciyi meşgul etmeden
+> sırasını bekleyebilir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -196,7 +209,7 @@ note: required by a bound in `futures_util::future::join_all::JoinAll`
 Bu hata mesajındaki not, değerleri bellekte taşınmayacaklarını garanti
 eden `Pin` türünün içine koymak —yani değerleri _sabitlemek (pin)_— için `pin!`
 makrosunu kullanmamız gerektiğini söyler. Hata mesajı, `dyn Future<Output = ()>`
-türünün `Unpin` trait'ini uygulaması gerektiği halde şu anda uygulamadığını, bu
+türünün `Unpin` trait'ini uygulaması gerektiği hâlde şu anda uygulamadığını, bu
 yüzden de sabitlemenin zorunlu olduğunu belirtir.
 
 `trpl::join_all` fonksiyonu `JoinAll` adında bir struct döndürür. Bu struct,
@@ -228,12 +241,13 @@ pub trait Future {
 }
 ```
 
-`cx` parametresi ve onun `Context` türü, bir çalışma zamanının tembel
-kalmayı sürdürürken herhangi bir future'ı ne zaman kontrol edeceğini gerçekte
-nasıl bildiğinin anahtarıdır. Yine bunun nasıl çalıştığının ayrıntıları bu
-bölümün kapsamı dışındadır ve genellikle bu konuyu yalnızca özel bir `Future`
-uygulaması yazarken düşünmeniz gerekir. Biz bunun yerine `self` parametresinin
-türüne odaklanacağız; çünkü `self` parametresinin tür bildirimine sahip olduğu
+`cx` parametresi ve onun `Context` türü, bir çalışma zamanının tembelliğini
+korurken belirli bir future'ı ne zaman yeniden kontrol etmesi gerektiğini nasıl
+bildiğinin anahtarıdır (yukarıdaki `Waker` notuna bakın). Yine bunun nasıl
+çalıştığının ayrıntıları bu bölümün kapsamı dışındadır ve genellikle bu konuyu
+yalnızca özel bir `Future` uygulaması yazarken düşünmeniz gerekir. Biz bunun
+yerine `self` parametresinin türüne odaklanacağız; çünkü `self` parametresinin
+tür bildirimine sahip olduğu
 bir metodu ilk kez görüyoruz. `self` için yazılan tür bildirimi diğer fonksiyon
 parametrelerindeki tür bildirimleri gibi çalışır, ancak iki temel farkı vardır:
 
@@ -297,7 +311,7 @@ bir varyantın alanlarında kendilerine yönelik referanslar barındırabilir.
 Ne var ki kendisine referans barındıran herhangi bir nesneyi taşımak varsayılan
 olarak güvenli değildir; çünkü referanslar her zaman başvurdukları şeyin gerçek
 bellek adresine işaret eder (bkz. Şekil 17-5). Veri yapısının kendisini
-taşırsanız, bu içsel referanslar eski konuma işaret eder halde kalır. Ancak o
+taşırsanız, bu içsel referanslar eski konuma işaret eder hâlde kalır. Ancak o
 bellek konumu artık geçersizdir. Birincisi, veri yapısında değişiklik
 yaptığınızda oradaki değer güncellenmeyecektir. İkincisi —ve daha da önemlisi—
 bilgisayar artık o belleği başka amaçlar için yeniden kullanmakta özgürdür! Daha
@@ -344,7 +358,7 @@ için taşınamamasıdır.
 
 <figure>
 
-<img alt="İkinci sütundaki bir değişiklik dışında önceki diyagramla aynı olan, kabaca üç sütun halinde dizilmiş dört kutu. Artık ikinci sütunda “b1” ve “b2” etiketli iki kutu vardır; “b1” grileştirilmiştir ve “Pin” kutusundan çıkan ok “b1” yerine “b2” üzerinden geçmektedir. Bu durum işaretçinin “b1”den “b2”ye taşındığını, ancak “pinned” içindeki verinin yerinden oynamadığını gösterir." src="img/trpl17-07.svg" class="center" />
+<img alt="İkinci sütundaki bir değişiklik dışında önceki diyagramla aynı olan, kabaca üç sütun hâlinde dizilmiş dört kutu. Artık ikinci sütunda “b1” ve “b2” etiketli iki kutu vardır; “b1” grileştirilmiştir ve “Pin” kutusundan çıkan ok “b1” yerine “b2” üzerinden geçmektedir. Bu durum işaretçinin “b1”den “b2”ye taşındığını, ancak “pinned” içindeki verinin yerinden oynamadığını gösterir." src="img/trpl17-07.svg" class="center" />
 
 <figcaption>Şekil 17-7: Kendine referanslı bir future türüne işaret eden bir `Box` değerini taşıma</figcaption>
 
@@ -356,10 +370,10 @@ barındırdığında düşünmemiz gerekir. Sayılar ve mantıksal (`bool`) değ
 ilkel değerler açıktır ki hiçbir içsel referans barındırmadıkları için
 güvenlidir. Rust'ta normalde çalıştığınız çoğu türde de durum böyledir. Örneğin
 bir `Vec` değerini endişelenmeden taşıyabilirsiniz. Şimdiye dek gördüklerimize
-bakılırsa, elinizde bir `Pin<Vec<String>>` olsaydı, kendisine başka hiçbir
-referans olmadığı sürece bir `Vec<String>` değerini taşımak her zaman güvenli
-olmasına rağmen her işi `Pin` tarafından sunulan güvenli ama kısıtlayıcı API'ler
-üzerinden yapmak zorunda kalırdınız. Bu gibi durumlarda öğeleri taşımanın sorun
+bakılırsa, elinizde bir `Pin<Vec<String>>` olsaydı her işi `Pin` tarafından
+sunulan güvenli ama kısıtlayıcı API'ler üzerinden yapmak zorunda kalırdınız;
+oysa kendisine başka hiçbir referans olmadığı sürece bir `Vec<String>` değerini
+taşımak her zaman güvenlidir. Bu gibi durumlarda öğeleri taşımanın sorun
 olmadığını derleyiciye söylemenin bir yoluna ihtiyacımız vardır — işte `Unpin`
 tam burada devreye girer.
 
@@ -490,7 +504,7 @@ Bir `Stream` trait'inin bunları nasıl bir araya getirebileceğine bakmadan ön
 trait'inden ardışık öğe dizisi fikrini alırız: onun `next` metodu bir
 `Option<Self::Item>` sunar. `Future` trait'inden ise zaman içinde hazır olma
 fikrini alırız: onun `poll` metodu bir `Poll<Self::Output>` sunar. Zaman içinde
-hazır hale gelen bir öğe dizisini temsil etmek için bu özellikleri bir araya
+hazır hâle gelen bir öğe dizisini temsil etmek için bu özellikleri bir araya
 getiren bir `Stream` trait'i tanımlarız:
 
 ```rust
@@ -521,7 +535,7 @@ tür ise `Option`'dır, çünkü tıpkı bir iteratörde olduğu gibi daha fazla
 kalıp kalmadığını bildirmesi gerekir.
 
 Bu tanıma çok benzeyen bir yapı büyük olasılıkla ileride Rust'ın standart
-kütüphanesinin bir parçası haline gelecektir. O zamana kadar çoğu çalışma
+kütüphanesinin bir parçası hâline gelecektir. O zamana kadar çoğu çalışma
 zamanının araç setinin bir parçası olduğundan ona güvenebilirsiniz ve bundan
 sonra ele alacağımız her şey genel olarak geçerli olacaktır!
 

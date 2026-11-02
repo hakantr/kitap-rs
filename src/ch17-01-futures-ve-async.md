@@ -109,7 +109,7 @@ Parametre olarak tek bir sayfa URL'si alan, bu adrese istek yapan ve `<title>`
 </Listing>
 
 İlk olarak `sayfa_basligi` adında bir fonksiyon tanımlıyor ve onu `async`
-anahtar kelimesiyle işaretliyoruz. Ardından geçirilen URL ne ise onu getirmek
+anahtar kelimesiyle işaretliyoruz. Ardından, fonksiyona verilen URL'yi getirmek
 için `trpl::get` fonksiyonunu kullanıyor ve yanıtı beklemek üzere `await`
 anahtar kelimesini ekliyoruz. `yanit` değerinin metnini almak için üzerinde
 `text` metodunu çağırıyor ve onu da bir kez daha `await` anahtar kelimesiyle

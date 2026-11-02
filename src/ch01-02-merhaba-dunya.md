@@ -41,7 +41,7 @@ Windows CMD için şunu girin:
 
 ### Rust Programlamanın Temelleri
 
-Ardından yeni bir kaynak dosya oluşturun ve adını _main.rs_ koyun. Rust kaynak dosyaları her zaman _.rs_ uzantısıyla biter. Dosya adınızda birden fazla kelime kullanıyorsanız kelimeleri ayırmak için alt çizgi (`_`) kullanmak genel kuraldır. Örneğin _merhabadunya.rs_ yerine _merhaba_dunya.rs_ kullanın.
+Ardından yeni bir kaynak dosya oluşturun ve adını _main.rs_ koyun. Rust kaynak dosyaları her zaman _.rs_ uzantısıyla biter. Dosya adınızda birden fazla kelime kullanıyorsanız kelimeleri ayırmak için alt çizgi (`_`) kullanmak yerleşik bir gelenektir. Örneğin _merhabadunya.rs_ yerine _merhaba_dunya.rs_ kullanın.
 
 Şimdi yeni oluşturduğunuz _main.rs_ dosyasını açın ve Liste 1-1'deki kodu girin.
 
@@ -110,7 +110,7 @@ Birincisi, `println!` bir Rust makrosunu çağırır. Bunun yerine bir fonksiyon
 
 Üçüncüsü, bu ifadenin sona erdiğini ve bir sonrakinin başlamaya hazır olduğunu belirten noktalı virgül (`;`) ile satırı sonlandırıyoruz. Rust kod satırlarının çoğu noktalı virgülle biter.
 
-> Not: Rust'ta kaynak kod dosyaları ve tüm metin türleri varsayılan olarak **UTF-8** kodlamasını kullanır; bu sayede `"Merhaba, dünya!"` örneğindeki gibi Türkçe karakterleri (`ç, ğ, ı, İ, ö, ş, ü`) ek bir ayar yapmadan metinlerin içinde doğrudan kullanabilirsiniz. Buna karşılık dosya, değişken ve fonksiyon adlarında ekosistem uyumluluğu için Türkçe karakter içermeyen küçük harfli `snake_case` biçimi (`merhaba_dunya` gibi) tercih edilir. Ayrıca ilk kodunuzu yazarken `!` veya `;` gibi bir işareti unutursanız endişelenmeyin; `rustc` derleyicisi hatanın tam satır ve sütununu göstermenin yanı sıra doğrudan düzeltme ipucu da sunar (örneğin `println!` yerine `println` yazdığınızda ``help: use `!` to invoke the macro`` önerisiyle sizi yönlendirir).
+> Not: Rust kaynak kod dosyaları her zaman **UTF-8** kodlamasıyla yazılır ve `String` gibi metin türleri de içeriklerini UTF-8 olarak tutar; bu sayede `"Merhaba, dünya!"` örneğindeki gibi Türkçe karakterleri (`ç, ğ, ı, İ, ö, ş, ü`) ek bir ayar yapmadan metinlerin içinde doğrudan kullanabilirsiniz. Rust 1.53'ten bu yana değişken ve fonksiyon adlarında da Unicode harflere izin verilir; ancak ekosistemdeki kodla uyumlu olması için dosya, değişken ve fonksiyon adlarında Türkçe karakter içermeyen küçük harfli `snake_case` biçimi (`merhaba_dunya` gibi) tercih edilir. Ayrıca ilk kodunuzu yazarken `!` veya `;` gibi bir işareti unutursanız endişelenmeyin; `rustc` derleyicisi hatanın tam satır ve sütununu göstermenin yanı sıra doğrudan düzeltme ipucu da sunar (örneğin `println!` yerine `println` yazdığınızda ``help: use `!` to invoke the macro`` önerisiyle sizi yönlendirir).
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="compiling-and-running-are-separate-steps"></a>

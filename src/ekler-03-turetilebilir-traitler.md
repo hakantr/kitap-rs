@@ -15,7 +15,7 @@ Bu ekte, standart kütüphanede bulunan ve `derive` ile kullanabileceğiniz tüm
 - Trait'i uygulamanıza izin verilen veya verilmeyen koşullar
 - Trait'i gerektiren işlem örnekleri
 
-`derive` özniteliğinin sağladığı davranıştan farklı bir davranış istiyorsanız, bu trait'leri elle nasıl uygulayacağınıza ilişkin ayrıntılar için her bir trait'in [standart kütüphane belgelendirmesine](../std/index.html)<!-- ignore --> başvurabilirsiniz.
+`derive` özniteliğinin sağladığı davranıştan farklı bir davranış istiyorsanız, bu trait'leri elle nasıl uygulayacağınıza ilişkin ayrıntılar için her bir trait'in [standart kütüphane belgelendirmesine](https://doc.rust-lang.org/std/index.html)<!-- ignore --> başvurabilirsiniz.
 
 Burada listelenen trait'ler, standart kütüphane tarafından tanımlanmış olup kendi türleriniz üzerinde `derive` ile uygulanabilen yegâne trait'lerdir. Standart kütüphanede tanımlanan diğer trait'lerin her türe uyan mantıklı bir varsayılan davranışı yoktur; bu nedenle onları amacınıza uygun biçimde uygulamak size bırakılmıştır.
 

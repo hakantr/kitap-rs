@@ -31,6 +31,8 @@ Boş bir hash map oluşturmanın bir yolu `new` fonksiyonunu kullanmak ve ardın
 
 Tıpkı vektörler gibi hash map'ler de asıl verilerini *öbekte (heap)* saklar (`HashMap` değişkeninin sabit boyutlu tablo işaretçisi ve kapasite bilgisi ise *yığında (stack)* tutulur). Bu örnekteki `HashMap`, `String` türünde anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi hash map'ler de türdeştir (homojendir): tüm anahtarlar kendi içinde aynı türde ve tüm değerler de kendi içinde aynı türde olmalıdır.
 
+> Not: Bir türün hash map anahtarı olarak kullanılabilmesi için `Eq` ve `Hash` trait'lerini uygulaması gerekir; `String`, `&str`, tam sayı türleri, `bool`, `char` ve yalnızca bu türlerden oluşan demetler bu koşulu hazır olarak sağlar. Kayan noktalı sayılar (`f32`, `f64`) ise `NaN` değeri kendisine bile eşit olmadığından `Eq` trait'ini uygulamaz ve doğrudan anahtar olarak kullanılamaz. Kendi struct veya enum türlerinizi anahtar yapmak için Ek C'de ele alınan türetme özniteliğini (`#[derive(PartialEq, Eq, Hash)]`) eklemeniz yeterlidir. Ayrıca anahtarları `String` olan bir hash map'te arama yaparken yeni bir `String` oluşturmanıza gerek yoktur: `skorlar.get("Mavi")` biçiminde doğrudan bir string sabiti (`&str`) verebilirsiniz; `get`, `remove` ve `contains_key` gibi metotlar, `Borrow` trait'i sayesinde `&String` yerine `&str` türünde argümanları da kabul eder.
+
 <!-- Old headings. Do not remove or links may break. -->
 <a id="accessing-values-in-a-hash-map"></a>
 <a id="bir-hash-mapteki-değerlere-erişmek"></a>

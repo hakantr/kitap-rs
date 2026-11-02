@@ -4,9 +4,9 @@
 
 ## Dilim (Slice) Türü
 
-_Dilimler (slices)_, bir [koleksiyon](ch08-00-yaygin-koleksiyonlar.html)<!-- ignore --> içindeki bitişik bir eleman dizisine referans vermenizi sağlar. Dilim bir referans türüdür; dolayısıyla verinin sahipliğine sahip değildir.
+_Dilimler (slices)_, bir [koleksiyon](ch08-00-yaygin-koleksiyonlar.html)<!-- ignore --> içindeki bitişik bir eleman dizisine referans vermenizi sağlar. Dilim bir tür referanstır; dolayısıyla verinin sahipliğini üstlenmez.
 
-Küçük bir programlama problemi düşünelim: Boşluklarla ayrılmış kelimelerden oluşan bir string alan ve bu string içinde bulduğu ilk kelimeyi döndüren bir fonksiyon yazın. Fonksiyon string içinde hiç boşluk bulamazsa tüm string tek bir kelime demektir; bu durumda stringin tamamı döndürülmelidir.
+Küçük bir programlama problemi düşünelim: Boşluklarla ayrılmış kelimelerden oluşan bir string alan ve bu string içinde bulduğu ilk kelimeyi döndüren bir fonksiyon yazın. Fonksiyon string içinde hiç boşluk bulamazsa tüm string tek bir kelime demektir; bu durumda string'in tamamı döndürülmelidir.
 
 > Not: Dilimleri tanıtmak amacıyla bu bölümde metinlerin yalnızca ASCII karakterlerden oluştuğunu varsayıyoruz; UTF-8 işleme konusunu Bölüm 8'deki ["String'lerle UTF-8 Kodlanmış Metin Saklama"][strings]<!-- ignore --> bölümünde kapsamlı biçimde ele alacağız.
 
@@ -16,7 +16,7 @@ Dilimlerin hangi sorunu çözdüğünü anlamak için bu fonksiyonun imzasını 
 fn ilk_kelime(metin: &String) -> ?
 ```
 
-`ilk_kelime` fonksiyonu `&String` türünde bir parametre alır. Sahipliğe ihtiyacımız olmadığı için bu tercih gayet uygundur. (İdiyomatik Rust'ta fonksiyonlar gerçekten gerekmedikçe argümanlarının sahipliğini almaz; bunun nedenleri ilerledikçe netleşecektir.) Peki bu fonksiyondan ne döndürmeliyiz? Bir stringin *bir kısmını* ifade etmenin henüz doğrudan bir yolu yoktur. Bununla birlikte, kelimenin sonunu belirten boşluğun indeksini döndürebiliriz. Gelin bunu Liste 4-7'de gösterildiği gibi deneyelim.
+`ilk_kelime` fonksiyonu `&String` türünde bir parametre alır. Sahipliğe ihtiyacımız olmadığı için bu tercih gayet uygundur. (İdiyomatik Rust'ta fonksiyonlar gerçekten gerekmedikçe argümanlarının sahipliğini almaz; bunun nedenleri ilerledikçe netleşecektir.) Peki bu fonksiyondan ne döndürmeliyiz? Bir string'in *bir kısmını* ifade etmenin henüz doğrudan bir yolu yoktur. Bununla birlikte, kelimenin sonunu belirten boşluğun indeksini döndürebiliriz. Gelin bunu Liste 4-7'de gösterildiği gibi deneyelim.
 
 <Listing number="4-7" file-name="src/main.rs" caption="`String` parametresi içindeki bir bayt indeksini döndüren `ilk_kelime` fonksiyonu">
 
@@ -42,7 +42,7 @@ Ardından `iter` metodunu kullanarak bu bayt dizisi üzerinde bir *iteratör (it
 
 `enumerate` metodu bir demet döndürdüğü için bu demeti parçalarına ayırmak (*destructure*) amacıyla desenleri (*patterns*) kullanabiliriz. Desenleri [Bölüm 6][ch6]<!-- ignore -->'da daha ayrıntılı ele alacağız. `for` döngüsünde, demetteki indeks için `i` ve demetteki tekil bayt için `&oge` içeren bir desen belirtiriz. `.iter().enumerate()` çağrısından elemana bir referans elde ettiğimiz için desende `&` kullanırız.
 
-`for` döngüsünün içinde, *bayt sabiti (byte literal)* sözdizimini (`b' '`) kullanarak boşluğu temsil eden baytı ararız. Bir boşluk bulursak bu konumu döndürürüz. Aksi takdirde `metin.len()` çağrısıyla stringin uzunluğunu döndürürüz:
+`for` döngüsünün içinde, *bayt sabiti (byte literal)* sözdizimini (`b' '`) kullanarak boşluğu temsil eden baytı ararız. Bir boşluk bulursak bu konumu döndürürüz. Aksi takdirde `metin.len()` çağrısıyla string'in uzunluğunu döndürürüz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:inside_for}}
@@ -82,7 +82,7 @@ Bir _string dilimi (string slice)_, bir `String` içindeki elemanların bitişik
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-17-slice/src/main.rs:here}}
 ```
 
-`merhaba` değişkeni tüm `String`'e referans vermek yerine, fazladan eklenen `[0..7]` kısmında belirtilen `String` bölümüne referans verir. Dilimleri köşeli parantezler içinde `[başlangıç_indeksi..bitiş_indeksi]` biçiminde bir aralık belirterek oluştururuz; burada _`başlangıç_indeksi`_ dilimdeki ilk konumu, _`bitiş_indeksi`_ ise dilimdeki son konumun bir fazlasını ifade eder. Dilim veri yapısı dahili olarak dilimin başlangıç konumunu ve uzunluğunu saklar; bu uzunluk _`bitiş_indeksi`_ eksi _`başlangıç_indeksi`_ değerine karşılık gelir. Dolayısıyla `let dunya = &metin[8..13];` örneğinde `dunya`, `metin` değişkeninin 8. indeksindeki bayta yönelen bir işaretçi ve `5` uzunluk değerini barındıran bir dilim olur.
+`merhaba` değişkeni tüm `String`'e referans vermek yerine, fazladan eklenen `[0..7]` kısmında belirtilen `String` bölümüne referans verir. Dilimleri köşeli parantezler içinde `[başlangıç_indeksi..bitiş_indeksi]` biçiminde bir aralık belirterek oluştururuz; burada _`başlangıç_indeksi`_ dilimdeki ilk konumu, _`bitiş_indeksi`_ ise dilimdeki son konumun bir fazlasını ifade eder. Dilim veri yapısı dahili olarak dilimin başlangıç konumunu ve uzunluğunu saklar; bu uzunluk _`bitiş_indeksi`_ eksi _`başlangıç_indeksi`_ değerine karşılık gelir. Dolayısıyla `let dunya = &metin[8..13];` örneğinde `dunya`, `metin` değişkeninin 8. indeksindeki bayta yönelen bir işaretçi ve `5` uzunluk değerini barındıran bir dilim olur. (Bu örnekte `"dünya"` yerine bilerek yalnızca ASCII karakterlerden oluşan `"dunya"` yazdık; nedenini aşağıdaki UTF-8 notunda göreceksiniz.)
 
 Şekil 4-7 bu bellek yapısını bir diyagramla göstermektedir.
 
@@ -111,7 +111,7 @@ let dilim = &metin[3..uzunluk];
 let dilim = &metin[3..];
 ```
 
-Tüm stringin bir dilimini almak için her iki değeri de atlayabilirsiniz. Dolayısıyla şunlar da eşdeğerdir:
+Tüm string'in bir dilimini almak için her iki değeri de atlayabilirsiniz. Dolayısıyla şunlar da eşdeğerdir:
 
 ```rust
 let metin = String::from("merhaba");
@@ -136,7 +136,7 @@ Tüm bu bilgileri göz önünde bulundurarak `ilk_kelime` fonksiyonunu bir dilim
 
 </Listing>
 
-Kelimenin bitiş indeksini tıpkı Liste 4-7'de yaptığımız gibi ilk boşluk karakterini arayarak buluruz. Bir boşluk bulduğumuzda, başlangıç ve bitiş indeksleri olarak sırasıyla stringin başlangıcını ve boşluğun indeksini kullanarak bir string dilimi döndürürüz; boşluk bulamazsak da `&metin[..]` ile stringin tamamını dilim olarak döndürürüz.
+Kelimenin bitiş indeksini tıpkı Liste 4-7'de yaptığımız gibi ilk boşluk karakterini arayarak buluruz. Bir boşluk bulduğumuzda, başlangıç ve bitiş indeksleri olarak sırasıyla string'in başlangıcını ve boşluğun indeksini kullanarak bir string dilimi döndürürüz; boşluk bulamazsak da `&metin[..]` ile string'in tamamını dilim olarak döndürürüz.
 
 Artık `ilk_kelime` fonksiyonunu çağırdığımızda, arka plandaki asıl veriye doğrudan bağlı tek bir değer elde ederiz. Bu değer, dilimin başlangıç noktasına yönelen bir referanstan ve dilimdeki eleman (bayt) sayısından oluşur.
 
@@ -146,7 +146,7 @@ Bir dilim döndürmek `ikinci_kelime` fonksiyonu için de aynı şekilde işe ya
 fn ikinci_kelime(metin: &String) -> &str {
 ```
 
-Derleyici `String` içine yönelen referansların geçerli kalmasını güvence altına alacağından, artık yanlış kullanılması çok daha zor ve yalın bir API'ye sahibiz. Liste 4-8'deki programda ilk kelimenin bitiş indeksini aldıktan sonra stringi temizlediğimiz ve elimizdeki indeksin geçersiz kaldığı hatayı hatırlıyor musunuz? O kod mantıksal açıdan hatalıydı ama anında hiçbir hata vermemişti; sorun ancak boşaltılmış bir string üzerinde ilk kelime indeksini kullanmaya devam ettiğimizde sonradan ortaya çıkacaktı. Dilimler bu hatayı imkânsız kılar ve kodumuzda bir sorun olduğunu çok daha erken fark etmemizi sağlar. `ilk_kelime`'nin dilim döndüren sürümünü aynı senaryoda kullanmak derleme zamanı hatası üretir:
+Derleyici `String` içine yönelen referansların geçerli kalmasını güvence altına alacağından, artık yanlış kullanılması çok daha zor ve yalın bir API'ye sahibiz. Liste 4-8'deki programda ilk kelimenin bitiş indeksini aldıktan sonra string'i temizlediğimiz ve elimizdeki indeksin geçersiz kaldığı hatayı hatırlıyor musunuz? O kod mantıksal açıdan hatalıydı ama anında hiçbir hata vermemişti; sorun ancak boşaltılmış bir string üzerinde ilk kelime indeksini kullanmaya devam ettiğimizde sonradan ortaya çıkacaktı. Dilimler bu hatayı imkânsız kılar ve kodumuzda bir sorun olduğunu çok daha erken fark etmemizi sağlar. `ilk_kelime`'nin dilim döndüren sürümünü aynı senaryoda kullanmak derleme zamanı hatası üretir:
 
 <Listing file-name="src/main.rs">
 
@@ -162,7 +162,7 @@ Derleyici `String` içine yönelen referansların geçerli kalmasını güvence 
 {{#include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/output.txt}}
 ```
 
-Ödünç alma kurallarını hatırlayalım: Bir değere ait değiştirilemez bir referansımız varken, aynı değere değiştirilebilir bir referans alamayız. `clear` metodunun `String`'i kısaltıp boşaltması gerektiği için değiştirilebilir bir referans alması gerekir. `clear` çağrısından sonraki `println!` satırı ise `kelime` içindeki referansı kullanır; dolayısıyla değiştirilemez referansın o noktada hâlâ etkin olması zorunludur. Rust, `clear` çağrısındaki değiştirilebilir referans (`mutable borrow occurs here`) ile `kelime` içindeki değiştirilemez referansın (`immutable borrow occurs here`) aynı anda var olmasına izin vermez ve derleme başarısız olur. Rust yalnızca API'mizi kullanımı daha kolay bir hâle getirmekle kalmamış, koskoca bir hata sınıfını daha derleme zamanında ortadan kaldırmıştır!
+Ödünç alma kurallarını hatırlayalım: Bir değere ait değiştirilemez bir referansımız varken, aynı değere değiştirilebilir bir referans alamayız. `clear` metodunun `String`'i kısaltıp boşaltması gerektiği için değiştirilebilir bir referans alması gerekir. (Kodda açıkça `&mut metin` yazmadığımıza dikkat edin: `clear` gibi metotlar `&mut self` imzasıyla tanımlandığından Rust, `metin.clear()` çağrısında bu değiştirilebilir ödünç almayı sizin yerinize otomatik olarak yapar; metot sözdizimini Bölüm 5'te ele alacağız.) `clear` çağrısından sonraki `println!` satırı ise `kelime` içindeki referansı kullanır; dolayısıyla değiştirilemez referansın o noktada hâlâ etkin olması zorunludur. Rust, `clear` çağrısındaki değiştirilebilir referans (`mutable borrow occurs here`) ile `kelime` içindeki değiştirilemez referansın (`immutable borrow occurs here`) aynı anda var olmasına izin vermez ve derleme başarısız olur. Rust yalnızca API'mizi kullanımı daha kolay bir hâle getirmekle kalmamış, koskoca bir hata sınıfını daha derleme zamanında ortadan kaldırmıştır!
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="string-literals-are-slices"></a>
@@ -226,7 +226,7 @@ String dilimleri, tahmin edebileceğiniz gibi stringlere özgüdür. Ancak daha 
 let d = [1, 2, 3, 4, 5];
 ```
 
-Tıpkı bir stringin belirli bir bölümüne başvurmak isteyebileceğimiz gibi, bir dizinin belirli bir bölümüne de başvurmak isteyebiliriz. Bunu şu şekilde yaparız:
+Tıpkı bir string'in belirli bir bölümüne başvurmak isteyebileceğimiz gibi, bir dizinin belirli bir bölümüne de başvurmak isteyebiliriz. Bunu şu şekilde yaparız:
 
 ```rust
 let d = [1, 2, 3, 4, 5];

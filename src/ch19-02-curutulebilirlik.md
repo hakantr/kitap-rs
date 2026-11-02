@@ -101,7 +101,9 @@ yapısını çürütülemez bir desenle kullanmanın mantıklı olmadığı konu
 
 Bu nedenle `match` kolları — geriye kalan tüm değerlerle çürütülemez bir desen
 kullanarak eşleşmesi gereken son kol dışında — çürütülebilir desenler kullanmak
-zorundadır. Rust, tek kollu bir `match` ifadesinde çürütülemez bir desen
+zorundadır. Çürütülemez bir desenin ardından başka kollar gelirse o kollara
+hiçbir zaman ulaşılamaz; derleyici bu durumda `unreachable_pattern` uyarısı
+verir. Rust, tek kollu bir `match` ifadesinde çürütülemez bir desen
 kullanmamıza izin verir; ancak bu sözdizimi pek kullanışlı değildir ve daha
 basit bir `let` deyimiyle değiştirilebilir.
 

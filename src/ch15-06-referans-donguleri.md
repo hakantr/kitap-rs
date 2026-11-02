@@ -85,7 +85,7 @@ fonksiyonunun sonunda Rust önce `b` değişkenini düşürür; bu işlem `b`'de
 bellek serbest bırakılmaz. Ardından Rust `a` değişkenini düşürür; bu da `a`'daki
 `Rc<Liste>` örneğinin referans sayısını aynı şekilde `2`'den `1`'e indirir. Diğer
 `Rc<Liste>` örneği hâlâ ona başvurduğu için bu örneğin belleği de serbest
-bırakılamaz. Listeye ayrılan bellek sonsuza dek toplanmadan kalacaktır. Bu
+bırakılamaz. Listeye ayrılan bellek bir daha asla serbest bırakılmayacaktır. Bu
 referans döngüsünü görselleştirmek için Şekil 15-4'teki diyagramı oluşturduk.
 
 <img alt="5 tamsayısını içeren bir dikdörtgene işaret eden 'a' etiketli bir dikdörtgen ve 10 tamsayısını içeren bir dikdörtgene işaret eden 'b' etiketli bir dikdörtgen. 5'i içeren dikdörtgen 10'u içeren dikdörtgene işaret eder, 10'u içeren dikdörtgen ise tekrar 5'i içeren dikdörtgene işaret ederek bir döngü oluşturur." src="img/trpl15-04.svg" class="center" />
@@ -342,14 +342,40 @@ referansı olması gerektiğini belirterek, bir referans döngüsü ve bellek s�
 oluşturmadan ebeveyn düğümlerin çocuk düğümlere ve çocuk düğümlerin de ebeveyn
 düğümlere işaret etmesini sağlayabilirsiniz.
 
-> Not: Bu bölümdeki iki temel kavramı kendi veri yapılarınızı tasarlarken şu pratik kurallarla özetleyebilirsiniz:
+> Not: Bu bölümdeki iki temel kavramı kendi veri yapılarınızı tasarlarken şu
+> pratik kurallarla özetleyebilirsiniz:
 >
-> - **Bellek sızıntısı Rust'ta neden `unsafe` değildir?** Rust'ta _bellek güvenliği_, serbest bırakılmış belleğe erişim (*use-after-free*), çifte serbest bırakma (*double free*), sarkan işaretçi ve veri yarışı gibi tanımsız davranışları (*undefined behavior*) engellemek anlamına gelir. Öbekte ayrılan bir belleğin hiç serbest bırakılmaması kaynak tüketimini artırsa da geçersiz bir bellek erişimine yol açmaz. Referans döngülerini her durumda derleme zamanında yakalamak mümkün olmadığından, Rust dil modelinde bir değerin `Drop::drop` yıkıcısının çalışmaması bellek güvenliğini ihlal etmez; bu nedenle standart kütüphanedeki bir değeri düşürmeden unutan `std::mem::forget` fonksiyonu ve öbekteki bir kutuyu `'static` referansa dönüştüren `Box::leak` metodu `unsafe` gerektirmeyen tamamen güvenli API'lerdir.
-> - **Kim `Rc<T>`, kim `Weak<T>` tutmalı?** Çift yönlü yapılarda yönü belirlemek için şu soruyu sorun: *“A nesnesi yok olduğunda B nesnesinin de onunla birlikte yok olması gerekir mi?”* Yanıt **evet** ise A'dan B'ye güçlü sahiplik (`Rc<T>`), yanıt **hayır** ise B'den A'ya sahiplik iddia etmeyen gözlemci referans (`Weak<T>`) kullanın:
->   - **Ağaç ve arayüz (DOM/UI) hiyerarşileri:** Ebeveyn → Çocuk `Rc<T>`, Çocuk → Ebeveyn `Weak<T>`.
->   - **Çift yönlü bağlı listeler (*doubly-linked list*):** İleri bağlantı (`sonraki`) `Rc<T>`, geri bağlantı (`onceki`) `Weak<T>`.
->   - **Gözlemci (*Observer*) ve önbellek (*Cache*) desenleri:** Verinin asıl sahipleri `Rc<T>` tutarken, yalnızca veri hâlâ yaşıyorsa ona bildirim göndermek veya önbellekten sunmak isteyen kayıt tablosu `Weak<T>` tutar (`upgrade()` çağrısı `None` döndürdüğünde süresi dolan kaydı temizler).
->   - Aralarında doğal bir üst-alt sahiplik yönü bulunmayan genel döngüsel graflarda ise `Rc<T>` / `Weak<T>` yerine tüm düğümleri tek bir `Vec<Dugum>` (veya arena) içinde tutup kenarları vektör indisleriyle (`usize`) ifade etmek, döngü kaynaklı bellek sızıntılarını tamamen ortadan kaldıran yaygın bir Rust desenidir.
+> - **Bellek sızıntısı Rust'ta neden `unsafe` değildir?** Rust'ta _bellek
+>   güvenliği_, serbest bırakılmış belleğe erişim (*use-after-free*), çift
+>   serbest bırakma (*double free*), sarkan işaretçi ve veri yarışı gibi
+>   tanımsız davranışları (*undefined behavior*) engellemek anlamına gelir.
+>   Öbekte ayrılan bir belleğin hiç serbest bırakılmaması kaynak tüketimini
+>   artırsa da geçersiz bir bellek erişimine yol açmaz. Referans döngülerini
+>   her durumda derleme zamanında yakalamak mümkün olmadığından, Rust dil
+>   modelinde bir değerin `Drop::drop` yıkıcısının çalışmaması bellek
+>   güvenliğini ihlal etmez; bu nedenle standart kütüphanedeki bir değeri
+>   düşürmeden unutan `std::mem::forget` fonksiyonu ve öbekteki bir kutuyu
+>   `'static` referansa dönüştüren `Box::leak` metodu `unsafe` gerektirmeyen,
+>   tamamen güvenli API'lerdir.
+> - **Kim `Rc<T>`, kim `Weak<T>` tutmalı?** Çift yönlü yapılarda yönü
+>   belirlemek için şu soruyu sorun: _“A nesnesi yok olduğunda B nesnesinin de
+>   onunla birlikte yok olması gerekir mi?”_ Yanıt **evet** ise A'dan B'ye
+>   güçlü sahiplik (`Rc<T>`), yanıt **hayır** ise B'den A'ya sahiplik iddia
+>   etmeyen gözlemci referans (`Weak<T>`) kullanın:
+>   - **Ağaç ve arayüz (DOM/UI) hiyerarşileri:** Ebeveynden çocuğa `Rc<T>`,
+>     çocuktan ebeveyne `Weak<T>`.
+>   - **Çift yönlü bağlı listeler (*doubly linked list*):** İleri bağlantı
+>     (`sonraki`) `Rc<T>`, geri bağlantı (`onceki`) `Weak<T>`.
+>   - **Gözlemci (*observer*) ve önbellek (*cache*) desenleri:** Verinin asıl
+>     sahipleri `Rc<T>` tutarken, yalnızca veri hâlâ yaşıyorsa ona bildirim
+>     göndermek veya onu önbellekten sunmak isteyen kayıt tablosu `Weak<T>`
+>     tutar (`upgrade()` çağrısı `None` döndürdüğünde süresi dolan kaydı
+>     temizler).
+>   - Aralarında doğal bir üst-alt sahiplik yönü bulunmayan genel döngüsel
+>     graflarda ise `Rc<T>` / `Weak<T>` yerine tüm düğümleri tek bir
+>     `Vec<Dugum>` (veya arena) içinde tutup kenarları vektör indisleriyle
+>     (`usize`) ifade etmek, döngü kaynaklı bellek sızıntılarını tamamen
+>     ortadan kaldıran yaygın bir Rust desenidir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -380,4 +406,4 @@ kaynağına göz atabilirsiniz.
 Sırada Rust'ta eşzamanlılık (*concurrency*) konusu var. Hatta orada birkaç yeni
 akıllı işaretçi daha öğreneceksiniz.
 
-[nomicon]: ../nomicon/index.html
+[nomicon]: https://doc.rust-lang.org/nomicon/index.html

@@ -92,7 +92,7 @@ işini üstlenen gizli `ortalamayi_guncelle` metodunu çağırır.
 `liste` ve `ortalama` alanlarını gizli bırakırız ki dışarıdaki kodun `liste`
 alanına doğrudan öğe eklemesinin veya oradan öğe çıkarmasının bir yolu olmasın;
 aksi takdirde `liste` değiştiğinde `ortalama` alanı güncelliğini yitirip uyumsuz
-hale gelebilirdi. `ortalama` metodu `ortalama` alanındaki değeri döndürerek
+hâle gelebilirdi. `ortalama` metodu `ortalama` alanındaki değeri döndürerek
 dışarıdaki kodun `ortalama` değerini okumasına izin verir, ancak değiştirmesine
 izin vermez.
 
@@ -172,12 +172,24 @@ Rust, kalıtım sunmayarak farklı bir ödünleşim kümesi seçmiştir. Kalıt�
 zaman gerekenden fazla kod paylaşma riski taşır. Alt sınıflar üst sınıflarının
 tüm karakteristiklerini her zaman paylaşmamalıdır, ancak kalıtım
 kullanıldığında bunu yaparlar. Bu durum bir programın tasarımını daha az esnek
-hale getirebilir. Ayrıca alt sınıfa uymayan metotlar yüzünden, alt sınıflar
+hâle getirebilir. Ayrıca alt sınıfa uymayan metotlar yüzünden, alt sınıflar
 üzerinde anlamsız olan veya hatalara yol açan metotların çağrılması olasılığı
 da doğar. Buna ek olarak bazı diller yalnızca _tekli kalıtıma (single
 inheritance)_ —yani bir alt sınıfın yalnızca tek bir sınıftan miras
 alabilmesine— izin vererek program tasarımının esnekliğini daha da kısıtlar.
 
+> Not: Kalıtımın yerini Rust'ta çoğunlukla _bileşim (composition)_ alır: Ortak
+> veriyi ayrı bir struct'ta toplayıp onu diğer struct'larda bir alan olarak
+> barındırır, ortak davranışı ise trait'lerde tanımlarsınız. Trait'ler arasında
+> "bu trait'i uygulayan her tür şu trait'i de uygulamalıdır" biçiminde bir
+> bağımlılık kurmak içinse Bölüm 20'deki [“Üst Trait'leri
+> Kullanmak”][supertraits]<!-- ignore --> alt bölümünde göreceğimiz üst
+> trait'ler (*supertraits*) kullanılır. Bu mekanizma, kalıtımdaki sınıf
+> hiyerarşisine benzer bir ilişkiyi veri düzeyinde değil, yalnızca davranış
+> düzeyinde ifade eder.
+
 Bu nedenlerle Rust, çalışma zamanında çok biçimlilik elde etmek için kalıtım
 yerine trait nesnelerini kullanma yönünde farklı bir yaklaşım benimser. Şimdi
 trait nesnelerinin nasıl çalıştığına bakalım.
+
+[supertraits]: ch20-02-gelismis-traitler.html#using-supertraits

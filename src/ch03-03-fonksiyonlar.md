@@ -47,7 +47,7 @@ Bu programı çalıştırmayı deneyin; aşağıdaki çıktıyı almalısınız:
 {{#include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/output.txt}}
 ```
 
-`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır ve `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon` fonksiyonuna `5` değerini ilettiğimizde, `println!` makrosu, biçim dizgesindeki (*format string*) içinde `x` bulunan süslü parantez çiftinin yerine `5` değerini koyar.
+`baska_bir_fonksiyon` bildiriminin `x` adında bir parametresi vardır ve `x`'in türü `i32` olarak belirtilmiştir. `baska_bir_fonksiyon` fonksiyonuna `5` değerini ilettiğimizde, `println!` makrosu, biçimlendirme metnindeki (*format string*) içinde `x` bulunan süslü parantez çiftinin yerine `5` değerini koyar.
 
 Fonksiyon imzalarında her parametrenin türünü _mutlaka_ bildirmelisiniz. Bu, Rust'ın tasarımında bilinçli olarak alınmış bir karardır: Fonksiyon tanımlarında tür bildirimini zorunlu kılmak, derleyicinin kodun diğer kısımlarında hangi türü kastettiğinizi anlamak için sizden neredeyse hiçbir zaman tür bildirimi istememesi anlamına gelir. Ayrıca derleyici, fonksiyonun hangi türleri beklediğini bildiğinde çok daha açıklayıcı hata mesajları üretebilir.
 

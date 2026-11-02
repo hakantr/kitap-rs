@@ -237,6 +237,11 @@ türünde veriyi elde ederiz.
 > bütünlüğünü korur. Liste 15-9'da `*kutu` ifadesinin doğrudan çalışmasının
 > nedeni ise `i32` türünün `Copy` trait'ini uygulamasıdır; derleyici konumdan
 > değeri taşımak yerine, bit düzeyinde kopyalayarak okur.
+>
+> Gerçek `Box<T>` ise bu kuralın derleyiciye yerleşik tek istisnasıdır: Kutu,
+> içindeki değerin tek sahibi olduğundan `let s = *kutu;` yazarak değeri
+> sahipliğiyle birlikte dışarı taşıyabilirsiniz. `Deref` uygulayan başka hiçbir
+> tür (`Rc<T>` dahil) bu olanağı sunmaz.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -323,6 +328,14 @@ parametrenin türüyle eşleşecek bir referans elde etmek için gerektiği kada
 `Deref::deref` kullanır. Kaç kez `Deref::deref` çağrısı ekleneceği derleme
 zamanında çözümlenir; dolayısıyla deref zorlamasından yararlanmanın hiçbir
 çalışma zamanı maliyeti yoktur!
+
+> Not: Deref zorlaması yalnızca fonksiyon argümanlarında değil, metot çağrısı
+> sözdiziminde de iş başındadır. `kutu.len()` yazdığınızda Rust, `len` adında
+> bir metot bulana dek `BenimKutu<String>`, `String` ve `str` türlerini sırayla
+> dener; bu yüzden değiştirilebilir bir `Box<Vec<i32>>` üzerinde doğrudan
+> `.push(1)` çağırabilir ya da bir `Rc<String>` üzerinde `.len()`
+> kullanabilirsiniz. Bölüm 5'te gördüğünüz otomatik referans alma ve başvuru
+> çözme mekanizması, perde arkasında işte bu `Deref` zincirini izler.
 
 <!-- Old headings. Do not remove or links may break. -->
 

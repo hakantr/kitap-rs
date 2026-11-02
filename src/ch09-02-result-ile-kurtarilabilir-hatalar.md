@@ -41,7 +41,7 @@ Başarısız olma ihtimali nedeniyle `Result` değeri döndüren bir fonksiyon �
 
 </Listing>
 
-Tıpkı `Option` enum'ı gibi `Result` enum'ı ve varyantları da *prelude* (başlangıç kapsamı) aracılığıyla otomatik olarak kapsama dahil edilir; dolayısıyla `match` kollarında `Ok` ve `Err` varyantlarının önüne `Result::` yazmamıza gerek yoktur.
+Tıpkı `Option` enum'ı gibi `Result` enum'ı ve varyantları da ön tanımlı kapsam (*prelude*) aracılığıyla otomatik olarak kapsama dahil edilir; dolayısıyla `match` kollarında `Ok` ve `Err` varyantlarının önüne `Result::` yazmamıza gerek yoktur.
 
 Sonuç `Ok` olduğunda bu kod, `Ok` varyantının içindeki `dosya` değerini döndürür ve biz de bu dosya tanıtıcısını `karsilama_dosyasi` değişkenine atarız. `match` bloğundan sonra bu dosya tanıtıcısını okuma veya yazma işlemleri için kullanabiliriz.
 
@@ -170,7 +170,7 @@ merhaba.txt bu projeye dahil edilmelidir: Os { code: 2, kind: NotFound, message:
 
 ### Hataları Yaymak
 
-Bir fonksiyonun gövdesi başarısız olabilecek bir işlem çağırdığında, hatayı fonksiyonun kendi içinde ele almak yerine ne yapılacağına karar verebilmesi için çağıran koda döndürebilirsiniz. Bu yaklaşıma hatayı *yayma (propagating)* adı verilir. Böylece kontrolü, hatanın nasıl ele alınacağına dair kendi kodunuzun bağlamında bulunandan daha fazla bilgiye veya mantığa sahip olabilecek çağıran koda bırakmış olursunuz.
+Bir fonksiyonun gövdesi başarısız olabilecek bir işlem çağırdığında, hatayı fonksiyonun kendi içinde ele almak yerine ne yapılacağına karar verebilmesi için çağıran koda döndürebilirsiniz. Bu yaklaşıma hatayı *yayma (propagating)* adı verilir. Böylece denetim çağıran koda geçer; çağıran kod, hatanın nasıl ele alınması gerektiğine dair sizin kodunuzun bağlamında bulunmayan ek bilgiye veya mantığa sahip olabilir.
 
 Örneğin Liste 9-6, bir dosyadan kullanıcı adını okuyan bir fonksiyonu göstermektedir. Dosya mevcut değilse veya okunamıyorsa bu fonksiyon, oluşan hataları kendisini çağıran koda döndürür.
 
@@ -227,7 +227,38 @@ Liste 9-6'daki `match` ifadesinin yaptığı iş ile `?` operatörünün yaptı�
 
 Örneğin Liste 9-7'deki `dosyadan_kullanici_adini_oku` fonksiyonunu, kendi tanımladığımız `BizimHatamiz` adında özel bir hata türü döndürecek şekilde değiştirebiliriz. Bir `io::Error` değerinden `BizimHatamiz` örneği üretmek üzere `impl From<io::Error> for BizimHatamiz` uygulamasını da tanımlarsak, `dosyadan_kullanici_adini_oku` gövdesindeki `?` operatörü çağrıları fonksiyona tek satır ek kod yazmamıza gerek kalmadan `from` fonksiyonunu çağırarak hata türünü otomatik olarak dönüştürür.
 
-> Not: `?` operatörünün perde arkasında `Err(e) => return Err(From::from(e))` dönüşümü yapması, gerçek dünya projelerinde farklı kütüphanelerden gelen hataları birleştirmenin temel anahtarıdır. Örneğin bir yapılandırma dosyasını okuyup içindeki port numarasını ayrıştıran bir fonksiyon hem `io::Error` (dosya okuma) hem de `ParseIntError` (sayıya çevirme) üretebilir. Bu iki hatayı kapsayan bir `YapilandirmaHatasi` enum'ı tanımlayıp her iki hata türü için `From` trait'ini uyguladığınızda, fonksiyon içinde hem `fs::read_to_string(yol)?` hem de `icerik.trim().parse()?` ifadelerini yan yana, hiçbir manuel dönüştürme kodu yazmadan kullanabilirsiniz.
+> Not: `?` operatörünün perde arkasında `Err(e) => return Err(From::from(e))` dönüşümü yapması, gerçek dünya projelerinde farklı kütüphanelerden gelen hataları birleştirmenin temel anahtarıdır. Örneğin bir yapılandırma dosyasını okuyup içindeki port numarasını ayrıştıran bir fonksiyon hem `io::Error` (dosya okuma) hem de `ParseIntError` (sayıya çevirme) üretebilir. Bu iki hatayı kapsayan bir `YapilandirmaHatasi` enum'ı tanımlayıp her iki hata türü için `From` trait'ini uyguladığınızda, fonksiyon içinde hem `fs::read_to_string(yol)?` hem de `icerik.trim().parse()?` ifadelerini yan yana, hiçbir manuel dönüştürme kodu yazmadan kullanabilirsiniz:
+>
+> ```rust,ignore
+> use std::num::ParseIntError;
+> use std::{fs, io};
+>
+> #[derive(Debug)]
+> enum YapilandirmaHatasi {
+>     Okuma(io::Error),
+>     Ayristirma(ParseIntError),
+> }
+>
+> impl From<io::Error> for YapilandirmaHatasi {
+>     fn from(hata: io::Error) -> Self {
+>         YapilandirmaHatasi::Okuma(hata)
+>     }
+> }
+>
+> impl From<ParseIntError> for YapilandirmaHatasi {
+>     fn from(hata: ParseIntError) -> Self {
+>         YapilandirmaHatasi::Ayristirma(hata)
+>     }
+> }
+>
+> fn port_numarasini_oku(yol: &str) -> Result<u16, YapilandirmaHatasi> {
+>     let icerik = fs::read_to_string(yol)?; // io::Error -> YapilandirmaHatasi
+>     let port: u16 = icerik.trim().parse()?; // ParseIntError -> YapilandirmaHatasi
+>     Ok(port)
+> }
+> ```
+>
+> `?` operatörünün her satırda hangi `From` uygulamasını çağıracağını derleyici, fonksiyonun dönüş türündeki hata türüne bakarak kendisi belirler.
 
 Liste 9-7 bağlamında `File::open` çağrısının sonundaki `?`, işlem başarılıysa `Ok` içindeki değeri çıkarıp `kullanici_adi_dosyasi` değişkenine atar. Bir hata oluşursa `?` operatörü tüm fonksiyondan erken çıkar ve `Err` değerini çağıran koda döndürür. Aynı davranış `read_to_string` çağrısının sonundaki `?` için de geçerlidir.
 
@@ -331,10 +362,12 @@ Neyse ki `main` fonksiyonu bir `Result<(), E>` de döndürebilir. Liste 9-12, Li
 
 Bir `main` fonksiyonu `Result<(), E>` döndürdüğünde çalıştırılabilir program, `main` `Ok(())` döndürürse `0` çıkış koduyla, bir `Err` değeri döndürürse sıfırdan farklı bir çıkış koduyla sonlanır. C dilinde yazılmış çalıştırılabilir programlar sonlanırken tam sayı döndürür: başarıyla tamamlanan programlar `0` tam sayısını, hata veren programlar ise `0`'dan farklı bir tam sayıyı döndürür. Rust da bu yerleşik kuralla uyumlu olmak adına çalıştırılabilir dosyalardan tam sayı çıkış kodları döndürür.
 
+> Not: `Box<dyn Error>` türünün "herhangi bir hata türü" olarak çalışmasının ardında yine `?` operatörünün `From` dönüşümü vardır: Standart kütüphane, `Error` trait'ini uygulayan her `E` türü için `From<E> for Box<dyn Error>` uygulamasını hazır sunar; dolayısıyla `?` operatörü `io::Error`, `ParseIntError` ya da sizin tanımladığınız bir hata türünü otomatik olarak `Box<dyn Error>` içine sarabilir. `main` bir `Err` değeriyle sonlandığında Rust çalışma zamanı bu değeri `Debug` biçimiyle standart hata çıktısına yazar; örneğin Liste 9-12'yi _merhaba.txt_ dosyası olmadan çalıştırırsanız `Error: Os { code: 2, kind: NotFound, message: "No such file or directory" }` satırını görür ve programın `1` çıkış koduyla sonlandığını gözlemlersiniz. Kullanıcıya daha okunaklı bir mesaj göstermek istediğinizde hatayı `main` içinde kendiniz yakalayıp `eprintln!` ile yazdırabilirsiniz; Bölüm 12'de tam olarak bunu yapacağız.
+
 `main` fonksiyonu, bir `ExitCode` döndüren `report` fonksiyonunu barındıran [`std::process::Termination` trait'ini][termination]<!-- ignore --> uygulayan herhangi bir türü döndürebilir. Kendi türleriniz için `Termination` trait'ini uygulama konusunda daha fazla bilgi edinmek üzere standart kütüphane belgelerine başvurabilirsiniz.
 
 Artık `panic!` çağırmanın ve `Result` döndürmenin ayrıntılarını incelediğimize göre, hangi durumda hangisinin uygun olduğuna nasıl karar vereceğimiz konusuna geçelim.
 
 [handle_failure]: ch02-00-tahmin-oyunu-programlama.html#potansiyel-bir-hatayı-result-ile-ele-almak
 [trait-objects]: ch18-02-trait-nesneleri.html#ortak-davranış-üzerinden-soyutlamak-için-trait-nesnelerini-kullanmak
-[termination]: ../std/process/trait.Termination.html
+[termination]: https://doc.rust-lang.org/std/process/trait.Termination.html

@@ -86,11 +86,13 @@ Akıştan okuma ve akışa yazma yapmamızı sağlayan trait'lere ve türlere er
 
 `baglantiyi_isle` fonksiyonunda, `akis` değişkenine bir referansı sarmalayan yeni bir `BufReader` örneği (`tamponlu_okuyucu`) oluşturuyoruz. `BufReader`, `std::io::Read` trait metotlarına yapılan çağrıları bizim yerimize yöneterek tamponlama (*buffering*) ekler.
 
+> Not: `BufReader::new(&akis)` çağrısında `akis` değişkeninin yalnızca paylaşımlı bir referansını (`&akis`) verdiğimize, buna rağmen ilerleyen listelerde aynı fonksiyonun sonunda `akis` üzerinde `write_all` çağırabildiğimize dikkat edin. Bu mümkündür; çünkü standart kütüphane `Read` ve `Write` trait'lerini yalnızca `TcpStream` için değil, `&TcpStream` için de uygular: Soketten okumak ve sokete yazmak, Rust açısından `TcpStream` değerini değiştirmek sayılmaz; asıl iş işletim sistemi tarafından yürütülür. `baglantiyi_isle` imzasındaki `mut akis` ise `write_all` metodunun `&mut self` almasından ötürü gereklidir; Liste 21-2'de henüz akışa yazmadığımız için derleyici bu `mut` için `variable does not need to be mutable` uyarısı verebilir, Liste 21-3'ten itibaren bu uyarı ortadan kalkar.
+
 Tarayıcının sunucumuza gönderdiği isteğin satırlarını toplamak için `http_istegi` adında bir değişken oluşturuyoruz. `Vec<_>` tür açıklamasını ekleyerek bu satırları bir vektörde toplamak istediğimizi belirtiyoruz.
 
 `BufReader`, `lines` metodunu sağlayan `std::io::BufRead` trait'ini uygular. `lines` metodu, veri akışında ne zaman bir satır sonu baytı görse akışı bölerek `Result<String, std::io::Error>` öğelerinden oluşan bir iteratör döndürür. Her bir `String` değerini elde etmek için her `Result` üzerinde `map` ve `unwrap` uyguluyoruz. Veri geçerli UTF-8 değilse veya akıştan okuma sırasında bir sorun yaşandıysa `Result` bir hata olabilir. Yine, üretime yönelik bir program bu hataları daha zarif biçimde ele almalıdır; ancak biz basitlik adına hata durumunda programı durdurmayı seçiyoruz.
 
-Tarayıcı, art arda iki satır sonu karakteri göndererek bir HTTP isteğinin sonunu bildirir; bu nedenle akıştan tek bir istek almak için boş string olan bir satıra ulaşana dek satırları alıyoruz. Satırları vektörde topladıktan sonra, web tarayıcısının sunucumuza gönderdiği yönergelere göz atabilmek için bunları okunaklı hata ayıklama biçimlendirmesiyle ekrana yazdırıyoruz.
+Tarayıcı, art arda iki satır sonu dizisi göndererek bir HTTP isteğinin (daha doğrusu istek başlıklarının) sonunu bildirir; bu nedenle akıştan tek bir istek almak için `take_while` ile boş string olan bir satıra ulaşana dek satırları alıyoruz. `lines` metodu her satırın sonundaki `\n` karakterini (ve varsa ondan önceki `\r` karakterini) attığı için, başlıkları gövdeden ayıran boş satır bize tam olarak boş bir `String` olarak ulaşır; `take_while` bu boş satırı gördüğü anda durur ve onu vektöre eklemez. Satırları vektörde topladıktan sonra, web tarayıcısının sunucumuza gönderdiği yönergelere göz atabilmek için bunları okunaklı hata ayıklama biçimlendirmesiyle ekrana yazdırıyoruz.
 
 Bu kodu deneyelim! Programı başlatın ve bir web tarayıcısında yeniden istek gönderin. Tarayıcıda hâlâ bir hata sayfası alacağımıza dikkat edin; ancak programımızın terminaldeki çıktısı artık şuna benzer görünecektir:
 
@@ -192,7 +194,7 @@ HTTP/1.1 200 OK\r\n\r\n
 
 </Listing>
 
-Eklenen ilk yeni satır, başarı mesajının verisini tutan `yanit` değişkenini tanımlar. Ardından, string verisini baytlara dönüştürmek için `yanit` üzerinde `as_bytes` metodunu çağırıyoruz. `akis` üzerindeki `write_all` metodu bir `&[u8]` alır ve bu baytları doğrudan bağlantı üzerinden gönderir. `write_all` işlemi başarısız olabileceği için her zamanki gibi olası bir hata sonucu üzerinde `unwrap` kullanıyoruz. Yine, gerçek bir uygulamada buraya hata yönetimi eklemeniz gerekir.
+Eklenen ilk yeni satır, başarı mesajının verisini tutan `yanit` değişkenini tanımlar. Ardından, string verisini baytlara dönüştürmek için `yanit` üzerinde `as_bytes` metodunu çağırıyoruz. `akis` üzerindeki `write_all` metodu bir `&[u8]` alır ve bu baytları doğrudan bağlantı üzerinden gönderir. (`write` metodundan farklı olarak `write_all`, tek bir çağrıda baytların yalnızca bir kısmı gönderilebildiğinde yazmaya devam eder ve verilen dilimin tamamı gönderilene kadar geri dönmez.) `write_all` işlemi başarısız olabileceği için her zamanki gibi olası bir hata sonucu üzerinde `unwrap` kullanıyoruz. Yine, gerçek bir uygulamada buraya hata yönetimi eklemeniz gerekir.
 
 Bu değişikliklerle kodumuzu çalıştıralım ve bir istek gönderelim. Artık terminale herhangi bir veri yazdırmadığımız için Cargo'nun çıktısı dışında hiçbir çıktı görmeyeceğiz. Bir web tarayıcısında _127.0.0.1:7878_ adresini yüklediğinizde hata yerine boş bir sayfa almalısınız. Az önce bir HTTP isteği alıp yanıt göndermeyi elle kodladınız!
 

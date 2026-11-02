@@ -40,9 +40,11 @@ Programı çalıştırdığınızda şuna benzer bir çıktı görürsünüz:
 {{#include ../listings/ch09-error-handling/no-listing-01-panic/output.txt}}
 ```
 
-`panic!` çağrısı, çıktının son bölümünde yer alan hata mesajını üretir. Panik çıktısının ilk iki satırı kaynak kodumuzda paniğin gerçekleştiği konumu ve panik mesajımızı (`çök ve yan`) gösterir: _src/main.rs:2:5_ ifadesi, paniğin _src/main.rs_ dosyamızın ikinci satırının beşinci karakterinde gerçekleştiğini belirtir (parantez içindeki sayı ise ana *thread*'in kimlik numarasıdır).
+`panic!` çağrısı, çıktının son bölümünde yer alan hata mesajını üretir. Panik çıktısının ilk iki satırı kaynak kodumuzda paniğin gerçekleştiği konumu ve panik mesajımızı (`çök ve yan`) gösterir: _src/main.rs:2:5_ ifadesi, paniğin _src/main.rs_ dosyamızın ikinci satırının beşinci karakterinde gerçekleştiğini belirtir (parantez içindeki sayı ise işletim sisteminin ana *thread*'e atadığı kimlik numarasıdır; bu sayı her çalıştırmada değişebilir).
 
 Bu örnekte işaret edilen satır doğrudan bizim yazdığımız koda aittir ve o satıra baktığımızda `panic!` makro çağrısını görürüz. Başka durumlarda ise `panic!` çağrısı, kodumuzun çağırdığı harici bir kodun içinde yer alabilir; bu durumda hata mesajında bildirilen dosya adı ve satır numarası, en başta `panic!` çağrısına yol açan bizim kodumuzdaki satırı değil, `panic!` makrosunun bizzat çağrıldığı başka bir koddaki satırı gösterir.
+
+> Not: `panic!` makrosu tıpkı `println!` gibi biçimlendirme argümanları kabul eder; örneğin `panic!("Geçersiz yapılandırma değeri: {deger}")` yazarak hata mesajına değişkenlerin değerini ekleyebilirsiniz. Standart kütüphanede, perde arkasında `panic!` çağıran ve niyetinizi daha açık ifade eden birkaç yardımcı makro daha bulunur: `unreachable!()` mantık gereği asla ulaşılmaması gereken kod yollarını, `todo!()` ve `unimplemented!()` ise henüz yazılmamış kod parçalarını işaretler. Bölüm 11'de testlerde sıkça kullanacağımız `assert!`, `assert_eq!` ve `assert_ne!` makroları da verilen koşul sağlanmadığında panik yapar. Bölüm 3'te gördüğünüz gibi hata ayıklama (*debug*) derlemelerinde tam sayı taşması da bir paniğe yol açar.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="using-a-panic-backtrace"></a>

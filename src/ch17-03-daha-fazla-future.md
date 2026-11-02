@@ -21,7 +21,7 @@ Bunun tersi de doğrudur: Rust, async blokları _yalnızca_ bir `await` noktası
 duraklatır ve denetimi çalışma zamanına geri verir. `await` noktaları arasındaki
 her şey senkrondur.
 
-Yani bir async blok içinde herhangi bir `await` noktası olmadan bir yığın iş
+Yani bir async blok içinde herhangi bir `await` noktası olmadan çok sayıda iş
 yaparsanız, o future diğer tüm future'ların ilerleme kaydetmesini engeller. Bu
 durumun zaman zaman bir future'ın diğer future'ları _aç bırakması (starving)_
 olarak adlandırıldığını duyabilirsiniz. Bazı durumlarda bu önemli bir sorun
@@ -43,7 +43,7 @@ fonksiyonu tanıtır.
 </Listing>
 
 Bu kod, `trpl::sleep` yerine `std::thread::sleep` kullanır; böylece `slow`
-çağrısı mevcut thread'i belirli bir milisaniye boyunca bloklar. Gerçek dünyadaki
+çağrısı mevcut thread'i belirtilen milisaniye süresince bloklar. Gerçek dünyadaki
 hem uzun süren hem de bloklayıcı işlemleri temsil etmesi için `slow`
 fonksiyonunu kullanabiliriz.
 
@@ -172,17 +172,19 @@ görevi parçalara bölmeye çalışmak onu belirgin biçimde yavaşlatabilir;
 dolayısıyla bazen _genel_ performans açısından bir işlemin kısa süreliğine
 bloklamasına izin vermek daha iyidir. Kodunuzun gerçek performans
 darboğazlarının neler olduğunu görmek için her zaman ölçüm yapın. Yine de
-eşzamanlı gerçekleşmesini beklediğiniz pek çok işin seri halde yürütüldüğünü
+eşzamanlı gerçekleşmesini beklediğiniz pek çok işin seri hâlde yürütüldüğünü
 _görüyorsanız_, arka plandaki bu dinamiği akılda tutmak son derece önemlidir!
 
 > Not: Bir `async` blok içinde senkron G/Ç çağrıları (`std::fs`,
 > `std::thread::sleep` vb.) veya uzun süren ağır CPU hesaplamaları çalıştırmak,
 > yalnızca o future'ı değil, çalışma zamanının o anki yürütücü thread'inde sıra
-> bekleyen diğer görevleri de bekletir. Gerçek dünya projelerinde `yield_now`
-> ile parçalara bölmeye uygun olmayan bloklayıcı işlemleri çalıştırmak için
-> çalışma zamanlarının sunduğu `spawn_blocking` fonksiyonundan ([Bölüm 17.6'da](ch17-06-future-gorev-thread.html)
-> değineceğiz) veya yoğun paralel veri işleme yükleri için `rayon` gibi özel
-> thread havuzlarından yararlanılır.
+> bekleyen diğer görevleri de bekletir. Gerçek dünya projelerinde, `yield_now`
+> ile parçalara bölünemeyen bloklayıcı işlemler için çalışma zamanlarının
+> sunduğu `spawn_blocking` gibi fonksiyonlar (bloklayıcı işi ayrı bir thread
+> havuzuna devreder; bu fonksiyonun adı bölümün sonundaki [“Future'lar,
+> Görevler ve Thread'ler”](ch17-06-future-gorev-thread.html) alt bölümünde de
+> geçecek) veya yoğun paralel veri işleme yükleri için `rayon` gibi özel thread
+> havuzları kullanılır.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -193,7 +195,7 @@ _görüyorsanız_, arka plandaki bu dinamiği akılda tutmak son derece önemlid
 ### Kendi Async Soyutlamalarımızı Kurmak
 
 Yeni desenler oluşturmak üzere future'ları birbiriyle birleştirebiliriz de.
-Örneğin elimizde halihazırda bulunan async yapı taşlarıyla bir `timeout` (zaman
+Örneğin elimizde hâlihazırda bulunan async yapı taşlarıyla bir `timeout` (zaman
 aşımı) fonksiyonu inşa edebiliriz. İşimiz bittiğinde ortaya çıkan sonuç, daha da
 fazla async soyutlama oluşturmak için kullanabileceğimiz bir başka yapı taşı
 olacaktır.

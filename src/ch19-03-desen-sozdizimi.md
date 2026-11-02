@@ -355,11 +355,11 @@ Bu kod, ilk argüman olarak aktarılan `3` değerini tamamen yoksayacak ve ekran
 
 Çoğu durumda belirli bir fonksiyon parametresine artık ihtiyacınız kalmadığında,
 kullanılmayan parametreyi içermemesi için fonksiyon imzasını değiştirirsiniz.
-Bir fonksiyon parametresini yoksaymak özellikle, örneğin belirli bir tür
-imzasına ihtiyaç duyduğunuz bir trait'i uygularken uygulamanızdaki fonksiyon
-gövdesinin parametrelerden birine ihtiyaç duymadığı durumlarda çok yararlı
-olabilir. Böylece parametreye bir ad verseydiniz alacağınız kullanılmayan
-fonksiyon parametresi derleyici uyarısından kaçınmış olursunuz.
+Bir fonksiyon parametresini yoksaymak özellikle şu durumda işe yarar: Bir
+trait'i uygularken trait'in belirlediği imzaya uymak zorundasınızdır, ancak
+sizin uygulamanızdaki fonksiyon gövdesi parametrelerden birine ihtiyaç duymaz.
+Parametreye bir ad verseydiniz derleyiciden alacağınız “kullanılmayan
+parametre” uyarısından böylece kurtulmuş olursunuz.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="ignoring-parts-of-a-value-with-a-nested-_"></a>
@@ -469,6 +469,16 @@ taşınmadığı için herhangi bir hata olmaksızın derlenecektir.
 Bu kod sorunsuzca çalışır; çünkü `metin` değerini hiçbir şeye bağlamayız ve
 dolayısıyla sahipliği taşınmaz.
 
+> Not: Liste 19-21'deki gibi `Copy` olmayan bir değeri desenle eşleştirirken
+> sahipliğin taşınmasını istemiyorsanız, değerin kendisi yerine referansı
+> üzerinde eşleştirme yapabilirsiniz: `if let Some(_metin) = &metin`. Bu
+> durumda derleyici, desendeki bağlamaları otomatik olarak birer referans
+> (`&String`) hâline getirir; `metin` taşınmadığı için sonrasında da
+> kullanılmaya devam edebilir. Aynı etkiyi desenin içinde `ref` (değiştirilebilir
+> referans için `ref mut`) anahtar kelimesiyle de elde edebilirsiniz:
+> `if let Some(ref _metin) = metin`. Bu daha eski sözdizimine, özellikle
+> otomatik referans bağlama kuralından önce yazılmış kodlarda sıkça rastlarsınız.
+
 <!-- Old headings. Do not remove or links may break. -->
 <a id="ignoring-remaining-parts-of-a-value-with-"></a>
 <a id="remaining-parts-of-a-value-with-"></a>
@@ -496,7 +506,8 @@ alanlarındaki değerleri yoksaymak istiyoruz.
 `x` değerini listeliyor ve ardından yalnızca `..` desenini ekliyoruz. Bu,
 özellikle çok sayıda alana sahip struct'larla çalışırken yalnızca bir veya iki
 alanın önemli olduğu durumlarda `y: _` ve `z: _` yazmak zorunda kalmaktan çok
-daha pratiktir.
+daha pratiktir. Struct desenlerinde `..` yalnızca alan listesinin en sonunda yer
+alabilir.
 
 `..` sözdizimi gerektiği kadar çok değere genişleyecektir. Liste 19-24, `..`
 sözdiziminin bir demetle nasıl kullanılacağını göstermektedir.
@@ -552,7 +563,9 @@ belirtilen ve o kolun seçilebilmesi için desenle birlikte sağlanması gereken
 bir `if` koşuludur. Match guard'lar, tek başına bir desenin izin verdiğinden
 daha karmaşık fikirleri ifade etmek için kullanışlıdır. Ancak yalnızca `match`
 ifadelerinde kullanılabildiklerini; `if let` veya `while let` ifadelerinde
-bulunmadıklarını unutmayın.
+bulunmadıklarını unutmayın. (Rust 2024 Sürümü'nde `if let` koşullarını `&&` ile
+zincirleyerek benzer bir etki elde edebilirsiniz; bkz. [“Koşullu `if let`
+İfadeleri”][if-let]<!-- ignore --> bölümündeki not.)
 
 Koşul, desende oluşturulan değişkenleri kullanabilir. Liste 19-26, ilk kolunun
 `Some(x)` desenine ve ek olarak (sayı çift ise `true` üretecek olan)
@@ -580,7 +593,11 @@ herhangi bir `Some` varyantıyla eşleştiği için o kol eşleşecekti.
 `if x % 2 == 0` koşulunu doğrudan bir desenin içinde ifade etmenin hiçbir yolu
 yoktur; match guard bize bu mantığı ifade etme olanağı sunar. Bu ek ifade
 gücünün dezavantajı ise işin içine match guard ifadeleri girdiğinde derleyicinin
-kapsamlılık (*exhaustiveness*) denetimi yapmaya çalışmamasıdır.
+kapsamlılık (*exhaustiveness*) denetimi yapmaya çalışmamasıdır: Derleyici, match
+guard içeren bir kolu olası değerleri kapsıyormuş gibi saymaz. Bu yüzden Liste
+19-26'da `Some(x) if x % 2 == 0` kolunun ardından koşulsuz bir `Some(x)` kolu
+da gerekir; aksi hâlde derleyici `Some` varyantının tamamen kapsanmadığını
+söyleyen bir hata verir.
 
 Liste 19-11'i tartışırken desen gölgeleme sorunumuzu çözmek için match
 guard'ları kullanabileceğimizden bahsetmiştik. `match` dışındaki değişkeni
@@ -680,8 +697,8 @@ ilişkili kod `id` alanının gerçek değerini içeren bir değişkene sahip de
 hangisi olduğunu bilmez. `id` değerini bir değişkene kaydetmediğimiz için desen
 kodu `id` alanındaki değeri kullanamaz.
 
-Aralık belirtmeden bir değişken yazdığımız son kolda ise, kolun kodunda
-kullanılmak üzere `id` adlı bir değişkende değere gerçekten sahibizdir. Bunun
+Aralık belirtmeden yalnızca bir değişken yazdığımız son kolda ise değer, kolun
+kodunda kullanılabilecek `id` adlı bir değişkende gerçekten elimizdedir. Bunun
 nedeni struct alanı kısaltma sözdizimini kullanmış olmamızdır. Ancak bu kolda,
 ilk iki kolda yaptığımız gibi `id` alanındaki değere herhangi bir sınama
 uygulamadık: Herhangi bir değer bu desenle eşleşecektir.
@@ -721,9 +738,11 @@ Rust'ın desenleri, farklı veri türlerini birbirinden ayırt etmede son derece
 kullanışlıdır. `match` ifadelerinde kullanıldıklarında Rust, desenlerinizin her
 olası değeri kapsamasını garanti altına alır; aksi takdirde programınız
 derlenmez. `let` deyimlerindeki ve fonksiyon parametrelerindeki desenler ise bu
-yapıları daha işlevsel hale getirerek değerlerin daha küçük parçalara
+yapıları daha işlevsel hâle getirerek değerlerin daha küçük parçalara
 ayrıştırılmasını ve bu parçaların değişkenlere atanmasını sağlar. İhtiyaçlarımıza
 uyacak şekilde basit ya da karmaşık desenler oluşturabiliriz.
 
 Sırada, kitabın sondan bir önceki bölümü için Rust'ın çeşitli özelliklerinin
 bazı gelişmiş yönlerine bakacağız.
+
+[if-let]: ch19-01-desenlerin-kullanildigi-yerler.html#koşullu-if-let-ifadeleri

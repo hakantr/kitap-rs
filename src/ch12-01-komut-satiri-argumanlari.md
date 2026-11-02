@@ -5,7 +5,7 @@
 
 ## Komut Satırı Argümanlarını Kabul Etme
 
-Her zaman olduğu gibi `cargo new` komutuyla yeni bir proje oluşturalım. Sisteminizde halihazırda kurulu olabilecek `grep` aracından ayırt edebilmek için projemize `minigrep` adını vereceğiz:
+Her zaman olduğu gibi `cargo new` komutuyla yeni bir proje oluşturalım. Sisteminizde hâlihazırda kurulu olabilecek `grep` aracından ayırt edebilmek için projemize `minigrep` adını vereceğiz:
 
 ```console
 $ cargo new minigrep
@@ -13,7 +13,7 @@ $ cargo new minigrep
 $ cd minigrep
 ```
 
-İlk görevimiz, `minigrep` aracının iki komut satırı argümanını kabul etmesini sağlamaktır: dosya yolu ve aranacak string. Başka bir deyişle programımızı `cargo run` komutu, ardından gelen argümanların `cargo` yerine programımıza ait olduğunu belirten iki tire (`--`), aranacak string ve içinde arama yapılacak dosyanın yoluyla şu şekilde çalıştırabilmek istiyoruz:
+İlk görevimiz, `minigrep` aracının iki komut satırı argümanını kabul etmesini sağlamaktır: dosya yolu ve aranacak string. Başka bir deyişle programımızı şu biçimde çalıştırabilmek istiyoruz: önce `cargo run` komutu, ardından sonraki argümanların `cargo`'ya değil programımıza ait olduğunu belirten iki tire (`--`), sonra aranacak string ve son olarak içinde arama yapılacak dosyanın yolu:
 
 ```console
 $ cargo run -- aranacakstring ornek-dosyaadi.txt

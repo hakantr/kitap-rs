@@ -133,7 +133,7 @@ iletmek açısından faydalıdır. Ayrıca bu değerin gelecekte
 güncellenmesi gerektiğinde kodunuzda değiştirmeniz gereken yalnızca tek bir yer
 olmasını sağlar.
 
-> Not: Değiştirilemez bir `let` değişkeni ile `const` arasındaki pratik farkı şöyle özetleyebiliriz: `let` yalnızca fonksiyon ve blok kapsamlarında tanımlanabilir, derleyicinin tür çıkarımından yararlanabilir ve kullanıcı girdisi ya da dosya okuma gibi çalışma zamanında üretilen bir değeri (sonradan değiştirilmemek üzere) bağlayabilir. `const` ise modül ve dosya düzeyinde küresel olarak da bildirilebilir, açık tür bildirimi zorunludur ve değeri derleme zamanında kesin olarak hesaplanıp kullanıldığı her yere doğrudan yerleştirilir.
+> Not: Değiştirilemez bir `let` değişkeni ile `const` arasındaki pratik farkı şöyle özetleyebiliriz: `let` yalnızca fonksiyon ve blok kapsamlarında tanımlanabilir, derleyicinin tür çıkarımından yararlanabilir ve kullanıcı girdisi ya da dosya okuma gibi çalışma zamanında üretilen bir değeri (sonradan değiştirilmemek üzere) bağlayabilir. `const` ise modül ve dosya düzeyinde küresel olarak da bildirilebilir, açık tür bildirimi zorunludur ve değeri derleme zamanında kesin olarak hesaplanıp kullanıldığı her yere doğrudan yerleştirilir. Rust'ta ayrıca `static` anahtar kelimesiyle bildirilen ve program boyunca bellekte sabit bir adreste tutulan küresel değişkenler de vardır; bunları Bölüm 20'de güvenli olmayan Rust'ı incelerken ele alacağız.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="shadowing"></a>
@@ -188,7 +188,7 @@ sayı olarak saklamak isteyelim:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-04-shadowing-can-change-types/src/main.rs:here}}
 ```
 
-İlk `bosluklar` değişkeni bir metin dilimi (`&str`) türündedir, ikinci `bosluklar` değişkeni ise
+İlk `bosluklar` değişkeni bir string dilimi (`&str`) türündedir, ikinci `bosluklar` değişkeni ise
 bir sayı (`usize`) türündedir. Gölgeleme böylece bizi `bosluklar_metin` ve
 `bosluklar_sayi` gibi farklı isimler türetmek zorunda kalmaktan kurtarır; bunun yerine
 daha yalın olan `bosluklar` ismini yeniden kullanabiliriz. Oysa aynı işi burada gösterildiği
@@ -212,4 +212,4 @@ sahip olabileceği diğer veri türlerine göz atalım.
 [comparing-the-guess-to-the-secret-number]: ch02-00-tahmin-oyunu-programlama.html#tahmini-gizli-sayıyla-karşılaştırmak
 [data-types]: ch03-02-veri-turleri.html#veri-türleri
 [storing-values-with-variables]: ch02-00-tahmin-oyunu-programlama.html#değerleri-değişkenlerle-saklamak
-[const-eval]: ../reference/const_eval.html
+[const-eval]: https://doc.rust-lang.org/reference/const_eval.html

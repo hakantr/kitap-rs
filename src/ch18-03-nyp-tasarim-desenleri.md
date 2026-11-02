@@ -9,10 +9,10 @@
 _Durum deseni (state pattern)_, nesne yönelimli bir tasarım desenidir. Desenin
 özü, bir değerin içsel olarak sahip olabileceği bir durum kümesi
 tanımlamamızdır. Bu durumlar bir dizi _durum nesnesi (state object)_ ile temsil
-edilir ve değerin davranışı içinde bulunduğu duruma göre değişir. Durumunu
-tutacak bir alana sahip olan ve bu alanda "taslak", "inceleme" veya
-"yayınlanmış" kümesinden bir durum nesnesi barındıran bir blog gönderisi
-struct'ı örneği üzerinden ilerleyeceğiz.
+edilir ve değerin davranışı içinde bulunduğu duruma göre değişir. Örnek
+olarak, durumunu bir alanda tutan bir blog gönderisi struct'ı üzerinde
+çalışacağız; bu alandaki durum nesnesi "taslak", "inceleme" veya "yayınlanmış"
+kümesinden biri olacaktır.
 
 Durum nesneleri işlevselliği paylaşır: Elbette Rust'ta nesneler ve kalıtım
 yerine struct'ları ve trait'leri kullanırız. Her durum nesnesi kendi
@@ -59,7 +59,7 @@ az tanıdık gelebilecek bir biçimde yapılandırılmış farklı bir çözüm
 göstereceğiz. Rust kodunu diğer dillerdeki kodlardan farklı tasarlamanın
 getirdiği ödünleşimleri deneyimlemek için bu iki çözümü karşılaştıracağız.
 
-Liste 18-11 bu iş akışını kod halinde göstermektedir: Bu, `gunce` adında bir
+Liste 18-11 bu iş akışını kod hâlinde göstermektedir: Bu, `gunce` adında bir
 kütüphane crate'inde uygulayacağımız API'nin örnek bir kullanımıdır. `gunce`
 crate'ini henüz uygulamadığımız için bu kod şimdilik derlenmeyecektir.
 
@@ -83,7 +83,8 @@ Ardından gönderi için inceleme istenebilmesini ve inceleme beklenirken `iceri
 metodunun boş bir string döndürmesini istiyoruz. Gönderi onay aldığında
 yayınlanmalı; yani `icerik` çağrıldığında gönderinin metni döndürülmelidir.
 
-Crate'ten etkileşime geçtiğimiz tek türün `Gonderi` türü olduğuna dikkat edin.
+Crate içinden doğrudan etkileşime girdiğimiz tek türün `Gonderi` olduğuna
+dikkat edin.
 Bu tür durum desenini kullanacak ve bir gönderinin içinde bulunabileceği çeşitli
 durumları —taslak, inceleme veya yayınlanmış— temsil eden üç durum nesnesinden
 biri olan bir değeri tutacaktır. Bir durumdan diğerine geçiş, `Gonderi` türünün
@@ -244,6 +245,16 @@ geçici olarak `None` değerine ayarlamamız gerekir. Bu sayede `Gonderi`'nin, y
 bir duruma dönüştürdükten sonra eski `durum` değerini kullanamaması güvence
 altına alınır.
 
+> Not: `Option` sarmalayıcısı olmadan alanı `durum: Box<dyn Durum>` biçiminde
+> tanımlayıp `self.durum = self.durum.inceleme_iste();` yazmayı deneseydik
+> derleyici `` error[E0507]: cannot move out of `self.durum` which is behind a
+> mutable reference `` hatası verirdi. `&mut self` üzerinden alana yalnızca
+> ödünç erişimimiz vardır; `inceleme_iste` ise `Box<Self>` değerinin sahipliğini
+> istediği için değeri alanın dışına taşımamız gerekir. Oysa bu taşıma, yeni
+> değer atanana kadar struct'ı bir anlığına bile olsa "boş" bırakır ve Rust
+> buna izin vermez. `Option::take`, alana geçici olarak `None` bırakarak bu
+> boşluğu derleyicinin kabul ettiği geçerli bir değerle doldurur.
+
 `Taslak` üzerindeki `inceleme_iste` metodu, bir gönderinin inceleme beklediği
 durumu temsil eden yeni bir `IncelemeBekleyen` struct'ının kutulanmış yeni bir
 örneğini döndürür. `IncelemeBekleyen` struct'ı da `inceleme_iste` metodunu
@@ -367,7 +378,7 @@ akışının kurallarıyla durum desenini uygulamış olduk. Kurallarla ilgili m
 > karşılaştırın! Enum kullanmanın bir dezavantajı, enum'ın değerini denetleyen
 > her yerin olası her varyantı ele almak için bir `match` ifadesine veya benzer
 > bir yapıya ihtiyaç duyacak olmasıdır. Bu durum, bu trait nesnesi çözümüne
-> kıyasla daha tekrarlayıcı bir hale gelebilir.
+> kıyasla daha tekrarlayıcı bir hâle gelebilir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -447,7 +458,7 @@ için `gunce` crate'inde yapabileceğimiz bazı değişikliklere bakalım.
 Farklı bir ödünleşim kümesi elde etmek için durum desenini nasıl yeniden
 düşünebileceğimizi göstereceğiz. Durumları ve geçişleri dışarıdaki kodun onlar
 hakkında hiçbir bilgisi olmayacak şekilde tamamen kapsüllemek yerine, durumları
-farklı türler halinde kodlayacağız. Sonuç olarak Rust'ın tür denetim sistemi,
+farklı türler hâlinde kodlayacağız. Sonuç olarak Rust'ın tür denetim sistemi,
 yalnızca yayınlanmış gönderilere izin verilen yerlerde taslak gönderileri
 kullanma girişimlerini derleyici hatası vererek engelleyecektir.
 
@@ -467,7 +478,7 @@ gönderi üzerinde boş bir string döndüren bir `icerik` metodu bulundurmak ye
 taslak gönderilerin `icerik` metoduna hiç sahip olmamasını sağlayacağız. Bu
 sayede bir taslak gönderinin içeriğini almaya çalışırsak, metodun mevcut
 olmadığını söyleyen bir derleyici hatası alırız. Sonuç olarak üretim ortamında
-taslak gönderi içeriğini yanlışlıkla görüntülememiz imkânsız hale gelir; çünkü o
+taslak gönderi içeriğini yanlışlıkla görüntülememiz imkânsız hâle gelir; çünkü o
 kod derlenmeyecektir bile. Liste 18-19 bir `Gonderi` struct'ının, bir
 `TaslakGonderi` struct'ının ve her birinin üzerindeki metotların tanımını
 göstermektedir.
@@ -556,13 +567,13 @@ değişiklikler, bu uygulamanın artık nesne yönelimli durum desenini tam olar
 izlemediği anlamına gelir: Durumlar arasındaki dönüşümler artık tamamen
 `Gonderi` uygulaması içinde kapsüllenmemektedir. Bununla birlikte kazancımız,
 tür sistemi ve derleme zamanında gerçekleşen tür denetimi sayesinde geçersiz
-durumların artık imkânsız hale gelmesidir! Bu da yayınlanmamış bir gönderinin
+durumların artık imkânsız hâle gelmesidir! Bu da yayınlanmamış bir gönderinin
 içeriğinin görüntülenmesi gibi belirli hataların üretim ortamına ulaşmadan önce
 keşfedilmesini güvence altına alır.
 
 Kodun bu sürümünün tasarımı hakkında ne düşündüğünüzü görmek için bu alt
-bölümün başında önerilen görevleri Liste 18-21 sonrasındaki haliyle `gunce`
-crate'i üzerinde deneyin. Bu görevlerden bazılarının bu tasarımda halihazırda
+bölümün başında önerilen görevleri Liste 18-21 sonrasındaki hâliyle `gunce`
+crate'i üzerinde deneyin. Bu görevlerden bazılarının bu tasarımda hâlihazırda
 tamamlanmış olabileceğine dikkat edin.
 
 Rust nesne yönelimli tasarım desenlerini uygulayabilse de durumu tür sisteminin
@@ -617,5 +628,5 @@ Sırada, Rust'ın pek çok esneklik sağlayan bir diğer özelliği olan desenle
 (*patterns*) bakacağız. Kitap boyunca onlara kısaca göz attık ama henüz tüm
 yeteneklerini görmedik. Haydi başlayalım!
 
-[more-info-than-rustc]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#derleyiciden-daha-fazla-bilgiye-sahip-olduğunuz-durumlar
+[more-info-than-rustc]: ch09-03-panic-yapmali-mi-yapmamali-mi.html#derleyiciden-daha-fazla-bilgiye-sahip-oldugunuz-durumlar
 [macros]: ch20-05-makrolar.html#makrolar

@@ -24,7 +24,7 @@ hâline gelir. Böylece çalışma zamanında ortaya çıkan bir
 eşzamanlılık hatasının oluştuğu koşulları birebir yeniden üretmeye çalışarak
 uzun zaman harcamak zorunda kalmazsınız; hatalı kod derlenmez ve derleyici
 sorunu açıklayan bir hata mesajı gösterir. Sonuç olarak kodunuzu canlı ortama
-(üretime) alındıktan sonra değil, henüz üzerinde çalışırken düzeltebilirsiniz.
+(üretime) aldıktan sonra değil, henüz üzerinde çalışırken düzeltebilirsiniz.
 Rust'ın bu yönüne _korkusuz eşzamanlılık_ adını verdik. Korkusuz eşzamanlılık,
 fark edilmesi güç sinsi hatalardan arınmış ve yeni hatalara yol açmadan kolayca
 yeniden düzenlenebilen kodlar yazmanıza olanak tanır.

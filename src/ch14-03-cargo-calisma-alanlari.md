@@ -224,6 +224,18 @@ Merhaba, dünya! 10 artı bir 11 eder!
 Bu komut, _toplayici/src/main.rs_ içindeki ve `bir_ekle` crate'ine bağımlı olan
 kodu çalıştırır.
 
+> Not: Kök _Cargo.toml_ dosyasında `[package]` bölümü bulunmayan böyle bir
+> _sanal çalışma alanında (virtual workspace)_ kök dizinden çalıştırdığınız
+> `cargo build`, `cargo check` ve `cargo test` gibi komutlar varsayılan olarak
+> tüm üye paketlere uygulanır. `cargo run` ise hangi ikili dosyayı
+> çalıştıracağını bilmek zorunda olduğundan, çalışma alanında birden fazla
+> ikili crate bulunduğunda `-p` bayrağı verilmezse hata verir. Üye paketlerden
+> birinin dizinine girip orada komut çalıştırdığınızda yalnızca o paket
+> hedeflenir; o konumdan tüm çalışma alanını derlemek için
+> `cargo build --workspace` kullanabilirsiniz. Kök dizinde varsayılan olarak
+> hangi paketlerin hedefleneceğini ise `[workspace]` bölümündeki
+> `default-members` anahtarıyla belirleyebilirsiniz.
+
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="depending-on-an-external-package-in-a-workspace"></a>
@@ -316,10 +328,10 @@ Bunu düzeltmek için `toplayici` paketinin _Cargo.toml_ dosyasını düzenleyip
 `rand` paketinin onun için de bir bağımlılık olduğunu belirtin. `toplayici`
 paketini derlemek, _Cargo.lock_ dosyasında `toplayici` paketinin bağımlılık
 listesine `rand` paketini ekleyecektir; ancak `rand` paketinin ek bir kopyası
-indirilmeyecektir. Cargo, uyumlu `rand` sürümleri belirttikleri sürece çalışma
-alanındaki her pakette yer alan ve `rand` kullanan tüm crate'lerin aynı sürümü
-kullanmasını sağlayarak bize hem disk alanı kazandırır hem de çalışma
-alanındaki crate'lerin birbirleriyle uyumlu kalmasını güvence altına alır.
+indirilmeyecektir. Paketler birbiriyle uyumlu `rand` sürümleri belirttiği
+sürece Cargo, çalışma alanında `rand` kullanan tüm crate'lerin aynı sürümü
+paylaşmasını sağlar; bu hem disk alanından tasarruf ettirir hem de çalışma
+alanındaki crate'lerin birbiriyle uyumlu kalmasını güvence altına alır.
 
 Çalışma alanındaki crate'ler aynı bağımlılığın birbiriyle uyumsuz sürümlerini
 belirtirse Cargo bunların her birini ayrı ayrı çözümler, ancak yine de mümkün

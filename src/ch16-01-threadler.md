@@ -100,10 +100,10 @@ sayıları artırmayı deneyin.
 
 ### Tüm Thread'lerin Bitmesini Bekleme
 
-Liste 16-1'deki kod, ana thread'in sona ermesi yüzünden çoğu zaman oluşturulan
-thread'i yalnızca erken durdurmakla kalmaz; thread'lerin çalışma sırasına dair
-bir garanti olmadığından, oluşturulan thread'in hiç çalışıp çalışamayacağını
-bile garanti edemez!
+Liste 16-1'deki kod, ana thread sona erdiği için çoğu zaman oluşturulan
+thread'i erken durdurmakla kalmaz; thread'lerin hangi sırayla çalışacağına dair
+bir garanti olmadığından, oluşturulan thread'in hiç çalışacağını bile garanti
+edemeyiz!
 
 Oluşturulan thread'in hiç çalışmaması ya da erken sonlanması sorununu,
 `thread::spawn` fonksiyonunun dönüş değerini bir değişkende saklayarak

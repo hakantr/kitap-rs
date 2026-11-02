@@ -19,13 +19,13 @@ Rust ayrıca sistem programlama dünyasına çağdaş geliştirici araçları da
 
 - Rust ile birlikte gelen bağımlılık yöneticisi ve derleme aracı olan Cargo; bağımlılıkları eklemeyi, derlemeyi ve yönetmeyi tüm Rust ekosistemi genelinde zahmetsiz ve tutarlı hâle getirir.
 - `rustfmt` biçimlendirme aracı, geliştiriciler arasında tutarlı bir kodlama stili sağlar.
-- Rust Dil Sunucusu `rust-analyzer`, kod tamamlama ve satır içi hata mesajları için tümleşik geliştirme ortamı (IDE) entegrasyonuna güç verir.
+- Rust'ın dil sunucusu `rust-analyzer`, kod tamamlama ve satır içi hata mesajları gibi özellikler için tümleşik geliştirme ortamı (IDE) entegrasyonunu sağlar.
 
 Geliştiriciler, Rust ekosistemindeki bu ve benzeri araçları kullanarak sistem düzeyinde kod yazarken yüksek üretkenliklerini koruyabilirler.
 
 ### Öğrenciler
 
-Rust, sistem kavramlarını öğrenmek isteyen öğrenciler ve meraklılar içindir. Pek çok kişi işletim sistemi geliştirme gibi konuları Rust kullanarak öğrenmiştir. Topluluk son derece sıcakkanlıdır ve öğrencilerin sorularını yanıtlamaktan mutluluk duyar. Rust ekipleri, bu kitap gibi çalışmalar aracılığıyla sistem kavramlarını —özellikle programlamaya yeni başlayanlar başta olmak üzere— daha fazla insan için erişilebilir kılmayı amaçlar.
+Rust, sistem kavramlarını öğrenmek isteyen öğrenciler ve meraklılar içindir. Pek çok kişi işletim sistemi geliştirme gibi konuları Rust kullanarak öğrenmiştir. Topluluk son derece sıcakkanlıdır ve öğrencilerin sorularını yanıtlamaktan mutluluk duyar. Rust ekipleri, bu kitap gibi çalışmalar aracılığıyla sistem kavramlarını başta programlamaya yeni başlayanlar olmak üzere daha fazla insan için erişilebilir kılmayı amaçlar.
 
 ### Şirketler
 
@@ -51,7 +51,7 @@ Genel olarak bu kitap, bölümleri baştan sona sırasıyla okuduğunuzu varsaya
 
 Bu kitapta iki tür bölüm bulacaksınız: kavram bölümleri ve proje bölümleri. Kavram bölümlerinde Rust'ın belirli bir yönünü öğreneceksiniz. Proje bölümlerinde ise o ana dek öğrendiklerinizi uygulayarak birlikte küçük programlar geliştireceğiz. Bölüm 2, Bölüm 12 ve Bölüm 21 proje bölümleridir; geri kalanlar ise kavram bölümleridir.
 
-**Bölüm 1**, Rust'ın nasıl kurulacağını, "Merhaba, dünya!" programının nasıl yazılacağını ve Rust'ın paket yöneticisi ve derleme aracı olan Cargo'nun nasıl kullanılacağını açıklar. **Bölüm 2**, bir sayı tahmin oyunu geliştirmenizi sağlayarak Rust'ta program yazmaya uygulamalı bir giriş sunar. Burada kavramları genel hatlarıyla ele alırız; ek ayrıntıları ise ilerleyen bölümler sağlar. Hemen kolları sıvayıp pratik yapmak istiyorsanız Bölüm 2 tam size göredir. Bir sonraki konuya geçmeden önce her ayrıntıyı öğrenmeyi tercih eden titiz bir okuyucuysanız Bölüm 2'yi atlayıp doğrudan diğer programlama dillerindekilere benzer Rust özelliklerini ele alan **Bölüm 3**'e geçmek isteyebilirsiniz; daha sonra öğrendiğiniz ayrıntıları uygulayacağınız bir proje üzerinde çalışmak istediğinizde Bölüm 2'ye geri dönebilirsiniz.
+**Bölüm 1**, Rust'ın nasıl kurulacağını, "Merhaba, dünya!" programının nasıl yazılacağını ve Rust'ın paket yöneticisi ve derleme aracı olan Cargo'nun nasıl kullanılacağını açıklar. **Bölüm 2**, bir sayı tahmin oyunu geliştirmenizi sağlayarak Rust'ta program yazmaya uygulamalı bir giriş sunar. Burada kavramları genel hatlarıyla ele alırız; ek ayrıntıları ise ilerleyen bölümler sağlar. Hemen kolları sıvayıp pratik yapmak istiyorsanız Bölüm 2 tam size göredir. Bir sonraki konuya geçmeden önce her ayrıntıyı öğrenmeyi tercih eden titiz bir okuyucuysanız Bölüm 2'yi atlayıp doğrudan **Bölüm 3**'e geçmek isteyebilirsiniz; bu bölüm, diğer programlama dillerindekilere benzeyen Rust özelliklerini ele alır. Öğrendiğiniz ayrıntıları bir proje üzerinde uygulamak istediğinizde Bölüm 2'ye geri dönebilirsiniz.
 
 **Bölüm 4**'te Rust'ın *sahiplik (ownership)* sistemini öğreneceksiniz. **Bölüm 5**, struct'ları ve metotları ele alır. **Bölüm 6** ise enum'ları, `match` ifadelerini ve `if let` ile `let...else` kontrol akışı yapılarını kapsar. Kendi özel türlerinizi oluşturmak için struct'ları ve enum'ları kullanacaksınız.
 
@@ -61,9 +61,9 @@ Bu kitapta iki tür bölüm bulacaksınız: kavram bölümleri ve proje bölüml
 
 **Bölüm 13**, Rust'ın fonksiyonel programlama dillerinden gelen özellikleri olan *kapanışları (closures)* ve *iteratörleri* inceler. **Bölüm 14**'te Cargo'yu daha derinlemesine inceleyecek ve kütüphanelerinizi başkalarıyla paylaşmaya yönelik en iyi uygulamaları konuşacağız. **Bölüm 15**, standart kütüphanenin sunduğu *akıllı işaretçileri (smart pointers)* ve bunların işlevselliğini mümkün kılan trait'leri ele alır.
 
-**Bölüm 16**'da farklı eşzamanlı programlama modellerini adım adım inceleyecek ve Rust'ın birden fazla *thread (iş parçacığı)* ile korkusuzca programlama yapmanıza nasıl yardımcı olduğunu konuşacağız. **Bölüm 17**'de ise Rust'ın `async` ve `await` sözdizimini; *görevler (tasks)*, *future'lar* ve *akışlar (streams)* ile bunların sağladığı hafif eşzamanlılık modeliyle birlikte keşfederek bu temelin üzerine yenilerini inşa edeceğiz.
+**Bölüm 16**'da farklı eşzamanlı programlama modellerini adım adım inceleyecek ve Rust'ın birden fazla *thread (iş parçacığı)* ile korkusuzca programlama yapmanıza nasıl yardımcı olduğunu konuşacağız. **Bölüm 17**'de ise bu temelin üzerine inşa ederek Rust'ın `async` ve `await` sözdizimini; *görevler (tasks)*, *future'lar* ve *akışlar (streams)* ile bunların mümkün kıldığı hafif eşzamanlılık modelini keşfedeceğiz.
 
-**Bölüm 18**, Rust'a özgü kullanım kalıplarının aşina olabileceğiniz nesne yönelimli programlama ilkeleriyle nasıl karşılaştırıldığını inceler. **Bölüm 19**, Rust programlarının genelinde fikirleri ifade etmenin güçlü yolları olan *desenler (patterns)* ve *desen eşleştirme (pattern matching)* üzerine bir başvuru kaynağıdır. **Bölüm 20** ise *güvenli olmayan (`unsafe`) Rust*, makrolar ve ömürler, trait'ler, türler, fonksiyonlar ile kapanışlar hakkında daha fazla ayrıntının yer aldığı, ilgi çekici gelişmiş konulardan oluşan zengin bir seçki sunar.
+**Bölüm 18**, Rust'a özgü kullanım kalıplarının (*idioms*) aşina olabileceğiniz nesne yönelimli programlama ilkeleriyle nerelerde örtüşüp nerelerde ayrıştığını inceler. **Bölüm 19**, Rust programlarının genelinde fikirleri ifade etmenin güçlü yolları olan *desenler (patterns)* ve *desen eşleştirme (pattern matching)* üzerine bir başvuru kaynağıdır. **Bölüm 20** ise *güvenli olmayan (`unsafe`) Rust*, makrolar ve ömürler, trait'ler, türler, fonksiyonlar ile kapanışlar hakkında daha fazla ayrıntının yer aldığı, ilgi çekici gelişmiş konulardan oluşan zengin bir seçki sunar.
 
 **Bölüm 21**'de alt düzey, *çok kanallı (multithreaded)* bir web sunucusu geliştireceğimiz bir projeyi tamamlayacağız!
 

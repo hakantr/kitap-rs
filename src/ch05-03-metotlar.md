@@ -34,7 +34,7 @@ Fonksiyon sürümünde `&Dikdortgen` kullanmamızla aynı nedenden ötürü bura
 > - **`&mut self`**: Metot örneğin alanlarını yerinde güncelliyorsa kullanılır. Bu tür bir metodu çağırabilmek için ilgili değişkenin `let mut dikdortgen1 = ...` şeklinde değiştirilebilir tanımlanmış olması gerekir.
 > - **`self` (tüketen metot)**: Metot mevcut örneği tüketip içindeki veriyi başka bir türe dönüştürüyorsa (örneğin bir `String`'i ham bayt vektörüne dönüştüren `String::into_bytes`) veya bir kaynağı kapatıp geçersiz kılıyorsa kullanılır; derleyici çağrıdan sonra eski örneğin yanlışlıkla tekrar kullanılmasını derleme zamanında engeller.
 
-Fonksiyonlar yerine metot kullanmanın temel nedeni, metot sözdizimini kullanabilmenin ve her metodun imzasında `self`'in türünü tekrarlamak zorunda kalmamanın yanı sıra, kod düzenidir. Bir türün örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda toplarız; böylece kodumuzu ileride kullanacak kişilerin `Dikdortgen`'in yeteneklerini sunduğumuz kütüphanenin farklı yerlerinde aramak zorunda kalmasını önleriz.
+Metot sözdizimini kullanabilmek ve her metodun imzasında `self`'in türünü yinelemek zorunda kalmamak bir yana, fonksiyonlar yerine metot kullanmanın asıl nedeni kod düzenidir. Bir türün örneğiyle yapabileceğimiz her şeyi tek bir `impl` bloğunda toplarız; böylece kodumuzu ileride kullanacak kişilerin `Dikdortgen`'in yeteneklerini sunduğumuz kütüphanenin farklı yerlerinde aramak zorunda kalmasını önleriz.
 
 Bir metoda struct'ın alanlarından biriyle aynı adı vermeyi de seçebileceğimize dikkat edin. Örneğin `Dikdortgen` üzerinde yine `genislik` adında bir metot tanımlayabiliriz:
 

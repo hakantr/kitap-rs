@@ -74,6 +74,22 @@ tersine düşürülür; bu yüzden `d` değişkeni `c`'den önce düşürülmü�
 sunmaktır; normalde bir yazdırma mesajı yerine türünüzün çalıştırması gereken
 temizlik kodunu belirtirsiniz.
 
+> Not: Düşürme sırası yalnızca yerel değişkenler için değil, bileşik değerlerin
+> parçaları için de kesin olarak belirlidir ve bu kurallara güvenebilirsiniz:
+>
+> - Aynı kapsamdaki yerel değişkenler, bildirildikleri sıranın tersine
+>   düşürülür.
+> - Bir struct ya da enum değeri düşürülürken önce (varsa) türün kendi `drop`
+>   metodu çalışır, ardından alanları bildirim sırasıyla düşürülür. Demetlerde,
+>   dizilerde ve `Vec<T>` gibi koleksiyonlarda da öğeler baştan sona sırayla
+>   düşürülür.
+> - Bir değişkene yeni bir değer atandığında eski değer, Bölüm 4'te gördüğümüz
+>   gibi atama anında hemen düşürülür.
+>
+> `drop` metodunun gövdesinde `self.veri` gibi alanlara hâlâ erişebilmenizin
+> nedeni de budur: Alanlar, türün kendi `drop` metodu tamamlandıktan sonra
+> düşürülür.
+
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="dropping-a-value-early-with-std-mem-drop"></a>
@@ -112,11 +128,11 @@ kullanımı*), `drop` metodunu açıkça çağırmamıza izin verilmediğini bel
 Hata mesajında geçen _yıkıcı (destructor)_ ifadesi, bir örneği temizleyen
 fonksiyonlar için kullanılan genel programlama terimidir. Bir _yıkıcı_, bir
 örnek oluşturan _yapıcı (constructor)_ kavramının karşıtı niteliğindedir.
-Rust'taki `drop` fonksiyonu da belirli bir yıkıcıdır.
+Rust'taki `drop` metodu da bu tür yıkıcılardan biridir.
 
 Rust, `drop` metodunu açıkça çağırmamıza izin vermez; çünkü `main` fonksiyonunun
 sonunda değer üzerinde `drop` metodunu yine otomatik olarak çağıracaktır. Bu
-durum, Rust aynı değeri iki kez temizlemeye çalışacağı için bir _çifte serbest
+durum, Rust aynı değeri iki kez temizlemeye çalışacağı için bir _çift serbest
 bırakma (double free)_ hatasına yol açardı.
 
 Bir değer kapsam dışına çıktığında `drop` çağrısının otomatik olarak eklenmesini
@@ -176,7 +192,7 @@ bırakıldı` metinleri arasında yazdırılır; bu da `c` değerini düşürmek
 > yerine örtük olarak bit düzeyinde kopyalandığından, bir tür hem `Copy` hem
 > `Drop` olsaydı `drop(x)` çağrısı yalnızca bir kopyayı düşürür, asıl `x`
 > değişkeni yaşamaya devam eder ve her kopya kapsam dışına çıktığında aynı
-> kaynak üzerinde yıkıcı tekrar tekrar çalışarak çifte serbest bırakma hatasına
+> kaynak üzerinde yıkıcı tekrar tekrar çalışarak çift serbest bırakma hatasına
 > yol açardı.
 
 Temizlik işlemlerini kullanışlı ve güvenli hâle getirmek için bir `Drop` trait'i

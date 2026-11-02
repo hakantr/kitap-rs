@@ -55,7 +55,7 @@ Sahipliğin ilk örneği olarak bazı değişkenlerin kapsamını (*scope*) ince
 let metin = "merhaba";
 ```
 
-`metin` değişkeni, metin değerinin programımızın kaynak koduna doğrudan sabit olarak yazıldığı bir *string sabitini (string literal)* ifade eder. Bu değişken, tanımlandığı noktadan içinde bulunduğu kapsamın sonuna kadar geçerlidir. Liste 4-1, `metin` değişkeninin nerelerde geçerli olacağını yorum satırlarıyla gösteren bir programı sunmaktadır.
+`metin` değişkeni bir *string sabitine (string literal)* başvurur; string sabitlerinde metnin değeri doğrudan programımızın kaynak koduna gömülüdür. Bu değişken, tanımlandığı noktadan içinde bulunduğu kapsamın sonuna kadar geçerlidir. Liste 4-1, `metin` değişkeninin nerelerde geçerli olacağını yorum satırlarıyla gösteren bir programı sunmaktadır.
 
 <Listing number="4-1" caption="Bir değişken ve geçerli olduğu kapsam">
 
@@ -87,7 +87,7 @@ Bir metin değerinin programımıza doğrudan yazıldığı string sabitlerini z
 let metin = String::from("merhaba");
 ```
 
-Çift iki nokta üst üste (`::`) operatörü, `string_from` gibi bir isim kullanmak yerine bu özel `from` fonksiyonunu `String` türünün isim uzayı (*namespace*) altında çağırmamıza olanak tanır. Bu sözdizimini Bölüm 5'teki ["Metotlar"][methods]<!-- ignore --> bölümünde ve Bölüm 7'de modüllerle isim uzaylarını incelerken ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths-module-tree]<!-- ignore --> bölümünde daha ayrıntılı ele alacağız.
+Çift iki nokta üst üste (`::`) operatörü, `string_from` gibi bir isim kullanmak yerine bu özel `from` fonksiyonunu `String` türünün ad alanı (*namespace*) altında çağırmamıza olanak tanır. Bu sözdizimini Bölüm 5'teki ["Metotlar"][methods]<!-- ignore --> bölümünde ve Bölüm 7'de modüllerle ad alanlarını incelerken ["Modül Ağacındaki Bir Öğeye Başvurmak İçin Yollar"][paths-module-tree]<!-- ignore --> bölümünde daha ayrıntılı ele alacağız.
 
 Bu tür bir string _değiştirilebilir_:
 
@@ -242,7 +242,7 @@ Yalnızca yığın verisini değil, `String`'in öbek verisini de _gerçekten_ d
 
 Bu kod sorunsuzca çalışır ve öbek verisinin _gerçekten_ kopyalandığı Şekil 4-3'teki davranışı açıkça üretir.
 
-Kodda bir `clone` çağrısı gördüğünüzde, arka planda isteğe bağlı bir kopyalama kodunun çalıştırıldığını ve bu işlemin performans açısından maliyetli olabileceğini bilirsiniz. Bu çağrı, sıradan bir atamadan farklı bir işlem yapıldığının açık bir görsel göstergesidir.
+Kodda bir `clone` çağrısı gördüğünüzde, arka planda o türe özgü bir kopyalama kodunun çalıştırıldığını ve bu işlemin performans açısından maliyetli olabileceğini bilirsiniz. Bu çağrı, sıradan bir atamadan farklı bir işlem yapıldığının açık bir görsel göstergesidir.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="stack-only-data-copy"></a>
@@ -262,7 +262,7 @@ Bunun nedeni, tam sayılar gibi derleme zamanında boyutu bilinen türlerin büt
 
 Rust, tam sayılar gibi yığında saklanan türlerin üzerine yerleştirebileceğimiz `Copy` adında özel bir trait sunar (trait'leri [Bölüm 10][traits]<!-- ignore -->'da ayrıntılı olarak inceleyeceğiz). Bir tür `Copy` trait'ini uyguluyorsa onu kullanan değişkenler taşınmaz; bunun yerine önemsiz bir maliyetle kopyalanır ve başka bir değişkene atandıktan sonra da geçerli kalmaya devam eder.
 
-Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` trait'ini eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinizde bu trait'i uygulamak üzere ilgili türetme özniteliğini (`#[derive(Copy)]`) nasıl ekleyeceğinizi öğrenmek için Ek C'deki ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz.
+Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` trait'ini eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinizde bu trait'i uygulamak üzere ilgili türetme özniteliğini (`#[derive(Copy)]`) nasıl ekleyeceğinizi öğrenmek için Ek C'deki ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz. (`Copy`, `Clone` trait'inin bir alt trait'i olduğundan uygulamada bu ikisi her zaman birlikte türetilir: `#[derive(Clone, Copy)]`.)
 
 Peki hangi türler `Copy` trait'ini uygular? Emin olmak için ilgili türün dokümantasyonunu kontrol edebilirsiniz; ancak genel kural olarak basit skaler değerlerden oluşan her grup `Copy` uygulayabilirken, öbekte bellek ayırma gerektiren veya bir sistem kaynağını temsil eden hiçbir tür `Copy` uygulayamaz. `Copy` trait'ini uygulayan başlıca türler şunlardır:
 

@@ -7,7 +7,7 @@
 
 > Not: Herhangi bir nedenden ötürü `rustup` kullanmayı tercih etmezseniz diğer seçenekler için lütfen [Diğer Rust Kurulum Yöntemleri sayfasına][otherinstall] göz atın.
 
-Aşağıdaki adımlar, Rust derleyicisinin en son *kararlı (stable)* sürümünü kurar. Rust'ın kararlılık güvenceleri sayesinde, bu kitapta derlenen tüm örnekler daha yeni Rust sürümleriyle de sorunsuzca derlenmeye devam edecektir. Rust ekibi hata mesajlarını ve uyarıları düzenli olarak iyileştirdiği için çıktılar sürümler arasında küçük farklılıklar gösterebilir. Başka bir deyişle, bu adımları izleyerek kuracağınız daha yeni herhangi bir kararlı Rust sürümü, kitabın içeriğiyle beklendiği gibi çalışacaktır.
+Aşağıdaki adımlar, Rust derleyicisinin en son *kararlı (stable)* sürümünü kurar. Rust'ın kararlılık güvenceleri sayesinde, bu kitapta yer alan ve derlenen tüm örnekler daha yeni Rust sürümleriyle de sorunsuzca derlenmeye devam edecektir. Rust ekibi hata mesajlarını ve uyarıları düzenli olarak iyileştirdiği için çıktılar sürümler arasında küçük farklılıklar gösterebilir. Başka bir deyişle, bu adımları izleyerek kuracağınız daha yeni herhangi bir kararlı Rust sürümü, kitabın içeriğiyle beklendiği gibi çalışacaktır.
 
 > ### Komut Satırı Gösterimi
 >
@@ -107,7 +107,7 @@ $ rustup self uninstall
 
 ### Yerel Belgeleri Okumak
 
-Rust kurulumu, çevrimdışı okuyabilmeniz için belgelerin yerel bir kopyasını da içerir. Yerel belgeleri tarayıcınızda açmak için `rustup doc` komutunu çalıştırın.
+Rust kurulumu, çevrim dışı okuyabilmeniz için belgelerin yerel bir kopyasını da içerir. Yerel belgeleri tarayıcınızda açmak için `rustup doc` komutunu çalıştırın.
 
 Standart kütüphanenin sunduğu bir türün ya da fonksiyonun ne işe yaradığından veya nasıl kullanılacağından emin olmadığınız her an, bunu öğrenmek için uygulama programlama arayüzü (API) belgelerine başvurabilirsiniz!
 
@@ -118,7 +118,7 @@ Standart kütüphanenin sunduğu bir türün ya da fonksiyonun ne işe yaradığ
 
 Bu kitap, Rust kodu yazmak için hangi araçları kullandığınız konusunda hiçbir varsayımda bulunmaz. Hemen hemen her metin düzenleyici işinizi görecektir! Bununla birlikte, pek çok metin düzenleyicinin ve tümleşik geliştirme ortamının (IDE) yerleşik Rust desteği vardır. Rust web sitesindeki [araçlar sayfasında][tools] her zaman pek çok düzenleyici ve IDE'nin oldukça güncel bir listesini bulabilirsiniz.
 
-### Bu Kitapla Çevrimdışı Çalışmak
+### Bu Kitapla Çevrim Dışı Çalışmak
 
 Çeşitli örneklerde, standart kütüphanenin ötesindeki Rust paketlerini kullanacağız. Bu örnekler üzerinde çalışabilmek için ya internet bağlantınızın olması ya da söz konusu bağımlılıkları önceden indirmiş olmanız gerekir. Bağımlılıkları önceden indirmek için aşağıdaki komutları çalıştırabilirsiniz. (`cargo`'nun ne olduğunu ve bu komutların her birinin ne işe yaradığını ilerleyen bölümlerde ayrıntılı olarak açıklayacağız.)
 

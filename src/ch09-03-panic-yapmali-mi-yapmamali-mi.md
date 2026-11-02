@@ -93,7 +93,7 @@ Doğrulamaları her yerde tekrarlamak yerine, ayrı bir modülde yeni bir tür t
 
 </Listing>
 
-*src/tahmin_oyunu.rs* dosyasındaki bu kodun, *src/lib.rs* dosyasına —burada göstermediğimiz— `mod tahmin_oyunu;` modül bildiriminin eklenmesine bağlı olduğunu unutmayın. Bu yeni modül dosyasında, içinde `i32` tutan `deger` adında bir alana sahip `Tahmin` struct'ını tanımlıyoruz. Sayının saklanacağı yer burasıdır.
+*src/tahmin_oyunu.rs* dosyasındaki bu kodun, *src/main.rs* dosyasına —burada göstermediğimiz— `mod tahmin_oyunu;` modül bildiriminin eklenmesine bağlı olduğunu unutmayın (modülleri ayrı dosyalara bölmeyi Bölüm 7'de ele almıştık). Bu yeni modül dosyasında, içinde `i32` tutan `deger` adında bir alana sahip `Tahmin` struct'ını tanımlıyoruz. Sayının saklanacağı yer burasıdır.
 
 Ardından `Tahmin` üzerinde, `Tahmin` örnekleri oluşturan `new` adında bir ilişkili fonksiyon tanımlıyoruz. `new` fonksiyonu `i32` türünde `deger` adlı tek bir parametre alacak ve bir `Tahmin` döndürecek biçimde tanımlanmıştır. Fonksiyon gövdesindeki kod, `deger` parametresinin 1 ile 100 arasında olup olmadığını sınar. `deger` bu sınamayı geçemezse `panic!` çağrısı yaparız; bu da çağıran kodu yazan programcıyı düzeltmesi gereken bir kusur bulunduğu konusunda uyarır, çünkü bu aralığın dışındaki bir `deger` ile `Tahmin` oluşturmaya çalışmak `Tahmin::new` fonksiyonunun dayandığı sözleşmeyi ihlal eder. `Tahmin::new` fonksiyonunun hangi koşullarda panik yapabileceği dışa açık API dokümantasyonunda belirtilmelidir; kendi oluşturacağınız API dokümantasyonunda `panic!` olasılığını bildirme kurallarını Bölüm 14'te ele alacağız. Eğer `deger` sınamayı geçerse, `deger` alanı bu parametreye ayarlanmış yeni bir `Tahmin` oluşturup döndürürüz.
 

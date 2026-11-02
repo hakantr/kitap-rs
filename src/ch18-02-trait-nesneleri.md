@@ -236,7 +236,7 @@ biçimde tanımlamış olduk.
 Ördek tiplemesi kullanan koda benzer kodlar yazmak için trait nesnelerini ve
 Rust'ın tür sistemini kullanmanın avantajı, bir değerin belirli bir metodu
 uygulayıp uygulamadığını çalışma zamanında hiçbir zaman denetlemek zorunda
-kalmamamız ya da bir değer bir metodu uygulamadığı halde onu çağırdığımızda
+kalmamamız ya da bir değer bir metodu uygulamadığı hâlde onu çağırdığımızda
 çalışma zamanı hatası alma endişesi yaşamamamızdır. Değerler trait nesnelerinin
 ihtiyaç duyduğu trait'leri uygulamıyorsa Rust kodumuzu derlemez.
 
@@ -310,7 +310,10 @@ destekleyebildiğimiz kodda fazladan esneklik elde ettik; dolayısıyla bu, göz
 > geri dönüş türü veya parametre türü olarak doğrudan kullanmamalı ve
 > jenerik tür parametreleri (`fn islem<T>(&self, x: T)`) içermemelidir (çünkü
 > sanal metot tablosuna sonsuz sayıda olası `T` türü için fonksiyon işaretçisi
-> eklenemez). Ayrıca trait'in kendisi `Sized` gerektirmemelidir; örneğin
+> eklenemez). Alıcısı (`self`, `&self` vb.) olmayan ilişkili fonksiyonlar da
+> yine `where Self: Sized` ile işaretlenmedikçe trait'i `dyn` uyumsuz kılar;
+> çünkü elde somut bir değer olmadan hangi uygulamanın çağrılacağı
+> belirlenemez. Ayrıca trait'in kendisi `Sized` gerektirmemelidir; örneğin
 > standart kütüphanedeki `Clone` trait'i `Sized` gerektirdiği ve
 > `fn clone(&self) -> Self` metodu `Self` döndürdüğü için `dyn Clone`
 > yazılamaz.

@@ -83,6 +83,8 @@ Rust kendi operatörlerinizi oluşturmanıza veya rastgele operatörleri aşır�
 
 `add` metodu, yeni bir `Nokta` oluşturmak için iki `Nokta` örneğinin `x` ve `y` değerlerini kendi aralarında toplar. `Add` trait'i, `add` metodundan döndürülecek türü belirleyen `Output` adında bir ilişkili türe sahiptir.
 
+> Not: `Add` trait'indeki `add` metodu `self` ve `rhs` parametrelerini referans olarak değil, değer olarak alır; yani `a + b` ifadesi her iki işlenenin de sahipliğini tüketir. Liste 20-15'te `Nokta` için `Copy` türetmemizin nedeni budur: Böylece `p1 + p2` yazdıktan sonra `p1` ve `p2` kullanılmaya devam edebilir. `Copy` olmayan bir tür için `+` operatörünü değerleri taşımadan kullanmak isterseniz `Add` trait'ini `&Nokta` gibi referans türleri üzerinde de uygulamanız gerekir; standart kütüphane `String` için tam da bunu yapar (`String + &str` ifadesinde sol taraf tüketilir, sağ taraf yalnızca ödünç alınır).
+
 Bu koddaki varsayılan jenerik tür, `Add` trait'inin içinde yer alır. Tanımı şöyledir:
 
 ```rust
@@ -107,7 +109,7 @@ Farklı birimlerde değerler tutan `Milimetreler` ve `Metreler` adında iki stru
 
 </Listing>
 
-`Milimetreler` ve `Metreler` değerlerini toplamak için, `Self` varsayılanını kullanmak yerine `Rhs` tür parametresinin değerini belirlemek üzere `impl Add<Metreler>` yazarız.
+`Milimetreler` ve `Metreler` değerlerini toplamak için, `Self` varsayılanını kullanmak yerine `Rhs` tür parametresinin değerini belirlemek üzere `impl Add<Metreler>` yazarız. Bu uygulama yalnızca `Milimetreler + Metreler` sıralamasını geçerli kılar; `Metreler + Milimetreler` yazabilmek için `Metreler` üzerinde ayrı bir `Add<Milimetreler>` uygulaması gerekir.
 
 Varsayılan tür parametrelerini başlıca iki şekilde kullanırsınız:
 
@@ -215,7 +217,7 @@ Belirsizliği gidermek ve Rust'a başka bir tür için olan `Hayvan` uygulaması
 
 </Listing>
 
-Açılı parantezler içinde Rust'a bir tür açıklaması sağlıyoruz; bu açıklama, bu fonksiyon çağrısı için `Kopek` türünü bir `Hayvan` olarak ele almak istediğimizi söyleyerek `Kopek` üzerinde uygulandığı hâliyle `Hayvan` trait'indeki `baby_name` fonksiyonunu çağırmak istediğimizi belirtir. Bu kod artık istediğimiz çıktıyı yazdıracaktır:
+Açılı parantezler içinde Rust'a bir tür açıklaması sağlıyoruz: `<Kopek as Hayvan>` yazarak bu fonksiyon çağrısı için `Kopek` türünü bir `Hayvan` olarak ele almak istediğimizi söylüyoruz. Böylece `Kopek` üzerinde uygulandığı hâliyle `Hayvan` trait'indeki `baby_name` fonksiyonu çağrılır. Bu kod artık istediğimiz çıktıyı yazdıracaktır:
 
 ```console
 {{#include ../listings/ch20-advanced-features/listing-20-22/output.txt}}

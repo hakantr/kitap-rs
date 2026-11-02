@@ -18,13 +18,12 @@ _Asenkron programlama (asynchronous programming)_, kodumuzu olası duraklama
 noktaları ve nihai sonuçlar cinsinden ifade etmemizi sağlayan ve koordinasyon
 ayrıntılarını bizim yerimize üstlenen bir soyutlamadır.
 
-Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için _thread'leri (iş
-parçacıklarını)_ kullanmamızın üzerine inşa edilerek kod yazmaya alternatif bir
-yaklaşım sunar: işlemlerin nasıl asenkron olabileceğini ifade etmemizi sağlayan
-Rust'ın _future_'ları, _akışları (streams)_, bunları destekleyen `async` ile
-`await` sözdizimi ve _asenkron çalışma zamanlarını (asynchronous runtimes)_
-—yani asenkron işlemlerin yürütülmesini yönetip koordine eden kodları— uygulayan
-üçüncü taraf crate'ler.
+Bu bölüm, Bölüm 16'da paralellik ve eşzamanlılık için thread'leri kullanışımızın
+üzerine inşa edilir ve kod yazmaya alternatif bir yaklaşım sunar: işlemlerin
+nasıl asenkron olabileceğini ifade etmemizi sağlayan Rust _future_'ları ile
+_akışları (streams)_, bunları destekleyen `async` ve `await` sözdizimi ve
+_asenkron çalışma zamanlarını (asynchronous runtimes)_ —yani asenkron işlemlerin
+yürütülmesini yönetip koordine eden kodu— sağlayan üçüncü taraf crate'ler.
 
 Bir örnek ele alalım. Diyelim ki bir aile kutlamasından hazırladığınız videoyu
 dışa aktarıyorsunuz; bu işlem dakikalardan saatlere kadar uzayabilir. Video dışa
@@ -114,12 +113,12 @@ düşünün. Tek bir ekip üyesine birden fazla görev verebilir, her üyeye tek
 görev atayabilir ya da bu iki yaklaşımın bir karışımını kullanabilirsiniz.
 
 Bir kişinin, elindeki görevlerden herhangi biri tamamlanmadan önce birkaç farklı
-görev üzerinde çalışması _eşzamanlılıktır_. Bu, bilgisayarınızda iki farklı
-projeyi hazır bulundurup bir projeden sıkıldığınızda ya da bir noktada
-takıldığınızda diğerine geçmenize benzer. Yalnızca tek bir kişisinizdir;
-dolayısıyla her iki görevde kelimenin tam anlamıyla aynı anda ilerleme
-kaydedemezsiniz, ancak aralarında geçiş yapıp her seferinde biri üzerinde
-ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil 17-1).
+görev üzerinde çalışması _eşzamanlılıktır_. Eşzamanlılığı uygulamanın bir yolu,
+bilgisayarınızda iki farklı projeyi hazır bulundurup bir projeden sıkıldığınızda
+ya da bir noktada takıldığınızda diğerine geçmenize benzer. Yalnızca tek bir
+kişisinizdir; dolayısıyla her iki görevde kelimenin tam anlamıyla aynı anda
+ilerleme kaydedemezsiniz, ancak aralarında geçiş yapıp her seferinde biri
+üzerinde ilerleyerek çoklu görev yürütebilirsiniz (bkz. Şekil 17-1).
 
 <figure>
 
@@ -192,8 +191,9 @@ perde arkasında paralellikten de yararlanabilir.
 >   Çünkü yüksek trafikli bir web sunucusunun ihtiyaç duyduğu çok thread'li iş
 >   çalmalı (*work-stealing*) çalışma zamanı ile birkaç kilobayt belleğe sahip
 >   bir mikrodenetleyicinin gereksinimleri birbirinden tamamen farklıdır.
->   Standart kütüphaneye tek tip bir çalışma zamanı dayatmamak (*sıfır maliyetli
->   soyutlama* ilkesi) sayesinde; ağ ve sunucu uygulamalarında `tokio`, hafif ve
+>   Standart kütüphaneye tek tip bir çalışma zamanı dayatmamak (Rust'ın
+>   "kullanmadığınız şeyin bedelini ödemezsiniz" ilkesinin bir uzantısı)
+>   sayesinde; ağ ve sunucu uygulamalarında `tokio`, hafif ve
 >   yalın projelerde `smol`, işletim sistemsiz (*bare-metal*) gömülü sistemlerde
 >   ise `embassy` gibi hedefe özel çalışma zamanları seçilebilir. Bu bölümde de
 >   öğrenme sürecini sadeleştirmek amacıyla, perde arkasında `tokio` ve
@@ -207,8 +207,8 @@ perde arkasında paralellikten de yararlanabilir.
 >   ayırması gerektirmeden oluşturulabilen bir `Future` değeri döndürür. Bir
 >   future, yoklanmadıkça (*poll*) —yani üzerinde `.await` kullanılmadıkça ya da
 >   bir çalışma zamanına teslim edilmedikçe— hiçbir adım ilerlemez. Bu tasarım,
->   görevleri başlatmadan önce birleştirmeyi ve bir future'ı düşürerek (*drop*)
->   ek maliyet olmaksızın anında iptal etmeyi mümkün kılar.
+>   future'ları çalıştırmadan önce birleştirmeyi ve henüz tamamlanmamış bir
+>   future'ı yalnızca düşürerek (*drop*) iptal etmeyi mümkün kılar.
 
 Şimdi, Rust'ta asenkron programlamanın gerçekte nasıl çalıştığına derinlemesine
 bakalım.

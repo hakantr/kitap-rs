@@ -21,4 +21,4 @@ Standart kütüphane tarafından sağlanan diğer koleksiyon türleri hakkında 
 
 Şimdi vektörlerin, string'lerin ve hash map'lerin nasıl oluşturulup güncelleneceğini ve her birini neyin özel kıldığını inceleyeceğiz.
 
-[collections]: ../std/collections/index.html
+[collections]: https://doc.rust-lang.org/std/collections/index.html

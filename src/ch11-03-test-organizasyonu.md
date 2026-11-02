@@ -191,7 +191,7 @@ _tests/ortak/mod.rs_ dosyasını oluşturduktan sonra onu herhangi bir entegrasy
 
 #### İkili Crate'ler İçin Entegrasyon Testleri
 
-Projemiz yalnızca bir _src/main.rs_ dosyası içeren ve _src/lib.rs_ dosyası bulunmayan bir ikili crate ise, _tests_ dizininde entegrasyon testleri oluşturup _src/main.rs_ dosyasında tanımlanan fonksiyonları `use` deyimiyle kapsama dahil edemeyiz. Yalnızca kütüphane crate'leri diğer crate'lerin kullanabileceği fonksiyonları dışarıya açar; ikili crate'ler ise doğrudan tek başlarına çalıştırılmak üzere tasarlanmıştır.
+Projemiz yalnızca bir _src/main.rs_ dosyası içeren ve _src/lib.rs_ dosyası bulunmayan bir ikili crate ise, _tests_ dizininde entegrasyon testleri oluşturup _src/main.rs_ dosyasında tanımlanan fonksiyonları `use` deyimiyle kapsama dahil edemeyiz. Yalnızca kütüphane crate'leri diğer crate'lerin kullanabileceği fonksiyonları dışarıya açar; ikili crate'ler ise doğrudan tek başlarına çalıştırılmak üzere tasarlanmıştır. (Bu kısıtlama yalnızca entegrasyon testleri için geçerlidir: _src/main.rs_ dosyasının içine `#[cfg(test)] mod tests` biçiminde birim testleri yazmaya devam edebilirsiniz; `cargo test` çıktısındaki `Running unittests src/main.rs` satırı bu testlere aittir.)
 
 Bir ikili dosya üreten Rust projelerinin, _src/lib.rs_ dosyasında yer alan asıl iş mantığını çağıran yalın bir _src/main.rs_ dosyasına sahip olmasının başlıca nedenlerinden biri budur. Bu mimari kullanıldığında entegrasyon testleri, kütüphane crate'ini `use` ile kapsama dahil ederek temel işlevselliği test _edebilir_. Temel işlevsellik doğru çalışıyorsa _src/main.rs_ dosyasındaki az miktardaki kod da sorunsuz çalışacaktır ve bu küçük kod parçasının ayrıca test edilmesine gerek kalmaz.
 

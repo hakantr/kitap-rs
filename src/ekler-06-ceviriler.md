@@ -5,7 +5,7 @@
 
 ## F - Kitabın Çevirileri
 
-Bu ekte kitabın İngilizce dışındaki dillerde topluluk tarafından hazırlanan çevirilerine yer verilmiştir. Bu çevirilerin bir kısmı hâlâ devam etmektedir; katkıda bulunmak veya yeni bir çeviriyi bildirmek için resmî depodaki [Translations etiketine][label] göz atabilirsiniz!
+Bu ekte kitabın İngilizce dışındaki dillerde topluluk tarafından hazırlanan çevirilerine yer verilmiştir. Bu çevirilerin çoğu hâlâ devam etmektedir; katkıda bulunmak veya yeni bir çeviriyi bildirmek için resmî depodaki [Translations etiketine][label] göz atabilirsiniz!
 
 [label]: https://github.com/rust-lang/book/issues?q=is%3Aopen+is%3Aissue+label%3ATranslations
 

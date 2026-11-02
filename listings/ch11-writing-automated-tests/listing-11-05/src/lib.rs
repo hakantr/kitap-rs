@@ -5,7 +5,7 @@ struct Dikdortgen {
 }
 
 impl Dikdortgen {
-    fn tutabilir_mi(&self, diger: &Dikdortgen) -> bool {
+    fn kapsayabilir_mi(&self, diger: &Dikdortgen) -> bool {
         self.genislik > diger.genislik && self.yukseklik > diger.yukseklik
     }
 }

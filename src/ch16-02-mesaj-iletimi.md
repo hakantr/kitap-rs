@@ -32,11 +32,11 @@ düşürüldüğünde kanalın _kapandığı (closed)_ söylenir.
 Burada, değerler üretip bunları bir kanal üzerinden gönderen bir thread'e ve bu
 değerleri alıp ekrana yazdıran başka bir thread'e sahip bir programı adım adım
 oluşturacağız. Bu özelliği göstermek amacıyla bir kanal kullanarak thread'ler
-arasında basit değerler göndereceğiz. Bu tekniğe aşina olduktan sonra; bir
-sohbet sistemi veya pek çok thread'in bir hesaplamanın parçalarını
-gerçekleştirip bu parçaları sonuçları birleştiren tek bir thread'e gönderdiği
-bir sistem gibi, birbirleriyle iletişim kurması gereken her türlü thread
-yapısında kanalları kullanabilirsiniz.
+arasında basit değerler göndereceğiz. Bu tekniğe aşina olduktan sonra kanalları,
+birbirleriyle iletişim kurması gereken her türlü thread yapısında
+kullanabilirsiniz: örneğin bir sohbet sisteminde ya da pek çok thread'in bir
+hesaplamanın parçalarını gerçekleştirip sonuçları birleştiren tek bir thread'e
+gönderdiği bir sistemde.
 
 İlk olarak Liste 16-6'da bir kanal oluşturacağız ancak onunla henüz hiçbir şey
 yapmayacağız. Rust, kanal üzerinden ne tür değerler göndermek istediğimizi henüz
@@ -67,7 +67,8 @@ geleneksel olarak sırasıyla `tx` ve `rx` kısaltmaları kullanılır; biz ise
 kodumuzda her bir ucu açıkça belirtmek üzere değişkenlerimizi `gonderici` ve
 `alici` olarak adlandırıyoruz. Burada demeti parçalarına ayıran
 (_destructuring_) bir desenle birlikte bir `let` deyimi kullanıyoruz; `let`
-deyimlerinde desen kullanımını ve yapı sökümünü Bölüm 19'da ele alacağız.
+deyimlerinde desen kullanımını ve parçalarına ayırma işlemini Bölüm 19'da ele
+alacağız.
 Şimdilik bir `let` deyimini bu şekilde kullanmanın, `mpsc::channel` tarafından
 döndürülen demetin parçalarını ayıklamak için elverişli bir yaklaşım olduğunu
 bilmeniz yeterlidir.
@@ -181,7 +182,7 @@ parametresinin sahipliğini alır ve değer taşındığında alıcı onun sahip
 devralır. Bu durum, değeri gönderdikten sonra yanlışlıkla tekrar kullanmamızı
 engeller; sahiplik sistemi her şeyin yolunda olduğunu denetler.
 
-> Not: Derleyicinin ürettiği `error[E0382]: borrow of moved value: 'deger'`
+> Not: Derleyicinin ürettiği `` error[E0382]: borrow of moved value: `deger` ``
 > (*taşınmış değerin ödünç alınması*) hatasına dikkat edin: `String` türü öbekte
 > (*heap*) veri tuttuğu ve `Copy` trait'ini uygulamadığı için
 > `gonderici.send(deger)` çağrısında sahiplik doğrudan kanala taşınır; bir alt

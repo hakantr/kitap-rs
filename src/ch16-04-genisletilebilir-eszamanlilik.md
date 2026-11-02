@@ -133,9 +133,11 @@ ve bunların nasıl korunacağı hakkında daha fazla bilgi içerir.
 > tüm alanları `Send` (veya `Sync`) ise türün kendisi de bu trait'i kendiliğinden
 > kazanır. Buna karşılık kendi veri yapınızın içinde ham işaretçi (`*const T` /
 > `*mut T`) kullandığınızda —örneğin standart kütüphanedeki `Vec<T>`, `Arc<T>`
-> veya `Mutex<T>` gibi alt düzey yapılar tasarlarken— derleyici otomatik uygulamayı
-> devre dışı bırakır ve thread güvenliği sözleşmesini bizzat doğrulayarak
-> `unsafe impl Send for ...` / `unsafe impl Sync for ...` yazmanızı bekler.
+> veya `Mutex<T>` gibi alt düzey yapılar tasarlarken— ham işaretçiler `Send` ve
+> `Sync` olmadığı için bu alanı içeren tür de kendiliğinden `!Send` / `!Sync`
+> olur. Türünüzün gerçekten thread güvenli olduğunu bizzat doğruladıktan sonra
+> bunu derleyiciye `unsafe impl Send for ...` / `unsafe impl Sync for ...`
+> satırlarıyla açıkça bildirmeniz gerekir.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -165,4 +167,4 @@ sürmesi güç hatalarla karşılaşmadan birden fazla thread üzerinde sorunsuz
 kavram değil: İlerleyin ve programlarınızı korkusuzca eşzamanlı hâle getirin!
 
 [shared-access]: ch16-03-paylasimli-durum.html#mutext-için-paylaşımlı-erişim
-[nomicon]: ../nomicon/index.html
+[nomicon]: https://doc.rust-lang.org/nomicon/index.html

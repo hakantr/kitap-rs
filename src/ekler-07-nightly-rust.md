@@ -110,7 +110,7 @@ Bu yayın modelinin önemli bir parçası daha vardır: kararsız (*unstable*) �
 
 Rust'ın `beta` veya `stable` kanallarını kullanıyorsanız hiçbir kararsız özellik bayrağını etkinleştiremezsiniz. Yeni özellikleri sonsuza dek kararlı ilan etmeden önce gerçek dünya koşullarında sınamamızı sağlayan kilit mekanizma budur. En yeni deneysel özellikleri denemek isteyenler bunu bilinçli olarak seçebilir; kaya gibi sağlam bir deneyim isteyenler ise `stable` kanalında kalarak kodlarının kırılmayacağından emin olabilir. Durgunluk olmadan istikrar.
 
-Geliştirme aşamasındaki kararsız özellikler değişmeye devam ettiği ve bu satırların yazıldığı zaman ile kararlı derlemelerde etkinleştirilecekleri zaman arasında farklılaşabileceği için bu kitap yalnızca kararlı özellikleri kapsar. Yalnızca `nightly` kanalına özgü özelliklerin belgelendirmesine çevrimiçi [_The Rust Unstable Book_](https://doc.rust-lang.org/nightly/unstable-book/) kaynağından ulaşabilirsiniz.
+Geliştirme aşamasındaki kararsız özellikler değişmeye devam ettiği ve bu satırların yazıldığı zaman ile kararlı derlemelerde etkinleştirilecekleri zaman arasında farklılaşabileceği için bu kitap yalnızca kararlı özellikleri kapsar. Yalnızca `nightly` kanalına özgü özelliklerin belgelendirmesine çevrim içi [_The Rust Unstable Book_](https://doc.rust-lang.org/nightly/unstable-book/) kaynağından ulaşabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 

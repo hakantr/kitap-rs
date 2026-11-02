@@ -107,6 +107,12 @@ bunun nasıl mümkün olduğunu inceleyelim.
 > | `Rc<T>` | Çoklu sahip | Yalnızca değiştirilemez (`&T`) | Derleme zamanı | Derleme hatası |
 > | `RefCell<T>` | Tek sahip | Değiştirilemez (`Ref<T>`) veya değiştirilebilir (`RefMut<T>`) | Çalışma zamanı | Çalışma zamanında `panic!` |
 > | `Rc<RefCell<T>>` | Çoklu sahip | Değiştirilemez veya değiştirilebilir (içteki `RefCell<T>` üzerinden) | Çalışma zamanı | Çalışma zamanında `panic!` |
+>
+> `Copy` olan küçük değerler (`i32`, `bool` gibi) için standart kütüphane,
+> `RefCell<T>` yerine daha hafif olan `Cell<T>` türünü de sunar: `Cell<T>`,
+> içteki değere referans vermek yerine `get` ile bir kopyasını döndürür ve `set`
+> ile değeri yenisiyle değiştirir; dolayısıyla çalışma zamanında ödünç takibi
+> yapmasına gerek kalmaz ve hiçbir zaman paniklemez.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -359,8 +365,8 @@ kullanabilirsiniz.
 >
 > Ayrıca `Ref<T>` ve `RefMut<T>` akıllı işaretçileri ödünç kilidini kapsam sonuna
 > kadar tuttuğu için, aynı fonksiyon içinde art arda ödünç almanız gerektiğinde
-> ilk ödüncü bir iç blok (`{ ... }`) içinde sınırlayabilir ya da Bölüm 15.3'te
-> öğrendiğiniz `drop(ilk_odunc)` çağrısıyla erken bırakabilirsiniz.
+> ilk ödüncü bir iç blok (`{ ... }`) içinde sınırlayabilir ya da bu bölümde daha
+> önce gördüğünüz `drop(ilk_odunc)` çağrısıyla erken bırakabilirsiniz.
 
 <!-- Old headings. Do not remove or links may break. -->
 

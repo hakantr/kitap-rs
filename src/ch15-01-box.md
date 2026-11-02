@@ -70,11 +70,10 @@ bırakılır. Bellekten serbest bırakma işlemi hem (yığında saklanan) kutun
 kendisi hem de (öbekte saklanan) işaret ettiği veri için gerçekleşir.
 
 Tek bir değeri öbeğe koymak pek kullanışlı değildir; bu nedenle kutuları tek
-başlarına bu şekilde çok sık kullanmazsınız. Tek bir `i32` gibi değerlerin
-varsayılan olarak saklandıkları yer olan yığında tutulması, durumların büyük
-çoğunluğunda çok daha uygundur. Gelin şimdi, kutular olmasaydı tanımlamamıza
-izin verilmeyecek türleri kutular sayesinde nasıl tanımlayabildiğimiz bir duruma
-bakalım.
+başlarına bu şekilde çok sık kullanmazsınız. Tek bir `i32` gibi değerleri,
+varsayılan olarak zaten saklandıkları yer olan yığında tutmak çoğu durumda çok
+daha uygundur. Şimdi, kutular olmasaydı hiç tanımlayamayacağımız türleri
+kutular sayesinde nasıl tanımlayabildiğimize bakalım.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -283,9 +282,25 @@ göstermektedir.
 
 <span class="caption">Şekil 15-2: `Dugum` (görselde `Cons`) bir `Box` tuttuğu için boyutu sonsuz olmayan bir `Liste`</span>
 
-> Not: Şekil 15-2'de `Box` kutusunun içinde gördüğünüz `usize`, hedef işlemci mimarisinin bellek adresi genişliğini ifade eder. Bir `Box<T>` değeri, öbekte işaret ettiği `T` verisi ister 4 bayt ister 4 megabayt olsun, yığında yalnızca **tek bir `usize` genişliğinde** (64-bit mimaride **8 bayt**, 32-bit mimaride 4 bayt) bir işaretçi olarak durur; kapasite veya referans sayacı gibi hiçbir ek meta veri taşımaz.
+> Not: Şekil 15-2'de `Box` kutusunun içinde gördüğünüz `usize`, hedef işlemci
+> mimarisinin bellek adresi genişliğini ifade eder. Bir `Box<T>` değeri, öbekte
+> işaret ettiği `T` verisi ister 4 bayt ister 4 megabayt olsun, yığında yalnızca
+> **tek bir `usize` genişliğinde** (64-bit mimaride **8 bayt**, 32-bit mimaride
+> 4 bayt) bir işaretçi olarak durur; kapasite veya referans sayacı gibi hiçbir
+> ek meta veri taşımaz.
 >
-> Üstelik Rust derleyicisi, bir `Box<T>` işaretçisinin tuttuğu bellek adresinin **asla sıfır (`null`) olamayacağını** garanti eder. Bu garanti sayesinde derleyici _boş işaretçi optimizasyonu (null-pointer optimization)_ uygular: Örneğin `Option<Box<T>>` kullandığınızda `None` varyantını temsil etmek için fazladan bayt harcamak yerine doğrudan `0` adresini kullanır; böylece 64-bit bir sistemde hem `Box<T>` hem de `Option<Box<T>>` yığında ek bellek tüketmeden tam olarak **8 bayt** yer kaplar (`std::mem::size_of::<Option<Box<i32>>>() == 8`). Aynı optimizasyon Liste 15-5'teki `Liste` enum'ı için de geçerlidir: `Bos` varyantı `Box<Liste>` içindeki sıfır adresi boşluğundan yararlandığı için ekstra bir ayrım etiketi eklenmez ve tüm `Liste` türü yığında yalnızca **16 bayt** (4 bayt `i32` + 4 bayt hizalama dolgusu + 8 bayt `Box` işaretçisi) yer tutar.
+> Üstelik Rust derleyicisi, bir `Box<T>` işaretçisinin tuttuğu bellek adresinin
+> **asla sıfır (`null`) olamayacağını** garanti eder. Bu garanti sayesinde
+> derleyici _boş işaretçi optimizasyonu (null-pointer optimization)_ uygular:
+> Örneğin `Option<Box<T>>` kullandığınızda `None` varyantını temsil etmek için
+> fazladan bayt harcamak yerine doğrudan `0` adresini kullanır; böylece 64-bit
+> bir sistemde hem `Box<T>` hem de `Option<Box<T>>` yığında ek bellek
+> tüketmeden tam olarak **8 bayt** yer kaplar
+> (`std::mem::size_of::<Option<Box<i32>>>() == 8`). Aynı optimizasyon Liste
+> 15-5'teki `Liste` enum'ı için de geçerlidir: `Bos` varyantı `Box<Liste>`
+> içindeki sıfır adresi boşluğundan yararlandığı için fazladan bir ayrım
+> etiketi eklenmez ve tüm `Liste` türü yığında yalnızca **16 bayt** (4 bayt
+> `i32` + 4 bayt hizalama dolgusu + 8 bayt `Box` işaretçisi) yer tutar.
 
 Kutular yalnızca bu dolaylılığı ve öbekte bellek ayırmayı sağlar; diğer akıllı
 işaretçi türlerinde göreceğimiz gibi başka özel yeteneklere sahip değildir.

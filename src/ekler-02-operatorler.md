@@ -93,7 +93,7 @@ Tablo B-2, kendi başına görünen ve çeşitli konumlarda geçerli olan sembol
 | Sembol                                                                 | Açıklama                                                               |
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | `'ident`                                                               | Adlandırılmış ömür (*lifetime*) veya döngü etiketi                     |
-| Hemen ardından `u8`, `i32`, `f64`, `usize` vb. gelen rakamlar          | Belirli bir türde sayısal hazır değer (*literal*)                      |
+| Hemen ardından `u8`, `i32`, `f64`, `usize` vb. gelen rakamlar          | Belirli bir türde sayısal sabit (*numeric literal*)                    |
 | `"..."`                                                                | String sabiti (*string literal*)                                       |
 | `r"..."`, `r#"..."#`, `r##"..."##` vb.                                 | Ham string sabiti; kaçış karakterleri (`\`) işlenmez                   |
 | `b"..."`                                                               | Bayt string sabiti; string yerine bir bayt dizisi (`&[u8; N]`) oluşturur |
@@ -102,7 +102,7 @@ Tablo B-2, kendi başına görünen ve çeşitli konumlarda geçerli olan sembol
 | `b'...'`                                                               | ASCII bayt sabiti (`u8`)                                               |
 | <code>&vert;...&vert; expr</code>                                      | Kapanış (*closure*)                                                    |
 | `!`                                                                    | Iraksayan (*diverging*) fonksiyonlar için daima boş taban türü (*never type*) |
-| `_`                                                                    | “Görmezden gelinen” desen bağlaması; ayrıca sayısal hazır değerleri okunaklı kılmak için basamak ayırıcısı olarak kullanılır (`1_000_000`) |
+| `_`                                                                    | “Görmezden gelinen” desen bağlaması; ayrıca sayısal sabitleri okunaklı kılmak için basamak ayırıcısı olarak kullanılır (`1_000_000`) |
 
 > Not: **Modern Rust'ta Ham Adres Operatörleri ve C-String Sabitleri:** Tablo B-1 ve B-2'deki klasik sözdizimine ek olarak güncel Rust kodlarında iki ek yapıyla sıkça karşılaşırsınız:
 > - **`&raw const expr` ve `&raw mut expr`**: Bölüm 20'de gördüğümüz gibi ara bir referans oluşturmadan güvenli biçimde doğrudan ham işaretçi (`*const T` / `*mut T`) üreten ham ödünç alma (*raw borrow*) operatörleridir.
@@ -116,7 +116,7 @@ Tablo B-3, modül hiyerarşisi içinde bir öğeye giden yol (*path*) bağlamın
 | Sembol                                  | Açıklama                                                                                                     |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `ident::ident`                          | Ad alanı yolu                                                                                                |
-| `::path`                                | Harici crate köküne göre yol (açıkça mutlak yol)                                                             |
+| `::path`                                | Harici bir crate'in köküne göre yol (örneğin `::std::fs`; açıkça mutlak yol)                                 |
 | `self::path`                            | Mevcut modüle göre yol (açıkça göreli yol)                                                                   |
 | `super::path`                           | Mevcut modülün üst modülüne göre yol                                                                         |
 | `type::ident`, `<type as trait>::ident` | İlişkili sabitler, fonksiyonlar ve türler                                                                    |
@@ -185,7 +185,7 @@ Tablo B-8, normal parantezlerin kullanıldığı bağlamları gösterir.
 
 | Sembol                   | Açıklama                                                                                    |
 | ------------------------ | ------------------------------------------------------------------------------------------- |
-| `()`                     | Boş demet (diğer adıyla *birim / unit*), hem hazır değer hem de tür olarak                  |
+| `()`                     | Boş demet (diğer adıyla *birim / unit*), hem sabit (değer) hem de tür olarak                |
 | `(expr)`                 | Parantez içine alınmış ifade                                                                |
 | `(expr,)`                | Tek öğeli demet ifadesi                                                                     |
 | `(type,)`                | Tek öğeli demet türü                                                                        |

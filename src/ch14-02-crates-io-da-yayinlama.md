@@ -28,9 +28,9 @@ belgelendirme yazmaya zaman ayırmaya değer. Bölüm 3'te iki eğik çizgi (`//
 kullanarak Rust koduna nasıl yorum ekleneceğini görmüştük. Rust'ta ayrıca HTML
 belgelendirmesi üreten ve amacına uygun biçimde _belgelendirme yorumu
 (documentation comment)_ olarak adlandırılan özel bir yorum türü de vardır.
-Üretilen HTML çıktısı, crate'inizin içeride _nasıl uygulandığından_ ziyade
-_nasıl kullanılacağını_ öğrenmek isteyen programcılara yönelik açık API
-öğelerinin belgelendirme yorumlarını görüntüler.
+Üretilen HTML, açık API öğelerine yazılmış belgelendirme yorumlarının
+içeriğini gösterir ve crate'inizin içeride _nasıl uygulandığıyla_ değil,
+_nasıl kullanılacağıyla_ ilgilenen programcılara yöneliktir.
 
 Belgelendirme yorumları iki yerine üç eğik çizgi (`///`) kullanır ve metni
 biçimlendirmek için Markdown sözdizimini destekler. Belgelendirme yorumlarını,
@@ -79,8 +79,8 @@ belgelendirmelerinde sıkça kullandığı diğer standart bölümler şunlardı
   türlerini ve hangi koşulların bu hataların döndürülmesine yol açabileceğini
   açıklamak çağıranlara büyük kolaylık sağlar; böylece farklı hata türlerini
   farklı şekillerde ele alan kodlar yazabilirler.
-- **Safety** (*Güvenlik*): Fonksiyonu çağırmak `unsafe` ise (güvensiz kodları
-  Bölüm 20'de ele alacağız), fonksiyonun neden `unsafe` olduğunu açıklayan ve
+- **Safety** (*Güvenlik*): Fonksiyonu çağırmak `unsafe` ise (güvenli olmayan
+  kodu Bölüm 20'de ele alacağız), fonksiyonun neden `unsafe` olduğunu açıklayan ve
   çağıranların sağlamasını beklediği değişmez koşulları (*invariants*) kapsayan
   bir bölüm bulunmalıdır.
 
@@ -128,19 +128,18 @@ görürüz!
 > okuyucudan gizlenir; ancak `cargo test` çalıştırıldığında derlemeye ve teste
 > eksiksiz dahil edilir. Bu ipucu, özellikle hazırlık kodlarını gizleyip
 > okuyucunun dikkatini doğrudan asıl API çağrısına odaklamak ya da örnek içinde
-> `?` operatörünü kullanabilmek için gereken sarmalayıcı fonksiyonu gizlemek
-> istediğinizde çok kullanışlıdır:
+> `?` operatörünü kullanabilmek için gereken `Ok(())` dönüş satırını gizlemek
+> istediğinizde çok kullanışlıdır. Aşağıdaki örnekte okuyucu yalnızca ilk iki
+> satırı görür; `rustdoc` ise gizli son satır sayesinde kodu `Result` döndüren
+> bir fonksiyonun içine sararak derler:
 >
 > ```rust,ignore
 > /// # Örnekler
 > ///
 > /// ```
-> /// # fn ornek() -> Result<(), std::num::ParseIntError> {
 > /// let sayi: i32 = "42".parse()?;
 > /// assert_eq!(sayi, 42);
-> /// # Ok(())
-> /// # }
-> /// # ornek().unwrap();
+> /// # Ok::<(), std::num::ParseIntError>(())
 > /// ```
 > ```
 >
@@ -209,7 +208,7 @@ içeren `benim_crate` (`my_crate`) belgelendirmesi</span>
 >
 > Crates.io üzerinde yayınladığınız her açık kaynaklı kütüphanenin `//!` ve `///`
 > yorumları, [docs.rs](https://docs.rs/)<!-- ignore --> tarafından otomatik
-> olarak derlenip çevrimiçi API kılavuzu olarak sunulur.
+> olarak derlenip çevrim içi API kılavuzu olarak sunulur.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="exporting-a-convenient-public-api-with-pub-use"></a>
@@ -272,7 +271,7 @@ dahil etmek için mevcut modül yapısını açıkça belirten `use` deyimlerine
 ihtiyacı olacaktır. Liste 14-4, `sanat` crate'inden `BirincilRenk` ve `karistir`
 öğelerini kullanan bir crate örneğini göstermektedir.
 
-<Listing number="14-4" file-name="src/main.rs" caption="İç yapısı dışa aktarılmış haldeyken `sanat` crate'inin öğelerini kullanan bir crate">
+<Listing number="14-4" file-name="src/main.rs" caption="İç yapısı dışa aktarılmış hâldeyken `sanat` crate'inin öğelerini kullanan bir crate">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch14-more-about-cargo/listing-14-04/src/main.rs}}
@@ -539,6 +538,22 @@ yeniden yayınlarsınız. Yaptığınız değişikliklerin türüne göre bir so
 sürüm numarasının ne olacağına karar vermek için [Semantik Sürümleme
 kurallarını][semver] kullanın. Ardından yeni sürümü yüklemek için
 `cargo publish` komutunu çalıştırın.
+
+> Not: Semantik Sürümleme, sürüm numarasını `BÜYÜK.KÜÇÜK.YAMA`
+> (*MAJOR.MINOR.PATCH*) biçiminde üç parçaya ayırır: Geriye dönük uyumlu hata
+> düzeltmelerinde yalnızca yama numarasını (`1.0.1`'den `1.0.2`'ye), geriye
+> dönük uyumlu yeni özelliklerde küçük numarayı (`1.0.2`'den `1.1.0`'a), açık
+> API'de uyumsuz bir değişiklik yaptığınızda ise büyük numarayı (`1.1.0`'dan
+> `2.0.0`'a) artırırsınız. Cargo, _Cargo.toml_ dosyasındaki `rand = "0.8.5"`
+> gibi sade bir sürüm gereksinimini `^0.8.5` olarak yorumlar ve `cargo update`
+> çalıştırıldığında yalnızca aynı uyumluluk aralığındaki sürümlere
+> (`>=0.8.5, <0.9.0`) geçilmesine izin verir. Bu kural `0.x` sürümlerinde
+> farklı işler: Büyük numara `0` iken küçük numaradaki her değişiklik uyumsuz
+> kabul edilir; yani `0.8.5` ile `0.9.0` birbiriyle uyumlu sayılmaz. Bu yüzden
+> var olan açık bir fonksiyonun imzasını değiştirmek ya da bir öğeyi kaldırmak
+> gibi kırıcı değişiklikleri her zaman yeni bir büyük sürüme (`0.x` serisinde
+> ise yeni bir küçük sürüme) saklayın; aksi hâlde kullanıcılarınızın projeleri
+> `cargo update` sonrasında beklenmedik biçimde derlenmez hâle gelebilir.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="removing-versions-from-cratesio-with-cargo-yank"></a>

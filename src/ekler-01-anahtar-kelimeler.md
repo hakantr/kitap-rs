@@ -30,7 +30,7 @@ Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımla
 - **`else`**: `if` ve `if let` kontrol akışı yapılarında koşul sağlanmadığında çalışacak geri dönüş kolunu tanımlar.
 - **`enum`**: Bir numaralandırma (*enumeration*) türü tanımlar.
 - **`extern`**: Harici bir fonksiyonu, değişkeni veya crate'i bağlar.
-- **`false`**: Mantıksal (`bool`) yanlış hazır değeri.
+- **`false`**: Mantıksal (`bool`) yanlış sabiti (*literal*).
 - **`fn`**: Bir fonksiyon veya fonksiyon işaretçisi türü tanımlar.
 - **`for`**: Bir iteratörden gelen öğeler üzerinde döngü kurar, bir trait'i uygular veya yüksek mertebeli (*higher-ranked*) bir ömür sınırı belirtir.
 - **`if`**: Koşullu bir ifadenin sonucuna göre dallanma yapar.
@@ -51,7 +51,7 @@ Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımla
 - **`struct`**: Bir `struct` (yapı) tanımlar.
 - **`super`**: Mevcut modülün üst modülü.
 - **`trait`**: Bir trait tanımlar.
-- **`true`**: Mantıksal (`bool`) doğru hazır değeri.
+- **`true`**: Mantıksal (`bool`) doğru sabiti (*literal*).
 - **`type`**: Bir tür takma adı veya ilişkili tür tanımlar.
 - **`union`**: Bir [birleşim (`union`)][union]<!-- ignore --> tanımlar; yalnızca bir `union` bildirimi içinde kullanıldığında anahtar kelimedir.
 - **`unsafe`**: Güvenli olmayan (*unsafe*) kod bloklarını, fonksiyonları, trait'leri veya uygulamaları belirtir.
@@ -59,7 +59,7 @@ Aşağıdaki listeler, Rust dili tarafından mevcut veya gelecekteki kullanımla
 - **`where`**: Bir türü kısıtlayan sınır yan tümcelerini belirtir.
 - **`while`**: Bir ifadenin sonucuna bağlı olarak koşullu döngü kurar.
 
-[union]: ../reference/items/unions.html
+[union]: https://doc.rust-lang.org/reference/items/unions.html
 
 <!-- Old headings. Do not remove or links may break. -->
 

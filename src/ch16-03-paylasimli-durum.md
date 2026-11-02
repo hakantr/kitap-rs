@@ -313,12 +313,30 @@ stratejilerini araştırıp bunları Rust'ta uygulamaya çalışın. `Mutex<T>` 
 `MutexGuard` için hazırlanan standart kütüphane API belgeleri bu konuda faydalı
 bilgiler sunar.
 
+> Not: Kilitlenme için iki thread bile gerekmez. `std::sync::Mutex`
+> _yeniden girişli (reentrant)_ değildir; yani kilidi elinde tutan bir thread
+> aynı mutex üzerinde ikinci kez `lock` çağırırsa kendi kendini bekler:
+>
+> ```rust,ignore
+> let veri = Mutex::new(0);
+> let koruyucu = veri.lock().unwrap();
+> // `koruyucu` hâlâ kapsamda olduğu için kilit serbest bırakılmadı;
+> // bu ikinci çağrı sonsuza dek bekler (ya da platforma göre panikler).
+> let ikinci = veri.lock().unwrap();
+> ```
+>
+> Bu tuzak, bir `MutexGuard` kapsamdayken aynı mutex'i yeniden kilitleyen bir
+> yardımcı fonksiyon çağırdığınızda kolayca ortaya çıkar. İki mutex söz konusu
+> olduğunda ise klasik çözüm, tüm thread'lerin kilitleri _her zaman aynı sırayla_
+> (örneğin önce `a` sonra `b`) edinmesini sağlamaktır; böylece iki thread'in
+> birbirinin elindeki kilidi beklediği çapraz bekleme durumu hiç oluşmaz.
+
 > Not: Bölüm 15'te gördüğünüz tek thread'li (*single-threaded*) akıllı işaretçi
 > ve içsel değiştirilebilirlik araçları ile bu bölümde tanıştığınız çok
 > thread'li (*multithreaded*) eşleniklerini tek bakışta şöyle
 > eşleştirebilirsiniz:
 >
-> | Amaç | Tek Thread'li (`!Send` / `!Sync`) | Çok Thread'li (`Send` + `Sync`) | Temel Fark ve Davranış |
+> | Amaç | Tek Thread'li (`!Sync`) | Çok Thread'li (`Send` + `Sync`) | Temel Fark ve Davranış |
 > | --- | --- | --- | --- |
 > | **Çoklu sahiplik** | `Rc<T>` | `Arc<T>` | `Rc<T>` sıradan sayaç kullanır (daha hızlıdır); `Arc<T>` sayacı atomik işlemlerle günceller. |
 > | **İçsel değiştirilebilirlik** | `RefCell<T>` | `Mutex<T>` / `RwLock<T>` | `RefCell<T>` ödünç çakışmasında `panic!` üretir; `Mutex<T>` tek erişim için, `RwLock<T>` ise çoklu okuyucu (`read`) veya tek yazıcı (`write`) için bekleyen thread'i bloklar. |
@@ -328,4 +346,4 @@ bilgiler sunar.
 Bu bölümü `Send` ve `Sync` trait'lerinden ve bunları özel türlerle nasıl
 kullanabileceğimizden bahsederek tamamlayacağız.
 
-[atomic]: ../std/sync/atomic/index.html
+[atomic]: https://doc.rust-lang.org/std/sync/atomic/index.html

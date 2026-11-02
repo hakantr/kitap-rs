@@ -7,7 +7,7 @@
 
 Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*) bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele alıyoruz!
 
-Rust dili ve derleyicisi altı haftalık bir yayın döngüsüne sahiptir; yani kullanıcılar sürekli olarak yeni özelliklere kavuşur. Diğer pek çok programlama dili daha büyük değişiklikleri daha seyrek aralıklarla yayınlarken, Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük iyileştirmeler üst üste birikir. Yine de altı haftalık sürümler arasında geriye dönüp baktığınızda, “Vay canına, Rust 1.10 ile Rust 1.31 arasında dil ne kadar değişmiş!” diyebilmek her zaman kolay olmayabilir.
+Rust dili ve derleyicisi altı haftalık bir yayın döngüsüne sahiptir; yani kullanıcılar sürekli olarak yeni özelliklere kavuşur. Diğer pek çok programlama dili daha büyük değişiklikleri daha seyrek aralıklarla yayınlarken, Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük iyileştirmeler üst üste birikir. Yine de bir yayından diğerine geriye dönüp baktığınızda, “Vay canına, Rust 1.10 ile Rust 1.31 arasında dil ne kadar değişmiş!” diyebilmek her zaman kolay olmayabilir.
 
 Yaklaşık her üç yılda bir Rust ekibi yeni bir Rust _sürümü_ (*edition*) yayınlar. Her sürüm, o zamana dek dile eklenen özellikleri eksiksiz güncellenmiş belgelendirme ve araçlarla birlikte net bir paket hâlinde bir araya getirir. Yeni sürümler de olağan altı haftalık yayın sürecinin bir parçası olarak kullanıcılara sunulur.
 
@@ -28,7 +28,7 @@ Tüm Rust derleyici sürümleri, o derleyicinin yayınlanmasından önce var ola
 Netleştirmek gerekirse: Yeni özelliklerin büyük çoğunluğu tüm sürümlerde kullanılabilir. Hangi Rust sürümünü kullanırsa kullansın tüm geliştiriciler, yeni kararlı derleyici sürümleri yayınlandıkça iyileştirmelerden yararlanmaya devam eder. Yalnızca bazı özel durumlarda —özellikle yeni anahtar kelimeler eklendiğinde veya mevcut bir sözdiziminin varsayılan davranışı iyileştirildiğinde— belirli özellikler yalnızca yeni sürümlerde etkinleştirilir. Bu tür özelliklerden yararlanmak istediğinizde projenizin `edition` ayarını yükseltmeniz gerekir.
 
 > Not: **Rust Sürümlerinin Kısa Özeti ve Otomatik Yükseltme (`cargo fix --edition`):**
-> - **Rust 2018:** Modül sisteminde `extern crate` zorunluluğunun kalkması, sözdizimsel olmayan ömürler (*NLL*) ve `async`/`await` anahtar kelimeleri.
+> - **Rust 2018:** Modül sisteminde `extern crate` zorunluluğunun kalkması, sözcüksel olmayan ömürler (*non-lexical lifetimes* — NLL) ve `async`/`await` anahtar kelimeleri.
 > - **Rust 2021:** Diziler (`[T; N]`) için doğrudan değer üzerinden `IntoIterator`, kapanışlarda alan bazlı (*disjoint*) yakalama ve ön tanımlı kapsama (`prelude`) `TryInto`, `TryFrom`, `FromIterator` eklenmesi.
 > - **Rust 2024:** Ön tanımlı kapsama `Future` ve `IntoFuture` eklenmesi, `-> impl Trait` dönüş türlerinde ömür yakalama kurallarının sadeleşmesi, `if let` ve blok sonu ifadelerinde geçici değer düşürme kapsamlarının iyileştirilmesi, `unsafe extern` ve `unsafe fn` içi güvenli olmayan işlem uyarıları, ayrılmış `gen` anahtar kelimesi ve Cargo'da MSRV duyarlı `resolver = "3"`.
 > - Mevcut bir crate'i yeni sürüme yükseltmek için önce `cargo fix --edition` komutunu çalıştırıp kodunuzu uyumlu hâle getirebilir, ardından _Cargo.toml_ içinde `edition = "2024"` yazıp `cargo test` ile doğrulayabilirsiniz.

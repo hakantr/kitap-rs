@@ -5,7 +5,7 @@ struct Dikdortgen {
 }
 
 impl Dikdortgen {
-    fn tutabilir_mi(&self, diger: &Dikdortgen) -> bool {
+    fn kapsayabilir_mi(&self, diger: &Dikdortgen) -> bool {
         self.genislik > diger.genislik && self.yukseklik > diger.yukseklik
     }
 }
@@ -16,7 +16,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn buyuk_kucugu_tutabilir_mi() {
+    fn buyuk_kucugu_kapsayabilir_mi() {
         // --snip--
         // ANCHOR_END: here
         let buyuk = Dikdortgen {
@@ -28,7 +28,7 @@ mod tests {
             yukseklik: 1,
         };
 
-        assert!(buyuk.tutabilir_mi(&kucuk));
+        assert!(buyuk.kapsayabilir_mi(&kucuk));
         // ANCHOR: here
     }
 
@@ -43,7 +43,7 @@ mod tests {
             yukseklik: 1,
         };
 
-        assert!(!kucuk.tutabilir_mi(&buyuk));
+        assert!(!kucuk.kapsayabilir_mi(&buyuk));
     }
 }
 // ANCHOR_END: here

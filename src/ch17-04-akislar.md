@@ -11,7 +11,7 @@ Gönderme”][17-02-messages]<!-- ignore --> başlığında asenkron kanalımız
 tarafını nasıl kullandığımızı hatırlayın. Asenkron `recv` metodu zaman içinde bir
 öğe dizisi üretir. Bu, _akış (stream)_ olarak bilinen çok daha genel bir desenin
 bir örneğidir. Pek çok kavram doğal olarak akış şeklinde temsil edilir: bir
-kuyrukta öğelerin hazır hale gelmesi, tüm veri kümesi bilgisayarın belleğine
+kuyrukta öğelerin hazır hâle gelmesi, tüm veri kümesi bilgisayarın belleğine
 sığmayacak kadar büyük olduğunda verilerin dosya sisteminden artımlı olarak
 parça parça çekilmesi veya zaman içinde ağ üzerinden veri gelmesi. Akışlar her
 adımda bir future ürettiği için onları diğer her türlü future ile birlikte
@@ -113,16 +113,17 @@ değildir, ancak ekosistemdeki çoğu crate benzer tanımları kullanır.
 >    şeklinde genel bir uygulamaya sahiptir; böylece `Stream` uygulayan _her_ tür,
 >    tek satır ek kod yazmadan `StreamExt` içindeki onlarca yardımcı metodu
 >    otomatik olarak kazanır.
-> 2. **Yetim kuralı (*orphan rule*) ve geriye dönük uyumluluk:** Bölüm 10'da
->    gördüğümüz yetim kuralı gereği, başka bir crate'te tanımlanmış bir trait'e
->    doğrudan yeni metotlar ekleyemezsiniz. Ayrı bir `*Ext` trait'i tanımlamak;
->    farklı crate'lerin (örneğin `futures` ile `tokio-stream`'in) aynı çekirdek
->    `Stream` trait'ini kırmadan kendi üst seviye adaptörlerini sunmasına olanak
->    tanır.
+> 2. **Genişletilebilirlik ve geriye dönük uyumluluk:** Başka bir crate'te
+>    tanımlanmış bir trait'in tanımına dışarıdan yeni metot ekleyemezsiniz.
+>    Yardımcı metotları ayrı bir `*Ext` trait'inde toplamak; farklı crate'lerin
+>    (örneğin `futures` ile `tokio-stream`'in) aynı çekirdek `Stream` trait'ini
+>    bozmadan kendi üst seviye adaptörlerini sunmasına ve bu adaptörlerin
+>    çekirdek trait'e dokunulmadan zaman içinde geliştirilmesine olanak tanır.
 >
-> Standart kütüphanede de bu yeteneği yerleşik hale getirmek üzere `AsyncIterator`
-> trait'i ve senkron `for` döngüsünün asenkron karşılığı olan `for await`
-> sözdizimi üzerindeki tasarım çalışmaları devam etmektedir.
+> Bu satırlar yazılırken standart kütüphaneye benzer bir trait'in
+> (`AsyncIterator`) eklenmesi ve senkron `for` döngüsünün asenkron karşılığı
+> olacak bir sözdizimi üzerindeki tasarım çalışmaları hâlâ sürmektedir; bu
+> özellikler yalnızca nightly Rust'ta deneysel olarak mevcuttur.
 
 Derleyici hatasını düzeltmenin yolu, Liste 17-22'deki gibi `trpl::StreamExt`
 için bir `use` deyimi eklemektir.
@@ -140,13 +141,16 @@ artık `StreamExt` kapsamda olduğuna göre tıpkı iteratörlerde olduğu gibi 
 tüm yardımcı metotları kullanabiliriz.
 
 > Not: `StreamExt` kapsamda olduğunda iteratörlerden tanıdığınız `map`, `filter`,
-> `take` ve `fold` gibi adaptörlerin yanı sıra zamana duyarlı asenkron akışlara
+> `take` ve `fold` gibi adaptörlerin yanı sıra, `trpl`'nin yeniden dışa
+> aktardığı `tokio_stream::StreamExt` sürümünde zamana duyarlı asenkron akışlara
 > özgü `timeout` (belirli sürede öğe gelmezse zaman aşımı üretme), `throttle`
 > (öğelerin geliş hızını sınırlandırma) ve `merge` (birden fazla akışı tek bir
-> akışta birleştirme) gibi metotları da zincirleyebilirsiniz. Ayrıca tıpkı Bölüm
-> 13'te `Iterator::next(&mut self)` çağrısının iteratörün iç durumunu ilerletmesi
-> gibi, `akis.next().await` çağrısı da akışın durumunu değiştirdiği için `akis`
-> değişkeninin `let mut akis` olarak tanımlandığına dikkat edin.
+> akışta birleştirme) gibi metotları da zincirleyebilirsiniz. Hangi yardımcı
+> metotların bulunduğu kullandığınız `StreamExt` sürümüne göre değişir; örneğin
+> `futures` crate'indeki sürümde `timeout` ve `throttle` yoktur. Ayrıca tıpkı
+> Bölüm 13'te `Iterator::next(&mut self)` çağrısının iteratörün iç durumunu
+> ilerletmesi gibi, `akis.next().await` çağrısı da akışın durumunu değiştirdiği
+> için `akis` değişkeninin `let mut akis` olarak tanımlandığına dikkat edin.
 
 [17-02-messages]: ch17-02-async-ile-eszamanlilik.html#iki-görev-arasında-mesaj-iletimiyle-veri-göndermek
 [iterator-trait]: ch13-02-iteratorler.html#iterator-traiti-ve-next-metodu

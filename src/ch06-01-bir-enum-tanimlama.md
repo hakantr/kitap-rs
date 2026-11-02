@@ -158,7 +158,7 @@ enum Option<T> {
 }
 ```
 
-`Option<T>` enum'ı o kadar kullanışlıdır ki Rust'ın *ön yükleme (prelude)* kapsamına bile dahil edilmiştir; yani onu `use` ile açıkça kapsama dahil etmenize gerek yoktur. Üstelik varyantları da ön yükleme kapsamındadır: `Some` ve `None` varyantlarını `Option::` öneki yazmadan doğrudan kullanabilirsiniz. Yine de `Option<T>` sıradan bir enum'dır; `Some(T)` ve `None` da hâlâ `Option<T>` türünün varyantlarıdır.
+`Option<T>` enum'ı o kadar kullanışlıdır ki her Rust programında kendiliğinden kapsamda bulunan öğeler kümesi olan *prelude* (ön tanımlı kapsam) içine bile dahil edilmiştir; yani onu `use` ile açıkça kapsama dahil etmenize gerek yoktur. Üstelik varyantları da prelude içindedir: `Some` ve `None` varyantlarını `Option::` öneki yazmadan doğrudan kullanabilirsiniz. Yine de `Option<T>` sıradan bir enum'dır; `Some(T)` ve `None` da hâlâ `Option<T>` türünün varyantlarıdır.
 
 `<T>` sözdizimi, Rust'ın henüz ele almadığımız bir özelliğidir. Bu, *jenerik (generic)* bir tür parametresidir; jenerik türleri Bölüm 10'da ayrıntılı olarak inceleyeceğiz. Şimdilik bilmeniz gereken tek şey şudur: `<T>`, `Option` enum'ının `Some` varyantının herhangi bir türden tek bir veri tutabileceği ve `T` yerine geçen her somut türün `Option<T>` türünün tamamını farklı bir tür hâline getirdiği anlamına gelir. Sayı ve karakter (`char`) türlerini tutmak için `Option` değerlerinin kullanıldığı bazı örneklere bakalım:
 
@@ -182,7 +182,7 @@ Bu kodu çalıştırdığımızda şuna benzer bir hata mesajı alırız:
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-07-cant-use-option-directly/output.txt}}
 ```
 
-İlk bakışta oldukça yoğun bir çıktı! Özünde bu hata mesajı (`cannot add Option<i8> to i8`), `i8` ile `Option<i8>` farklı türler olduğu için Rust'ın bu iki değeri nasıl toplayacağını bilmediğini (yani `i8` türü için `Option<i8>` ile toplama işlemini tanımlayan `Add<Option<i8>>` trait'inin uygulanmadığını) belirtir. Rust'ta `i8` gibi bir türde değere sahip olduğumuzda, derleyici her zaman geçerli bir değere sahip olduğumuzu garanti eder. Bu değeri kullanmadan önce null olup olmadığını kontrol etmek zorunda kalmadan güvenle ilerleyebiliriz. Yalnızca elimizde bir `Option<i8>` (veya üzerinde çalıştığımız değerin türü her neyse) olduğunda bir değerin bulunmama ihtimalini düşünmemiz gerekir; derleyici de değeri kullanmadan önce bu durumu ele aldığımızdan emin olur.
+İlk bakışta oldukça yoğun bir çıktı! Özünde bu hata mesajı (`` cannot add `Option<i8>` to `i8` ``), `i8` ile `Option<i8>` farklı türler olduğu için Rust'ın bu iki değeri nasıl toplayacağını bilmediğini (yani `i8` türü için `Option<i8>` ile toplama işlemini tanımlayan `Add<Option<i8>>` trait'inin uygulanmadığını) belirtir. Rust'ta `i8` gibi bir türde değere sahip olduğumuzda, derleyici her zaman geçerli bir değere sahip olduğumuzu garanti eder. Bu değeri kullanmadan önce null olup olmadığını kontrol etmek zorunda kalmadan güvenle ilerleyebiliriz. Yalnızca elimizde bir `Option<i8>` (veya üzerinde çalıştığımız değerin türü her neyse) olduğunda bir değerin bulunmama ihtimalini düşünmemiz gerekir; derleyici de değeri kullanmadan önce bu durumu ele aldığımızdan emin olur.
 
 Başka bir deyişle, bir `Option<T>` üzerinde `T` türüne ait işlemleri gerçekleştirebilmek için önce onu bir `T` değerine dönüştürmeniz gerekir. Bu zorunluluk, null kaynaklı en yaygın hatalardan birini yakalamaya yardımcı olur: Gerçekte null olan bir değerin null olmadığını varsaymak.
 
@@ -196,6 +196,6 @@ Peki `Option<T>` türünde bir değere sahip olduğunuzda, içindeki `T` değeri
 
 Genel olarak bir `Option<T>` değerini kullanmak için her bir varyantı ele alacak kodlara sahip olmak istersiniz: Yalnızca elinizde bir `Some(T)` değeri olduğunda çalışacak ve içteki `T` değerini kullanmasına izin verilen bir kod; bir de yalnızca `None` değeriniz olduğunda çalışacak ve elinde kullanılabilir bir `T` değeri bulunmayan başka bir kod. `match` ifadesi, enum'larla birlikte kullanıldığında tam olarak bu işi yapan bir kontrol akışı yapısıdır: Değerin, enum'ın hangi varyantı olduğuna bağlı olarak farklı kod dallarını çalıştırır ve bu kodlar eşleşen değerin içindeki verileri doğrudan kullanabilir.
 
-[IpAddr]: ../std/net/enum.IpAddr.html
-[option]: ../std/option/enum.Option.html
-[docs]: ../std/option/enum.Option.html
+[IpAddr]: https://doc.rust-lang.org/std/net/enum.IpAddr.html
+[option]: https://doc.rust-lang.org/std/option/enum.Option.html
+[docs]: https://doc.rust-lang.org/std/option/enum.Option.html

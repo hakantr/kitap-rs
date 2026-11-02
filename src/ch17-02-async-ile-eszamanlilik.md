@@ -140,6 +140,20 @@ Async bloklar anonim future'lara derlendiği için, her döngüyü bir async blo
 koyabilir ve `trpl::join` fonksiyonunu kullanarak çalışma zamanının her ikisini
 de tamamlanana kadar çalıştırmasını sağlayabiliriz.
 
+> Not: `trpl::spawn_task` ile `trpl::join` arasındaki fark yalnızca sözdizimsel
+> değildir. `spawn_task`, verdiğiniz future'ı çalışma zamanına bağımsız bir
+> _görev_ olarak teslim eder; çalışma zamanı bu görevi uygun gördüğü anda (çok
+> thread'li bir çalışma zamanında başka bir işletim sistemi thread'i üzerinde
+> bile) yürütebilir. Bu yüzden tıpkı `thread::spawn` gibi `spawn_task` de
+> future'ın `Send + 'static` olmasını ister; yerel değişkenlere referans tutan
+> bir future'ı `spawn_task`'a veremezsiniz. `trpl::join` ise yeni bir görev
+> oluşturmaz: verdiğiniz future'ları, içinde bulunduğunuz görevin bir parçası
+> olarak dönüşümlü biçimde yoklar. Future'lar aynı görevde, aynı thread üzerinde
+> kaldığı için `'static` ömür şartı yoktur ve Liste 17-8'deki gibi çevredeki
+> değişkenleri rahatça ödünç alabilirler. Kural olarak, birbirinden bağımsız ve
+> uzun süre arka planda çalışacak işler için `spawn_task`; aynı kapsamda
+> başlayıp birlikte bitmesini istediğiniz işler için `join` tercih edilir.
+
 Bölüm 16'daki [“Tüm Thread'lerin Bitmesini Bekleme”][join-handles]<!-- ignore -->
 başlığında, `std::thread::spawn` çağırdığınızda döndürülen `JoinHandle` türü
 üzerinde `join` metodunun nasıl kullanılacağını göstermiştik. `trpl::join`
