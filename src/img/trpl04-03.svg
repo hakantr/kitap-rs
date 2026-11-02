@@ -4,8 +4,8 @@
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#2563eb"/></marker></defs>
 <style>text { font-family: "DejaVu Sans", sans-serif; fill: #17324d; font-size: 14px; } .label { font-size: 12px; font-weight: 600; letter-spacing: 1px; } .code { font-family: "DejaVu Sans Mono", monospace; } .heading { font-weight: 600; } .grid { stroke: #cbd5e1; stroke-width: 1; }</style>
 <rect x="1" y="1" width="638" height="548" rx="16" fill="#fff" stroke="#e2e8f0"/>
-<text x="32" y="30" text-anchor="start" dominant-baseline="middle" class="label" style="fill:#2563eb">YIĞIN</text>
-<text x="432" y="30" text-anchor="start" dominant-baseline="middle" class="label" style="fill:#2563eb">ÖBEK</text>
+<text x="124" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#2563eb">YIĞIN</text>
+<text x="504" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#c65d24">ÖBEK</text>
 <text x="124.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">s1</text>
 <rect x="32" y="100" width="184" height="136" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
 <path d="M32,134 H216 M144,100 V236" class="grid" fill="none"/>

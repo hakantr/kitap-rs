@@ -21,7 +21,7 @@ class Diagram:
         fill = f' style="fill:{color}"' if color else ''
         self.parts.append(f'<text x="{x}" y="{y}" text-anchor="{anchor}" dominant-baseline="middle" class="{cls}"{fill}>{escape(str(value))}</text>')
     def label(self, x, y, value, color=BLUE):
-        self.text(x, y, value, 'label', 'start', color)
+        self.text(x, y, value, 'label', 'middle', color)
     def table(self, x, y, title, headers, rows, widths=(112, 72), muted=False):
         w, h = sum(widths), 34 * (len(rows)+1)
         accent = '#64748b' if muted else (ORANGE if headers[0]=='indeks' else BLUE)
@@ -47,11 +47,13 @@ class Diagram:
         return self.table(x,y,name,('ad','değer'),rows,muted=muted)[0]
     def heap(self, x, y, value='hello', muted=False):
         return self.table(x,y,'',('indeks','değer'),[(i,c if c!=' ' else '␣') for i,c in enumerate(value)],(72,72),muted)[1]
-    def arrow(self, start, end, bend=False, label=None):
+    def arrow(self, start, end, bend=False, label=None, label_position=None):
         x,y=start; X,Y=end
         path=f'M{x},{y} C{x+55},{y} {X-55},{Y} {X-4},{Y}' if bend else f'M{x},{y} L{X-4},{Y}'
         self.parts.append(f'<circle cx="{x}" cy="{y}" r="3" fill="{BLUE}"/><path d="{path}" fill="none" stroke="{BLUE}" stroke-width="2" marker-end="url(#arrow)"/>')
-        if label:self.text((x+X)/2,(y+Y)/2-16,label,'',color=BLUE)
+        if label:
+            label_x, label_y = label_position or ((x+X)/2, (y+Y)/2-16)
+            self.text(label_x,label_y,label,'',color=BLUE)
     def save(self, number):
         (DEST / f'trpl04-{number:02}.svg').write_text('\n'.join(self.parts+['</svg>'])+'\n')
 
@@ -66,15 +68,15 @@ def main():
         7: ('String dilimi', 's, hello world verisinin tamamına işaret eder. world dilimi 6. bayttan başlar ve 5 bayt uzunluğundadır. ␣ boşluk karakterini gösterir.'),
     }
     for n,(title,desc) in descriptions.items():
-        width=740 if n==6 else 640
+        width=860 if n==6 else 640
         height=580 if n==7 else (580 if n==5 else 550 if n==3 else 470 if n in (2,3,4) else 330)
         d=Diagram(width,height,title,desc)
         if n==6:
-            d.label(28,30,'REFERANS');d.label(276,30,'YIĞIN');d.label(556,30,'ÖBEK')
-            a=d.stack(28,100,'s',pointer_only=True);b=d.stack(276,100,'s1');c=d.heap(556,100)
-            d.arrow(a,(276,151),label='ödünç alır');d.arrow(b,c)
+            d.label(120,58,'REFERANS');d.label(464,58,'YIĞIN');d.label(756,58,'ÖBEK',ORANGE)
+            a=d.stack(28,100,'s',pointer_only=True);b=d.stack(372,100,'s1');c=d.heap(684,100)
+            d.arrow(a,(372,151),label='ödünç alır',label_position=(292,132));d.arrow(b,c)
         else:
-            d.label(32,30,'YIĞIN');d.label(432,30,'ÖBEK')
+            d.label(124,58,'YIĞIN');d.label(504,58,'ÖBEK',ORANGE)
             a=d.stack(32,100,'s' if n in (5,7) else 's1',11 if n==7 else 4 if n==5 else 5,muted=n==4)
             c=d.heap(432,100,'hello world' if n==7 else 'ahoy' if n==5 else 'hello')
             d.arrow(a,c)
@@ -83,7 +85,7 @@ def main():
             elif n==3:
                 b=d.stack(32,310,'s2');e=d.heap(432,310);d.arrow(b,e)
             elif n==5:
-                d.label(432,315,'SERBEST BIRAKILDI', '#64748b');d.heap(432,345,'hello',muted=True)
+                d.label(504,315,'SERBEST BIRAKILDI', '#64748b');d.heap(432,345,'hello',muted=True)
             elif n==7:
                 b=d.table(32,345,'world',('ad','değer'),[('işaretçi',''),('uzunluk',5)])[0]
                 d.arrow(b,(432,151+6*34),bend=True)
