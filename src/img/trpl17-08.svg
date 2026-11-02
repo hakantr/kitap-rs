@@ -1,47 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="606.2" height="274" viewBox="0 0 303.1 137" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
-  <title id="title">Pin arkasındaki String verisi</title>
-  <desc id="desc">Oklar referansların veya işlem akışının yönünü gösterir. Soluk alanlar geçersiz ya da önceki durumu belirtir.</desc>
-  <rect x="0.5" y="0.5" width="302.1" height="136" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.7" />
-  <g id="graph0" class="graph" transform="translate(22 115)">
-    <g id="clust1" class="cluster">
-      <title>cluster_deref</title>
-      <polygon fill="#eff6ff" stroke="#94a3b8" stroke-dasharray="5,2" points="82,-8 82,-85 251.1,-85 251.1,-8 82,-8" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="166.55" y="-67.7" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" font-weight="600">String</text>
-    </g>
-    <g id="node1" class="node">
-      <title>pinned_box</title>
-      <polyline fill="none" stroke="#94a3b8" points="15,-45 39,-45" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="27" y="-51.2" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d">Pin</text>
-      <polygon fill="none" stroke="#94a3b8" points="15,-22.5 15,-45 39,-45 39,-22.5 15,-22.5" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="start" x="25.12" y="-28.7" font-family="DejaVu Sans, sans-serif" font-size="14.00" fill="#17324d"> </text>
-    </g>
-    <g id="node2" class="node">
-      <title>pin</title>
-      <ellipse fill="#2563eb" stroke="#94a3b8" cx="91.8" cy="-34" rx="1.8" ry="1.8" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-    <g id="edge1" class="edge">
-      <title>pinned_box:c-&gt;pin</title>
-      <path fill="none" stroke="#2563eb" d="M28,-33.75C28,-33.75 81.37,-33.96 89.71,-34" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-    <g id="node3" class="node">
-      <title>fut</title>
-      <polygon fill="none" stroke="#94a3b8" points="137.6,-22.75 137.6,-45.25 178.1,-45.25 178.1,-22.75 137.6,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="157.85" y="-34" font-family="DejaVu Sans, sans-serif" font-size="11.53" fill="#17324d" dominant-baseline="central">5usize</text>
-      <polygon fill="none" stroke="#94a3b8" points="178.1,-22.75 178.1,-45.25 190.85,-45.25 190.85,-22.75 178.1,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="184.475" y="-34" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">h</text>
-      <polygon fill="none" stroke="#94a3b8" points="190.85,-22.75 190.85,-45.25 202.85,-45.25 202.85,-22.75 190.85,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="196.85" y="-34" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">e</text>
-      <polygon fill="none" stroke="#94a3b8" points="202.85,-22.75 202.85,-45.25 212.6,-45.25 212.6,-22.75 202.85,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="207.725" y="-34" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">l</text>
-      <polygon fill="none" stroke="#94a3b8" points="212.6,-22.75 212.6,-45.25 222.35,-45.25 222.35,-22.75 212.6,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="217.475" y="-34" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">l</text>
-      <polygon fill="none" stroke="#94a3b8" points="222.35,-22.75 222.35,-45.25 235.1,-45.25 235.1,-22.75 222.35,-22.75" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="228.725" y="-34" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">o</text>
-    </g>
-    <g id="edge2" class="edge">
-      <title>pin-&gt;fut:target</title>
-      <path fill="none" stroke="#2563eb" d="M92.8,-34C92.8,-34 112.11,-34 125.09,-34" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-      <polygon fill="#2563eb" stroke="#2563eb" points="125.09,-37.5 135.09,-34 125.09,-30.5 125.09,-37.5" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="240" viewBox="0 0 640 240" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<title id="title">Pin arkasındaki merhaba metni</title>
+<desc id="desc">Pin, 7 baytlık merhaba metnini tutan String değerine işaret eder. Kesikli çerçeve, String türünün Unpin uyguladığını gösterir.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#2563eb"/></marker></defs>
+<style>text { font-family: "DejaVu Sans", sans-serif; fill: #17324d; font-size: 14px; } .label { font-size: 12px; font-weight: 600; letter-spacing: 1px; } .code { font-family: "DejaVu Sans Mono", monospace; } .heading { font-weight: 600; } .grid { stroke: #cbd5e1; stroke-width: 1; }</style>
+<rect x="1" y="1" width="638" height="238" rx="16" fill="#fff" stroke="#e2e8f0"/>
+<rect x="200" y="40" width="404" height="164" rx="10" fill="#eff6ff" stroke="#94a3b8" stroke-dasharray="6 4"/>
+<text x="402.0" y="64" text-anchor="middle" dominant-baseline="middle" class="heading">String</text>
+<text x="379.0" y="108" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">metin</text>
+<rect x="232" y="126" width="294" height="36" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="274.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">7usize</text>
+<path d="M316,126 v36" class="grid"/>
+<text x="331.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">m</text>
+<path d="M346,126 v36" class="grid"/>
+<text x="361.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">e</text>
+<path d="M376,126 v36" class="grid"/>
+<text x="391.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">r</text>
+<path d="M406,126 v36" class="grid"/>
+<text x="421.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">h</text>
+<path d="M436,126 v36" class="grid"/>
+<text x="451.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">a</text>
+<path d="M466,126 v36" class="grid"/>
+<text x="481.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">b</text>
+<path d="M496,126 v36" class="grid"/>
+<text x="511.0" y="144" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">a</text>
+<text x="64" y="106" text-anchor="middle" dominant-baseline="middle" class="heading">Pin</text>
+<rect x="32" y="124" width="64" height="40" rx="6" fill="#fff" stroke="#cbd5e1"/>
+<circle cx="64" cy="144" r="3" fill="#2563eb"/><path d="M64,144 L228,144" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 </svg>

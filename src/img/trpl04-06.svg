@@ -1,20 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="330" viewBox="0 0 860 330" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="400" viewBox="0 0 860 400" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
 <title id="title">String değerine referans</title>
-<desc id="desc">s referansı s1 değişkenini ödünç alır. s1, öbekteki hello verisinin sahibidir.</desc>
+<desc id="desc">metin referansı metin1 değişkenini ödünç alır. metin1, öbekteki merhaba verisinin sahibidir.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#2563eb"/></marker></defs>
 <style>text { font-family: "DejaVu Sans", sans-serif; fill: #17324d; font-size: 14px; } .label { font-size: 12px; font-weight: 600; letter-spacing: 1px; } .code { font-family: "DejaVu Sans Mono", monospace; } .heading { font-weight: 600; } .grid { stroke: #cbd5e1; stroke-width: 1; }</style>
-<rect x="1" y="1" width="858" height="328" rx="16" fill="#fff" stroke="#e2e8f0"/>
+<rect x="1" y="1" width="858" height="398" rx="16" fill="#fff" stroke="#e2e8f0"/>
 <text x="120" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#2563eb">REFERANS</text>
 <text x="464" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#2563eb">YIĞIN</text>
 <text x="756" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#c65d24">ÖBEK</text>
-<text x="120.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">s</text>
+<text x="120.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">metin</text>
 <rect x="28" y="100" width="184" height="68" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
 <path d="M28,134 H212 M140,100 V168" class="grid" fill="none"/>
 <text x="84.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">ad</text>
 <text x="176.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">değer</text>
 <text x="84.0" y="151" text-anchor="middle" dominant-baseline="middle" class="">işaretçi</text>
 <text x="176.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code"></text>
-<text x="464.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">s1</text>
+<text x="464.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">metin1</text>
 <rect x="372" y="100" width="184" height="136" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
 <path d="M372,134 H556 M484,100 V236" class="grid" fill="none"/>
 <path d="M372,168 H556" class="grid"/>
@@ -24,27 +24,33 @@
 <text x="428.0" y="151" text-anchor="middle" dominant-baseline="middle" class="">işaretçi</text>
 <text x="520.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code"></text>
 <text x="428.0" y="185" text-anchor="middle" dominant-baseline="middle" class="">uzunluk</text>
-<text x="520.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">5</text>
+<text x="520.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">7</text>
 <text x="428.0" y="219" text-anchor="middle" dominant-baseline="middle" class="">kapasite</text>
-<text x="520.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">5</text>
-<rect x="684" y="100" width="144" height="204" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
-<path d="M684,134 H828 M756,100 V304" class="grid" fill="none"/>
+<text x="520.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">7</text>
+<rect x="684" y="100" width="144" height="272" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
+<path d="M684,134 H828 M756,100 V372" class="grid" fill="none"/>
 <path d="M684,168 H828" class="grid"/>
 <path d="M684,202 H828" class="grid"/>
 <path d="M684,236 H828" class="grid"/>
 <path d="M684,270 H828" class="grid"/>
+<path d="M684,304 H828" class="grid"/>
+<path d="M684,338 H828" class="grid"/>
 <text x="720.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#c65d24">indeks</text>
 <text x="792.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#c65d24">değer</text>
 <text x="720.0" y="151" text-anchor="middle" dominant-baseline="middle" class="">0</text>
-<text x="792.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code">h</text>
+<text x="792.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code">m</text>
 <text x="720.0" y="185" text-anchor="middle" dominant-baseline="middle" class="">1</text>
 <text x="792.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">e</text>
 <text x="720.0" y="219" text-anchor="middle" dominant-baseline="middle" class="">2</text>
-<text x="792.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">l</text>
+<text x="792.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">r</text>
 <text x="720.0" y="253" text-anchor="middle" dominant-baseline="middle" class="">3</text>
-<text x="792.0" y="253" text-anchor="middle" dominant-baseline="middle" class="code">l</text>
+<text x="792.0" y="253" text-anchor="middle" dominant-baseline="middle" class="code">h</text>
 <text x="720.0" y="287" text-anchor="middle" dominant-baseline="middle" class="">4</text>
-<text x="792.0" y="287" text-anchor="middle" dominant-baseline="middle" class="code">o</text>
+<text x="792.0" y="287" text-anchor="middle" dominant-baseline="middle" class="code">a</text>
+<text x="720.0" y="321" text-anchor="middle" dominant-baseline="middle" class="">5</text>
+<text x="792.0" y="321" text-anchor="middle" dominant-baseline="middle" class="code">b</text>
+<text x="720.0" y="355" text-anchor="middle" dominant-baseline="middle" class="">6</text>
+<text x="792.0" y="355" text-anchor="middle" dominant-baseline="middle" class="code">a</text>
 <circle cx="176.0" cy="151" r="3" fill="#2563eb"/><path d="M176.0,151 L368,151" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 <text x="292" y="132" text-anchor="middle" dominant-baseline="middle" class="" style="fill:#2563eb">ödünç alır</text>
 <circle cx="520.0" cy="151" r="3" fill="#2563eb"/><path d="M520.0,151 L680,151" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>

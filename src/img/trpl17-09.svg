@@ -1,74 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="412.842" viewBox="0 0 409.6 222.5" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
-  <title id="title">String verisini güvenle değiştirme</title>
-  <desc id="desc">Oklar referansların veya işlem akışının yönünü gösterir. Soluk alanlar geçersiz ya da önceki durumu belirtir.</desc>
-  <rect x="0.5" y="0.5" width="408.6" height="221.5" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="0.7" />
-  <g id="graph0" class="graph" transform="translate(22 200.5)">
-    <g id="clust1" class="cluster">
-      <title>cluster_both</title>
-    </g>
-    <g id="clust2" class="cluster">
-      <title>cluster_deref</title>
-      <polygon fill="#eff6ff" stroke="#94a3b8" stroke-dasharray="5,2" points="154,-16 154,-109 349.6,-109 349.6,-16 154,-16" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="251.8" y="-91.7" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" font-weight="600">String</text>
-    </g>
-    <g id="node1" class="node">
-      <title>pinned_box</title>
-      <polyline fill="none" stroke="#94a3b8" points="59,-152 83,-152" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="71" y="-158.2" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d">Pin</text>
-      <polygon fill="none" stroke="#94a3b8" points="59,-129.5 59,-152 83,-152 83,-129.5 59,-129.5" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="start" x="69.12" y="-135.7" font-family="DejaVu Sans, sans-serif" font-size="14.00" fill="#17324d"> </text>
-    </g>
-    <g id="node3" class="node">
-      <title>pin</title>
-      <ellipse fill="#2563eb" stroke="#94a3b8" cx="163.8" cy="-57" rx="1.8" ry="1.8" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-    <g id="edge1" class="edge">
-      <title>pinned_box:c-&gt;pin</title>
-      <path fill="none" stroke="#2563eb" d="M72,-140.75C72,-140.75 151.8,-67.14 161.78,-57.94" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-    <g id="node2" class="node">
-      <title>string1</title>
-      <polygon fill="#f1f5f9" stroke="#94a3b8" points="24,-39 24,-83 118,-83 118,-39 24,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <polyline fill="none" stroke="#94a3b8" points="24,-61 118,-61" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="71" y="-66.7" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d">s1</text>
-      <polygon fill="none" stroke="#94a3b8" points="24,-39 24,-61 64,-61 64,-39 24,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="44" y="-50" font-family="DejaVu Sans, sans-serif" font-size="11.37" fill="#17324d" dominant-baseline="central">5usize</text>
-      <polygon fill="none" stroke="#94a3b8" points="64,-39 64,-61 76,-61 76,-39 64,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="70" y="-50" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">h</text>
-      <polygon fill="none" stroke="#94a3b8" points="76,-39 76,-61 88,-61 88,-39 76,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="82" y="-50" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">e</text>
-      <polygon fill="none" stroke="#94a3b8" points="88,-39 88,-61 97,-61 97,-39 88,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="92.5" y="-50" font-family="DejaVu Sans, sans-serif" font-size="10.50" fill="#17324d" dominant-baseline="central">l</text>
-      <polygon fill="none" stroke="#94a3b8" points="97,-39 97,-61 106,-61 106,-39 97,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="101.5" y="-50" font-family="DejaVu Sans, sans-serif" font-size="10.50" fill="#17324d" dominant-baseline="central">l</text>
-      <polygon fill="none" stroke="#94a3b8" points="106,-39 106,-61 118,-61 118,-39 106,-39" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="112" y="-50" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">o</text>
-    </g>
-    <g id="node4" class="node">
-      <title>string2</title>
-      <polyline fill="none" stroke="#94a3b8" points="209.6,-50 333.6,-50" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="271.6" y="-55.7" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d">s2</text>
-      <polygon fill="none" stroke="#94a3b8" points="209.6,-28 209.6,-50 249.6,-50 249.6,-28 209.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="229.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="11.37" fill="#17324d" dominant-baseline="central">7usize</text>
-      <polygon fill="none" stroke="#94a3b8" points="249.6,-28 249.6,-50 261.6,-50 261.6,-28 249.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="255.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">g</text>
-      <polygon fill="none" stroke="#94a3b8" points="261.6,-28 261.6,-50 273.6,-50 273.6,-28 261.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="267.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">o</text>
-      <polygon fill="none" stroke="#94a3b8" points="273.6,-28 273.6,-50 285.6,-50 285.6,-28 273.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="279.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">o</text>
-      <polygon fill="none" stroke="#94a3b8" points="285.6,-28 285.6,-50 297.6,-50 297.6,-28 285.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="291.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">d</text>
-      <polygon fill="none" stroke="#94a3b8" points="297.6,-28 297.6,-50 309.6,-50 309.6,-28 297.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="303.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">b</text>
-      <polygon fill="none" stroke="#94a3b8" points="309.6,-28 309.6,-50 321.6,-50 321.6,-28 309.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="315.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">y</text>
-      <polygon fill="none" stroke="#94a3b8" points="321.6,-28 321.6,-50 333.6,-50 333.6,-28 321.6,-28" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round" />
-      <text text-anchor="middle" x="327.6" y="-39" font-family="DejaVu Sans, sans-serif" font-size="12.00" fill="#17324d" dominant-baseline="central">e</text>
-    </g>
-    <g id="edge2" class="edge">
-      <title>pin-&gt;string2:target</title>
-      <path fill="none" stroke="#2563eb" d="M164.8,-57C164.8,-57 185.03,-48.68 198,-43.36" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-      <polygon fill="#2563eb" stroke="#2563eb" points="199.28,-46.61 207.2,-39.58 196.62,-40.14 199.28,-46.61" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" />
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="350" viewBox="0 0 840 350" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<title id="title">String değerini merhaba yerine selam ile değiştirme</title>
+<desc id="desc">Önceki metin1 değeri merhaba 7 bayttır ve soluk gösterilir. Pin artık metin2 adıyla gösterilen 5 baytlık selam değerine işaret eder. String, Unpin uyguladığı için bu değişim güvenlidir.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#2563eb"/></marker></defs>
+<style>text { font-family: "DejaVu Sans", sans-serif; fill: #17324d; font-size: 14px; } .label { font-size: 12px; font-weight: 600; letter-spacing: 1px; } .code { font-family: "DejaVu Sans Mono", monospace; } .heading { font-weight: 600; } .grid { stroke: #cbd5e1; stroke-width: 1; }</style>
+<rect x="1" y="1" width="838" height="348" rx="16" fill="#fff" stroke="#e2e8f0"/>
+<rect x="410" y="150" width="394" height="166" rx="10" fill="#eff6ff" stroke="#94a3b8" stroke-dasharray="6 4"/>
+<text x="607.0" y="174" text-anchor="middle" dominant-baseline="middle" class="heading">String</text>
+<text x="179.0" y="227" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#64748b">metin1</text>
+<rect x="32" y="245" width="294" height="36" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/>
+<text x="74.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">7usize</text>
+<path d="M116,245 v36" class="grid"/>
+<text x="131.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">m</text>
+<path d="M146,245 v36" class="grid"/>
+<text x="161.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">e</text>
+<path d="M176,245 v36" class="grid"/>
+<text x="191.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">r</text>
+<path d="M206,245 v36" class="grid"/>
+<text x="221.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">h</text>
+<path d="M236,245 v36" class="grid"/>
+<text x="251.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">a</text>
+<path d="M266,245 v36" class="grid"/>
+<text x="281.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">b</text>
+<path d="M296,245 v36" class="grid"/>
+<text x="311.0" y="263" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#64748b">a</text>
+<text x="561.0" y="226" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">metin2</text>
+<rect x="444" y="244" width="234" height="36" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+<text x="486.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">5usize</text>
+<path d="M528,244 v36" class="grid"/>
+<text x="543.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">s</text>
+<path d="M558,244 v36" class="grid"/>
+<text x="573.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">e</text>
+<path d="M588,244 v36" class="grid"/>
+<text x="603.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">l</text>
+<path d="M618,244 v36" class="grid"/>
+<text x="633.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">a</text>
+<path d="M648,244 v36" class="grid"/>
+<text x="663.0" y="262" text-anchor="middle" dominant-baseline="middle" class="code" style="fill:#17324d">m</text>
+<text x="104" y="47" text-anchor="middle" dominant-baseline="middle" class="heading">Pin</text>
+<rect x="72" y="65" width="64" height="40" rx="6" fill="#fff" stroke="#cbd5e1"/>
+<circle cx="104" cy="85" r="3" fill="#2563eb"/><path d="M104,85 L440,262" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
 </svg>

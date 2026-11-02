@@ -86,10 +86,10 @@ Bir _string dilimi (string slice)_, bir `String` içindeki elemanların bitişik
 
 Şekil 4-7 bu bellek yapısını bir diyagramla göstermektedir.
 
-<img alt="Üç tablo: ilk tablo yığın üzerindeki s (metin) değişkeninin verilerini temsil eder ve öbek üzerindeki &quot;hello world&quot; string verisi tablosunun 0. indeksindeki bayta işaret eder. Üçüncü tablo ise dilim olan world (dunya) değişkeninin yığın verilerini temsil eder; uzunluk değeri 5'tir ve öbek veri tablosunun 6. baytına işaret eder."
-src="img/trpl04-07.svg" class="center" style="width: 50%;" />
+<img alt="Üç tablo: metin değişkeninin yığın verileri, öbekteki 13 baytlık merhaba dunya metnine işaret eder; uzunluk ve kapasite 13’tür. dunya dilimi 8. indeksteki d baytından başlar ve 5 bayt uzunluğundadır. Öbek tablosundaki ␣ simgesi 7. indeksteki boşluğu gösterir."
+src="img/trpl04-07.svg" class="center" />
 
-<span class="caption">Şekil 4-7: Bir `String`'in belirli bir parçasına başvuran string dilimi (diyagramda İngilizce `s = "hello world"` ve `&s[6..11]` karşılığı olan `world` gösterilmektedir)</span>
+<span class="caption">Şekil 4-7: `metin = String::from("merhaba dunya")` değerinin `&metin[8..13]` bölümüne başvuran `dunya` string dilimi</span>
 
 Rust'ın `..` aralık sözdiziminde 0. indeksten başlamak istiyorsanız iki noktadan önceki sayıyı yazmayabilirsiniz. Başka bir deyişle, aşağıdaki iki satır birbirine eşdeğerdir:
 

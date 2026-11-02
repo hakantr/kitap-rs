@@ -242,23 +242,23 @@ Tıpkı `Send` ve `Sync` trait'lerinde olduğu gibi derleyici, güvenli olduğun
 
 Başka bir deyişle, `Pin` ile `Unpin` arasındaki ilişki hakkında akılda tutulması gereken iki nokta vardır. Birincisi, `Unpin` “normal” durumdur; `!Unpin` ise özel durumdur. İkincisi, bir türün `Unpin` ya da `!Unpin` uygulaması _yalnızca_ o türe yönelik <code>Pin<&mut <em>BirTur</em>></code> gibi sabitlenmiş bir işaretçi kullandığınızda önem taşır.
 
-Bunu somutlaştırmak için bir `String` düşünün: bir uzunluğu ve onu oluşturan Unicode karakterleri vardır. Şekil 17-8'de görüldüğü gibi bir `String` değerini `Pin` içine sarabiliriz. Ancak `String`, Rust'taki diğer çoğu tür gibi `Unpin` trait'ini otomatik olarak uygular.
+Bunu somutlaştırmak için `"merhaba"` metnini tutan bir `String` düşünün. Bu metin 7 ASCII karakterden oluşur ve uzunluğu 7 bayttır. Şekil 17-8'de görüldüğü gibi bir `String` değerini `Pin` içine sarabiliriz. Ancak `String`, Rust'taki diğer çoğu tür gibi `Unpin` trait'ini otomatik olarak uygular.
 
 <figure>
 
-<img alt="Solda “Pin” etiketli bir kutu ve ondan sağdaki “String” etiketli kutuya giden bir ok. “String” kutusu, string'in uzunluğunu temsil eden 5usize verisini ve bu String örneğinde saklanan “hello” metninin karakterlerini temsil eden “h”, “e”, “l”, “l” ve “o” harflerini içerir. Kesikli bir dikdörtgen “Pin” kutusunu değil, yalnızca “String” kutusunu ve etiketini çevreler." src="img/trpl17-08.svg" class="center" />
+<img alt="Soldaki Pin kutusu, sağdaki String alanında metin adıyla gösterilen değere işaret eder. Satırdaki 7usize uzunluğu, ardından gelen m, e, r, h, a, b, a hücreleri merhaba metninin 7 baytını gösterir. Kesikli çerçeve String türünün Unpin uyguladığını belirtir." src="img/trpl17-08.svg" class="center" />
 
 <figcaption>Şekil 17-8: Bir `String` değerini sabitleme; kesikli çizgi, `String` türünün `Unpin` trait'ini uyguladığını ve dolayısıyla sabitlenmediğini gösterir</figcaption>
 
 </figure>
 
-Sonuç olarak, `String` bunun yerine `!Unpin` uygulasaydı geçersiz sayılacak şeyleri yapabiliriz; örneğin Şekil 17-9'daki gibi bellekteki birebir aynı konumda bir string'i bir başkasıyla değiştirebiliriz. Bu işlem `Pin` sözleşmesini ihlal etmez; çünkü `String`, taşınmasını güvensiz kılacak hiçbir içsel referansa sahip değildir. `!Unpin` yerine `Unpin` uygulamasının tam nedeni de budur.
+Sonuç olarak, `String` bunun yerine `!Unpin` uygulasaydı geçersiz sayılacak şeyleri yapabiliriz; örneğin Şekil 17-9'daki gibi `"merhaba"` değerini bellekteki aynı konumda `"selam"` değeriyle değiştirebiliriz. Yeni metin 5 ASCII karakterden oluştuğu için uzunluğu 5 bayttır. Bu işlem `Pin` sözleşmesini ihlal etmez; çünkü `String`, taşınmasını güvensiz kılacak hiçbir içsel referansa sahip değildir. `!Unpin` yerine `Unpin` uygulamasının tam nedeni de budur.
 
 <figure>
 
-<img alt="Önceki örnekteki aynı “hello” string verisi artık “s1” olarak etiketlenmiş ve grileştirilmiştir. Önceki örnekteki “Pin” kutusu ise artık “s2” etiketli, geçerli, uzunluğu 7usize olan ve “goodbye” metninin karakterlerini içeren farklı bir String örneğine işaret etmektedir. O da Unpin trait'ini uyguladığı için s2 kesikli bir dikdörtgenle çevrilidir." src="img/trpl17-09.svg" class="center" />
+<img alt="Önceki 7 baytlık merhaba değeri metin1 adıyla soluk gösterilir. Pin artık metin2 adıyla gösterilen yeni String değerine işaret eder. Yeni satırda 5usize uzunluğu ve selam metnini oluşturan s, e, l, a, m baytları vardır. String türü Unpin uyguladığı için değişim güvenlidir; yeni değer kesikli çerçeve içindedir." src="img/trpl17-09.svg" class="center" />
 
-<figcaption>Şekil 17-9: Bellekteki `String` değerini tamamen farklı bir `String` ile değiştirme</figcaption>
+<figcaption>Şekil 17-9: Bellekteki 7 baytlık `"merhaba"` değerini 5 baytlık `"selam"` değeriyle değiştirme</figcaption>
 
 </figure>
 

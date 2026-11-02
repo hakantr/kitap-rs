@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="580" viewBox="0 0 640 580" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="660" viewBox="0 0 640 660" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
 <title id="title">String dilimi</title>
-<desc id="desc">s, hello world verisinin tamamına işaret eder. world dilimi 6. bayttan başlar ve 5 bayt uzunluğundadır. ␣ boşluk karakterini gösterir.</desc>
+<desc id="desc">metin, 13 baytlık merhaba dunya verisinin tamamına işaret eder. dunya dilimi 8. bayttan başlar ve 5 bayt uzunluğundadır. ␣ boşluk karakterini gösterir.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 Z" fill="#2563eb"/></marker></defs>
 <style>text { font-family: "DejaVu Sans", sans-serif; fill: #17324d; font-size: 14px; } .label { font-size: 12px; font-weight: 600; letter-spacing: 1px; } .code { font-family: "DejaVu Sans Mono", monospace; } .heading { font-weight: 600; } .grid { stroke: #cbd5e1; stroke-width: 1; }</style>
-<rect x="1" y="1" width="638" height="578" rx="16" fill="#fff" stroke="#e2e8f0"/>
+<rect x="1" y="1" width="638" height="658" rx="16" fill="#fff" stroke="#e2e8f0"/>
 <text x="124" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#2563eb">YIĞIN</text>
 <text x="504" y="58" text-anchor="middle" dominant-baseline="middle" class="label" style="fill:#c65d24">ÖBEK</text>
-<text x="124.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">s</text>
+<text x="124.0" y="83" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">metin</text>
 <rect x="32" y="100" width="184" height="136" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
 <path d="M32,134 H216 M144,100 V236" class="grid" fill="none"/>
 <path d="M32,168 H216" class="grid"/>
@@ -16,11 +16,11 @@
 <text x="88.0" y="151" text-anchor="middle" dominant-baseline="middle" class="">işaretçi</text>
 <text x="180.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code"></text>
 <text x="88.0" y="185" text-anchor="middle" dominant-baseline="middle" class="">uzunluk</text>
-<text x="180.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">11</text>
+<text x="180.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">13</text>
 <text x="88.0" y="219" text-anchor="middle" dominant-baseline="middle" class="">kapasite</text>
-<text x="180.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">11</text>
-<rect x="432" y="100" width="144" height="408" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
-<path d="M432,134 H576 M504,100 V508" class="grid" fill="none"/>
+<text x="180.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">13</text>
+<rect x="432" y="100" width="144" height="476" rx="8" fill="#fff7ed" stroke="#cbd5e1"/>
+<path d="M432,134 H576 M504,100 V576" class="grid" fill="none"/>
 <path d="M432,168 H576" class="grid"/>
 <path d="M432,202 H576" class="grid"/>
 <path d="M432,236 H576" class="grid"/>
@@ -31,41 +31,47 @@
 <path d="M432,406 H576" class="grid"/>
 <path d="M432,440 H576" class="grid"/>
 <path d="M432,474 H576" class="grid"/>
+<path d="M432,508 H576" class="grid"/>
+<path d="M432,542 H576" class="grid"/>
 <text x="468.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#c65d24">indeks</text>
 <text x="540.0" y="117" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#c65d24">değer</text>
 <text x="468.0" y="151" text-anchor="middle" dominant-baseline="middle" class="">0</text>
-<text x="540.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code">h</text>
+<text x="540.0" y="151" text-anchor="middle" dominant-baseline="middle" class="code">m</text>
 <text x="468.0" y="185" text-anchor="middle" dominant-baseline="middle" class="">1</text>
 <text x="540.0" y="185" text-anchor="middle" dominant-baseline="middle" class="code">e</text>
 <text x="468.0" y="219" text-anchor="middle" dominant-baseline="middle" class="">2</text>
-<text x="540.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">l</text>
+<text x="540.0" y="219" text-anchor="middle" dominant-baseline="middle" class="code">r</text>
 <text x="468.0" y="253" text-anchor="middle" dominant-baseline="middle" class="">3</text>
-<text x="540.0" y="253" text-anchor="middle" dominant-baseline="middle" class="code">l</text>
+<text x="540.0" y="253" text-anchor="middle" dominant-baseline="middle" class="code">h</text>
 <text x="468.0" y="287" text-anchor="middle" dominant-baseline="middle" class="">4</text>
-<text x="540.0" y="287" text-anchor="middle" dominant-baseline="middle" class="code">o</text>
+<text x="540.0" y="287" text-anchor="middle" dominant-baseline="middle" class="code">a</text>
 <text x="468.0" y="321" text-anchor="middle" dominant-baseline="middle" class="">5</text>
-<text x="540.0" y="321" text-anchor="middle" dominant-baseline="middle" class="code">␣</text>
+<text x="540.0" y="321" text-anchor="middle" dominant-baseline="middle" class="code">b</text>
 <text x="468.0" y="355" text-anchor="middle" dominant-baseline="middle" class="">6</text>
-<text x="540.0" y="355" text-anchor="middle" dominant-baseline="middle" class="code">w</text>
+<text x="540.0" y="355" text-anchor="middle" dominant-baseline="middle" class="code">a</text>
 <text x="468.0" y="389" text-anchor="middle" dominant-baseline="middle" class="">7</text>
-<text x="540.0" y="389" text-anchor="middle" dominant-baseline="middle" class="code">o</text>
+<text x="540.0" y="389" text-anchor="middle" dominant-baseline="middle" class="code">␣</text>
 <text x="468.0" y="423" text-anchor="middle" dominant-baseline="middle" class="">8</text>
-<text x="540.0" y="423" text-anchor="middle" dominant-baseline="middle" class="code">r</text>
+<text x="540.0" y="423" text-anchor="middle" dominant-baseline="middle" class="code">d</text>
 <text x="468.0" y="457" text-anchor="middle" dominant-baseline="middle" class="">9</text>
-<text x="540.0" y="457" text-anchor="middle" dominant-baseline="middle" class="code">l</text>
+<text x="540.0" y="457" text-anchor="middle" dominant-baseline="middle" class="code">u</text>
 <text x="468.0" y="491" text-anchor="middle" dominant-baseline="middle" class="">10</text>
-<text x="540.0" y="491" text-anchor="middle" dominant-baseline="middle" class="code">d</text>
+<text x="540.0" y="491" text-anchor="middle" dominant-baseline="middle" class="code">n</text>
+<text x="468.0" y="525" text-anchor="middle" dominant-baseline="middle" class="">11</text>
+<text x="540.0" y="525" text-anchor="middle" dominant-baseline="middle" class="code">y</text>
+<text x="468.0" y="559" text-anchor="middle" dominant-baseline="middle" class="">12</text>
+<text x="540.0" y="559" text-anchor="middle" dominant-baseline="middle" class="code">a</text>
 <circle cx="180.0" cy="151" r="3" fill="#2563eb"/><path d="M180.0,151 L428,151" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="124.0" y="328" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">world</text>
-<rect x="32" y="345" width="184" height="102" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
-<path d="M32,379 H216 M144,345 V447" class="grid" fill="none"/>
-<path d="M32,413 H216" class="grid"/>
-<text x="88.0" y="362" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">ad</text>
-<text x="180.0" y="362" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">değer</text>
-<text x="88.0" y="396" text-anchor="middle" dominant-baseline="middle" class="">işaretçi</text>
-<text x="180.0" y="396" text-anchor="middle" dominant-baseline="middle" class="code"></text>
-<text x="88.0" y="430" text-anchor="middle" dominant-baseline="middle" class="">uzunluk</text>
-<text x="180.0" y="430" text-anchor="middle" dominant-baseline="middle" class="code">5</text>
-<circle cx="180.0" cy="396" r="3" fill="#2563eb"/><path d="M180.0,396 C235.0,396 377,355 428,355" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="32" y="548" text-anchor="start" dominant-baseline="middle" class="" style="fill:#64748b">␣ = boşluk · Dilim: &amp;s[6..11]</text>
+<text x="124.0" y="368" text-anchor="middle" dominant-baseline="middle" class="code heading" style="fill:#2563eb">dunya</text>
+<rect x="32" y="385" width="184" height="102" rx="8" fill="#eff6ff" stroke="#cbd5e1"/>
+<path d="M32,419 H216 M144,385 V487" class="grid" fill="none"/>
+<path d="M32,453 H216" class="grid"/>
+<text x="88.0" y="402" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">ad</text>
+<text x="180.0" y="402" text-anchor="middle" dominant-baseline="middle" class="heading" style="fill:#2563eb">değer</text>
+<text x="88.0" y="436" text-anchor="middle" dominant-baseline="middle" class="">işaretçi</text>
+<text x="180.0" y="436" text-anchor="middle" dominant-baseline="middle" class="code"></text>
+<text x="88.0" y="470" text-anchor="middle" dominant-baseline="middle" class="">uzunluk</text>
+<text x="180.0" y="470" text-anchor="middle" dominant-baseline="middle" class="code">5</text>
+<circle cx="180.0" cy="436" r="3" fill="#2563eb"/><path d="M180.0,436 C235.0,436 377,423 428,423" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="32" y="628" text-anchor="start" dominant-baseline="middle" class="" style="fill:#64748b">␣ = boşluk · Dilim: &amp;metin[8..13]</text>
 </svg>

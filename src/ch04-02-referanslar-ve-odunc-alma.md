@@ -18,9 +18,9 @@ Değerin sahipliğini devralmak yerine parametre olarak bir değere referans kab
 
 Öncelikle, değişken bildirimindeki ve fonksiyonun dönüş değerindeki tüm demet kodlarının ortadan kalktığına dikkat edin. İkinci olarak, `uzunlugu_hesapla` fonksiyonuna `&metin1` aktardığımıza ve fonksiyon tanımında `String` yerine `&String` kullandığımıza bakın. Bu `&` işaretleri (ampersand) referansları temsil eder ve bir değerin sahipliğini üstlenmeden ona başvurmanıza olanak tanır. Şekil 4-6 bu kavramı görselleştirmektedir.
 
-<img alt="Üç tablo: s (metin) tablosu yalnızca s1 (metin1) tablosuna yönelen bir işaretçi içerir. s1 (metin1) tablosu ise s1'e ait yığın verilerini barındırır ve öbek üzerindeki string verisine işaret eder." src="img/trpl04-06.svg" class="center" />
+<img alt="Üç tablo: metin tablosu yalnızca metin1 tablosuna yönelen bir işaretçi içerir. metin1 tablosu ise metin1'e ait yığın verilerini barındırır ve öbek üzerindeki 7 baytlık merhaba verisine işaret eder; uzunluk ve kapasite değerleri 7’dir." src="img/trpl04-06.svg" class="center" />
 
-<span class="caption">Şekil 4-6: `String` türündeki `s1` (`metin1`) değişkenine işaret eden `&String` türündeki `s` (`metin`) diyagramı</span>
+<span class="caption">Şekil 4-6: `String` türündeki `metin1` değişkenine işaret eden `&String` türündeki `metin` diyagramı</span>
 
 > Not: `&` kullanarak referans oluşturmanın tam tersi _başvuru çözme (dereferencing)_ işlemidir ve bu işlem başvuru çözme operatörü olan `*` ile gerçekleştirilir. Başvuru çözme operatörünün bazı kullanımlarını Bölüm 8'de görecek, başvuru çözmenin ayrıntılarını ise Bölüm 15'te inceleyeceğiz.
 

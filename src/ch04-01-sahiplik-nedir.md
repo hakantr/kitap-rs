@@ -155,28 +155,27 @@ Bu kod önceki örneğe çok benzediği için çalışma şeklinin de aynı olac
 
 `String` için perde arkasında neler olup bittiğini görmek üzere Şekil 4-1'e göz atın. Bir `String`, solda gösterildiği gibi üç bileşenden oluşur: metnin içeriğini tutan belleğe işaret eden bir işaretçi (`ptr`), bir uzunluk (`len`) ve bir kapasite (`capacity`). Bu veri grubu yığında saklanır. Sağda ise metnin asıl içeriğini barındıran öbek belleği yer alır.
 
-<img alt="İki tablo: ilk tablo yığın üzerindeki s1 (metin1) değişkeninin uzunluğunu (5), kapasitesini (5) ve ikinci tablodaki ilk değere yönelen işaretçisini gösterir. İkinci tablo ise öbek üzerindeki string verisinin bayt bayt temsilini içerir." src="img/trpl04-01.svg" class="center"
-style="width: 50%;" />
+<img alt="İki tablo: ilk tablo yığın üzerindeki metin1 değişkeninin uzunluğunu (7), kapasitesini (7) ve ikinci tablodaki ilk değere yönelen işaretçisini gösterir. İkinci tablo ise öbek üzerindeki string verisinin bayt bayt temsilini içerir." src="img/trpl04-01.svg" class="center" />
 
-<span class="caption">Şekil 4-1: `s1` (`metin1`) değişkenine bağlı `"hello"` değerini tutan bir `String`'in bellekteki temsili</span>
+<span class="caption">Şekil 4-1: `metin1` değişkenine bağlı `"merhaba"` değerini tutan bir `String`'in bellekteki temsili</span>
 
 Uzunluk (`len`), `String` içeriğinin o anda bayt cinsinden ne kadar bellek kullandığını belirtir. Kapasite (`capacity`) ise `String`'in bellek ayırıcıdan aldığı toplam bellek miktarının bayt cinsinden değeridir. Uzunluk ile kapasite arasındaki fark önemlidir, ancak bu bağlamda belirleyici olmadığından şimdilik kapasiteyi göz ardı edebiliriz.
 
-> Not: Kitabın orijinal bellek diyagramlarında (`Şekil 4-1` – `Şekil 4-5`), İngilizce koddaki değişken adları (`metin1`, `metin2`, `metin` yerine `s1`, `s2`, `s`) ve `"hello"` (5 bayt) ile `"ahoy"` (4 bayt) metinleri yer almaktadır. Türkçe kodumuzdaki `String::from("merhaba")` örneğinde ise `"merhaba"` 7 ASCII karakterden oluştuğu için yığındaki `len` ve `capacity` değerleri `7` olur. Ayrıca `len` alanının karakter sayısını değil **bayt sayısını** tuttuğuna dikkat edin: Örneğin UTF-8 kodlamasında `'ç'`, `'ğ'`, `'ı'`, `'ö'`, `'ş'`, `'ü'` gibi Türkçe harfler 2 bayt yer kapladığından `String::from("dünya")` bellekte 5 değil **6 bayt** (`len = 6`) uzunluğundadır.
+> Not: Şekil 4-1’de kod örneğiyle aynı `"merhaba"` metni kullanılır. Bu metin 7 ASCII karakterden oluştuğu için uzunluğu 7 bayttır; bu örnekte gösterilen kapasite de 7 bayttır. `len` alanı karakter sayısını değil **bayt sayısını** tutar. Örneğin UTF-8 kodlamasında `"dünya"` 5 harfli olmasına rağmen `'ü'` 2 bayt tuttuğundan **6 bayt** (`len = 6`) uzunluğundadır.
 
 `metin1`'i `metin2`'ye atadığımızda `String`'in yığın verisi kopyalanır; yani yığında bulunan işaretçiyi, uzunluğu ve kapasiteyi kopyalarız. İşaretçinin gösterdiği öbek üzerindeki veriyi ise kopyalamayız. Başka bir deyişle, bellekteki veri yerleşimi Şekil 4-2'deki gibi görünür.
 
-<img alt="Üç tablo: yığın üzerinde sırasıyla s1 (metin1) ve s2 (metin2) değişkenlerini temsil eden ve her ikisi de öbekteki aynı string verisine işaret eden tablolar."
-src="img/trpl04-02.svg" class="center" style="width: 50%;" />
+<img alt="Üç tablo: yığın üzerinde sırasıyla metin1 ve metin2 değişkenlerini temsil eden ve her ikisi de öbekteki aynı string verisine işaret eden tablolar."
+src="img/trpl04-02.svg" class="center" />
 
-<span class="caption">Şekil 4-2: `s1` (`metin1`) değişkeninin işaretçi, uzunluk ve kapasite değerlerinin kopyasına sahip olan `s2` (`metin2`) değişkeninin bellekteki temsili</span>
+<span class="caption">Şekil 4-2: `metin1` değişkeninin işaretçi, uzunluk ve kapasite değerlerinin kopyasına sahip olan `metin2` değişkeninin bellekteki temsili</span>
 
 Bellekteki görünüm, Rust öbek verisini de kopyalasaydı ortaya çıkacak olan Şekil 4-3'teki gibi _değildir_. Eğer Rust böyle davransaydı, öbekteki verinin büyük olduğu durumlarda `metin2 = metin1` ataması çalışma zamanı performansı açısından son derece maliyetli olabilirdi.
 
-<img alt="Dört tablo: s1 (metin1) ve s2 (metin2) için yığın verilerini temsil eden iki tablo ve her birinin öbek üzerinde işaret ettiği kendine ait ayrı string verisi kopyası."
-src="img/trpl04-03.svg" class="center" style="width: 50%;" />
+<img alt="Dört tablo: metin1 ve metin2 için yığın verilerini temsil eden iki tablo ve her birinin öbek üzerinde işaret ettiği kendine ait ayrı string verisi kopyası."
+src="img/trpl04-03.svg" class="center" />
 
-<span class="caption">Şekil 4-3: Rust öbek verisini de kopyalasaydı `s2 = s1` (`metin2 = metin1`) işleminin oluşturacağı alternatif bellek görünümü</span>
+<span class="caption">Şekil 4-3: Rust öbek verisini de kopyalasaydı `metin2 = metin1` işleminin oluşturacağı alternatif bellek görünümü</span>
 
 Daha önce, bir değişken kapsam dışına çıktığında Rust'ın otomatik olarak `drop` fonksiyonunu çağırdığını ve o değişkene ait öbek belleğini temizlediğini belirtmiştik. Ancak Şekil 4-2'de her iki veri işaretçisinin de aynı bellek konumunu gösterdiğini görüyoruz. Bu ciddi bir sorundur: `metin2` ve `metin1` kapsam dışına çıktığında her ikisi de aynı belleği serbest bırakmaya çalışacaktır. Bu durum _çift serbest bırakma (double free)_ hatası olarak bilinir ve daha önce değindiğimiz bellek güvenliği hatalarından biridir. Aynı belleği iki kez serbest bırakmak bellek bozulmasına (*memory corruption*) ve bunun sonucunda güvenlik açıklarına yol açabilir.
 
@@ -196,10 +195,9 @@ Rust geçersiz kılınmış değişkeni kullanmanızı engellediği için şuna 
 
 Diğer programlama dilleriyle çalışırken _sığ kopya (shallow copy)_ ve _derin kopya (deep copy)_ terimlerini duyduysanız; öbekteki veriyi kopyalamadan yalnızca işaretçiyi, uzunluğu ve kapasiteyi kopyalama fikri kulağa sığ kopya yapmak gibi gelebilir. Ancak Rust aynı zamanda ilk değişkeni geçersiz kıldığı için bu işlem sığ kopya olarak değil, _taşıma (move)_ olarak adlandırılır. Bu örnekte `metin1`'in `metin2`'ye _taşındığını_ söyleriz. Dolayısıyla bellekte gerçekte olan durum Şekil 4-4'te gösterilmiştir.
 
-<img alt="Üç tablo: yığın üzerinde sırasıyla s1 (metin1) ve s2 (metin2) tabloları. s1 tablosu artık geçerli olmadığı için grileştirilmiştir; öbek verisine erişmek için yalnızca s2 kullanılabilir." src="img/trpl04-04.svg" class="center" style="width:
-50%;" />
+<img alt="Üç tablo: yığın üzerinde sırasıyla metin1 ve metin2 tabloları. metin1 tablosu artık geçerli olmadığı için grileştirilmiştir; öbek verisine erişmek için yalnızca metin2 kullanılabilir." src="img/trpl04-04.svg" class="center" />
 
-<span class="caption">Şekil 4-4: `s1` (`metin1`) geçersiz kılındıktan sonra bellekteki temsil</span>
+<span class="caption">Şekil 4-4: `metin1` geçersiz kılındıktan sonra bellekteki temsil</span>
 
 Bu yaklaşım sorunumuzu tamamen çözer! Yalnızca `metin2` geçerli kaldığından, kapsam dışına çıktığında belleği yalnızca o serbest bırakır ve çift serbest bırakma tehlikesi ortadan kalkar.
 
@@ -219,8 +217,8 @@ Kapsam, sahiplik ve belleğin `drop` fonksiyonu aracılığıyla serbest bırak�
 
 Başlangıçta `metin` adında bir değişken tanımlıyor ve ona `"merhaba"` değerini tutan bir `String` bağlıyoruz. Hemen ardından `"selam"` değerine sahip yeni bir `String` oluşturup `metin` değişkenine atıyoruz. Bu noktada öbekteki ilk değere başvuran hiçbir değişken kalmamıştır. Şekil 4-5, bu atama sonrasında yığın ve öbek verilerinin durumunu göstermektedir:
 
-<img alt="Yığındaki string değişkenini (s / metin) temsil eden tablo öbek üzerindeki ikinci string verisine (ahoy / selam) işaret ediyor; ilk string verisi (hello / merhaba) ise artık erişilemediği için gri renkte gösteriliyor."
-src="img/trpl04-05.svg" class="center" style="width: 50%;" />
+<img alt="Yığındaki string değişkenini (metin) temsil eden tablo öbek üzerindeki ikinci string verisine (selam) işaret ediyor; ilk string verisi (merhaba) ise artık erişilemediği için gri renkte gösteriliyor."
+src="img/trpl04-05.svg" class="center" />
 
 <span class="caption">Şekil 4-5: Başlangıçtaki değer bütünüyle yenisiyle değiştirildikten sonra bellekteki temsil</span>
 
