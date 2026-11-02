@@ -189,9 +189,7 @@ Buradaki çözüm, referans yerine doğrudan `String` değerini döndürmektir:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-16-no-dangle/src/main.rs:here}}
 ```
 
-Bu kod çalışır: `String` değerinin sahipliği çağıran fonksiyona taşındığı için
-ona ait öbek belleği bu fonksiyondan dönülürken serbest bırakılmaz. Bellek,
-değerin yeni sahibi onu düşürdüğünde serbest bırakılır.
+Bu kod çalışır: `String` değerinin sahipliği çağıran fonksiyona taşındığı için ona ait öbek belleği bu fonksiyondan dönülürken serbest bırakılmaz. Bellek, değerin yeni sahibi onu düşürdüğünde serbest bırakılır.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="the-rules-of-references"></a>

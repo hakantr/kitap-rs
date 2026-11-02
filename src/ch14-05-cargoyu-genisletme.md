@@ -7,13 +7,7 @@
 
 ## Özel Komutlarla Cargo'yu Genişletme
 
-Cargo, kendisinde değişiklik yapmanıza gerek kalmadan onu yeni alt komutlarla
-genişletebileceğiniz şekilde tasarlanmıştır. `$PATH` çevre değişkeninizdeki
-dizinlerde `cargo-birsey` adında bir ikili dosya varsa, `cargo birsey` yazarak
-onu sanki bir Cargo alt komutuymuş gibi çalıştırabilirsiniz. Bu tür özel
-komutlar, `cargo --list` komutunu çalıştırdığınızda da listelenir. Uzantıları
-`cargo install` ile kurup ardından tıpkı yerleşik Cargo araçları gibi
-çalıştırabilmek, Cargo tasarımının son derece kullanışlı bir avantajıdır!
+Cargo, kendisinde değişiklik yapmanıza gerek kalmadan onu yeni alt komutlarla genişletebileceğiniz şekilde tasarlanmıştır. `$PATH` çevre değişkeninizdeki dizinlerde `cargo-birsey` adında bir ikili dosya varsa, `cargo birsey` yazarak onu sanki bir Cargo alt komutuymuş gibi çalıştırabilirsiniz. Bu tür özel komutlar, `cargo --list` komutunu çalıştırdığınızda da listelenir. Uzantıları `cargo install` ile kurup ardından tıpkı yerleşik Cargo araçları gibi çalıştırabilmek, Cargo tasarımının son derece kullanışlı bir avantajıdır!
 
 > Not: Rust ekosisteminde geliştiricilerin günlük iş akışlarını hızlandırmak
 > için `cargo install` ile kurup sıkça kullandığı pek çok özel Cargo alt komutu
@@ -52,10 +46,4 @@ komutlar, `cargo --list` komutunu çalıştırdığınızda da listelenir. Uzant
 
 ## Özet
 
-Cargo ve [crates.io](https://crates.io/)<!-- ignore --> aracılığıyla kod
-paylaşmak, Rust ekosistemini pek çok farklı görev için kullanışlı kılan temel
-unsurlardan biridir. Rust'ın standart kütüphanesi küçük ve kararlıdır; ancak
-crate'leri paylaşmak, kullanmak ve dilin kendisinden bağımsız bir takvimde
-geliştirmek kolaydır. İşinize yarayan kodları
-[crates.io](https://crates.io/)<!-- ignore --> üzerinde paylaşmaktan çekinmeyin;
-büyük olasılıkla başkalarının da işine yarayacaktır!
+Cargo ve [crates.io](https://crates.io/)<!-- ignore --> aracılığıyla kod paylaşmak, Rust ekosistemini pek çok farklı görev için kullanışlı kılan temel unsurlardan biridir. Rust'ın standart kütüphanesi küçük ve kararlıdır; ancak crate'leri paylaşmak, kullanmak ve dilin kendisinden bağımsız bir takvimde geliştirmek kolaydır. İşinize yarayan kodları [crates.io](https://crates.io/)<!-- ignore --> üzerinde paylaşmaktan çekinmeyin; büyük olasılıkla başkalarının da işine yarayacaktır!

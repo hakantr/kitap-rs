@@ -7,11 +7,7 @@
 
 ## Tek İş Parçacıklı (Single-Threaded) Web Sunucusu Geliştirme
 
-İşe, tek iş parçacıklı (tek thread'li) bir web sunucusunu çalışır hâle getirerek
-başlayacağız. Başlamadan önce, web sunucuları geliştirirken rol oynayan
-protokollere kısaca göz atalım. Bu protokollerin tüm ayrıntıları bu kitabın
-kapsamı dışındadır; ancak kısa bir genel bakış ihtiyacınız olan bilgiyi
-sağlayacaktır.
+İşe, tek iş parçacıklı (tek thread'li) bir web sunucusunu çalışır hâle getirerek başlayacağız. Başlamadan önce, web sunucuları geliştirirken rol oynayan protokollere kısaca göz atalım. Bu protokollerin tüm ayrıntıları bu kitabın kapsamı dışındadır; ancak kısa bir genel bakış ihtiyacınız olan bilgiyi sağlayacaktır.
 
 Web sunucularında yer alan iki temel protokol _Hiper Metin Aktarım Protokolü_ (_Hypertext Transfer Protocol_ — _HTTP_) ve _Aktarım Denetim Protokolü_ (_Transmission Control Protocol_ — _TCP_) olarak adlandırılır. Her iki protokol de _istek-yanıt (request-response)_ protokolüdür; yani bir _istemci (client)_ istekleri başlatır, bir _sunucu (server)_ ise bu istekleri dinleyip istemciye bir yanıt sağlar. Bu istek ve yanıtların içerikleri söz konusu protokoller tarafından tanımlanır.
 
@@ -311,7 +307,4 @@ Daha önce tekrarlanan kod artık `if` ve `else` bloklarının dışındadır ve
 
 Harika! Artık yaklaşık 40 satırlık Rust koduyla, bir isteğe içerik sayfasıyla ve diğer tüm isteklere 404 yanıtıyla karşılık veren basit bir web sunucumuz var.
 
-Şu anda sunucumuz tek bir thread üzerinde (tek iş parçacıklı olarak) çalışıyor;
-yani aynı anda yalnızca tek bir isteğe hizmet verebiliyor. Bazı yavaş istekleri
-simüle ederek bunun nasıl bir soruna yol açabileceğini inceleyelim. Ardından
-sunucumuzun aynı anda birden fazla isteği ele alabilmesi için bunu düzelteceğiz.
+Şu anda sunucumuz tek bir thread üzerinde (tek iş parçacıklı olarak) çalışıyor; yani aynı anda yalnızca tek bir isteğe hizmet verebiliyor. Bazı yavaş istekleri simüle ederek bunun nasıl bir soruna yol açabileceğini inceleyelim. Ardından sunucumuzun aynı anda birden fazla isteği ele alabilmesi için bunu düzelteceğiz.

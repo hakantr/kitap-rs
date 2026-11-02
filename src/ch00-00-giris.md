@@ -13,17 +13,7 @@ Rust, çeşitli nedenlerle pek çok kişi için ideal bir dildir. Gelin en önem
 
 ### Geliştirici Ekipleri
 
-Rust, farklı düzeylerde sistem programlama bilgisine sahip geliştiricilerden
-oluşan büyük ekiplerin iş birliği içinde çalışması için üretken bir araç
-olduğunu kanıtlamıştır. Alt düzey kodlar, diğer pek çok dilde ancak kapsamlı
-testler ve deneyimli geliştiricilerin titiz kod incelemeleriyle yakalanabilen
-çeşitli sinsi hatalara açıktır. Rust'ta ise derleyici, bellek güvenliği
-ihlalleri ve veri yarışları gibi yakalanması güç pek çok hatayı derleme
-aşamasında engeller. Bu güvence, bütün *eşzamanlılık (concurrency)* hatalarının
-önlendiği anlamına gelmez; kilitlenmeler ve işlemlerin yanlış sıralanmasından
-kaynaklanan mantık hataları yine mümkündür. Ekip, derleyiciyle omuz omuza
-çalışarak vaktini hataların peşinden koşmak yerine programın mantığına
-odaklanmaya ayırabilir.
+Rust, farklı düzeylerde sistem programlama bilgisine sahip geliştiricilerden oluşan büyük ekiplerin iş birliği içinde çalışması için üretken bir araç olduğunu kanıtlamıştır. Alt düzey kodlar, diğer pek çok dilde ancak kapsamlı testler ve deneyimli geliştiricilerin titiz kod incelemeleriyle yakalanabilen çeşitli sinsi hatalara açıktır. Rust'ta ise derleyici, bellek güvenliği ihlalleri ve veri yarışları gibi yakalanması güç pek çok hatayı derleme aşamasında engeller. Bu güvence, bütün *eşzamanlılık (concurrency)* hatalarının önlendiği anlamına gelmez; kilitlenmeler ve işlemlerin yanlış sıralanmasından kaynaklanan mantık hataları yine mümkündür. Ekip, derleyiciyle omuz omuza çalışarak vaktini hataların peşinden koşmak yerine programın mantığına odaklanmaya ayırabilir.
 
 Rust ayrıca sistem programlama dünyasına çağdaş geliştirici araçları da kazandırır:
 
@@ -75,8 +65,7 @@ Bu kitapta iki tür bölüm bulacaksınız: kavram bölümleri ve proje bölüml
 
 **Bölüm 18**, Rust'a özgü kullanım kalıplarının (*idioms*) aşina olabileceğiniz nesne yönelimli programlama ilkeleriyle nerelerde örtüşüp nerelerde ayrıştığını inceler. **Bölüm 19**, Rust programlarının genelinde fikirleri ifade etmenin güçlü yolları olan *desenler (patterns)* ve *desen eşleştirme (pattern matching)* üzerine bir başvuru kaynağıdır. **Bölüm 20** ise *güvenli olmayan (`unsafe`) Rust*, makrolar ve ömürler, trait'ler, türler, fonksiyonlar ile kapanışlar hakkında daha fazla ayrıntının yer aldığı, ilgi çekici gelişmiş konulardan oluşan zengin bir seçki sunar.
 
-**Bölüm 21**'de alt düzey, *çok iş parçacıklı (multithreaded)* bir web sunucusu
-geliştireceğimiz bir projeyi tamamlayacağız!
+**Bölüm 21**'de alt düzey, *çok iş parçacıklı (multithreaded)* bir web sunucusu geliştireceğimiz bir projeyi tamamlayacağız!
 
 Son olarak ekler bölümü, dil hakkında başvuru kaynağı niteliğinde faydalı bilgiler barındırır. **Ek A** Rust'ın anahtar kelimelerini, **Ek B** Rust'ın operatörlerini ve sembollerini, **Ek C** standart kütüphane tarafından sağlanan türetilebilir trait'leri, **Ek D** faydalı geliştirme araçlarını ve **Ek E** *Rust sürümlerini (editions)* kapsar. **Ek F**'de kitabın çevirilerini bulabilir, **Ek G**'de ise Rust'ın nasıl geliştirildiğini ve *"Nightly Rust"* (gecelik derleme) sürümünün ne olduğunu öğrenebilirsiniz.
 
@@ -92,21 +81,11 @@ Rust öğrenme sürecinin önemli bir parçası, derleyicinin gösterdiği hata 
 | <img src="img/ferris/panics.svg" class="ferris-explain" alt="Ellerini havaya kaldırmış Ferris"/>                      | Bu kod panik oluşturur!            |
 | <img src="img/ferris/not_desired_behavior.svg" class="ferris-explain" alt="Tek pençesi havada, omuz silken Ferris"/> | Bu kod istenen davranışı üretmez.  |
 
-Çoğu durumda, derlenmeyen bir örneği sonraki adımlarda düzelteceğiz. Bu yüzden
-örnekleri yalnızca son hâlleriyle değil, anlatıldıkları aşamadaki amaçlarıyla
-birlikte değerlendirin.
+Çoğu durumda, derlenmeyen bir örneği sonraki adımlarda düzelteceğiz. Bu yüzden örnekleri yalnızca son hâlleriyle değil, anlatıldıkları aşamadaki amaçlarıyla birlikte değerlendirin.
 
-Bir kod bloğu her zaman tek başına çalıştırılabilecek tam bir program değildir.
-`// --snip--` işareti, konuyla doğrudan ilgili olmayan satırların
-gösterilmediğini belirtir; bir örnek de önceki adımda tanımladığınız tür veya
-fonksiyonları kullanabilir. Dosya adlarını ve çevredeki yönergeleri izleyerek
-kodu mevcut projenizin ilgili bölümüne yerleştirin.
+Bir kod bloğu her zaman tek başına çalıştırılabilecek tam bir program değildir. `// --snip--` işareti, konuyla doğrudan ilgili olmayan satırların gösterilmediğini belirtir; bir örnek de önceki adımda tanımladığınız tür veya fonksiyonları kullanabilir. Dosya adlarını ve çevredeki yönergeleri izleyerek kodu mevcut projenizin ilgili bölümüne yerleştirin.
 
-Derleme hatası, panik ve istenmeyen sonuç farklı durumlardır: Derleme hatasında
-çalıştırılabilir program üretilmez; panikte kod derlenmiş olsa da yürütme
-sırasında normal akış kesilir; mantık hatasında ise program çalışabilir fakat
-beklenen sonucu üretmez. Bu ayrımı öğrenmek de örneklerin amacının bir
-parçasıdır.
+Derleme hatası, panik ve istenmeyen sonuç farklı durumlardır: Derleme hatasında çalıştırılabilir program üretilmez; panikte kod derlenmiş olsa da yürütme sırasında normal akış kesilir; mantık hatasında ise program çalışabilir fakat beklenen sonucu üretmez. Bu ayrımı öğrenmek de örneklerin amacının bir parçasıdır.
 
 > Not: Rust derleyicisi (`rustc`), hata ve uyarı mesajlarını İngilizce olarak
 > üretir; ancak hata kodları (örneğin `E0382`), satır işaretçileri ve `help:`

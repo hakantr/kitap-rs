@@ -29,12 +29,7 @@ Boş bir hash map oluşturmanın bir yolu `new` fonksiyonunu kullanmak ve ardın
 
 Öncelikle standart kütüphanenin koleksiyonlar modülünden `HashMap` türünü `use` ile kapsama dahil etmemiz gerektiğine dikkat edin. Üç yaygın koleksiyonumuz arasında en az sıklıkla kullanılanı bu olduğu için, ön tanımlı kapsamda (*prelude*) otomatik olarak kapsama dahil edilen öğeler arasında yer almaz. Hash map'ler standart kütüphaneden daha az yerleşik destek alır; örneğin vektörlerdeki `vec!` gibi bunları oluşturmaya yarayan yerleşik bir makro yoktur.
 
-Tıpkı vektörler gibi hash map'ler de asıl verilerini *öbekte (heap)* saklar
-(`HashMap` değerinin tabloyu yöneten sabit boyutlu kısmı ise örneklerimizdeki
-yerel değişkenin içinde bulunur). Bu örnekteki `HashMap`, `String` türünde
-anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi hash map'ler de
-türdeştir (homojendir): tüm anahtarlar kendi içinde aynı türde ve tüm değerler
-de kendi içinde aynı türde olmalıdır.
+Tıpkı vektörler gibi hash map'ler de asıl verilerini *öbekte (heap)* saklar (`HashMap` değerinin tabloyu yöneten sabit boyutlu kısmı ise örneklerimizdeki yerel değişkenin içinde bulunur). Bu örnekteki `HashMap`, `String` türünde anahtarlara ve `i32` türünde değerlere sahiptir. Vektörler gibi hash map'ler de türdeştir (homojendir): tüm anahtarlar kendi içinde aynı türde ve tüm değerler de kendi içinde aynı türde olmalıdır.
 
 > Not: Bir türün hash map anahtarı olarak kullanılabilmesi için `Eq` ve `Hash`
 > trait'lerini uygulaması gerekir; `String`, `&str`, tam sayı türleri, `bool`,

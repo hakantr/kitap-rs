@@ -5,12 +5,7 @@
 
 ## E - Sürümler
 
-Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*)
-bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele
-alıyoruz! Buradaki *sürüm (edition)*, `rustc 1.85.0` gibi bir derleyici
-sürümünden farklıdır: `edition`, crate'in kaynak kodunun hangi dil kurallarıyla
-yorumlanacağını seçer. Aynı derleyici birden fazla edition'ı destekleyebilir;
-derleyiciyi güncellemek projenizin `edition` ayarını kendiliğinden değiştirmez.
+Bölüm 1'de `cargo new` komutunun _Cargo.toml_ dosyanıza bir sürüm (*edition*) bilgisi eklediğini görmüştünüz. Bu ekte bu kavramın ne anlama geldiğini ele alıyoruz! Buradaki *sürüm (edition)*, `rustc 1.85.0` gibi bir derleyici sürümünden farklıdır: `edition`, crate'in kaynak kodunun hangi dil kurallarıyla yorumlanacağını seçer. Aynı derleyici birden fazla edition'ı destekleyebilir; derleyiciyi güncellemek projenizin `edition` ayarını kendiliğinden değiştirmez.
 
 Rust dili ve derleyicisi altı haftalık bir yayın döngüsüne sahiptir; yani kullanıcılar sürekli olarak yeni özelliklere kavuşur. Diğer pek çok programlama dili daha büyük değişiklikleri daha seyrek aralıklarla yayınlarken, Rust daha küçük güncellemeleri daha sık yayınlar. Bir süre sonra tüm bu küçük iyileştirmeler üst üste birikir. Yine de bir yayından diğerine geriye dönüp baktığınızda, “Vay canına, Rust 1.10 ile Rust 1.31 arasında dil ne kadar değişmiş!” diyebilmek her zaman kolay olmayabilir.
 

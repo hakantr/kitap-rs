@@ -47,13 +47,7 @@ _Tam sayı (integer)_, kesirli bileşeni olmayan bir sayıdır. Bölüm 2'de tam
 | 128 bit | `i128`   | `u128`    |
 | Mimariye bağlı | `isize`  | `usize`   |
 
-Her tam sayı türünün belirli bir boyutu ve değer aralığı vardır. _İşaretli_
-türler negatif sayıları, sıfırı ve pozitif sayıları; _işaretsiz_ türler ise
-sıfırı ve pozitif sayıları temsil eder. Buradaki “işaret”, sayının kaynak kodda
-mutlaka `+` veya `-` ile yazılması gerektiğini değil, türün negatif değerleri
-temsil edip edemediğini belirtir. İşaretli sayılar bellekte [ikiye
-tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili
-kullanılarak saklanır.
+Her tam sayı türünün belirli bir boyutu ve değer aralığı vardır. _İşaretli_ türler negatif sayıları, sıfırı ve pozitif sayıları; _işaretsiz_ türler ise sıfırı ve pozitif sayıları temsil eder. Buradaki “işaret”, sayının kaynak kodda mutlaka `+` veya `-` ile yazılması gerektiğini değil, türün negatif değerleri temsil edip edemediğini belirtir. İşaretli sayılar bellekte [ikiye tümleyen][twos-complement]<!-- ignore --> (*two's complement*) temsili kullanılarak saklanır.
 
 Her işaretli varyant, _n_ ilgili varyantın kullandığı bit sayısı olmak üzere, −(2<sup>n − 1</sup>) ile 2<sup>n − 1</sup> − 1 (sınırlar dahil) aralığındaki sayıları saklayabilir. Dolayısıyla bir `i8`, −(2<sup>7</sup>) ile 2<sup>7</sup> − 1 aralığındaki, yani −128 ile 127 arasındaki sayıları tutabilir. İşaretsiz varyantlar ise 0 ile 2<sup>n</sup> − 1 aralığındaki sayıları saklayabilir; örneğin bir `u8`, 0 ile 2<sup>8</sup> − 1 aralığındaki, yani 0 ile 255 arasındaki sayıları tutabilir.
 

@@ -39,13 +39,7 @@ Dosya içeriğinde sorgu metnini fiilen arayacak ve sorguyla eşleşen satırlar
 
 Bu test `"güven"` string'ini arar. Üzerinde arama yaptığımız metin üç satırdan oluşur ve büyük/küçük harf duyarlılığı nedeniyle bunlardan yalnızca ikincisi küçük harfli `"güven"` ifadesini barındırır (açılış çift tırnağından hemen sonra gelen ters eğik çizginin `\`, Rust'a bu çok satırlı string sabitinin başına yeni satır karakteri koymamasını söylediğine dikkat edin). Ardından `ara` fonksiyonundan dönen değerin yalnızca beklediğimiz satırı içerdiğini doğruluyoruz.
 
-Bu test derlenir; ancak çalıştırıldığında `unimplemented!` makrosu `"not
-implemented"` (*uygulanmadı*) mesajıyla paniklediği için başarısız olur. TDD
-ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi
-`ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak
-fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece
-test, beklediğimiz asıl nedenden dolayı —boş bir vektör, `"güvenli, hızlı,
-üretken."` satırını barındıran vektörle eşleşmediği için— başarısız olacaktır.
+Bu test derlenir; ancak çalıştırıldığında `unimplemented!` makrosu `"not implemented"` (*uygulanmadı*) mesajıyla paniklediği için başarısız olur. TDD ilkelerine uygun olarak küçük bir adım atalım: Liste 12-16'da gösterildiği gibi `ara` fonksiyonunu her zaman boş bir vektör döndürecek şekilde tanımlayarak fonksiyon çağrıldığında paniklememesini sağlayacak kadar kod ekleyelim. Böylece test, beklediğimiz asıl nedenden dolayı —boş bir vektör, `"güvenli, hızlı, üretken."` satırını barındıran vektörle eşleşmediği için— başarısız olacaktır.
 
 <Listing number="12-16" file-name="src/lib.rs" caption="`ara` fonksiyonunu çağrıldığında paniklemeyecek kadar tanımlama">
 

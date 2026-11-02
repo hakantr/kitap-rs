@@ -7,28 +7,11 @@
 
 ## `cargo install` ile İkili Dosyaları Kurma
 
-`cargo install` komutu, ikili crate'leri yerel olarak kurup kullanmanıza olanak
-tanır. Bu komut sistem paketlerinin yerini almak için değil; Rust
-geliştiricilerinin, başkaları tarafından [crates.io](https://crates.io/)<!-- ignore -->
-üzerinde paylaşılan araçları pratik bir şekilde kurabilmesi için
-tasarlanmıştır. Yalnızca ikili hedefi olan paketleri kurabileceğinizi
-unutmayın. _İkili hedef (binary target)_, crate içinde bir _src/main.rs_
-dosyası ya da ikili dosya olarak belirtilmiş başka bir dosya bulunduğunda
-oluşturulan çalıştırılabilir programdır; buna karşılık kütüphane hedefi tek
-başına çalıştırılamaz, ancak başka programlara dahil edilmeye uygundur.
-Crate'lerin README dosyalarında genellikle ilgili crate'in bir kütüphane mi
-olduğu, bir ikili hedefe mi sahip olduğu yoksa her ikisini birden mi sunduğu
-bilgisi yer alır.
+`cargo install` komutu, ikili crate'leri yerel olarak kurup kullanmanıza olanak tanır. Bu komut sistem paketlerinin yerini almak için değil; Rust geliştiricilerinin, başkaları tarafından [crates.io](https://crates.io/)<!-- ignore --> üzerinde paylaşılan araçları pratik bir şekilde kurabilmesi için tasarlanmıştır. Yalnızca ikili hedefi olan paketleri kurabileceğinizi unutmayın. _İkili hedef (binary target)_, crate içinde bir _src/main.rs_ dosyası ya da ikili dosya olarak belirtilmiş başka bir dosya bulunduğunda oluşturulan çalıştırılabilir programdır; buna karşılık kütüphane hedefi tek başına çalıştırılamaz, ancak başka programlara dahil edilmeye uygundur. Crate'lerin README dosyalarında genellikle ilgili crate'in bir kütüphane mi olduğu, bir ikili hedefe mi sahip olduğu yoksa her ikisini birden mi sunduğu bilgisi yer alır.
 
-`cargo install` ile kurulan tüm ikili dosyalar, kurulum kök dizininin _bin_
-klasöründe saklanır. Rust'ı _rustup.rs_ kullanarak kurduysanız ve özel bir
-yapılandırma yapmadıysanız bu dizin *$HOME/.cargo/bin* olacaktır. `cargo install`
-ile kurduğunuz programları çalıştırabilmek için bu dizinin `$PATH` çevre
-değişkeninizde yer aldığından emin olun.
+`cargo install` ile kurulan tüm ikili dosyalar, kurulum kök dizininin _bin_ klasöründe saklanır. Rust'ı _rustup.rs_ kullanarak kurduysanız ve özel bir yapılandırma yapmadıysanız bu dizin *$HOME/.cargo/bin* olacaktır. `cargo install` ile kurduğunuz programları çalıştırabilmek için bu dizinin `$PATH` çevre değişkeninizde yer aldığından emin olun.
 
-Örneğin [Bölüm 12'de][ch12], dosyalarda arama yapmak için kullanılan `grep`
-aracının Rust ile yazılmış `ripgrep` adlı bir uygulaması olduğundan söz
-etmiştik. `ripgrep`'i kurmak için şu komutu çalıştırabiliriz:
+Örneğin [Bölüm 12'de][ch12], dosyalarda arama yapmak için kullanılan `grep` aracının Rust ile yazılmış `ripgrep` adlı bir uygulaması olduğundan söz etmiştik. `ripgrep`'i kurmak için şu komutu çalıştırabiliriz:
 
 <!-- manual-regeneration
 cargo install something you don't have, copy relevant output below
@@ -47,11 +30,7 @@ $ cargo install ripgrep
    Installed package `ripgrep v14.1.1` (executable `rg`)
 ```
 
-Çıktının sondan bir önceki satırı, kurulan ikili dosyanın konumunu ve adını
-gösterir; `ripgrep` örneğinde bu ad `rg`'dir. Daha önce de belirttiğimiz gibi,
-kurulum dizini `$PATH` içinde yer aldığı sürece `rg --help` komutunu
-çalıştırabilir ve dosyalarda arama yapmak için daha hızlı, daha "Rust usulü" bir
-araç kullanmaya başlayabilirsiniz!
+Çıktının sondan bir önceki satırı, kurulan ikili dosyanın konumunu ve adını gösterir; `ripgrep` örneğinde bu ad `rg`'dir. Daha önce de belirttiğimiz gibi, kurulum dizini `$PATH` içinde yer aldığı sürece `rg --help` komutunu çalıştırabilir ve dosyalarda arama yapmak için daha hızlı, daha "Rust usulü" bir araç kullanmaya başlayabilirsiniz!
 
 > Not: Günlük geliştirme sürecinde `cargo install` ile kurduğunuz araçları
 > yönetirken ve kendi projelerinizi yerel sisteminize kurarken şu pratik

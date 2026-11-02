@@ -103,12 +103,7 @@ Peki buradaki fark nedir? Neden `String` değiştirilebilirken string sabitleri 
 
 ### Bellek ve Ayırma
 
-Bir string sabitinde içeriği derleme zamanında bildiğimiz için metin doğrudan
-son çalıştırılabilir ikili dosyaya gömülür. String sabitlerinin hızlı ve verimli
-olmasının nedeni budur. Bu kullanımda metnin içeriği baştan bilindiği için
-çalışma zamanında ayrıca bellek ayırmaya gerek yoktur. Ne yazık ki derleme
-zamanında boyutu bilinmeyen ve program çalışırken boyutu değişebilecek her bir
-metin parçası için ikili dosyanın içine sabit bir bellek bloğu koyamayız.
+Bir string sabitinde içeriği derleme zamanında bildiğimiz için metin doğrudan son çalıştırılabilir ikili dosyaya gömülür. String sabitlerinin hızlı ve verimli olmasının nedeni budur. Bu kullanımda metnin içeriği baştan bilindiği için çalışma zamanında ayrıca bellek ayırmaya gerek yoktur. Ne yazık ki derleme zamanında boyutu bilinmeyen ve program çalışırken boyutu değişebilecek her bir metin parçası için ikili dosyanın içine sabit bir bellek bloğu koyamayız.
 
 `String` türünde ise değiştirilebilir ve büyüyebilir bir metin parçasını desteklemek amacıyla, içeriği tutmak üzere öbekte derleme zamanında bilinmeyen miktarda bellek ayırmamız gerekir. Bu durum iki gereklilik doğurur:
 
@@ -263,32 +258,13 @@ Henüz değinmediğimiz bir ayrıntı daha var. Bir kısmını Liste 4-2'de gör
 
 Ancak bu kod az önce öğrendiklerimizle çelişiyor gibi görünmektedir: `clone` çağrısı yapmadığımız hâlde `x` hâlâ geçerlidir ve `y` içine taşınmamıştır.
 
-Bunun nedeni, `i32` türünün `Copy` trait'ini uygulamasıdır: Değeri oluşturan
-bitler kopyalandığında ayrı bir kaynağın sahipliği çoğaltılmaz. Burada
-belirleyici olan değerin yığında tutulması veya boyutunun bilinmesi değildir;
-örneğin `String` değerinin boyutu da derleme zamanında bilinir, ancak bu tür
-`Copy` uygulamaz. Yani `y` değişkenini oluşturduktan sonra `x` değişkeninin
-geçerliliğini yitirmesini gerektirecek hiçbir neden yoktur. Başka bir deyişle,
-burada derin kopyalama ile sığ kopyalama arasında hiçbir fark bulunmaz; bu
-yüzden `clone` çağırmak olağan sığ kopyalamadan farklı bir iş yapmayacağı için
-ona gerek duymayız.
+Bunun nedeni, bu örnekteki `x` ve `y` değişkenlerinin türü olan `i32`'nin `Copy` trait'ini uygulamasıdır. `let y = x;` atamasında tam sayı değeri kopyalanır ve `x` geçerli kalır. Bir `i32` değeri, `String` gibi öbekteki ayrı bir verinin sahibi değildir; bu nedenle bitlerini kopyalamak değerin tamamını kopyalamak için yeterlidir. Bu tam sayı örneğinde derin kopyalama ile sığ kopyalama arasında fark yoktur ve `clone` çağırmaya gerek duymayız.
 
-Rust, tam sayılar gibi bit düzeyinde kopyalanabilen türlerin uygulayabildiği
-`Copy` adında özel bir trait sunar (trait'leri [Bölüm 10][traits]<!-- ignore
--->'da ayrıntılı olarak inceleyeceğiz). Bir tür `Copy` trait'ini uyguluyorsa onu
-kullanan değişkenler taşınmaz; bunun yerine önemsiz bir maliyetle kopyalanır ve
-başka bir değişkene atandıktan sonra da geçerli kalmaya devam eder.
+Burada belirleyici olan, türün `Copy` trait'ini uygulamasıdır; değerin yığında tutulması veya boyutunun derleme zamanında bilinmesi tek başına yeterli değildir. Örneğin `String`'in yığında tutulan kısmının boyutu da derleme zamanında bilinir. Ancak yığındaki bu kısım, metnin öbekteki asıl verisine işaret eden bir işaretçinin yanı sıra uzunluk ve kapasite bilgilerini de içerir. İşaretçi, asıl verinin bellekteki adresini tutar; işaretçileri ve akıllı işaretçileri [Bölüm 15](ch15-00-akilli-isaretciler.md)'te daha ayrıntılı inceleyeceğiz. Yalnızca yığındaki bitleri kopyalamak, öbekteki veriyi çoğaltmaz. `String`, `Copy` uygulamadığı için bir `String` değeri başka bir değişkene atandığında sahiplik taşınır ve önceki değişken geçersiz olur.
 
-Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa
-Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına
-çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` trait'ini
-eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinizde bu trait'i
-uygulamak üzere ilgili türetme özniteliğini (`#[derive(Copy)]`) nasıl
-ekleyeceğinizi öğrenmek için Ek C'deki ["Türetilebilir
-Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz. (`Copy`,
-`Clone` trait'inin bir alt trait'i olduğundan bir türün `Copy` uygulayabilmesi
-için `Clone` da uygulaması gerekir. Bu iki trait genellikle birlikte türetilir:
-`#[derive(Clone, Copy)]`; elle uygulamak da mümkündür.)
+Rust, tam sayılar gibi bit düzeyinde kopyalanabilen türlerin uygulayabildiği `Copy` adında özel bir trait sunar (trait'leri [Bölüm 10][traits]<!-- ignore -->'da ayrıntılı olarak inceleyeceğiz). Bir tür `Copy` trait'ini uyguluyorsa onu kullanan değişkenler taşınmaz; bunun yerine önemsiz bir maliyetle kopyalanır ve başka bir değişkene atandıktan sonra da geçerli kalmaya devam eder.
+
+Bir türün kendisi ya da parçalarından herhangi biri `Drop` trait'ini uygulamışsa Rust o türü `Copy` ile işaretlememize izin vermez. Değer kapsam dışına çıktığında özel bir temizlik işlemi yapılması gereken bir türe `Copy` trait'ini eklemeye çalışırsak derleme zamanı hatası alırız. Kendi türlerinizde bu trait'i uygulamak üzere ilgili türetme özniteliğini (`#[derive(Copy)]`) nasıl ekleyeceğinizi öğrenmek için Ek C'deki ["Türetilebilir Trait'ler"][derivable-traits]<!-- ignore --> bölümüne bakabilirsiniz. (`Copy`, `Clone` trait'inin bir alt trait'i olduğundan bir türün `Copy` uygulayabilmesi için `Clone` da uygulaması gerekir. Bu iki trait genellikle birlikte türetilir: `#[derive(Clone, Copy)]`; elle uygulamak da mümkündür.)
 
 Peki hangi türler `Copy` trait'ini uygular? Emin olmak için ilgili türün dokümantasyonunu kontrol edebilirsiniz; ancak genel kural olarak basit skaler değerlerden oluşan her grup `Copy` uygulayabilirken, öbekte bellek ayırma gerektiren veya bir sistem kaynağını temsil eden hiçbir tür `Copy` uygulayamaz. `Copy` trait'ini uygulayan başlıca türler şunlardır:
 

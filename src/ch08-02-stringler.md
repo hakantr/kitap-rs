@@ -279,14 +279,7 @@ Bir karakterin baytlarının yalnızca bir kısmını `&merhaba[0..1]` gibi bir 
 {{#include ../listings/ch08-common-collections/output-only-01-not-char-boundary/output.txt}}
 ```
 
-Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter
-sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir.
-Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız;
-aksi hâlde programınızın çökmesine yol açabilirsiniz. Vektörlerdeki `get`
-metodunda olduğu gibi, panik yapmayan bir alternatif olarak `merhaba.get(0..1)`
-çağrısını kullanabilirsiniz: Bu metot, aralık string sınırları içindeyse,
-başlangıcı bitişinden büyük değilse ve iki uç da UTF-8 karakter sınırına denk
-geliyorsa dilimi `Some` içinde döndürür; aksi hâlde `None` döndürür.
+Panik mesajında da görüldüğü üzere, bitiş bayt indeksi `1` geçerli bir karakter sınırı değildir ve `'З'` karakterinin baytlarının (`0..2`) ortasına denk gelir. Bu nedenle aralık kullanarak string dilimleri oluştururken dikkatli olmalısınız; aksi hâlde programınızın çökmesine yol açabilirsiniz. Vektörlerdeki `get` metodunda olduğu gibi, panik yapmayan bir alternatif olarak `merhaba.get(0..1)` çağrısını kullanabilirsiniz: Bu metot, aralık string sınırları içindeyse, başlangıcı bitişinden büyük değilse ve iki uç da UTF-8 karakter sınırına denk geliyorsa dilimi `Some` içinde döndürür; aksi hâlde `None` döndürür.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="methods-for-iterating-over-strings"></a>

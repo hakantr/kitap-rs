@@ -26,10 +26,7 @@ fn ilk_kelime(metin: &String) -> ?
 
 </Listing>
 
-`String` değerini eleman eleman tarayıp her bir değerin boşluk olup olmadığını
-kontrol etmemiz gerektiğinden, `as_bytes` metoduyla `String` içindeki UTF-8
-baytlarını `&[u8]` türünde bir dilim olarak ödünç alırız. Bu işlem metni
-kopyalamaz veya yeni bir dizi oluşturmaz:
+`String` değerini eleman eleman tarayıp her bir değerin boşluk olup olmadığını kontrol etmemiz gerektiğinden, `as_bytes` metoduyla `String` içindeki UTF-8 baytlarını `&[u8]` türünde bir dilim olarak ödünç alırız. Bu işlem metni kopyalamaz veya yeni bir dizi oluşturmaz:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}

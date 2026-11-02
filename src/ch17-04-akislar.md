@@ -6,38 +6,11 @@
 
 ## Akışlar (Streams): Sıralı Future'lar
 
-Bu bölümün başlarında, [“Mesaj İletimiyle İki Görev Arasında Veri
-Gönderme”][17-02-messages]<!-- ignore --> başlığında asenkron kanalımızın alıcı
-tarafını nasıl kullandığımızı hatırlayın. Asenkron `recv` metodu zaman içinde bir
-öğe dizisi üretir. Bu, _akış (stream)_ olarak bilinen çok daha genel bir desenin
-bir örneğidir. Pek çok kavram doğal olarak akış şeklinde temsil edilir: bir
-kuyrukta öğelerin hazır hâle gelmesi, tüm veri kümesi bilgisayarın belleğine
-sığmayacak kadar büyük olduğunda verilerin dosya sisteminden artımlı olarak
-parça parça çekilmesi veya zaman içinde ağ üzerinden veri gelmesi. Akışlar her
-adımda bir future ürettiği için onları diğer her türlü future ile birlikte
-kullanabilir ve ilginç şekillerde birleştirebiliriz. Örneğin, çok fazla ağ
-çağrısı tetiklememek için olayları gruplayabilir, uzun süren işlem dizilerine
-zaman aşımı tanımlayabilir ya da gereksiz iş yapmamak için kullanıcı arayüzü
-olaylarının sıklığını sınırlandırabiliriz.
+Bu bölümün başlarında, [“Mesaj İletimiyle İki Görev Arasında Veri Gönderme”][17-02-messages]<!-- ignore --> başlığında asenkron kanalımızın alıcı tarafını nasıl kullandığımızı hatırlayın. Asenkron `recv` metodu zaman içinde bir öğe dizisi üretir. Bu, _akış (stream)_ olarak bilinen çok daha genel bir desenin bir örneğidir. Pek çok kavram doğal olarak akış şeklinde temsil edilir: bir kuyrukta öğelerin hazır hâle gelmesi, tüm veri kümesi bilgisayarın belleğine sığmayacak kadar büyük olduğunda verilerin dosya sisteminden artımlı olarak parça parça çekilmesi veya zaman içinde ağ üzerinden veri gelmesi. Akışlar her adımda bir future ürettiği için onları diğer her türlü future ile birlikte kullanabilir ve ilginç şekillerde birleştirebiliriz. Örneğin, çok fazla ağ çağrısı tetiklememek için olayları gruplayabilir, uzun süren işlem dizilerine zaman aşımı tanımlayabilir ya da gereksiz iş yapmamak için kullanıcı arayüzü olaylarının sıklığını sınırlandırabiliriz.
 
-Bölüm 13'te, [“`Iterator` Trait'i ve `next` Metodu”][iterator-trait]<!-- ignore -->
-başlığında `Iterator` trait'ini incelerken de bir öğe dizisi görmüştük; ancak
-iteratörler ile asenkron kanal alıcısı arasında iki temel fark vardır. İlk fark
-zamandır: iteratörler senkronken kanal alıcısı asenkrondur. İkinci fark ise
-API'dir. Doğrudan `Iterator` ile çalışırken onun senkron `next` metodunu
-çağırırız. Özel olarak `trpl::Receiver` akışında ise bunun yerine asenkron bir
-`recv` metodu çağırmıştık. Bunların dışında bu API'ler kullanım hissi açısından
-birbirine çok benzer ve bu benzerlik bir tesadüf değildir. Akış, yinelemenin
-asenkron bir biçimi gibidir. Bununla birlikte `trpl::Receiver` özel olarak mesaj
-almayı beklerken, genel amaçlı akış API'si çok daha kapsamlıdır: tıpkı
-`Iterator`'ın yaptığı gibi sıradaki öğeyi sunar, ancak bunu asenkron olarak
-yapar.
+Bölüm 13'te, [“`Iterator` Trait'i ve `next` Metodu”][iterator-trait]<!-- ignore --> başlığında `Iterator` trait'ini incelerken de bir öğe dizisi görmüştük; ancak iteratörler ile asenkron kanal alıcısı arasında iki temel fark vardır. İlk fark zamandır: iteratörler senkronken kanal alıcısı asenkrondur. İkinci fark ise API'dir. Doğrudan `Iterator` ile çalışırken onun senkron `next` metodunu çağırırız. Özel olarak `trpl::Receiver` akışında ise bunun yerine asenkron bir `recv` metodu çağırmıştık. Bunların dışında bu API'ler kullanım hissi açısından birbirine çok benzer ve bu benzerlik bir tesadüf değildir. Akış, yinelemenin asenkron bir biçimi gibidir. Bununla birlikte `trpl::Receiver` özel olarak mesaj almayı beklerken, genel amaçlı akış API'si çok daha kapsamlıdır: tıpkı `Iterator`'ın yaptığı gibi sıradaki öğeyi sunar, ancak bunu asenkron olarak yapar.
 
-Rust'ta iteratörler ile akışlar arasındaki bu benzerlik, aslında herhangi bir
-iteratörden bir akış oluşturabileceğimiz anlamına gelir. Bir iteratörde olduğu
-gibi, bir akışla da `next` metodunu çağırıp ardından çıktısını `await` ile
-bekleyerek çalışabiliriz; henüz derlenmeyecek olan Liste 17-21'de bu kullanım
-gösterilmektedir.
+Rust'ta iteratörler ile akışlar arasındaki bu benzerlik, aslında herhangi bir iteratörden bir akış oluşturabileceğimiz anlamına gelir. Bir iteratörde olduğu gibi, bir akışla da `next` metodunu çağırıp ardından çıktısını `await` ile bekleyerek çalışabiliriz; henüz derlenmeyecek olan Liste 17-21'de bu kullanım gösterilmektedir.
 
 <Listing number="17-21" caption="Bir iteratörden akış oluşturma ve değerlerini yazdırma" file-name="src/main.rs">
 
@@ -47,14 +20,9 @@ gösterilmektedir.
 
 </Listing>
 
-Bir sayı dizisiyle başlıyor, bunu bir iteratöre dönüştürüyor ve ardından tüm
-değerleri iki katına çıkarmak için üzerinde `map` çağırıyoruz. Daha sonra
-`trpl::stream_from_iter` fonksiyonunu kullanarak iteratörü bir akışa
-dönüştürüyoruz. Ardından bir `while let` döngüsüyle akıştaki öğeler üzerinde
-geldikçe dönüyoruz.
+Bir sayı dizisiyle başlıyor, bunu bir iteratöre dönüştürüyor ve ardından tüm değerleri iki katına çıkarmak için üzerinde `map` çağırıyoruz. Daha sonra `trpl::stream_from_iter` fonksiyonunu kullanarak iteratörü bir akışa dönüştürüyoruz. Ardından bir `while let` döngüsüyle akıştaki öğeler üzerinde geldikçe dönüyoruz.
 
-Ne yazık ki kodu çalıştırmayı denediğimizde derlenmez ve bunun yerine
-kullanılabilir bir `next` metodu olmadığını bildirir:
+Ne yazık ki kodu çalıştırmayı denediğimizde derlenmez ve bunun yerine kullanılabilir bir `next` metodu olmadığını bildirir:
 
 <!-- manual-regeneration
 cd listings/ch17-async-await/listing-17-21
@@ -86,20 +54,9 @@ help: there is a method `try_next` with a similar name
    |                                      ~~~~~~~~
 ```
 
-Bu çıktının da açıkladığı gibi, derleyici hatasının nedeni `next` metodunu
-kullanabilmek için doğru trait'in kapsamda olması gerekliliğidir. Şimdiye
-kadarki tartışmamıza bakarak bu trait'in `Stream` olmasını makul bir şekilde
-bekleyebilirsiniz, ancak gereken trait aslında `StreamExt`'tir. _Extension_
-(uzantı/genişletme) kelimesinin kısaltması olan `Ext`, Rust topluluğunda bir
-trait'i başka bir trait ile genişletmek için yaygın olarak kullanılan bir
-desendir.
+Bu çıktının da açıkladığı gibi, derleyici hatasının nedeni `next` metodunu kullanabilmek için doğru trait'in kapsamda olması gerekliliğidir. Şimdiye kadarki tartışmamıza bakarak bu trait'in `Stream` olmasını makul bir şekilde bekleyebilirsiniz, ancak gereken trait aslında `StreamExt`'tir. _Extension_ (uzantı/genişletme) kelimesinin kısaltması olan `Ext`, Rust topluluğunda bir trait'i başka bir trait ile genişletmek için yaygın olarak kullanılan bir desendir.
 
-`Stream` trait'i, `Iterator` ve `Future` trait'lerini etkili bir biçimde
-birleştiren düşük seviyeli bir arayüz tanımlar. `StreamExt` ise `Stream`
-üzerine, `next` metodunun yanı sıra `Iterator` trait'inin sunduklarına benzer
-diğer yardımcı metotları da içeren daha üst seviyeli bir API kümesi sağlar.
-`Stream` ve `StreamExt` henüz Rust'ın standart kütüphanesinin bir parçası
-değildir, ancak ekosistemdeki çoğu crate benzer tanımları kullanır.
+`Stream` trait'i, `Iterator` ve `Future` trait'lerini etkili bir biçimde birleştiren düşük seviyeli bir arayüz tanımlar. `StreamExt` ise `Stream` üzerine, `next` metodunun yanı sıra `Iterator` trait'inin sunduklarına benzer diğer yardımcı metotları da içeren daha üst seviyeli bir API kümesi sağlar. `Stream` ve `StreamExt` henüz Rust'ın standart kütüphanesinin bir parçası değildir, ancak ekosistemdeki çoğu crate benzer tanımları kullanır.
 
 > Not: **Neden `*Ext` (Uzantı Trait'i) Deseni Kullanılır?**
 >
@@ -125,8 +82,7 @@ değildir, ancak ekosistemdeki çoğu crate benzer tanımları kullanır.
 > olacak bir sözdizimi üzerindeki tasarım çalışmaları hâlâ sürmektedir; bu
 > özellikler yalnızca nightly Rust'ta deneysel olarak mevcuttur.
 
-Derleyici hatasını düzeltmenin yolu, Liste 17-22'deki gibi `trpl::StreamExt`
-için bir `use` deyimi eklemektir.
+Derleyici hatasını düzeltmenin yolu, Liste 17-22'deki gibi `trpl::StreamExt` için bir `use` deyimi eklemektir.
 
 <Listing number="17-22" caption="Bir iteratörü akış temeli olarak başarıyla kullanma" file-name="src/main.rs">
 
@@ -136,9 +92,7 @@ için bir `use` deyimi eklemektir.
 
 </Listing>
 
-Tüm bu parçalar bir araya geldiğinde kod tam istediğimiz gibi çalışır! Dahası,
-artık `StreamExt` kapsamda olduğuna göre tıpkı iteratörlerde olduğu gibi sunduğu
-tüm yardımcı metotları kullanabiliriz.
+Tüm bu parçalar bir araya geldiğinde kod tam istediğimiz gibi çalışır! Dahası, artık `StreamExt` kapsamda olduğuna göre tıpkı iteratörlerde olduğu gibi sunduğu tüm yardımcı metotları kullanabiliriz.
 
 > Not: `StreamExt` kapsamda olduğunda iteratörlerden tanıdığınız `map`, `filter`,
 > `take` ve `fold` gibi adaptörlerin yanı sıra, `trpl`'nin yeniden dışa

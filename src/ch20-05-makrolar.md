@@ -246,14 +246,7 @@ Bu struct'ın alanları, ayrıştırdığımız Rust kodunun `ident` (_identifie
 
 Birazdan, eklemek istediğimiz yeni Rust kodunu üretecek olan `impl_merhaba_makro` fonksiyonunu tanımlayacağız. Ancak buna geçmeden önce, `derive` makromuzun çıktısının da bir `TokenStream` olduğuna dikkat edin. Döndürülen `TokenStream`, crate kullanıcılarımızın yazdığı koda eklenir; böylece kendi crate'lerini derlediklerinde, değiştirilmiş `TokenStream` içinde sağladığımız ek işlevselliği elde ederler.
 
-Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive`
-fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz.
-Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının
-`Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, hata doğrudan bir
-`Err` dönüş değeri olarak iletilemez. Makro panikleyebilir veya açıklayıcı bir
-`compile_error!` çağrısı içeren bir `TokenStream` üretebilir. Bu örneği `unwrap`
-kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak
-neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
+Burada `syn::parse` fonksiyonu çağrısı başarısız olursa `merhaba_makro_derive` fonksiyonunun paniklemesi için `unwrap` çağırdığımızı fark etmiş olabilirsiniz. Prosedürel makro API'sine uymak adına `proc_macro_derive` fonksiyonlarının `Result` yerine `TokenStream` döndürmesi zorunlu olduğundan, hata doğrudan bir `Err` dönüş değeri olarak iletilemez. Makro panikleyebilir veya açıklayıcı bir `compile_error!` çağrısı içeren bir `TokenStream` üretebilir. Bu örneği `unwrap` kullanarak basitleştirdik; üretim kodunda `panic!` veya `expect` kullanarak neyin ters gittiğine dair daha özgül hata mesajları sağlamalısınız.
 
 Artık öznitelik eklenmiş Rust kodunu bir `TokenStream`'den `DeriveInput` örneğine dönüştüren koda sahip olduğumuza göre, Liste 20-42'de gösterildiği gibi öznitelik eklenmiş tür üzerinde `MerhabaMakro` trait'ini uygulayan kodu üretelim.
 

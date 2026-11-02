@@ -85,11 +85,7 @@ Struct'lar üzerinde türetildiğinde `PartialOrd`, her alandaki değerleri alan
 
 `Clone` trait'inin gerekli olduğu duruma bir örnek, bir dilim (`&[T]`) üzerinde `to_vec` metodunu çağırmaktır. Dilim içerdiği tür örneklerinin sahibi değildir, ancak `to_vec` çağrısından döndürülen `Vec<T>` kendi örneklerinin sahibi olmak zorundadır; bu nedenle `to_vec` her öğe üzerinde `clone` çağırır. Dolayısıyla dilimde saklanan türün `Clone` uygulaması gerekir.
 
-`Copy` trait'i, bir değeri oluşturan bitleri kopyalayarak çoğaltmanıza olanak
-tanır; bu işlem için türe özel bir klonlama kodu çalıştırılmaz. Bu özellik
-değerin yığında mı, öbekte mi tutulduğuna bağlı değildir. `Copy` hakkında daha
-fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri:
-Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
+`Copy` trait'i, bir değeri oluşturan bitleri kopyalayarak çoğaltmanıza olanak tanır; bu işlem için türe özel bir klonlama kodu çalıştırılmaz. Bu özellik değerin yığında mı, öbekte mi tutulduğuna bağlı değildir. `Copy` hakkında daha fazla bilgi için Bölüm 4'teki [“Yalnızca Yığındaki Veri: Copy”][stack-only-data-copy]<!-- ignore --> bölümüne bakın.
 
 `Copy` trait'i, programcıların herhangi bir metodu özel olarak uygulayıp “arka planda hiçbir özel kod çalıştırılmadığı” varsayımını ihlal etmesini önlemek amacıyla hiçbir metot tanımlamaz. Bu sayede tüm programcılar bir `Copy` değerini kopyalamanın çok hızlı (yalnızca bit düzeyinde kopyalama) olacağını güvenle varsayabilir.
 

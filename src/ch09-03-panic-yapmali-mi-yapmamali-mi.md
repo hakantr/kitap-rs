@@ -4,20 +4,7 @@
 
 ## `panic!` Yapmalı mı Yapmamalı mı?
 
-Peki ne zaman `panic!` çağırmanız, ne zaman `Result` döndürmeniz gerektiğine
-nasıl karar verirsiniz? Kod paniklediğinde normal yürütme akışı kesilir; çağıran
-kod, bir `Err` değeri alıp işlemi olağan hata akışı içinde sürdürme fırsatı
-bulamaz. Geri sarma kullanan programlarda bazı panikler `catch_unwind` ile
-yakalanabilse de bu mekanizma normal hata yönetiminde `Result` yerine
-kullanılmaz. Ortada bir kurtarma olasılığı bulunsun ya da bulunmasın her türlü
-hata durumu için `panic!` çağırabilirsiniz; ancak bunu yaptığınızda, durumun
-kurtarılamaz olduğuna çağıran kod adına siz karar vermiş olursunuz. Bir `Result`
-değeri döndürmeyi tercih ettiğinizde ise çağıran koda seçenek sunarsınız.
-Çağıran kod kendi bağlamına uygun bir biçimde hatayı telafi etmeyi deneyebilir
-ya da eldeki `Err` değerinin bu senaryoda kurtarılamaz olduğuna hükmedip
-`panic!` çağırarak sizin kurtarılabilir hatanızı kurtarılamaz bir hataya
-dönüştürebilir. Dolayısıyla, başarısız olma ihtimali bulunan bir fonksiyon
-tanımlarken `Result` döndürmek iyi bir varsayılan tercihtir.
+Peki ne zaman `panic!` çağırmanız, ne zaman `Result` döndürmeniz gerektiğine nasıl karar verirsiniz? Kod paniklediğinde normal yürütme akışı kesilir; çağıran kod, bir `Err` değeri alıp işlemi olağan hata akışı içinde sürdürme fırsatı bulamaz. Geri sarma kullanan programlarda bazı panikler `catch_unwind` ile yakalanabilse de bu mekanizma normal hata yönetiminde `Result` yerine kullanılmaz. Ortada bir kurtarma olasılığı bulunsun ya da bulunmasın her türlü hata durumu için `panic!` çağırabilirsiniz; ancak bunu yaptığınızda, durumun kurtarılamaz olduğuna çağıran kod adına siz karar vermiş olursunuz. Bir `Result` değeri döndürmeyi tercih ettiğinizde ise çağıran koda seçenek sunarsınız. Çağıran kod kendi bağlamına uygun bir biçimde hatayı telafi etmeyi deneyebilir ya da eldeki `Err` değerinin bu senaryoda kurtarılamaz olduğuna hükmedip `panic!` çağırarak sizin kurtarılabilir hatanızı kurtarılamaz bir hataya dönüştürebilir. Dolayısıyla, başarısız olma ihtimali bulunan bir fonksiyon tanımlarken `Result` döndürmek iyi bir varsayılan tercihtir.
 
 Örnekler, prototip kodları ve testler gibi durumlarda ise `Result` döndürmek yerine panik yapan kod yazmak daha uygundur. Gelin önce bunun nedenini inceleyelim, ardından derleyicinin başarısızlığın imkânsız olduğunu anlayamadığı ancak bir insan olarak sizin görebildiğiniz durumları ele alalım. Bölümün sonunda da kütüphane kodlarında panik yapıp yapmamaya nasıl karar verileceğine ilişkin genel yönergelerle konuyu tamamlayacağız.
 
@@ -80,18 +67,7 @@ Kodunuz geçersiz değerlerle çağrıldığında kullanıcıyı riske atabilece
 
 ### Doğrulama İçin Özel Türler
 
-Geçerli bir değere sahip olduğumuzdan emin olmak için Rust'ın tür sistemini
-kullanma fikrini bir adım ileri taşıyalım ve doğrulama amacıyla özel bir tür
-oluşturmayı inceleyelim. Bölüm 2'de kullanıcıdan 1 ile 100 arasında bir sayı
-tahmin etmesini istediğimiz tahmin oyununu hatırlayın. Kullanıcının tahminini
-gizli sayımızla karşılaştırmadan önce bu aralıkta olup olmadığını hiç
-doğrulamamış, `u32` türüne ayrıştırma yaparak yalnızca negatif olmadığından ve
-bu türün aralığına sığdığından emin olmuştuk. Sıfır da geçerli bir `u32`
-değeridir. O örnekte bunun sonuçları çok ağır değildi; “Çok büyük!” veya “Çok
-küçük!” çıktılarımız yine doğru kalıyordu. Yine de kullanıcıyı geçerli
-tahminlere yönlendirmek ve aralık dışında bir sayı girilmesi ile örneğin harf
-yazılması durumlarında farklı davranışlar sergilemek faydalı bir iyileştirme
-olurdu.
+Geçerli bir değere sahip olduğumuzdan emin olmak için Rust'ın tür sistemini kullanma fikrini bir adım ileri taşıyalım ve doğrulama amacıyla özel bir tür oluşturmayı inceleyelim. Bölüm 2'de kullanıcıdan 1 ile 100 arasında bir sayı tahmin etmesini istediğimiz tahmin oyununu hatırlayın. Kullanıcının tahminini gizli sayımızla karşılaştırmadan önce bu aralıkta olup olmadığını hiç doğrulamamış, `u32` türüne ayrıştırma yaparak yalnızca negatif olmadığından ve bu türün aralığına sığdığından emin olmuştuk. Sıfır da geçerli bir `u32` değeridir. O örnekte bunun sonuçları çok ağır değildi; “Çok büyük!” veya “Çok küçük!” çıktılarımız yine doğru kalıyordu. Yine de kullanıcıyı geçerli tahminlere yönlendirmek ve aralık dışında bir sayı girilmesi ile örneğin harf yazılması durumlarında farklı davranışlar sergilemek faydalı bir iyileştirme olurdu.
 
 Bunu yapmanın bir yolu, negatif sayıları da yakalayabilmek için tahmini `u32` yerine `i32` olarak ayrıştırmak ve ardından sayının geçerli aralıkta olup olmadığını denetleyen şöyle bir kontrol eklemektir:
 
